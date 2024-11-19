@@ -5,8 +5,10 @@ defmodule RujiraWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/api", RujiraWeb do
+  scope "/api" do
     pipe_through :api
+    forward "/graphiql", Absinthe.Plug.GraphiQL, schema: RujiraWeb.Schema
+    forward "/", Absinthe.Plug, schema: RujiraWeb.Schema
   end
 
   # Enable LiveDashboard in development
