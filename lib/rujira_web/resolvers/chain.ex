@@ -51,7 +51,7 @@ defmodule RujiraWeb.Resolvers.Chain do
     {:ok, %{balance: 1_000_000}}
   end
 
-  def thor_resolver(%{address: address}, _, _resolution) do
+  def thor_resolver(_, _, _resolution) do
     {:error, :invalid_address}
   end
 end

@@ -7,7 +7,7 @@ defmodule RujiraWeb.Schema do
   query do
     field :accounts, list_of(:root_account) do
       arg(:addresses, list_of(:string))
-      resolve(&Resolvers.Account.root_accounts_resolver/3)
+      resolve(&Resolvers.Account.root_resolver/3)
     end
   end
 end
