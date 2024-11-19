@@ -1,5 +1,5 @@
 defmodule RujiraWeb.Resolvers.Account do
-  def account_resolver(_, _, _) do
+  def account_resolver(parent, _, _) do
     {:ok, %{address: "thor1htrqlgcqc8lexctrx7c2kppq4vnphkatgaj932"}}
   end
 

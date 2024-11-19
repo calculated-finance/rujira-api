@@ -5,6 +5,7 @@ defmodule RujiraWeb.Schema.AccountTypes do
   @desc "A root account represents a single address. This can have multiple layer 1 accounts based on the type of address"
   object :root_account do
     field :address, :string
+    field :account, :account, do: resolve(&Resolvers.Account.account_resolver/3)
 
     field :avax, :l1_account, do: resolve(&Resolvers.Chain.avax_resolver/3)
     field :btc, :l1_account, do: resolve(&Resolvers.Chain.btc_resolver/3)
@@ -21,14 +22,11 @@ defmodule RujiraWeb.Schema.AccountTypes do
   @desc "A l1_account represents data about this address on the layer 1 specified"
   object :l1_account do
     field :balance, :string
-
-    field :account, :account do
-      resolve(&Resolvers.Account.account_resolver/3)
-    end
   end
 
-  @desc "An account represents data about this address on the Rujira app layer, using the mapped address from the root account"
+  @desc "An account represents data about this address on the Rujira app layer, using the mapped address from the root account when required"
   object :account do
+    @desc "The THORChain address for this account on the app layer"
     field :address, :string
   end
 end
