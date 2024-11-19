@@ -9,12 +9,10 @@ defmodule Rujira.Balances do
      ]}
   end
 
-  def fetch_balances(:avax, _) do
-    {:ok, [%{amount: 1_000_000_000_000_000_000, asset: "AVAX.AVAX"}]}
-  end
-
-  def fetch_balances(:btc, _) do
-    {:ok, [%{amount: 100_000_000, asset: "BTC.BTC"}]}
+  def fetch_balances(:avax, address) do
+    with {:ok, balance} <- Rujira.Balances.Evm.fetch_balance(:avax, address) do
+      {:ok, [%{amount: balance, asset: "AVAX.AVAX"}]}
+    end
   end
 
   def fetch_balances(:bch, _) do
@@ -29,8 +27,10 @@ defmodule Rujira.Balances do
     {:ok, [%{amount: 1_000_000_000, asset: "DOGE.DOGE"}]}
   end
 
-  def fetch_balances(:eth, _) do
-    {:ok, [%{amount: 1_000_000_000_000_000_000, asset: "ETH.ETH"}]}
+  def fetch_balances(:eth, address) do
+    with {:ok, balance} <- Rujira.Balances.Evm.fetch_balance(:eth, address) do
+      {:ok, [%{amount: balance, asset: "ETH.ETH"}]}
+    end
   end
 
   def fetch_balances(:gaia, _) do
