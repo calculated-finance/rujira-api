@@ -44,7 +44,8 @@ defmodule Rujira.MixProject do
       {:bandit, "~> 1.5"},
       {:absinthe, "~> 1.7"},
       {:absinthe_plug, "~> 1.4"},
-      {:ethereumex, "~> 0.10"}
+      {:ethereumex, "~> 0.10"},
+      {:finch, "~> 0.19.0"}
     ]
   end
 

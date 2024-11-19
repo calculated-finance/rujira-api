@@ -15,7 +15,8 @@ defmodule Rujira.Application do
       # Start a worker by calling: Rujira.Worker.start_link(arg)
       # {Rujira.Worker, arg},
       # Start to serve requests, typically the last entry
-      RujiraWeb.Endpoint
+      RujiraWeb.Endpoint,
+      {Finch, name: Rujira.Finch}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

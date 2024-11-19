@@ -23,6 +23,13 @@ defmodule Rujira.Balances do
     {:ok, [%{amount: 1_000_000_000_000_000_000, asset: "BNB.BNB"}]}
   end
 
+  def fetch_balances(:btc, address) do
+    with {:ok, balance} <- Rujira.Balances.Btc.fetch_balance(:avax, address) do
+      IO.inspect(balance)
+      {:ok, [%{amount: balance, asset: "BTC.BTC"}]}
+    end
+  end
+
   def fetch_balances(:doge, _) do
     {:ok, [%{amount: 1_000_000_000, asset: "DOGE.DOGE"}]}
   end
