@@ -1,6 +1,7 @@
 defmodule RujiraWeb.Schema.AccountTypes do
   use Absinthe.Schema.Notation
   alias RujiraWeb.Resolvers
+  import_types(RujiraWeb.Schema.BalanceTypes)
 
   @desc "A root account represents a single address. This can have multiple layer 1 accounts based on the type of address"
   object :root_account do
@@ -21,12 +22,13 @@ defmodule RujiraWeb.Schema.AccountTypes do
 
   @desc "A l1_account represents data about this address on the layer 1 specified"
   object :l1_account do
-    field :balance, :string
+    field :balance, :l1_balance
   end
 
   @desc "An account represents data about this address on the Rujira app layer, using the mapped address from the root account when required"
   object :account do
     @desc "The THORChain address for this account on the app layer"
     field :address, :string
+    field :balances, list_of(:balance)
   end
 end
