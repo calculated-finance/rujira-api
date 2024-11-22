@@ -1,5 +1,5 @@
 defprotocol Rujira.Chains.Native.Adapter do
   @spec balances(t, String.t()) ::
-          {:ok, list(%{asset: String.t(), amount: String.t()})} | {:error, any()}
+          {:ok, list(%{asset: String.t(), amount: non_neg_integer()})} | {:error, any()}
   def balances(adapter, address)
 end

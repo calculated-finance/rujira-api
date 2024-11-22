@@ -3,7 +3,9 @@ defmodule Rujira.Chains.Native.Bch do
 end
 
 defimpl Rujira.Chains.Native.Adapter, for: Rujira.Chains.Native.Bch do
-  def balances(_a, _address) do
-    {:ok, [%{amount: 1_000_000_000, asset: "BCH.BCH"}]}
+  def balances(_a, address) do
+    with {:ok, balance} <- CryptoApis.Api.get_balance("bitcoin-cash", address, 8) do
+      {:ok, [%{amount: balance, asset: "BCH.BCH"}]}
+    end
   end
 end
