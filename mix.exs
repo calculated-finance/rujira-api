@@ -46,7 +46,8 @@ defmodule Rujira.MixProject do
       {:absinthe_plug, "~> 1.4"},
       {:ethereumex, "~> 0.10"},
       {:finch, "~> 0.19.0"},
-      {:protobuf, "~> 0.13.0"}
+      {:protobuf, "~> 0.13.0"},
+      {:grpc, "~> 0.9"}
     ]
   end
 

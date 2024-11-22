@@ -1,12 +1,6 @@
 defmodule Rujira.Balances do
-  def fetch_balances(:thor, _) do
-    {:ok,
-     [
-       %{denom: "btc-btc", amount: 100_000_000},
-       %{denom: "x/uruji", amount: 1_000_000},
-       %{denom: "rune", amount: 1_000_000},
-       %{denom: "gaia-kuji", amount: 1_000_000}
-     ]}
+  def fetch_balances(:thor, address) do
+    Rujira.Balances.Thor.fetch_balances(address)
   end
 
   def fetch_balances(:avax, address) do
@@ -39,12 +33,12 @@ defmodule Rujira.Balances do
     end
   end
 
-  def fetch_balances(:gaia, _) do
-    {:ok, [%{amount: 1_000_000, asset: "GAIA.ATOM"}]}
+  def fetch_balances(:gaia, address) do
+    Rujira.Balances.Gaia.fetch_balances(address)
   end
 
   def fetch_balances(:kuji, _) do
-    {:ok, [%{amount: 1_000_000, asset: "GAIA.KUJI"}]}
+    {:ok, [%{amount: 1_000_000, asset: "KUJI.KUJI"}]}
   end
 
   def fetch_balances(:ltc, _) do
