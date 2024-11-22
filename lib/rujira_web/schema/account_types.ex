@@ -10,7 +10,7 @@ defmodule RujiraWeb.Schema.AccountTypes do
     field :balances, list_of(:native_balance) do
       arg(:tokens, list_of(:string))
       @desc "A list of contract addresses for ERC-20, SPL etc token balances"
-      resolve(&Resolvers.Balance.resolver/3)
+      resolve(&Resolvers.Balance.native/3)
     end
 
     field :account, :account do
@@ -24,7 +24,7 @@ defmodule RujiraWeb.Schema.AccountTypes do
     field :address, :string
 
     field :balances, list_of(:balance) do
-      resolve(&Resolvers.Balance.resolver/3)
+      resolve(&Resolvers.Balance.cosmos/3)
     end
   end
 end

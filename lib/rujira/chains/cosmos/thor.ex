@@ -1,9 +1,9 @@
-defmodule Rujira.Balances.Thor do
+defmodule Rujira.Chains.Cosmos.Thor do
   alias Cosmos.Bank.V1beta1.QueryAllBalancesRequest
   alias Cosmos.Bank.V1beta1.QueryAllBalancesResponse
   import Cosmos.Bank.V1beta1.Query.Stub
 
-  def fetch_balances(address) do
+  def balances(address) do
     req = %QueryAllBalancesRequest{address: address}
 
     with {:ok, conn} <- connection(),

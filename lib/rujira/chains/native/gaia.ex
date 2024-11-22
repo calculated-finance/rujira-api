@@ -1,28 +1,11 @@
-defmodule Rujira.Balances.Gaia do
-  alias Cosmos.Bank.V1beta1.QueryAllBalancesRequest
-  alias Cosmos.Bank.V1beta1.QueryAllBalancesResponse
-  import Cosmos.Bank.V1beta1.Query.Stub
+alias Cosmos.Bank.V1beta1.QueryAllBalancesRequest
+alias Cosmos.Bank.V1beta1.QueryAllBalancesResponse
+import Cosmos.Bank.V1beta1.Query.Stub
 
-  def fetch_balances(address) do
-    req = %QueryAllBalancesRequest{address: address}
+defmodule Rujira.Chains.Native.Gaia do
+  defstruct []
 
-    with {:ok, conn} <- connection(),
-         {:ok, %QueryAllBalancesResponse{balances: balances}} <- all_balances(conn, req) do
-      balances =
-        Enum.reduce(balances, [], fn e, agg ->
-          case map_coin(e) do
-            nil -> agg
-            x -> [x | agg]
-          end
-        end)
-
-      {:ok, balances}
-    else
-      {:error, %{message: message}} -> {:error, message}
-    end
-  end
-
-  defp connection() do
+  def connection(%__MODULE__{}) do
     cred = GRPC.Credential.new(ssl: [verify: :verify_none])
 
     GRPC.Stub.connect("cosmos-grpc.publicnode.com", 443,
@@ -78,4 +61,25 @@ defmodule Rujira.Balances.Gaia do
   end
 
   def map_coin(_), do: nil
+end
+
+defimpl Rujira.Chains.Native.Adapter, for: Rujira.Chains.Native.Gaia do
+  def balances(a, address) do
+    req = %QueryAllBalancesRequest{address: address}
+
+    with {:ok, conn} <- Rujira.Chains.Native.Gaia.connection(a),
+         {:ok, %QueryAllBalancesResponse{balances: balances}} <- all_balances(conn, req) do
+      balances =
+        Enum.reduce(balances, [], fn e, agg ->
+          case Rujira.Chains.Native.Gaia.map_coin(e) do
+            nil -> agg
+            x -> [x | agg]
+          end
+        end)
+
+      {:ok, balances}
+    else
+      {:error, %{message: message}} -> {:error, message}
+    end
+  end
 end
