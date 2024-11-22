@@ -1,4 +1,4 @@
-defmodule Rujira.Blockstream.Api do
+defmodule Blockstream.Api do
   @moduledoc """
   Module to query Bitcoin wallet balances using Blockstream API and Finch.
   """
