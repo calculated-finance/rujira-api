@@ -25,7 +25,6 @@ defmodule Rujira.Balances do
 
   def fetch_balances(:btc, address) do
     with {:ok, balance} <- Rujira.Balances.Btc.fetch_balance(:avax, address) do
-      IO.inspect(balance)
       {:ok, [%{amount: balance, asset: "BTC.BTC"}]}
     end
   end
