@@ -47,7 +47,9 @@ defmodule Rujira.MixProject do
       {:ethereumex, "~> 0.10"},
       {:finch, "~> 0.19.0"},
       {:protobuf, "~> 0.13.0"},
-      {:grpc, "~> 0.9"}
+      {:grpc, "~> 0.9"},
+      {:absinthe_relay, "~> 1.5"},
+      {:cors_plug, "~> 3.0"}
     ]
   end
 
