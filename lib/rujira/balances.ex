@@ -9,6 +9,7 @@ defmodule Rujira.Balances do
   @spec cosmos_balances(atom(), String.t()) ::
           {:ok, list(%{denom: String.t(), amount: String.t()})} | {:error, any()}
   def cosmos_balances(:thor, address), do: Rujira.Chains.Cosmos.Thor.balances(address)
+  def cosmos_balances(:kuji, address), do: Rujira.Chains.Cosmos.Kujira.balances(address)
 
   @doc """
   Fetches the balances of THORChain supported assets on native chains, with the correct Asset string for THORChain usage

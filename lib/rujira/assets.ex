@@ -3,7 +3,7 @@ defmodule Rujira.Assets do
   Interfaces for interacting with THORChain Asset values
   """
 
-  def to_symbol(str) do
+  def symbol(str) do
     # TODO: suport more delimiters
     [_, v | _] = String.split(str, ".")
     [sym | _] = String.split(v, "-")

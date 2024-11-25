@@ -8,24 +8,30 @@ defmodule RujiraWeb.Resolvers.Balance do
   end
 
   def metadata(%{asset: asset}, _, _) do
-    symbol = Rujira.Assets.to_symbol(asset)
+    symbol = Rujira.Assets.symbol(asset)
     decimals = Rujira.Assets.decimals(asset)
     {:ok, %{symbol: symbol, decimals: decimals}}
   end
 
-  def metadata(%{denom: _denom}, _, _) do
-    {:ok, %{current: 1000, change_day: 0.1}}
+  def metadata(%{denom: denom}, _, _) do
+    symbol = Rujira.Tokens.symbol(denom)
+    decimals = Rujira.Tokens.decimals(denom)
+    {:ok, %{symbol: symbol, decimals: decimals}}
   end
 
   def price(%{asset: asset}, _, _) do
-    symbol = Rujira.Assets.to_symbol(asset)
+    symbol = Rujira.Assets.symbol(asset)
 
     with {:ok, %{price: price, change: change}} <- Rujira.Prices.get(symbol) do
       {:ok, %{current: price, change_day: change}}
     end
   end
 
-  def price(%{denom: _denom}, _, _) do
-    {:ok, %{current: 1000, change_day: 0.1}}
+  def price(%{denom: denom}, _, _) do
+    symbol = Rujira.Tokens.symbol(denom)
+
+    with {:ok, %{price: price, change: change}} <- Rujira.Prices.get(symbol) do
+      {:ok, %{current: price, change_day: change}}
+    end
   end
 end

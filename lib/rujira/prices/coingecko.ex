@@ -1,6 +1,9 @@
 defmodule Rujira.Prices.Coingecko do
   use Memoize
+
   def id("BTC"), do: {:ok, "bitcoin"}
+  def id("rKUJI"), do: {:ok, "kujira"}
+  def id("KUJI"), do: {:ok, "kujira"}
   def id(symbol), do: lookup_id(symbol)
 
   def price(id) do
