@@ -4,7 +4,7 @@ defmodule RujiraWeb.Schema do
 
   query do
     @desc "Start with a list of chains"
-    field :chains, :chains do
+    field :chains, non_null(:chains) do
       resolve(&RujiraWeb.Resolvers.Chains.resolver/3)
     end
   end
