@@ -34,7 +34,7 @@ config :cors_plug,
   origin: [
     "http://localhost:5173",
     ~r/https:\/\/rujira-ui-main\.vercel\.app/,
-    ~r/https:\/\/rujira-ui-main-git-[a-z]+\.vercel\.app/
+    ~r/https:\/\/rujira-ui-main-git-[a-z]+-rujira\.vercel\.app/
   ],
   max_age: 86400,
   methods: ["GET", "POST"]
