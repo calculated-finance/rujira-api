@@ -16,6 +16,9 @@ defmodule Rujira.Chains.Cosmos.Kujira do
          {:ok, balances} <-
            Task.async_stream(@tokens, &balance_of(conn, address, &1))
            |> Enum.reduce({:ok, []}, fn
+             {:ok, {:ok, %{amount: "0"}}}, {:ok, acc} ->
+               {:ok, acc}
+
              {:ok, {:ok, %{denom: denom, amount: amount}}}, {:ok, acc} ->
                {:ok, [%{denom: denom, amount: amount} | acc]}
 
