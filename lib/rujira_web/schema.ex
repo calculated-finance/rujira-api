@@ -1,6 +1,7 @@
 defmodule RujiraWeb.Schema do
   use Absinthe.Schema
   import_types(RujiraWeb.Schema.ChainTypes)
+  import_types(RujiraWeb.Schema.Scalars.BigInt)
 
   query do
     @desc "Start with a list of chains"

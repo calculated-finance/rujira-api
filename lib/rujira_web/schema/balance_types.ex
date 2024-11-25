@@ -4,12 +4,12 @@ defmodule RujiraWeb.Schema.BalanceTypes do
   @desc "The balance of a token or coin on a layer 1 chain"
   object :native_balance do
     field :asset, non_null(:string)
-    field :amount, non_null(:string)
+    field :amount, non_null(:bigint)
   end
 
   @desc "The balance of a token or coin on the app layer"
   object :balance do
     field :denom, non_null(:string)
-    field :amount, non_null(:string)
+    field :amount, non_null(:bigint)
   end
 end
