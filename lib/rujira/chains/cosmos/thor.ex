@@ -11,6 +11,7 @@ defmodule Rujira.Chains.Cosmos.Thor do
       {:ok, balances}
     else
       {:error, %{message: message}} -> {:error, message}
+      err -> err
     end
   end
 

@@ -31,6 +31,7 @@ defmodule Rujira.Chains.Cosmos.Kujira do
       {:ok, balances}
     else
       {:error, %{message: message}} -> {:error, message}
+      error -> error
     end
   end
 
@@ -41,6 +42,7 @@ defmodule Rujira.Chains.Cosmos.Kujira do
       {:ok, balance}
     else
       {:error, %{message: message}} -> {:error, message}
+      error -> error
     end
   end
 
