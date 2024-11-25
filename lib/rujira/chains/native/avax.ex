@@ -1,13 +1,9 @@
 defmodule Rujira.Chains.Native.Avax do
-  defstruct []
-
-  def rpc() do
-    "https://api.avax.network/ext/bc/C/rpc"
-  end
+  defstruct rpc: "https://api.avax.network/ext/bc/C/rpc"
 end
 
-defimpl Rujira.Chains.Native.Adapter, for: Rujira.Chain.Avax do
+defimpl Rujira.Chains.Native.Adapter, for: Rujira.Chains.Native.Avax do
   def balances(a, address) do
-    Rujira.Chains.Native.Evm.balances(a.rpc(), address, "AVAX.AVAX")
+    Rujira.Chains.Native.Evm.balances(a.rpc, address, "AVAX.AVAX")
   end
 end
