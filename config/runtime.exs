@@ -96,4 +96,12 @@ if config_env() == :prod do
   #       force_ssl: [hsts: true]
   #
   # Check `Plug.SSL` for all available options in `force_ssl`.
+
+  coingecko_key =
+    System.get_env("COINGECKO_API_KEY") ||
+      raise """
+      environment variable COINGECKO_API_KEY is missing.
+      """
+
+  config :rujira, Rujira.Prices.Coingecko, cg_key: coingecko_key
 end

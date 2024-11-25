@@ -14,4 +14,5 @@ defmodule RujiraWeb.Schema.Scalars.BigInt do
   end
 
   defp serialize_bigint(value) when is_integer(value), do: Integer.to_string(value)
+  defp serialize_bigint(value) when is_binary(value), do: value
 end

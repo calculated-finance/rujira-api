@@ -52,6 +52,8 @@ config :rujira, RujiraWeb.Endpoint,
 # Enable dev routes for dashboard and mailbox
 config :rujira, dev_routes: true
 
+config :rujira, Rujira.Prices.Coingecko, cg_key: "CG-nawZKt1eWPZgWCAydmWVvQN9"
+
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
 

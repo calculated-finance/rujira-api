@@ -49,7 +49,9 @@ defmodule Rujira.MixProject do
       {:protobuf, "~> 0.13.0"},
       {:grpc, "~> 0.9"},
       {:absinthe_relay, "~> 1.5"},
-      {:cors_plug, "~> 3.0"}
+      {:cors_plug, "~> 3.0"},
+      {:tesla, "~> 1.11"},
+      {:memoize, "~> 1.4"}
     ]
   end
 
