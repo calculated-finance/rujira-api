@@ -18,7 +18,7 @@ defmodule Rujira.Chains.Cosmos.Thor do
   defp connection() do
     cred = GRPC.Credential.new(ssl: [verify: :verify_none])
 
-    GRPC.Stub.connect("thornode-grpc.defiantlabs.net", 443,
+    GRPC.Stub.connect("thornode-devnet-grpc.bryanlabs.net", 443,
       interceptors: [{GRPC.Client.Interceptors.Logger, level: :debug}],
       cred: cred
     )

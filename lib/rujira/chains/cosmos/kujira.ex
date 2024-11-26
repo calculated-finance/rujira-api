@@ -47,11 +47,11 @@ defmodule Rujira.Chains.Cosmos.Kujira do
   end
 
   defp connection() do
-    # cred = GRPC.Credential.new(ssl: [verify: :verify_none])
+    cred = GRPC.Credential.new(ssl: [verify: :verify_none])
 
-    GRPC.Stub.connect("199.59.208.194", 30648,
-      interceptors: [{GRPC.Client.Interceptors.Logger, level: :debug}]
-      # cred: cred
+    GRPC.Stub.connect("kujira-grpc.bryanlabs.net", 443,
+      interceptors: [{GRPC.Client.Interceptors.Logger, level: :debug}],
+      cred: cred
     )
   end
 end
