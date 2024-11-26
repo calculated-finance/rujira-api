@@ -3,6 +3,8 @@ defmodule Rujira.Assets do
   Interfaces for interacting with THORChain Asset values
   """
 
+  def symbol("GAIA.RKUJI"), do: "rKUJI"
+
   def symbol(str) do
     # TODO: suport more delimiters
     [_, v | _] = String.split(str, ".")
