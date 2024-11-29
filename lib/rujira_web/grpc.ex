@@ -11,3 +11,8 @@ defimpl Enumerable, for: GRPC.RPCError do
   def slice(%GRPC.RPCError{status: status, message: message}),
     do: Enumerable.slice(%{status: status, message: message})
 end
+
+defmodule RujiraWeb.Grpc do
+  def to_string(int) when is_integer(int), do: Integer.to_string(int)
+  def to_string(nil), do: ""
+end

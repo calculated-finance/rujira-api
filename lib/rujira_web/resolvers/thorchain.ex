@@ -10,20 +10,20 @@ defmodule RujiraWeb.Resolvers.Thorchain do
     tolerance_bps = Map.get(x, :tolerance_bps, nil)
     refund_address = Map.get(x, :refund_address, nil)
     affiliate = Map.get(x, :affiliate, nil)
-    affiliate_bps = Map.get(x, :affiliate_bps, nil)
+    affiliate_bps = Map.get(x, :affiliate_bps, [])
     height = Map.get(x, :height, nil)
 
     req = %QueryQuoteSwapRequest{
       from_asset: from_asset,
       to_asset: to_asset,
-      amount: Integer.to_string(amount),
-      streaming_interval: streaming_interval,
-      streaming_quantity: streaming_quantity,
+      amount: RujiraWeb.Grpc.to_string(amount),
+      streaming_interval: RujiraWeb.Grpc.to_string(streaming_interval),
+      streaming_quantity: RujiraWeb.Grpc.to_string(streaming_quantity),
       destination: destination,
-      tolerance_bps: tolerance_bps,
+      tolerance_bps: RujiraWeb.Grpc.to_string(tolerance_bps),
       refund_address: refund_address,
       affiliate: affiliate,
-      affiliate_bps: affiliate_bps,
+      affiliate_bps: Enum.map(affiliate_bps, &RujiraWeb.Grpc.to_string/1),
       height: height
     }
 

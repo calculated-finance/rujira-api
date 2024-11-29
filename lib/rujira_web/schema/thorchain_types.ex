@@ -13,7 +13,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
       arg(:tolerance_bps, :integer)
       arg(:refund_address, :address)
       arg(:affiliate, list_of(:string))
-      arg(:affiliate_bps, list_of(:string))
+      arg(:affiliate_bps, list_of(:integer))
       arg(:height, :string)
       resolve(&Resolvers.Thorchain.quote/3)
     end
