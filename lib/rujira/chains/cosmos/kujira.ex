@@ -29,9 +29,6 @@ defmodule Rujira.Chains.Cosmos.Kujira do
                error
            end) do
       {:ok, balances}
-    else
-      {:error, %{message: message}} -> {:error, message}
-      error -> error
     end
   end
 
@@ -40,9 +37,6 @@ defmodule Rujira.Chains.Cosmos.Kujira do
 
     with {:ok, %QueryBalanceResponse{balance: balance}} <- balance(conn, req) do
       {:ok, balance}
-    else
-      {:error, %{message: message}} -> {:error, message}
-      error -> error
     end
   end
 

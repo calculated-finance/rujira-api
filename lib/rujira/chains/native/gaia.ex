@@ -78,8 +78,6 @@ defimpl Rujira.Chains.Native.Adapter, for: Rujira.Chains.Native.Gaia do
         end)
 
       {:ok, balances}
-    else
-      {:error, %{message: message}} -> {:error, message}
     end
   end
 end

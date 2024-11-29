@@ -19,7 +19,7 @@ defmodule RujiraWeb.Schema.ChainTypes do
 
   object :chain do
     field :accounts, non_null(list_of(non_null(:native_account))) do
-      arg(:addresses, non_null(list_of(non_null(:string))))
+      arg(:addresses, non_null(list_of(non_null(:address))))
       resolve(&Resolvers.Account.resolver/3)
     end
   end

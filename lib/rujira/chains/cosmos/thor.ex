@@ -9,13 +9,10 @@ defmodule Rujira.Chains.Cosmos.Thor do
     with {:ok, conn} <- connection(),
          {:ok, %QueryAllBalancesResponse{balances: balances}} <- all_balances(conn, req) do
       {:ok, balances}
-    else
-      {:error, %{message: message}} -> {:error, message}
-      err -> err
     end
   end
 
-  defp connection() do
+  def connection() do
     cred = GRPC.Credential.new(ssl: [verify: :verify_none])
 
     GRPC.Stub.connect("thornode-devnet-grpc.bryanlabs.net", 443,

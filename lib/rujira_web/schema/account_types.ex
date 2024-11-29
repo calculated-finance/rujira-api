@@ -5,7 +5,7 @@ defmodule RujiraWeb.Schema.AccountTypes do
 
   @desc "A native_account represents data about this address on the layer 1 specified"
   object :native_account do
-    field :address, non_null(:string)
+    field :address, non_null(:address)
 
     field :balances, non_null(list_of(non_null(:native_balance))) do
       arg(:tokens, list_of(:string))
@@ -21,7 +21,7 @@ defmodule RujiraWeb.Schema.AccountTypes do
   @desc "An account represents data about this address on THORChain and the Rujira app layer, using the mapped address from the root account when required"
   object :account do
     @desc "The THORChain address for this account on the app layer"
-    field :address, non_null(:string)
+    field :address, non_null(:address)
 
     field :balances, non_null(list_of(non_null(:balance))) do
       resolve(&Resolvers.Balance.cosmos/3)
