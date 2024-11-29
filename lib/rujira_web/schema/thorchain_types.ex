@@ -37,7 +37,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :memo, non_null(:string)
     field :expected_amount_out, non_null(:bigint)
 
-    field :expected_asset_out, :balance do
+    field :expected_asset_out, non_null(:balance) do
       resolve(&RujiraWeb.Resolvers.Balance.quote/3)
     end
 
