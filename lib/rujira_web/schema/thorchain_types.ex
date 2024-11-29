@@ -36,6 +36,11 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :gas_rate_units, non_null(:string)
     field :memo, non_null(:string)
     field :expected_amount_out, non_null(:bigint)
+
+    field :expected_asset_out, :balance do
+      resolve(&RujiraWeb.Resolvers.Balance.quote/3)
+    end
+
     field :max_streaming_quantity, non_null(:bigint)
     field :streaming_swap_blocks, non_null(:integer)
     field :streaming_swap_seconds, non_null(:integer)

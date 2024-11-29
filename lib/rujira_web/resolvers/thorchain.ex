@@ -30,7 +30,7 @@ defmodule RujiraWeb.Resolvers.Thorchain do
     with {:ok, conn} <- Rujira.Chains.Cosmos.Thor.connection(),
          {:ok, %QueryQuoteSwapResponse{} = res} <- quote_swap(conn, req),
          {:ok, expiry} <- DateTime.from_unix(res.expiry) do
-      {:ok, %{res | expiry: expiry}}
+      {:ok, Map.put(%{res | expiry: expiry}, :request, req)}
     end
   end
 end

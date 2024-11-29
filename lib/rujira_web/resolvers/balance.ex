@@ -34,4 +34,8 @@ defmodule RujiraWeb.Resolvers.Balance do
       {:ok, %{current: price, change_day: change}}
     end
   end
+
+  def quote(%{request: %{to_asset: asset}, expected_amount_out: amount}, _, _) do
+    {:ok, %{asset: asset, amount: amount}}
+  end
 end
