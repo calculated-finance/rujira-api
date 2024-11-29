@@ -29,11 +29,15 @@ defmodule RujiraWeb.Resolvers.Node do
          }}
 
       ["account", chain, address] ->
-        {:ok,
-         %Layer1{
-           chain: String.to_existing_atom(chain),
-           address: address
-         }}
+        try do
+          {:ok,
+           %Layer1{
+             chain: String.to_existing_atom(chain),
+             address: address
+           }}
+        rescue
+          ArgumentError -> {:error, "invalid chain #{chain}"}
+        end
 
       ["account", address] ->
         {:ok, %Account{chain: :thor, address: address}}
