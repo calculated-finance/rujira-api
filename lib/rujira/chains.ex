@@ -1,5 +1,5 @@
 defmodule Rujira.Chains do
-  alias __MODULE__.Native.Adapter
+  alias __MODULE__.Layer1.Adapter
   @spec get_native_adapter(atom()) :: {:ok, Adapter.t()} | {:error, any()}
   def get_native_adapter(chain) do
     try do

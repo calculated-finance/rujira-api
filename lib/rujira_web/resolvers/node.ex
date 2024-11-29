@@ -20,18 +20,11 @@ defmodule RujiraWeb.Resolvers.Node do
 
   defp decode_id(id) do
     case String.split(id, ":") do
-      ["account", "kujira", address] ->
-        # Special case for Kujira so we can query native merge assets
-        {:ok,
-         %Account{
-           chain: :kujira,
-           address: address
-         }}
-
       ["account", chain, address] ->
         try do
           {:ok,
            %Layer1{
+             id: id,
              chain: String.to_existing_atom(chain),
              address: address
            }}
@@ -40,7 +33,7 @@ defmodule RujiraWeb.Resolvers.Node do
         end
 
       ["account", address] ->
-        {:ok, %Account{chain: :thor, address: address}}
+        {:ok, %Account{id: id, chain: :thor, address: address}}
 
       _ ->
         {:error, "Invalid ID"}
