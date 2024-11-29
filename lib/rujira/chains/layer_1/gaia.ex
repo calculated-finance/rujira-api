@@ -2,7 +2,7 @@ alias Cosmos.Bank.V1beta1.QueryAllBalancesRequest
 alias Cosmos.Bank.V1beta1.QueryAllBalancesResponse
 import Cosmos.Bank.V1beta1.Query.Stub
 
-defmodule Rujira.Chains.Native.Gaia do
+defmodule Rujira.Chains.Layer1.Gaia do
   defstruct []
 
   def connection(%__MODULE__{}) do
@@ -63,15 +63,15 @@ defmodule Rujira.Chains.Native.Gaia do
   def map_coin(_), do: nil
 end
 
-defimpl Rujira.Chains.Native.Adapter, for: Rujira.Chains.Native.Gaia do
+defimpl Rujira.Chains.Layer1.Adapter, for: Rujira.Chains.Layer1.Gaia do
   def balances(a, address) do
     req = %QueryAllBalancesRequest{address: address}
 
-    with {:ok, conn} <- Rujira.Chains.Native.Gaia.connection(a),
+    with {:ok, conn} <- Rujira.Chains.Layer1.Gaia.connection(a),
          {:ok, %QueryAllBalancesResponse{balances: balances}} <- all_balances(conn, req) do
       balances =
         Enum.reduce(balances, [], fn e, agg ->
-          case Rujira.Chains.Native.Gaia.map_coin(e) do
+          case Rujira.Chains.Layer1.Gaia.map_coin(e) do
             nil -> agg
             x -> [x | agg]
           end

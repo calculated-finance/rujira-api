@@ -3,11 +3,15 @@ defmodule RujiraWeb.Schema.AccountTypes do
   alias RujiraWeb.Resolvers
   import_types(RujiraWeb.Schema.BalanceTypes)
 
-  @desc "A native_account represents data about this address on the layer 1 specified"
-  object :native_account do
-    field :address, non_null(:address)
+  @desc "A layer_1_account represents data about this address on the layer 1 specified"
+  object :layer_1_account do
+    interface(:node)
+    field :id, non_null(:id)
 
-    field :balances, non_null(list_of(non_null(:native_balance))) do
+    field :address, non_null(:address)
+    field :chain, non_null(:chain)
+
+    field :balances, non_null(list_of(non_null(:layer_1_balance))) do
       arg(:tokens, list_of(:string))
       @desc "A list of contract addresses for ERC-20, SPL etc token balances"
       resolve(&Resolvers.Balance.native/3)
@@ -20,6 +24,9 @@ defmodule RujiraWeb.Schema.AccountTypes do
 
   @desc "An account represents data about this address on THORChain and the Rujira app layer, using the mapped address from the root account when required"
   object :account do
+    interface(:node)
+    field :id, non_null(:id)
+
     @desc "The THORChain address for this account on the app layer"
     field :address, non_null(:address)
 

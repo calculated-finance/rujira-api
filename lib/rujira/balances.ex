@@ -1,5 +1,5 @@
 defmodule Rujira.Balances do
-  alias Rujira.Chains.Native.Adapter
+  alias Rujira.Chains.Layer1.Adapter
 
   @doc """
   Fetches the balances of Cosmos SDK x/bank tokens.

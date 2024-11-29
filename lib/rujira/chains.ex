@@ -4,7 +4,7 @@ defmodule Rujira.Chains do
   def get_native_adapter(chain) do
     try do
       name = chain |> Atom.to_string() |> String.capitalize()
-      module = Module.concat([__MODULE__, :Native, name])
+      module = Module.concat([__MODULE__, :Layer1, name])
       {:ok, struct(module, [])}
     catch
       _ ->

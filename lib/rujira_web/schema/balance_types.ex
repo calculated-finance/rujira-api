@@ -2,7 +2,7 @@ defmodule RujiraWeb.Schema.BalanceTypes do
   use Absinthe.Schema.Notation
 
   @desc "The balance of a token or coin on a layer 1 chain"
-  object :native_balance do
+  object :layer_1_balance do
     field :asset, non_null(:string)
     field :amount, non_null(:bigint)
     field :metadata, non_null(:metadata), resolve: &RujiraWeb.Resolvers.Balance.metadata/3
