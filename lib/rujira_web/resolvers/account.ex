@@ -4,7 +4,7 @@ defmodule RujiraWeb.Resolvers.Account do
   end
 
   def resolver(%{address: address, chain: :thor}, %{}, _) do
-    {:ok, %{address: address, chain: :thor}}
+    {:ok, %{id: "account:#{address}", address: address, chain: :thor}}
   end
 
   # Kujira has a special case as an unsupported L1 (and so no app layer deposits) so that the UIs
