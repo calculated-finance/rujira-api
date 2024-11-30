@@ -29,6 +29,10 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
   end
 
   object :quote do
+    field :asset_in, non_null(:layer_1_balance) do
+      resolve(&RujiraWeb.Resolvers.Balance.quote/3)
+    end
+
     field :inbound_address, non_null(:address)
     field :inbound_confirmation_blocks, non_null(:integer)
     field :inbound_confirmation_seconds, non_null(:integer)
