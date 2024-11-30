@@ -71,7 +71,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
   end
 
   object :pool do
-    field :asset, non_null(:layer_1_asset), resolve: &RujiraWeb.Resolvers.Balance.asset/3
+    field :asset, non_null(:layer_1_asset), resolve: &RujiraWeb.Resolvers.Token.asset/3
     field :short_code, non_null(:string)
     field :status, non_null(:pool_status)
     field :decimals, non_null(:integer)
