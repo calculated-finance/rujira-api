@@ -26,6 +26,10 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :pools, non_null(list_of(non_null(:pool))) do
       resolve(&Resolvers.Thorchain.pools/3)
     end
+
+    field :rune, :denom do
+      resolve(fn _, _, _ -> {:ok, %{denom: "rune"}} end)
+    end
   end
 
   object :quote do
