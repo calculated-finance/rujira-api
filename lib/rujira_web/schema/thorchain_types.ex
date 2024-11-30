@@ -3,7 +3,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
   alias RujiraWeb.Resolvers
 
   object :thorchain do
-    field :quote, non_null(:quote) do
+    field :quote, :quote do
       arg(:from_asset, non_null(:asset))
       arg(:to_asset, non_null(:asset))
       arg(:amount, non_null(:bigint))
@@ -23,7 +23,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
       resolve(&Resolvers.Thorchain.pool/3)
     end
 
-    field :pools, non_null(list_of(:pool)) do
+    field :pools, non_null(list_of(non_null(:pool))) do
       resolve(&Resolvers.Thorchain.pools/3)
     end
   end
