@@ -10,7 +10,7 @@ defmodule RujiraWeb.Resolvers.Account do
   # Kujira has a special case as an unsupported L1 (and so no app layer deposits) so that the UIs
   # can fetch merge token balances using the same schema
   def resolver(%{address: address, chain: :kuji}, %{}, _) do
-    {:ok, %{address: address, chain: :kuji}}
+    {:ok, %{id: "account:#{address}", address: address, chain: :kuji}}
   end
 
   def resolver(%{address: address, chain: chain}, %{}, _) do
