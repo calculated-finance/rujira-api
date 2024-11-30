@@ -1,15 +1,15 @@
 defimpl Enumerable, for: GRPC.RPCError do
   def count(%GRPC.RPCError{message: message}),
-    do: Enumerable.count(%{message: message})
+    do: Enumerable.count(%{status: message, message: message})
 
   def member?(%GRPC.RPCError{message: message}, element),
-    do: Enumerable.member?(%{message: message}, element)
+    do: Enumerable.member?(%{status: message, message: message}, element)
 
   def reduce(%GRPC.RPCError{message: message}, acc, fun),
-    do: Enumerable.reduce(%{message: message}, acc, fun)
+    do: Enumerable.reduce(%{status: message, message: message}, acc, fun)
 
   def slice(%GRPC.RPCError{message: message}),
-    do: Enumerable.slice(%{message: message})
+    do: Enumerable.slice(%{status: message, message: message})
 end
 
 defmodule RujiraWeb.Grpc do
