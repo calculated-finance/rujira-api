@@ -1,7 +1,11 @@
 defmodule RujiraWeb.Resolvers.Thorchain do
+  alias Thorchain.Types.QueryPoolsResponse
+  alias Thorchain.Types.QueryPoolsRequest
+  alias Thorchain.Types.QueryPoolResponse
+  alias Thorchain.Types.QueryPoolRequest
   alias Thorchain.Types.QueryQuoteSwapResponse
   alias Thorchain.Types.QueryQuoteSwapRequest
-  import Thorchain.Types.Query.Stub, only: [quote_swap: 2]
+  alias Thorchain.Types.Query.Stub, as: Q
 
   def quote(_prev, %{from_asset: from_asset, to_asset: to_asset, amount: amount} = x, _res) do
     streaming_interval = Map.get(x, :streaming_interval, nil)
@@ -28,9 +32,34 @@ defmodule RujiraWeb.Resolvers.Thorchain do
     }
 
     with {:ok, conn} <- Rujira.Chains.Cosmos.Thor.connection(),
-         {:ok, %QueryQuoteSwapResponse{} = res} <- quote_swap(conn, req),
+         {:ok, %QueryQuoteSwapResponse{} = res} <- Q.quote_swap(conn, req),
          {:ok, expiry} <- DateTime.from_unix(res.expiry) do
       {:ok, Map.put(%{res | expiry: expiry}, :request, req)}
     end
+  end
+
+  def pools(_, _, _) do
+    req = %QueryPoolsRequest{}
+
+    with {:ok, conn} <- Rujira.Chains.Cosmos.Thor.connection(),
+         {:ok, %QueryPoolsResponse{pools: pools}} <- Q.pools(conn, req) do
+      {:ok, Enum.map(pools, &cast_pool/1)}
+    end
+  end
+
+  def pool(_, %{asset: asset}, _) do
+    req = %QueryPoolRequest{asset: asset}
+
+    with {:ok, conn} <- Rujira.Chains.Cosmos.Thor.connection(),
+         {:ok, %QueryPoolResponse{} = pool} <- Q.pool(conn, req) do
+      {:ok, cast_pool(pool)}
+    end
+  end
+
+  defp cast_pool(pool) do
+    pool
+    |> Map.put(:lp_units, Map.get(pool, :LP_units))
+    |> Map.update(:derived_depth_bps, "0", &String.to_integer/1)
+    |> Map.update(:savers_fill_bps, "0", &String.to_integer/1)
   end
 end

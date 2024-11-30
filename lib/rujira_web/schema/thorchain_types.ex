@@ -17,6 +17,15 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
       arg(:height, :string)
       resolve(&Resolvers.Thorchain.quote/3)
     end
+
+    field :pool, :pool do
+      arg(:asset, non_null(:asset))
+      resolve(&Resolvers.Thorchain.pool/3)
+    end
+
+    field :pools, non_null(list_of(:pool)) do
+      resolve(&Resolvers.Thorchain.pools/3)
+    end
   end
 
   object :quote do
@@ -55,5 +64,38 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :total, non_null(:bigint)
     field :slippage_bps, non_null(:integer)
     field :total_bps, non_null(:integer)
+  end
+
+  object :pool do
+    field :asset, non_null(:asset)
+    field :short_code, non_null(:string)
+    field :status, non_null(:pool_status)
+    field :decimals, non_null(:integer)
+    field :pending_inbound_asset, non_null(:bigint)
+    field :pending_inbound_rune, non_null(:bigint)
+    field :balance_asset, non_null(:bigint)
+    field :balance_rune, non_null(:bigint)
+    field :asset_tor_price, non_null(:bigint)
+    field :pool_units, non_null(:bigint)
+    field :lp_units, non_null(:bigint)
+    field :synth_units, non_null(:bigint)
+    field :synth_supply, non_null(:bigint)
+    field :savers_depth, non_null(:bigint)
+    field :savers_units, non_null(:bigint)
+    field :savers_fill_bps, non_null(:integer)
+    field :savers_capacity_remaining, non_null(:bigint)
+    field :synth_mint_paused, non_null(:boolean)
+    field :synth_supply_remaining, non_null(:bigint)
+    field :loan_collateral, non_null(:bigint)
+    field :loan_collateral_remaining, non_null(:bigint)
+    field :loan_cr, non_null(:bigint)
+    field :derived_depth_bps, non_null(:integer)
+  end
+
+  enum :pool_status do
+    value(:unknown, as: "UnknownPoolStatus")
+    value(:available, as: "Available")
+    value(:staged, as: "Staged")
+    value(:suspended, as: "Suspended")
   end
 end
