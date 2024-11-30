@@ -3,16 +3,24 @@ defmodule RujiraWeb.Schema.BalanceTypes do
 
   @desc "The balance of a token or coin on a layer 1 chain"
   object :layer_1_balance do
-    field :asset, non_null(:string)
+    field :asset, non_null(:layer_1_asset), resolve: &RujiraWeb.Resolvers.Balance.asset/3
     field :amount, non_null(:bigint)
+  end
+
+  object :layer_1_asset do
+    field :asset, non_null(:string)
     field :metadata, non_null(:metadata), resolve: &RujiraWeb.Resolvers.Balance.metadata/3
     field :price, :price, resolve: &RujiraWeb.Resolvers.Balance.price/3
   end
 
   @desc "The balance of a token or coin on the app layer"
   object :balance do
-    field :denom, non_null(:string)
+    field :denom, non_null(:denom), resolve: &RujiraWeb.Resolvers.Balance.denom/3
     field :amount, non_null(:bigint)
+  end
+
+  object :denom do
+    field :denom, non_null(:string)
     field :metadata, non_null(:metadata), resolve: &RujiraWeb.Resolvers.Balance.metadata/3
     field :price, :price, resolve: &RujiraWeb.Resolvers.Balance.price/3
   end

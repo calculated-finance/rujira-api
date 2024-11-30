@@ -3,6 +3,14 @@ defmodule RujiraWeb.Resolvers.Balance do
     Rujira.Balances.cosmos_balances(chain, address)
   end
 
+  def asset(%{asset: asset}, _, _) do
+    {:ok, %{asset: asset}}
+  end
+
+  def denom(%{denom: denom}, _, _) do
+    {:ok, %{denom: denom}}
+  end
+
   def native(%{address: address, chain: chain}, _, _) do
     Rujira.Balances.native_balances(chain, address)
   end
