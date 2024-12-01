@@ -28,7 +28,9 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     end
 
     field :rune, :denom do
-      resolve(fn _, _, _ -> {:ok, %{id: "token:denom:rune", denom: "rune"}} end)
+      resolve(fn _, _, _ ->
+        {:ok, %{id: Node.encode_id(:token, :denom, "rune"), denom: "rune"}}
+      end)
     end
   end
 

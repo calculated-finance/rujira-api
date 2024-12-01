@@ -1,16 +1,18 @@
 defmodule RujiraWeb.Resolvers.Account do
+  alias RujiraWeb.Resolvers.Node
+
   def resolver(%{chain: chain}, %{addresses: addresses}, _) do
     {:ok, Enum.map(addresses, &%{address: &1, chain: chain})}
   end
 
   def resolver(%{address: address, chain: :thor}, %{}, _) do
-    {:ok, %{id: "account:#{address}", address: address, chain: :thor}}
+    {:ok, %{id: Node.encode_id(:account, address), address: address, chain: :thor}}
   end
 
   # Kujira has a special case as an unsupported L1 (and so no app layer deposits) so that the UIs
   # can fetch merge token balances using the same schema
   def resolver(%{address: address, chain: :kuji}, %{}, _) do
-    {:ok, %{id: "account:#{address}", address: address, chain: :kuji}}
+    {:ok, %{id: Node.encode_id(:account, address), address: address, chain: :kuji}}
   end
 
   def resolver(%{address: address, chain: chain}, %{}, _) do

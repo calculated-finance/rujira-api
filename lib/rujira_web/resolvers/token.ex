@@ -1,10 +1,12 @@
 defmodule RujiraWeb.Resolvers.Token do
+  alias RujiraWeb.Resolvers.Node
+
   def asset(%{asset: asset}, _, _) do
-    {:ok, %{id: "token:asset:#{asset}", asset: asset}}
+    {:ok, %{id: Node.encode_id(:token, :asset, asset), asset: asset}}
   end
 
   def denom(%{denom: denom}, _, _) do
-    {:ok, %{id: "token:denom:#{denom}", denom: denom}}
+    {:ok, %{id: Node.encode_id(:token, :denom, denom), denom: denom}}
   end
 
   def metadata(%{asset: asset}, _, _) do

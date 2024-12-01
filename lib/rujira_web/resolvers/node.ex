@@ -49,4 +49,9 @@ defmodule RujiraWeb.Resolvers.Node do
         {:error, "Invalid ID"}
     end
   end
+
+  def encode_id(:token, :asset, asset), do: "token:asset:#{asset}"
+  def encode_id(:token, :denom, denom), do: "token:denom:#{denom}"
+  def encode_id(:account, chain, address), do: "account:#{chain}:#{address}"
+  def encode_id(:account, address), do: "account:#{address}"
 end
