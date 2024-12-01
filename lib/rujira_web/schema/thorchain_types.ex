@@ -1,6 +1,7 @@
 defmodule RujiraWeb.Schema.ThorchainTypes do
   use Absinthe.Schema.Notation
   alias RujiraWeb.Resolvers
+  alias RujiraWeb.Resolvers.Node
 
   object :thorchain do
     field :quote, :quote do

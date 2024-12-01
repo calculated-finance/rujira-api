@@ -1,13 +1,11 @@
 defmodule RujiraWeb.Schema.AccountTypes do
   use Absinthe.Schema.Notation
+  use Absinthe.Relay.Schema.Notation, :modern
   alias RujiraWeb.Resolvers
   import_types(RujiraWeb.Schema.BalanceTypes)
 
   @desc "A layer_1_account represents data about this address on the layer 1 specified"
-  object :layer_1_account do
-    interface(:node)
-    field :id, non_null(:id)
-
+  node object(:layer_1_account) do
     field :address, non_null(:address)
     field :chain, non_null(:chain)
 
@@ -23,10 +21,7 @@ defmodule RujiraWeb.Schema.AccountTypes do
   end
 
   @desc "An account represents data about this address on THORChain and the Rujira app layer, using the mapped address from the root account when required"
-  object :account do
-    interface(:node)
-    field :id, non_null(:id)
-
+  node object(:account) do
     @desc "The THORChain address for this account on the app layer"
     field :address, non_null(:address)
 
