@@ -1,10 +1,10 @@
 defmodule RujiraWeb.Resolvers.Token do
   def asset(%{asset: asset}, _, _) do
-    {:ok, %{asset: asset}}
+    {:ok, %{id: "token:asset:#{asset}", asset: asset}}
   end
 
   def denom(%{denom: denom}, _, _) do
-    {:ok, %{denom: denom}}
+    {:ok, %{id: "token:denom:#{denom}", denom: denom}}
   end
 
   def metadata(%{asset: asset}, _, _) do

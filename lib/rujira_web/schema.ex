@@ -42,6 +42,8 @@ defmodule RujiraWeb.Schema do
       Examples
       - account:sthor1qm7vtdca95aj7nvtrarqm3uah33nhffpnhhg3j for a native account
       - account:btc:bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh for a layer 1 Bitcoin account
+      - token:asset:BTC.BTC
+      - token:denom:rune
     """
     field :id, non_null(:id)
     resolve_type(&RujiraWeb.Resolvers.Node.type/2)

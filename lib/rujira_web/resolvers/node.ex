@@ -1,4 +1,6 @@
 defmodule RujiraWeb.Resolvers.Node do
+  alias Rujira.Tokens.Asset
+  alias Rujira.Tokens.Denom
   alias Rujira.Accounts.Account
   alias Rujira.Accounts.Layer1
 
@@ -17,6 +19,8 @@ defmodule RujiraWeb.Resolvers.Node do
 
   def type(%Account{}, _), do: :account
   def type(%Layer1{}, _), do: :layer_1_account
+  def type(%Denom{}, _), do: :denom
+  def type(%Asset{}, _), do: :layer_1_asset
 
   defp decode_id(id) do
     case String.split(id, ":") do
@@ -34,6 +38,12 @@ defmodule RujiraWeb.Resolvers.Node do
 
       ["account", address] ->
         {:ok, %Account{id: id, chain: :thor, address: address}}
+
+      ["token", "asset", asset] ->
+        {:ok, %Asset{id: id, asset: asset}}
+
+      ["token", "denom", denom] ->
+        {:ok, %Denom{id: id, denom: denom}}
 
       _ ->
         {:error, "Invalid ID"}

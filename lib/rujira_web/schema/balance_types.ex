@@ -1,5 +1,6 @@
 defmodule RujiraWeb.Schema.BalanceTypes do
   use Absinthe.Schema.Notation
+  use Absinthe.Relay.Schema.Notation, :modern
 
   @desc "The balance of a token or coin on a layer 1 chain"
   object :layer_1_balance do
@@ -7,7 +8,7 @@ defmodule RujiraWeb.Schema.BalanceTypes do
     field :amount, non_null(:bigint)
   end
 
-  object :layer_1_asset do
+  node object(:layer_1_asset) do
     field :asset, non_null(:string)
     field :metadata, non_null(:metadata), resolve: &RujiraWeb.Resolvers.Token.metadata/3
     field :price, :price, resolve: &RujiraWeb.Resolvers.Token.price/3
@@ -19,7 +20,7 @@ defmodule RujiraWeb.Schema.BalanceTypes do
     field :amount, non_null(:bigint)
   end
 
-  object :denom do
+  node object(:denom) do
     field :denom, non_null(:string)
     field :metadata, non_null(:metadata), resolve: &RujiraWeb.Resolvers.Token.metadata/3
     field :price, :price, resolve: &RujiraWeb.Resolvers.Token.price/3
