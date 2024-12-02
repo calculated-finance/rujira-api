@@ -9,7 +9,7 @@ defmodule RujiraWeb.Schema.AccountTypes do
     field :address, non_null(:address)
     field :chain, non_null(:chain)
 
-    field :balances, non_null(list_of(non_null(:layer_1_balance))) do
+    field :balances, list_of(non_null(:layer_1_balance)) do
       arg(:tokens, list_of(:string))
       @desc "A list of contract addresses for ERC-20, SPL etc token balances"
       resolve(&Resolvers.Balance.native/3)
@@ -25,7 +25,7 @@ defmodule RujiraWeb.Schema.AccountTypes do
     @desc "The THORChain address for this account on the app layer"
     field :address, non_null(:address)
 
-    field :balances, non_null(list_of(non_null(:balance))) do
+    field :balances, list_of(non_null(:balance)) do
       resolve(&Resolvers.Balance.cosmos/3)
     end
   end

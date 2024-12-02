@@ -25,8 +25,8 @@ defmodule Rujira.Chains.Cosmos.Kujira do
              _, {:error, err} ->
                {:error, err}
 
-             error, _ ->
-               error
+             {:ok, {:error, error}}, _ ->
+               {:error, error}
            end) do
       {:ok, balances}
     end
