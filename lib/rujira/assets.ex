@@ -15,6 +15,7 @@ defmodule Rujira.Assets do
   def decimals("AVAX" <> _), do: 18
   def decimals("BCH" <> _), do: 8
   def decimals("BTC" <> _), do: 8
+  def decimals("BSC" <> _), do: 18
   def decimals("DOGE" <> _), do: 8
   def decimals("ETH" <> _), do: 18
   def decimals("GAIA" <> _), do: 6
