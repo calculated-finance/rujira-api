@@ -16,7 +16,8 @@ defmodule Rujira.Application do
       # {Rujira.Worker, arg},
       # Start to serve requests, typically the last entry
       RujiraWeb.Endpoint,
-      {Finch, name: Rujira.Finch}
+      {Finch, name: Rujira.Finch},
+      {Rujira.Invalidator, pubsub: Rujira.PubSub}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
