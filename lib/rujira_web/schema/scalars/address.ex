@@ -7,6 +7,7 @@ defmodule RujiraWeb.Schema.Scalars.Address do
   end
 
   defp do_parse(%Absinthe.Blueprint.Input.String{value: value}), do: {:ok, value}
+  defp do_parse(%Absinthe.Blueprint.Input.Null{}), do: {:ok, nil}
   defp do_parse(_), do: :error
 
   defp do_serialize(value) when is_binary(value), do: value
