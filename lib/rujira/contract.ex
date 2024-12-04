@@ -79,7 +79,7 @@ defmodule Rujira.Contract do
     end)
   end
 
-  @spec get(Channel.t(), {module(), String.t()} | struct()) ::
+  @spec get(GRPC.Channel.t(), {module(), String.t()} | struct()) ::
           {:ok, struct()} | {:error, any()}
   def get(channel, {module, address}) do
     Memoize.Cache.get_or_run({__MODULE__, :get, [{module, address}]}, fn ->
