@@ -60,7 +60,7 @@ defmodule Rujira.Invalidator do
     # Only the one where it actually matches the protocol will be affected
     scan_attributes(rest, [
       {Rujira.Contract, :query_state_all, [value]},
-      {Rujira.Contract, :query_state_smart, [value, :_]}
+      {Rujira.Contract, :query_state_smart, [value, :_]} | collection
     ])
   end
 
