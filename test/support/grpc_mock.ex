@@ -1,11 +1,9 @@
-defmodule Rujira.Merge.GrpcMock do
+defmodule Rujira.GrpcMock do
   @moduledoc """
   Mock adapter for GRPC client to simulate GRPC communication in tests.
   """
 
   @behaviour GRPC.Client.Adapter
-  alias Cosmwasm.Wasm.V1.QuerySmartContractStateResponse
-  alias Cosmwasm.Wasm.V1.QuerySmartContractStateRequest
   alias GRPC.Client.Stream
 
   @impl true
@@ -29,23 +27,11 @@ defmodule Rujira.Merge.GrpcMock do
         %Stream{request_mod: request_mod, payload: %{request: request}},
         _opts
       ) do
+    data_mock = get_data_mock()
+
     case request_mod.decode(request) do
-      %QuerySmartContractStateRequest{
-        address: "contract-merge",
-        query_data: "{\"config\":{}}"
-      } ->
-        {:ok,
-         %QuerySmartContractStateResponse{
-           data:
-             Jason.encode!(%{
-               merge_denom: "gaia-kuji",
-               merge_supply: "1000000000",
-               ruji_denom: "rune",
-               ruji_allocation: "10000000000",
-               decay_starts_at: "1733424430000000000",
-               decay_ends_at: "1764874030000000000"
-             })
-         }}
+      request ->
+        data_mock.get_response(request)
     end
   end
 
@@ -67,5 +53,9 @@ defmodule Rujira.Merge.GrpcMock do
   @impl true
   def cancel(_stream) do
     :ok
+  end
+
+  defp get_data_mock do
+    Application.get_env(:rujira, :grpc_mock_data_module)
   end
 end
