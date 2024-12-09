@@ -5,8 +5,8 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
 
   object :thorchain do
     field :quote, :quote do
-      arg(:from_asset, non_null(:asset))
-      arg(:to_asset, non_null(:asset))
+      arg(:from_asset, non_null(:asset_string))
+      arg(:to_asset, non_null(:asset_string))
       arg(:amount, non_null(:bigint))
       arg(:streaming_interval, :integer)
       arg(:streaming_quantity, :bigint)
@@ -20,7 +20,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     end
 
     field :pool, :pool do
-      arg(:asset, non_null(:asset))
+      arg(:asset, non_null(:asset_string))
       resolve(&Resolvers.Thorchain.pool/3)
     end
 
@@ -30,16 +30,13 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
 
     field :rune, :denom do
       resolve(fn _, _, _ ->
-        {:ok, %{id: Node.encode_id(:token, :denom, "rune"), denom: "rune"}}
+        {:ok, %{id: Node.encode_id(:denom, "rune"), denom: "rune"}}
       end)
     end
   end
 
   object :quote do
-    field :asset_in, non_null(:layer_1_balance) do
-      resolve(&RujiraWeb.Resolvers.Balance.quote/3)
-    end
-
+    field :asset_in, non_null(:layer_1_balance)
     field :inbound_address, non_null(:address)
     field :inbound_confirmation_blocks, non_null(:integer)
     field :inbound_confirmation_seconds, non_null(:integer)
@@ -56,11 +53,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :gas_rate_units, non_null(:string)
     field :memo, non_null(:string)
     field :expected_amount_out, non_null(:bigint)
-
-    field :expected_asset_out, non_null(:layer_1_balance) do
-      resolve(&RujiraWeb.Resolvers.Balance.quote/3)
-    end
-
+    field :expected_asset_out, non_null(:layer_1_balance)
     field :max_streaming_quantity, non_null(:bigint)
     field :streaming_swap_blocks, non_null(:integer)
     field :streaming_swap_seconds, non_null(:integer)
@@ -78,7 +71,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
   end
 
   object :pool do
-    field :asset, non_null(:layer_1_asset), resolve: &RujiraWeb.Resolvers.Token.asset/3
+    field :asset, non_null(:asset), resolve: &RujiraWeb.Resolvers.Token.asset/3
     field :short_code, non_null(:string)
     field :status, non_null(:pool_status)
     field :decimals, non_null(:integer)

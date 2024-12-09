@@ -3,6 +3,12 @@ defmodule Rujira.Assets do
   Interfaces for interacting with THORChain Asset values
   """
 
+  def chain(str) do
+    # TODO: suport more delimiters
+    [c | _] = String.split(str, [".", "-"])
+    c
+  end
+
   def symbol("GAIA.RKUJI"), do: "rKUJI"
 
   def symbol(str) do
@@ -21,4 +27,20 @@ defmodule Rujira.Assets do
   def decimals("GAIA" <> _), do: 6
   def decimals("LTC" <> _), do: 8
   def decimals("THOR" <> _), do: 6
+
+  def type(str) do
+    cond do
+      String.match?(str, Regex.compile!("^[A-Z]+\.")) -> :layer_1
+      String.match?(str, Regex.compile!("^[A-Z]+-")) -> :secured
+      true -> :native
+    end
+  end
+
+  def to_layer_1(str) do
+    String.replace(str, "-", ".", global: false)
+  end
+
+  def to_secured(str) do
+    String.replace(str, ".", "-", global: false)
+  end
 end

@@ -2,7 +2,6 @@ defmodule RujiraWeb.Schema.AccountTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
   alias RujiraWeb.Resolvers
-  import_types(RujiraWeb.Schema.BalanceTypes)
 
   @desc "A layer_1_account represents data about this address on the layer 1 specified"
   node object(:layer_1_account) do

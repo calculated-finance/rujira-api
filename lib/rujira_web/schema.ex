@@ -1,8 +1,11 @@
 defmodule RujiraWeb.Schema do
   use Absinthe.Schema
   use Absinthe.Relay.Schema, :modern
+  import_types(RujiraWeb.Schema.AccountTypes)
+  import_types(RujiraWeb.Schema.BalanceTypes)
   import_types(RujiraWeb.Schema.ChainTypes)
   import_types(RujiraWeb.Schema.ThorchainTypes)
+  import_types(RujiraWeb.Schema.TokenTypes)
   import_types(RujiraWeb.Schema.Scalars.Address)
   import_types(RujiraWeb.Schema.Scalars.Asset)
   import_types(RujiraWeb.Schema.Scalars.BigInt)

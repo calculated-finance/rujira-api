@@ -1,6 +1,6 @@
-defmodule Rujira.Tokens do
+defmodule Rujira.Denoms do
   @moduledoc """
-  Interfaces for interacting with token denominations
+  Interfaces for interacting with Cosmos SDK x/bank token denominations
   """
 
   # Kujira-Native tokens

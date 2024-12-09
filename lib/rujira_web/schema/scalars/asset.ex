@@ -1,7 +1,7 @@
 defmodule RujiraWeb.Schema.Scalars.Asset do
   use Absinthe.Schema.Notation
 
-  scalar :asset, description: "A THORChain denominated Asset" do
+  scalar :asset_string, description: "A string representation of a THORChain compatible asset" do
     parse(&do_parse/1)
     serialize(&do_serialize/1)
   end

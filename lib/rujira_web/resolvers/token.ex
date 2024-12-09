@@ -1,12 +1,68 @@
 defmodule RujiraWeb.Resolvers.Token do
+  alias Rujira.Assets
   alias RujiraWeb.Resolvers.Node
 
-  def asset(%{asset: asset}, _, _) do
-    {:ok, %{id: Node.encode_id(:token, :asset, asset), asset: asset}}
+  def asset(%{asset: "THOR." <> _ = asset}, _, _) do
+    {:ok,
+     %Assets.Asset{
+       id: Node.encode_id(:asset, asset),
+       asset: asset,
+       type: :native,
+       chain: :thor
+     }}
   end
 
+  def asset(%{asset: asset}, _, _) do
+    {:ok,
+     %Assets.Asset{
+       id: Node.encode_id(:asset, asset),
+       asset: asset,
+       type: Rujira.Assets.type(asset),
+       chain: get_chain(asset),
+       variants: %{
+         asset: asset
+       }
+     }}
+  end
+
+  def layer1(%{asset: asset}, _, _) do
+    l1 = Rujira.Assets.to_layer_1(asset)
+
+    {:ok,
+     %Assets.Asset{
+       id: Node.encode_id(:asset, l1),
+       asset: l1,
+       type: :layer_1,
+       chain: get_chain(asset),
+       variants: %{
+         asset: asset
+       }
+     }}
+  end
+
+  def secured(%{asset: asset}, _, _) do
+    secured = Rujira.Assets.to_secured(asset)
+
+    {:ok,
+     %Assets.Asset{
+       id: Node.encode_id(:asset, secured),
+       asset: secured,
+       type: :secured,
+       chain: get_chain(asset),
+       variants: %{
+         asset: asset
+       }
+     }}
+  end
+
+  defp get_chain(sym) do
+    Rujira.Assets.chain(sym) |> String.downcase() |> String.to_existing_atom()
+  end
+
+  @spec denom(%{:denom => any(), optional(any()) => any()}, any(), any()) ::
+          {:ok, %{denom: any(), id: <<_::64, _::_*8>>}}
   def denom(%{denom: denom}, _, _) do
-    {:ok, %{id: Node.encode_id(:token, :denom, denom), denom: denom}}
+    {:ok, %{id: Node.encode_id(:denom, denom), denom: denom}}
   end
 
   def metadata(%{asset: asset}, _, _) do
@@ -16,8 +72,8 @@ defmodule RujiraWeb.Resolvers.Token do
   end
 
   def metadata(%{denom: denom}, _, _) do
-    symbol = Rujira.Tokens.symbol(denom)
-    decimals = Rujira.Tokens.decimals(denom)
+    symbol = Rujira.Denoms.symbol(denom)
+    decimals = Rujira.Denoms.decimals(denom)
     {:ok, %{symbol: symbol, decimals: decimals}}
   end
 
@@ -30,7 +86,7 @@ defmodule RujiraWeb.Resolvers.Token do
   end
 
   def price(%{denom: denom}, _, _) do
-    symbol = Rujira.Tokens.symbol(denom)
+    symbol = Rujira.Denoms.symbol(denom)
 
     with {:ok, %{price: price, change: change}} <- Rujira.Prices.get(symbol) do
       {:ok, %{current: price, change_day: change}}

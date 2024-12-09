@@ -1,6 +1,5 @@
 defmodule RujiraWeb.Schema.ChainTypes do
   use Absinthe.Schema.Notation
-  import_types(RujiraWeb.Schema.AccountTypes)
 
   @desc "A root account represents a single address. This can have multiple layer 1 accounts based on the type of address"
   enum :chain do
