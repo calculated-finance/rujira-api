@@ -27,5 +27,9 @@ defmodule RujiraWeb.Schema.AccountTypes do
     field :balances, list_of(non_null(:balance)) do
       resolve(&Resolvers.Balance.cosmos/3)
     end
+
+    field :merge, :merge_stats do
+      resolve(&Resolvers.Merge.account_stats/3)
+    end
   end
 end

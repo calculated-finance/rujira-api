@@ -11,6 +11,8 @@ defmodule RujiraWeb.Schema do
   import_types(RujiraWeb.Schema.Scalars.BigInt)
   import_types(RujiraWeb.Schema.Scalars.Contract)
   import_types(RujiraWeb.Schema.Scalars.Timestamp)
+  import_types(RujiraWeb.Schema.RujiraTypes)
+  import_types(RujiraWeb.Schema.MergeTypes)
 
   query do
     field :node, :node do
@@ -35,6 +37,11 @@ defmodule RujiraWeb.Schema do
     @desc "THORChain related queries"
     field :thorchain, :thorchain do
       resolve(fn _, _, _ -> {:ok, %{thorchain: %{}}} end)
+    end
+
+    @desc "Rujira related queries"
+    field :rujira, :rujira do
+      resolve(fn _, _, _ -> {:ok, %{rujira: %{}}} end)
     end
   end
 
