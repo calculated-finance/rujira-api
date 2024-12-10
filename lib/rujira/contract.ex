@@ -12,12 +12,14 @@ defmodule Rujira.Contract do
 
   @spec info(GRPC.Channel.t(), String.t()) ::
           {:ok, Cosmwasm.Wasm.V1.ContractInfo.t()} | {:error, GRPC.RPCError.t()}
-  def info(channel, address) do
+  def info(_channel, address) do
     with {:ok, %{contract_info: contract_info}} <-
-           Stub.contract_info(
-             channel,
-             %QueryContractInfoRequest{address: address}
-           ) do
+           Rujira.Grpc.Client.stub(fn channel ->
+             Stub.contract_info(
+               channel,
+               %QueryContractInfoRequest{address: address}
+             )
+           end) do
       {:ok, contract_info}
     end
   end
@@ -33,15 +35,17 @@ defmodule Rujira.Contract do
     )
   end
 
-  defp by_code_page(channel, code_id, key \\ nil)
+  defp by_code_page(_, code_id, key \\ nil)
 
-  defp by_code_page(channel, code_id, nil) do
+  defp by_code_page(_channel, code_id, nil) do
     with {:ok, %{contracts: contracts, pagination: %{next_key: next_key}}} <-
-           Stub.contracts_by_code(
-             channel,
-             %QueryContractsByCodeRequest{code_id: code_id}
-           ),
-         {:ok, next} <- by_code_page(channel, code_id, next_key) do
+           Rujira.Grpc.Client.stub(fn channel ->
+             Stub.contracts_by_code(
+               channel,
+               %QueryContractsByCodeRequest{code_id: code_id}
+             )
+           end),
+         {:ok, next} <- by_code_page(:none, code_id, next_key) do
       {:ok, Enum.concat(contracts, next)}
     end
   end
@@ -50,16 +54,18 @@ defmodule Rujira.Contract do
     {:ok, []}
   end
 
-  defp by_code_page(channel, code_id, key) do
+  defp by_code_page(_, code_id, key) do
     with {:ok, %{contracts: contracts, pagination: %{next_key: next_key}}} <-
-           Stub.contracts_by_code(
-             channel,
-             %QueryContractsByCodeRequest{
-               code_id: code_id,
-               pagination: %PageRequest{key: key}
-             }
-           ),
-         {:ok, next} <- by_code_page(channel, code_id, next_key) do
+           Rujira.Grpc.Client.stub(fn channel ->
+             Stub.contracts_by_code(
+               channel,
+               %QueryContractsByCodeRequest{
+                 code_id: code_id,
+                 pagination: %PageRequest{key: key}
+               }
+             )
+           end),
+         {:ok, next} <- by_code_page(:none, code_id, next_key) do
       {:ok, Enum.concat(contracts, next)}
     end
   end
@@ -120,18 +126,20 @@ defmodule Rujira.Contract do
 
   @spec query_state_smart(GRPC.Channel.t(), String.t(), map()) ::
           {:ok, map()} | {:error, GRPC.RPCError.t()}
-  def query_state_smart(channel, address, query) do
+  def query_state_smart(_, address, query) do
     Memoize.Cache.get_or_run(
       {__MODULE__, :query_state_smart, [address, query]},
       fn ->
         with {:ok, %{data: data}} <-
-               Stub.smart_contract_state(
-                 channel,
-                 %QuerySmartContractStateRequest{
-                   address: address,
-                   query_data: Jason.encode!(query)
-                 }
-               ),
+               Rujira.Grpc.Client.stub(fn channel ->
+                 Stub.smart_contract_state(
+                   channel,
+                   %QuerySmartContractStateRequest{
+                     address: address,
+                     query_data: Jason.encode!(query)
+                   }
+                 )
+               end),
              {:ok, res} <- Jason.decode(data) do
           {:ok, res}
         end
@@ -153,15 +161,17 @@ defmodule Rujira.Contract do
     )
   end
 
-  defp query_state_all_page(channel, address, page) do
+  defp query_state_all_page(_, address, page) do
     with {:ok, %{models: models, pagination: %{next_key: next_key}}} when next_key != "" <-
-           Stub.all_contract_state(
-             channel,
-             %QueryAllContractStateRequest{address: address, pagination: page}
-           ),
+           Rujira.Grpc.Client.stub(fn channel ->
+             Stub.all_contract_state(
+               channel,
+               %QueryAllContractStateRequest{address: address, pagination: page}
+             )
+           end),
          {:ok, next} <-
            query_state_all_page(
-             channel,
+             :none,
              address,
              %PageRequest{key: next_key}
            ) do
@@ -181,13 +191,15 @@ defmodule Rujira.Contract do
   @doc """
   Streams the current contract state
   """
-  def stream_state_all(channel, address) do
+  def stream_state_all(_, address) do
     Stream.resource(
       fn ->
-        Stub.all_contract_state(
-          channel,
-          %QueryAllContractStateRequest{address: address}
-        )
+        Rujira.Grpc.Client.stub(fn channel ->
+          Stub.all_contract_state(
+            channel,
+            %QueryAllContractStateRequest{address: address}
+          )
+        end)
       end,
       fn
         # We're on the last item and there's another page. Return that item and fetch the next page
@@ -198,13 +210,15 @@ defmodule Rujira.Contract do
          }}
         when next_key != "" ->
           next =
-            Stub.all_contract_state(
-              channel,
-              %QueryAllContractStateRequest{
-                address: address,
-                pagination: %PageRequest{key: next_key}
-              }
-            )
+            Rujira.Grpc.Client.stub(fn channel ->
+              Stub.all_contract_state(
+                channel,
+                %QueryAllContractStateRequest{
+                  address: address,
+                  pagination: %PageRequest{key: next_key}
+                }
+              )
+            end)
 
           {[Jason.decode!(value)], next}
 

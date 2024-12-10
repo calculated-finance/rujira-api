@@ -6,8 +6,9 @@ defmodule Rujira.Chains.Cosmos.Thor do
   def balances(address) do
     req = %QueryAllBalancesRequest{address: address}
 
-    with {:ok, conn} <- connection(),
-         {:ok, %QueryAllBalancesResponse{balances: balances}} <- all_balances(conn, req) do
+    with {:ok, _conn} <- connection(),
+         {:ok, %QueryAllBalancesResponse{balances: balances}} <-
+           Rujira.Grpc.Client.stub(fn channel -> all_balances(channel, req) end) do
       {:ok, balances}
     end
   end

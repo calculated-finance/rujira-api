@@ -7,6 +7,8 @@ defmodule Rujira.Application do
 
   @impl true
   def start(_type, _args) do
+    grpc_list = Application.get_env(:rujira, :grpcs, [])
+
     children = [
       RujiraWeb.Telemetry,
       Rujira.Repo,
@@ -17,7 +19,17 @@ defmodule Rujira.Application do
       # Start to serve requests, typically the last entry
       RujiraWeb.Endpoint,
       {Finch, name: Rujira.Finch},
-      {Rujira.Invalidator, pubsub: Rujira.PubSub}
+      {Rujira.Invalidator, pubsub: Rujira.PubSub},
+      :poolboy.child_spec(
+        :grpc_pool,
+        [
+          name: {:local, :grpc_pool},
+          worker_module: Rujira.Grpc.Worker,
+          size: length(grpc_list)*6,
+          max_overflow: 5
+        ],
+        grpc_list
+      )
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

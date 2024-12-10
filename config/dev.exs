@@ -63,3 +63,8 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
+
+config :rujira, :grpcs, [
+  %{host: "server1.broken.activateFailover.com", port: 443},
+  %{host: "thornode-devnet-grpc.bryanlabs.net", port: 443}
+]

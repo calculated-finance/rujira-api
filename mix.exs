@@ -51,7 +51,8 @@ defmodule Rujira.MixProject do
       {:absinthe_relay, "~> 1.5"},
       {:cors_plug, "~> 3.0"},
       {:tesla, "~> 1.11"},
-      {:memoize, "~> 1.4"}
+      {:memoize, "~> 1.4"},
+      {:poolboy, "~> 1.5.1"}
     ]
   end
 
