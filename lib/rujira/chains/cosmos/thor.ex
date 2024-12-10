@@ -6,19 +6,9 @@ defmodule Rujira.Chains.Cosmos.Thor do
   def balances(address) do
     req = %QueryAllBalancesRequest{address: address}
 
-    with {:ok, _conn} <- connection(),
-         {:ok, %QueryAllBalancesResponse{balances: balances}} <-
-           Rujira.Grpc.Client.stub(fn channel -> all_balances(channel, req) end) do
+    with {:ok, %QueryAllBalancesResponse{balances: balances}} <-
+           Rujira.Grpc.Client.stub(&all_balances/2, req) do
       {:ok, balances}
     end
-  end
-
-  def connection() do
-    cred = GRPC.Credential.new(ssl: [verify: :verify_none])
-
-    GRPC.Stub.connect("thornode-devnet-grpc.bryanlabs.net", 443,
-      interceptors: [{GRPC.Client.Interceptors.Logger, level: :debug}],
-      cred: cred
-    )
   end
 end

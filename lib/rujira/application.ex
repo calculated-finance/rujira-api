@@ -25,7 +25,7 @@ defmodule Rujira.Application do
         [
           name: {:local, :grpc_pool},
           worker_module: Rujira.Grpc.Worker,
-          size: length(grpc_list)*6,
+          size: length(grpc_list),
           max_overflow: 5
         ],
         grpc_list

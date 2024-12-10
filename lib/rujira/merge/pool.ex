@@ -55,8 +55,8 @@ defmodule Rujira.Merge.Pool do
           status: :not_loaded | Status.t()
         }
 
-  @spec from_config(GRPC.Channel.t(), String.t(), map()) :: :error | {:ok, __MODULE__.t()}
-  def from_config(_, address, %{
+  @spec from_config(String.t(), map()) :: :error | {:ok, __MODULE__.t()}
+  def from_config(address, %{
         "merge_denom" => merge_denom,
         "merge_supply" => merge_supply,
         "ruji_denom" => ruji_denom,

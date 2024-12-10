@@ -6,10 +6,9 @@ defmodule Rujira.Merge.Service do
 
   @spec get_stats() :: {:ok, list(Pool.t())} | {:error, GRPC.RPCError.t()}
   def get_stats() do
-    with {:ok, channel} <- Rujira.Chains.Cosmos.Thor.connection(),
-         {:ok, pools} <- Rujira.Merge.list_pools(channel),
+    with {:ok, pools} <- Rujira.Merge.list_pools(),
          {:ok, stats} <-
-           Task.async_stream(pools, &Rujira.Merge.load_pool(channel, &1))
+           Task.async_stream(pools, &Rujira.Merge.load_pool/1)
            |> Enum.reduce({:ok, []}, fn
              {:ok, {:ok, pool}}, {:ok, acc} -> {:ok, [pool | acc]}
              {:ok, {:error, error}}, _ -> {:error, error}
@@ -54,10 +53,9 @@ defmodule Rujira.Merge.Service do
 
   @spec get_accounts(String.t()) :: {:ok, list(Account.t())} | {:error, GRPC.RPCError.t()}
   def get_accounts(account) do
-    with {:ok, channel} <- Rujira.Chains.Cosmos.Thor.connection(),
-         {:ok, pools} <- Rujira.Merge.list_pools(channel),
+    with {:ok, pools} <- Rujira.Merge.list_pools(),
          {:ok, accounts} <-
-           Task.async_stream(pools, &Rujira.Merge.load_account(channel, &1, account))
+           Task.async_stream(pools, &Rujira.Merge.load_account(&1, account))
            |> Enum.reduce({:ok, []}, fn
              {:ok, {:ok, pool}}, {:ok, acc} -> {:ok, [pool | acc]}
              {:ok, {:error, error}}, _ -> {:error, error}

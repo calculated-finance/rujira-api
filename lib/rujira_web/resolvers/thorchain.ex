@@ -31,8 +31,8 @@ defmodule RujiraWeb.Resolvers.Thorchain do
       height: height
     }
 
-    with {:ok, conn} <- Rujira.Chains.Cosmos.Thor.connection(),
-         {:ok, %QueryQuoteSwapResponse{} = res} <- Q.quote_swap(conn, req),
+    with {:ok, %QueryQuoteSwapResponse{} = res} <-
+           Rujira.Grpc.Client.stub(&Q.quote_swap/2, req),
          {:ok, expiry} <- DateTime.from_unix(res.expiry) do
       {:ok,
        %{res | expiry: expiry}
@@ -45,8 +45,8 @@ defmodule RujiraWeb.Resolvers.Thorchain do
   def pools(_, _, _) do
     req = %QueryPoolsRequest{}
 
-    with {:ok, conn} <- Rujira.Chains.Cosmos.Thor.connection(),
-         {:ok, %QueryPoolsResponse{pools: pools}} <- Q.pools(conn, req) do
+    with {:ok, %QueryPoolsResponse{pools: pools}} <-
+           Rujira.Grpc.Client.stub(&Q.pools/2, req) do
       {:ok, Enum.map(pools, &cast_pool/1)}
     end
   end
@@ -54,8 +54,8 @@ defmodule RujiraWeb.Resolvers.Thorchain do
   def pool(_, %{asset: asset}, _) do
     req = %QueryPoolRequest{asset: asset}
 
-    with {:ok, conn} <- Rujira.Chains.Cosmos.Thor.connection(),
-         {:ok, %QueryPoolResponse{} = pool} <- Q.pool(conn, req) do
+    with {:ok, %QueryPoolResponse{} = pool} <-
+           Rujira.Grpc.Client.stub(&Q.pool/2, req) do
       {:ok, cast_pool(pool)}
     end
   end

@@ -8,23 +8,22 @@ defmodule Rujira.Grpc.Client do
     :poolboy.transaction(:grpc_pool, &GenServer.call(&1, :channel, @timeout))
   end
 
-  def stub(stub_fn) do
+  def stub(stub_fn, req) do
     :poolboy.transaction(:grpc_pool, fn worker_pid ->
       try do
-        IO.puts("PID: #{inspect(worker_pid)}")
         with {:ok, channel} <- GenServer.call(worker_pid, :channel, @timeout) do
-          stub_fn.(channel)
+          stub_fn.(channel, req)
         end
       catch
         :error, _ ->
-          reconnect_and_retry(worker_pid, stub_fn)
+          reconnect_and_retry(worker_pid, stub_fn, req)
       end
     end)
   end
 
-  defp reconnect_and_retry(worker_pid, stub_fn) do
+  defp reconnect_and_retry(worker_pid, stub_fn, req) do
     with {:ok, new_channel} <- GenServer.call(worker_pid, :reconnect, @timeout) do
-      stub_fn.(new_channel)
+      stub_fn.(new_channel, req)
     else
       {:error, reason} -> {:error, reason}
     end

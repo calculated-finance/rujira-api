@@ -15,25 +15,25 @@ defmodule Rujira.Merge do
   Fetches all Merge Pools
   """
 
-  @spec list_pools(GRPC.Channel.t(), list(integer())) ::
+  @spec list_pools(list(integer())) ::
           {:ok, list(Pool.t())} | {:error, GRPC.RPCError.t()}
-  def list_pools(channel, code_ids \\ @code_ids) when is_list(code_ids),
-    do: Contract.list(channel, Pool, code_ids)
+  def list_pools(code_ids \\ @code_ids) when is_list(code_ids),
+    do: Contract.list(Pool, code_ids)
 
   @doc """
   Fetches the Merge Pool contract and its current config from the chain
   """
 
-  @spec get_pool(GRPC.Channel.t(), String.t()) :: {:ok, Pool.t()} | {:error, :not_found}
-  def get_pool(channel, address), do: Contract.get(channel, {Pool, address})
+  @spec get_pool(String.t()) :: {:ok, Pool.t()} | {:error, :not_found}
+  def get_pool(address), do: Contract.get({Pool, address})
 
   @doc """
   Loads the current Status into the Pool
   """
 
-  @spec load_pool(GRPC.Channel.t(), Pool.t()) :: {:ok, Pool.t()} | {:error, GRPC.RPCError.t()}
-  def load_pool(channel, pool) do
-    with {:ok, res} <- Rujira.Contract.query_state_smart(channel, pool.address, %{status: %{}}),
+  @spec load_pool(Pool.t()) :: {:ok, Pool.t()} | {:error, GRPC.RPCError.t()}
+  def load_pool(pool) do
+    with {:ok, res} <- Rujira.Contract.query_state_smart(pool.address, %{status: %{}}),
          {:ok, status} <- Rujira.Merge.Pool.Status.from_query(res) do
       {:ok, %{pool | status: status}}
     else
@@ -44,11 +44,11 @@ defmodule Rujira.Merge do
   @doc """
   Loads an Account Pool by account address
   """
-  @spec load_account(GRPC.Channel.t(), Pool.t(), String.t()) ::
+  @spec load_account(Pool.t(), String.t()) ::
           {:ok, Account.t()} | {:error, GRPC.RPCError.t()}
-  def load_account(channel, pool, account) do
+  def load_account(pool, account) do
     with {:ok, res} <-
-           Rujira.Contract.query_state_smart(channel, pool.address, %{account: %{addr: account}}),
+           Rujira.Contract.query_state_smart(pool.address, %{account: %{addr: account}}),
          {:ok, account} <- Rujira.Merge.Account.from_query(pool, res) do
       {:ok, account}
     end
