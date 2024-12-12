@@ -5,6 +5,7 @@ defmodule Rujira.Chains.Cosmos.Kujira do
 
   @tokens [
     "ukuji",
+    "factory/kujira1tsekaqv9vmem0zwskmf90gpf0twl6k57e8vdnq/urkuji",
     "factory/kujira1sc6a0347cc5q3k890jj0pf3ylx2s38rh4sza4t/ufuzn",
     "factory/kujira12cjjeytrqcj25uv349thltcygnp9k0kukpct0e/uwink",
     "factory/kujira1aaudpfr9y23lt9d45hrmskphpdfaq9ajxd3ukh/unstk",
@@ -33,7 +34,8 @@ defmodule Rujira.Chains.Cosmos.Kujira do
   end
 
   def balance_of(conn, address, denom) do
-    req = %QueryBalanceRequest{address: address, denom: denom}
+    req =
+      %QueryBalanceRequest{address: address, denom: denom}
 
     with {:ok, %QueryBalanceResponse{balance: balance}} <- balance(conn, req) do
       {:ok, balance}

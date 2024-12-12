@@ -25,6 +25,14 @@ defmodule RujiraWeb.Resolvers.Node do
 
   defp decode_id(id) do
     case String.split(id, ":") do
+      ["account", "kuji", address] ->
+        {:ok,
+         %Accounts.Account{
+           id: id,
+           chain: :kuji,
+           address: address
+         }}
+
       ["account", chain, address] ->
         try do
           {:ok,
