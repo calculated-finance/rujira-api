@@ -3,11 +3,23 @@ defmodule RujiraWeb.Schema.MergeTypes do
   use Absinthe.Relay.Schema.Notation, :modern
 
   @desc "A merge_pool represents the configuration about a rujira-merge contract"
-  object :merge_pool do
+  node object(:merge_pool) do
     field :address, non_null(:string)
-    field :merge_denom, non_null(:string)
+
+    field :merge_denom, non_null(:denom) do
+      resolve(fn %{merge_denom: denom}, x, y ->
+        RujiraWeb.Resolvers.Token.denom(%{denom: denom}, x, y)
+      end)
+    end
+
     field :merge_supply, non_null(:bigint)
-    field :ruji_denom, non_null(:string)
+
+    field :ruji_denom, non_null(:denom) do
+      resolve(fn %{ruji_denom: denom}, x, y ->
+        RujiraWeb.Resolvers.Token.denom(%{denom: denom}, x, y)
+      end)
+    end
+
     field :ruji_allocation, non_null(:bigint)
     field :decay_starts_at, non_null(:timestamp)
     field :decay_ends_at, non_null(:timestamp)

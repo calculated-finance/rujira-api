@@ -2,6 +2,7 @@ defmodule RujiraWeb.Resolvers.Node do
   alias Rujira.Assets
   alias Rujira.Denoms
   alias Rujira.Accounts
+  alias Rujira.Merge
 
   def id(%{id: encoded_id}, _) do
     decode_id(encoded_id)
@@ -20,6 +21,7 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Accounts.Layer1{}, _), do: :layer_1_account
   def type(%Denoms.Denom{}, _), do: :denom
   def type(%Assets.Asset{}, _), do: :asset
+  def type(%Merge.Pool{}, _), do: :merge_pool
 
   defp decode_id(id) do
     case String.split(id, ":") do
@@ -44,6 +46,9 @@ defmodule RujiraWeb.Resolvers.Node do
       ["denom", denom] ->
         {:ok, %Denoms.Denom{id: id, denom: denom}}
 
+      ["contract", "merge", address] ->
+        RujiraWeb.Resolvers.Merge.node(%{address: address}, nil, nil)
+
       _ ->
         {:error, "Invalid ID"}
     end
@@ -53,4 +58,5 @@ defmodule RujiraWeb.Resolvers.Node do
   def encode_id(:account, address), do: "account:#{address}"
   def encode_id(:denom, denom), do: "denom:#{denom}"
   def encode_id(:account, chain, address), do: "account:#{chain}:#{address}"
+  def encode_id(:contract, :merge, address), do: "contract:merge:#{address}"
 end

@@ -18,37 +18,36 @@ defmodule Rujira.Merge.Service do
     end
   end
 
-  @spec get_rates(list(Pool.t())) :: {:ok, list()}
+  @spec set_values(Pool.t()) :: {:ok, Pool.t()}
+  def set_values(pool) do
+    total_allocation = Map.get(pool, :merge_supply)
+    ruji_allocation = Map.get(pool, :ruji_allocation)
+    decay_ends_at = Map.get(pool, :decay_ends_at)
+    decay_starts_at = Map.get(pool, :decay_starts_at)
+    shares = Map.get(pool.status, :shares)
+    size = Map.get(pool.status, :size)
+
+    now = DateTime.utc_now()
+
+    remaining_time = DateTime.diff(decay_ends_at, now, :second)
+    duration = DateTime.diff(decay_ends_at, decay_starts_at, :second)
+
+    start_rate = trunc(div(ruji_allocation * @precision, total_allocation))
+
+    current_rate =
+      trunc(div(start_rate, @precision) * div(remaining_time * @precision, duration))
+
+    effective_rate = if shares == 0, do: 0, else: trunc(div(size * @precision, shares))
+
+    pool
+    |> Map.put(:start_rate, start_rate)
+    |> Map.put(:current_rate, current_rate)
+    |> Map.put(:effective_rate, effective_rate)
+  end
+
+  @spec get_rates(list(Pool.t())) :: list(Pool.t())
   def get_rates(pools) do
-    with {:ok, pools} <-
-           Enum.map(pools, fn pool ->
-             total_allocation = Map.get(pool, :merge_supply)
-             ruji_allocation = Map.get(pool, :ruji_allocation)
-             decay_ends_at = Map.get(pool, :decay_ends_at)
-             decay_starts_at = Map.get(pool, :decay_starts_at)
-             shares = Map.get(pool.status, :shares)
-             size = Map.get(pool.status, :size)
-
-             now = DateTime.utc_now()
-
-             remaining_time = DateTime.diff(decay_ends_at, now, :second)
-             duration = DateTime.diff(decay_ends_at, decay_starts_at, :second)
-
-             start_rate = trunc(div(ruji_allocation * @precision, total_allocation))
-
-             current_rate =
-               trunc(div(start_rate, @precision) * div(remaining_time * @precision, duration))
-
-             effective_rate = if shares == 0, do: 0, else: trunc(div(size * @precision, shares))
-
-             pool
-             |> Map.put(:start_rate, start_rate)
-             |> Map.put(:current_rate, current_rate)
-             |> Map.put(:effective_rate, effective_rate)
-           end)
-           |> then(&{:ok, &1}) do
-      {:ok, pools}
-    end
+    Enum.map(pools, &set_values/1)
   end
 
   @spec get_accounts(String.t()) :: {:ok, list(Account.t())} | {:error, GRPC.RPCError.t()}

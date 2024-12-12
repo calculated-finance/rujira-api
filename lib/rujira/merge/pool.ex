@@ -34,6 +34,7 @@ defmodule Rujira.Merge.Pool do
   end
 
   defstruct [
+    :id,
     :address,
     :merge_denom,
     :merge_supply,
@@ -45,6 +46,7 @@ defmodule Rujira.Merge.Pool do
   ]
 
   @type t :: %__MODULE__{
+          id: String.t(),
           address: String.t(),
           merge_denom: String.t(),
           merge_supply: integer(),
