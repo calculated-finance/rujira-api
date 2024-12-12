@@ -4,6 +4,10 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
   alias RujiraWeb.Resolvers.Node
 
   object :thorchain do
+    field :inbound_addresses, non_null(list_of(non_null(:inbound_address))) do
+      resolve(&Resolvers.Thorchain.inbound_addresses/3)
+    end
+
     field :quote, :quote do
       arg(:from_asset, non_null(:asset_string))
       arg(:to_asset, non_null(:asset_string))
@@ -101,5 +105,21 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     value(:available, as: "Available")
     value(:staged, as: "Staged")
     value(:suspended, as: "Suspended")
+  end
+
+  object :inbound_address do
+    field :chain, non_null(:chain)
+    field :pub_key, :string
+    field :address, non_null(:address)
+    field :router, :address
+    field :halted, non_null(:boolean)
+    field :global_trading_paused, non_null(:boolean)
+    field :chain_trading_paused, non_null(:boolean)
+    field :chain_lp_actions_paused, non_null(:boolean)
+    field :gas_rate, :bigint
+    field :gas_rate_units, :string
+    field :outbound_tx_size, :bigint
+    field :outbound_fee, non_null(:bigint)
+    field :dust_threshold, :bigint
   end
 end

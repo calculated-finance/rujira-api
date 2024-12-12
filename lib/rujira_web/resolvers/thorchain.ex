@@ -1,4 +1,7 @@
 defmodule RujiraWeb.Resolvers.Thorchain do
+  alias Thorchain.Types.QueryInboundAddressesResponse
+  alias Thorchain.Types.QueryInboundAddressResponse
+  alias Thorchain.Types.QueryInboundAddressesRequest
   alias Thorchain.Types.QueryPoolsResponse
   alias Thorchain.Types.QueryPoolsRequest
   alias Thorchain.Types.QueryPoolResponse
@@ -65,5 +68,29 @@ defmodule RujiraWeb.Resolvers.Thorchain do
     |> Map.put(:lp_units, Map.get(pool, :LP_units))
     |> Map.update(:derived_depth_bps, "0", &String.to_integer/1)
     |> Map.update(:savers_fill_bps, "0", &String.to_integer/1)
+  end
+
+  def inbound_addresses(_, _, _) do
+    with {:ok, %QueryInboundAddressesResponse{inbound_addresses: inbound_addresses}} <-
+           Rujira.Grpc.Client.stub(&Q.inbound_addresses/2, %QueryInboundAddressesRequest{}) do
+      {:ok, inbound_addresses |> Enum.map(&cast_response/1)}
+    end
+  end
+
+  defp cast_response(x) do
+    x
+    |> Map.update(:chain, nil, &String.to_existing_atom(String.downcase(&1)))
+    |> Map.update(:gas_rate_units, nil, fn
+      "" -> nil
+      x -> x
+    end)
+    |> Map.update(:pub_key, nil, fn
+      "" -> nil
+      x -> x
+    end)
+    |> Map.update(:router, nil, fn
+      "" -> nil
+      x -> x
+    end)
   end
 end
