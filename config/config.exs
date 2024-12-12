@@ -44,6 +44,8 @@ config :tesla, :adapter, {Tesla.Adapter.Finch, name: Rujira.Finch}
 
 config :memoize, cache_strategy: Rujira.CacheStrategy
 
+mode = System.get_env("MODE") || "dev"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
-import_config "#{config_env()}.exs"
+import_config "#{MODE}.exs"
