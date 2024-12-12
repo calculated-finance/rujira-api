@@ -9,7 +9,11 @@ defmodule RujiraWeb.Resolvers.Merge do
 
   def merge_stats(_, _, _) do
     with {:ok, res} <- Rujira.Merge.Service.get_stats() do
-      {:ok, Rujira.Merge.Service.get_rates(res)}
+      res
+      |> Rujira.Merge.Service.get_rates()
+      |> Enum.map(&%{&1 | id: RujiraWeb.Resolvers.Node.encode_id(:contract, :merge, &1.address)})
+      |> then(&{:ok, &1})
+      |> IO.inspect()
     end
   end
 
