@@ -42,6 +42,23 @@ defmodule Rujira.Merge do
   end
 
   @doc """
+  Gets and Loads all pools
+  """
+  @spec load_pools() :: {:ok, list(Pool.t())} | {:error, GRPC.RPCError.t()}
+  def load_pools() do
+    with {:ok, pools} <- Rujira.Merge.list_pools(),
+         {:ok, stats} <-
+           Task.async_stream(pools, &Rujira.Merge.load_pool/1)
+           |> Enum.reduce({:ok, []}, fn
+             {:ok, {:ok, pool}}, {:ok, acc} -> {:ok, [pool | acc]}
+             {:ok, {:error, error}}, _ -> {:error, error}
+             {:error, err}, _ -> {:error, err}
+           end) do
+      {:ok, stats}
+    end
+  end
+
+  @doc """
   Loads an Account Pool by account address
   """
   @spec load_account(Pool.t(), String.t()) ::
@@ -51,6 +68,20 @@ defmodule Rujira.Merge do
            Rujira.Contract.query_state_smart(pool.address, %{account: %{addr: account}}),
          {:ok, account} <- Rujira.Merge.Account.from_query(pool, res) do
       {:ok, account}
+    end
+  end
+
+  @spec load_accounts(String.t()) :: {:ok, list(Account.t())} | {:error, GRPC.RPCError.t()}
+  def load_accounts(account) do
+    with {:ok, pools} <- Rujira.Merge.list_pools(),
+         {:ok, accounts} <-
+           Task.async_stream(pools, &Rujira.Merge.load_account(&1, account))
+           |> Enum.reduce({:ok, []}, fn
+             {:ok, {:ok, pool}}, {:ok, acc} -> {:ok, [pool | acc]}
+             {:ok, {:error, error}}, _ -> {:error, error}
+             {:error, err}, _ -> {:error, err}
+           end) do
+      {:ok, accounts}
     end
   end
 end

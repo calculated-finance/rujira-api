@@ -27,35 +27,37 @@ defmodule RujiraWeb.Schema.MergeTypes do
     field :current_rate, non_null(:bigint)
     @desc "Start Rate with 12 Decimals place"
     field :start_rate, non_null(:bigint)
-    @desc "Effective Rate with 12 Decimals place. Claim Rate considering bonus tokens"
-    field :effective_rate, non_null(:bigint)
     field :status, :merge_status
   end
 
   @desc "A merge_status represents current status about the rujira-merge contract"
   object :merge_status do
+    @desc "The total amount of merge token deposited"
     field :merged, non_null(:bigint)
+    @desc "The total amount of shares issued for the merge pool"
     field :shares, non_null(:bigint)
+    @desc "The total amount of ruji token allocated to the merge pool"
     field :size, non_null(:bigint)
   end
 
   @desc "A merge_accounts represents aggregate data about account address related to the merge pools"
   object :merge_stats do
     field :accounts, list_of(non_null(:merge_account))
-    field :total_merged, non_null(:bigint)
-    field :total_shares, non_null(:bigint)
+    @desc "The total amount of merge token that all `shares` are worth"
     field :total_size, non_null(:bigint)
-    @desc "Effective Rate with 12 Decimals place. Claim Rate considering bonus tokens"
-    field :effective_rate, non_null(:bigint)
   end
 
   @desc "A merge_account represents data about account address related to the merge pool"
   object :merge_account do
-    field :pool_address, non_null(:string)
+    field :pool, non_null(:merge_pool)
+    @desc "The amount of merge token that has been deposited by the account"
     field :merged, non_null(:bigint)
+    @desc "The amount of shares owned by this account"
     field :shares, non_null(:bigint)
+    @desc "The amount of ruji token that `shares` are worth"
     field :size, non_null(:bigint)
-    @desc "Effective Rate with 12 Decimals place. Claim Rate considering bonus tokens"
-    field :effective_rate, non_null(:bigint)
+
+    @desc "The current conversion rate for merge token to ruji token, given current pool ownership"
+    field :rate, non_null(:bigint)
   end
 end

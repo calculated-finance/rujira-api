@@ -1,4 +1,6 @@
 defmodule Rujira.Merge.Pool do
+  @precision 1_000_000_000_000
+
   defmodule Status do
     defstruct [
       :merged,
@@ -42,6 +44,8 @@ defmodule Rujira.Merge.Pool do
     :ruji_allocation,
     :decay_starts_at,
     :decay_ends_at,
+    :start_rate,
+    :current_rate,
     :status
   ]
 
@@ -54,6 +58,8 @@ defmodule Rujira.Merge.Pool do
           ruji_allocation: integer(),
           decay_starts_at: integer(),
           decay_ends_at: integer(),
+          start_rate: integer(),
+          current_rate: integer(),
           status: :not_loaded | Status.t()
         }
 
@@ -70,19 +76,39 @@ defmodule Rujira.Merge.Pool do
          {ruji_allocation, ""} <- Integer.parse(ruji_allocation),
          {:ok, decay_ends_at} <- Rujira.parse_timestamp(decay_ends_at),
          {:ok, decay_starts_at} <- Rujira.parse_timestamp(decay_starts_at) do
-      {:ok,
-       %__MODULE__{
-         address: address,
-         merge_denom: merge_denom,
-         merge_supply: merge_supply,
-         ruji_denom: ruji_denom,
-         ruji_allocation: ruji_allocation,
-         decay_starts_at: decay_starts_at,
-         decay_ends_at: decay_ends_at,
-         status: :not_loaded
-       }}
+      %__MODULE__{
+        address: address,
+        merge_denom: merge_denom,
+        merge_supply: merge_supply,
+        ruji_denom: ruji_denom,
+        ruji_allocation: ruji_allocation,
+        decay_starts_at: decay_starts_at,
+        decay_ends_at: decay_ends_at,
+        status: :not_loaded
+      }
+      |> set_rates()
+      |> then(&{:ok, &1})
     else
       _ -> :error
     end
+  end
+
+  defp set_rates(
+         %__MODULE__{
+           merge_supply: merge_supply,
+           ruji_allocation: ruji_allocation,
+           decay_ends_at: decay_ends_at,
+           decay_starts_at: decay_starts_at
+         } = pool
+       ) do
+    now = DateTime.utc_now()
+    remaining_time = DateTime.diff(decay_ends_at, now, :second)
+    duration = DateTime.diff(decay_ends_at, decay_starts_at, :second)
+    start_rate = trunc(div(ruji_allocation * @precision, merge_supply))
+
+    current_rate =
+      trunc(div(start_rate, @precision) * div(remaining_time * @precision, duration))
+
+    %{pool | start_rate: start_rate, current_rate: current_rate}
   end
 end
