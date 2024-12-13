@@ -48,7 +48,9 @@ defmodule RujiraWeb.Schema.MergeTypes do
     @desc "The total value of deposits at the time of deposit"
     field :deposit_size, non_null(:balance) do
       # TODO: Index deposits
-      resolve(fn %{total_size: deposit_size} = x, _, _ ->
+      resolve(fn %{total_size: deposit_size}, _, _ ->
+        # Simulate a smaller deposit for now
+        deposit_size = trunc(deposit_size * 0.8)
         {:ok, %{amount: deposit_size, denom: @merge_denom}}
       end)
     end
