@@ -5,16 +5,18 @@ defmodule Rujira.Merge.Pool do
     defstruct [
       :merged,
       :shares,
-      :size
+      :size,
+      :current_rate
     ]
 
     @type t :: %__MODULE__{
             merged: integer(),
             shares: integer(),
-            size: integer()
+            size: integer(),
+            current_rate: integer()
           }
 
-    @spec from_query(map()) :: {:ok, __MODULE__.t()} | :error
+    @spec from_query(map()) :: {:ok, __MODULE__.t()} | {:error, :parse_error}
     def from_query(%{
           "merged" => merged,
           "shares" => shares,
@@ -30,7 +32,7 @@ defmodule Rujira.Merge.Pool do
            size: size
          }}
       else
-        _ -> :error
+        _ -> {:error, :parse_error}
       end
     end
   end
@@ -76,6 +78,8 @@ defmodule Rujira.Merge.Pool do
          {ruji_allocation, ""} <- Integer.parse(ruji_allocation),
          {:ok, decay_ends_at} <- Rujira.parse_timestamp(decay_ends_at),
          {:ok, decay_starts_at} <- Rujira.parse_timestamp(decay_starts_at) do
+      start_rate = trunc(div(ruji_allocation * @precision, merge_supply))
+
       %__MODULE__{
         address: address,
         merge_denom: merge_denom,
@@ -84,36 +88,46 @@ defmodule Rujira.Merge.Pool do
         ruji_allocation: ruji_allocation,
         decay_starts_at: decay_starts_at,
         decay_ends_at: decay_ends_at,
+        start_rate: start_rate,
         status: :not_loaded
       }
-      |> set_rates()
+      |> set_rate()
       |> then(&{:ok, &1})
     else
       _ -> :error
     end
   end
 
-  defp set_rates(
-         %__MODULE__{
-           merge_denom: merge_denom,
-           merge_supply: merge_supply,
-           ruji_allocation: ruji_allocation,
-           decay_ends_at: decay_ends_at,
-           decay_starts_at: decay_starts_at
-         } = pool
-       ) do
+  def set_rate(%__MODULE__{status: %Status{} = status} = pool) do
+    current_rate = calculate_rate(pool)
+
+    %{
+      pool
+      | current_rate: current_rate,
+        status: %{status | current_rate: current_rate}
+    }
+  end
+
+  def set_rate(%__MODULE__{} = pool) do
+    current_rate = calculate_rate(pool)
+    %{pool | current_rate: current_rate}
+  end
+
+  defp calculate_rate(%__MODULE__{
+         merge_supply: merge_supply,
+         ruji_allocation: ruji_allocation,
+         decay_ends_at: decay_ends_at,
+         decay_starts_at: decay_starts_at,
+         start_rate: start_rate
+       }) do
     now = DateTime.utc_now()
     remaining_time = DateTime.diff(decay_ends_at, now, :second)
     duration = DateTime.diff(decay_ends_at, decay_starts_at, :second)
-    start_rate = trunc(div(ruji_allocation * @precision, merge_supply))
 
-    current_rate =
-      cond do
-        DateTime.compare(now, decay_starts_at) == :lt -> start_rate
-        DateTime.compare(now, decay_ends_at) == :gt -> 0
-        true -> trunc(div(start_rate, @precision) * div(remaining_time * @precision, duration))
-      end
-
-    %{pool | start_rate: start_rate, current_rate: current_rate}
+    cond do
+      DateTime.compare(now, decay_starts_at) == :lt -> start_rate
+      DateTime.compare(now, decay_ends_at) == :gt -> 0
+      true -> trunc(div(start_rate, @precision) * div(remaining_time * @precision, duration))
+    end
   end
 end

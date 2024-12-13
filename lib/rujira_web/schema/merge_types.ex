@@ -40,6 +40,8 @@ defmodule RujiraWeb.Schema.MergeTypes do
     field :shares, non_null(:bigint)
     @desc "The total amount of ruji token allocated to the merge pool"
     field :size, non_null(:bigint)
+    @desc "Current Rate with 12 Decimals place"
+    field :current_rate, non_null(:bigint)
   end
 
   @desc "A merge_accounts represents aggregate data about account address related to the merge pools"
