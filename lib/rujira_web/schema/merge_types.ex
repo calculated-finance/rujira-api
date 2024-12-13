@@ -2,6 +2,8 @@ defmodule RujiraWeb.Schema.MergeTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
 
+  @merge_denom "ruji"
+
   @desc "A merge_pool represents the configuration about a rujira-merge contract"
   node object(:merge_pool) do
     field :address, non_null(:string)
@@ -43,19 +45,40 @@ defmodule RujiraWeb.Schema.MergeTypes do
   @desc "A merge_accounts represents aggregate data about account address related to the merge pools"
   object :merge_stats do
     field :accounts, list_of(non_null(:merge_account))
+    @desc "The total value of deposits at the time of deposit"
+    field :deposit_size, non_null(:balance) do
+      # TODO: Index deposits
+      resolve(fn %{total_size: deposit_size} = x, _, _ ->
+        {:ok, %{amount: deposit_size, denom: @merge_denom}}
+      end)
+    end
+
     @desc "The total amount of merge token that all `shares` are worth"
-    field :total_size, non_null(:bigint)
+    field :total_size, non_null(:balance) do
+      resolve(fn %{total_size: total_size}, _, _ ->
+        {:ok, %{amount: total_size, denom: @merge_denom}}
+      end)
+    end
   end
 
   @desc "A merge_account represents data about account address related to the merge pool"
   object :merge_account do
     field :pool, non_null(:merge_pool)
     @desc "The amount of merge token that has been deposited by the account"
-    field :merged, non_null(:bigint)
+    field :merged, non_null(:balance) do
+      resolve(fn %{merged: merged, pool: %{merge_denom: merge_denom}}, _, _ ->
+        {:ok, %{amount: merged, denom: merge_denom}}
+      end)
+    end
+
     @desc "The amount of shares owned by this account"
     field :shares, non_null(:bigint)
     @desc "The amount of ruji token that `shares` are worth"
-    field :size, non_null(:bigint)
+    field :size, non_null(:balance) do
+      resolve(fn %{size: size}, _, _ ->
+        {:ok, %{amount: size, denom: @merge_denom}}
+      end)
+    end
 
     @desc "The current conversion rate for merge token to ruji token, given current pool ownership"
     field :rate, non_null(:bigint)

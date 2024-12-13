@@ -1,6 +1,5 @@
 defmodule RujiraWeb.Resolvers.Thorchain do
   alias Thorchain.Types.QueryInboundAddressesResponse
-  alias Thorchain.Types.QueryInboundAddressResponse
   alias Thorchain.Types.QueryInboundAddressesRequest
   alias Thorchain.Types.QueryPoolsResponse
   alias Thorchain.Types.QueryPoolsRequest
