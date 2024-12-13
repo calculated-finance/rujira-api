@@ -30,3 +30,7 @@ config :rujira, :grpcs, [
   %{host: "server1.broken.activateFailover.com", port: 443},
   %{host: "thornode-devnet-grpc.bryanlabs.net", port: 443}
 ]
+
+config :appsignal, :config,
+  active: true,
+  env: :mock
