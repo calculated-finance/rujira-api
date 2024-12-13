@@ -40,7 +40,11 @@ defmodule Rujira.Merge.Account do
          merged: merged,
          shares: shares,
          size: size,
-         rate: trunc(div(merged * @precision, size))
+         rate:
+           if(size == 0,
+             do: 0,
+             else: trunc(div(merged * @precision, size))
+           )
        }}
     else
       _ -> :error
