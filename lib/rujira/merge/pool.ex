@@ -95,6 +95,7 @@ defmodule Rujira.Merge.Pool do
 
   defp set_rates(
          %__MODULE__{
+           merge_denom: merge_denom,
            merge_supply: merge_supply,
            ruji_allocation: ruji_allocation,
            decay_ends_at: decay_ends_at,
@@ -107,7 +108,11 @@ defmodule Rujira.Merge.Pool do
     start_rate = trunc(div(ruji_allocation * @precision, merge_supply))
 
     current_rate =
-      trunc(div(start_rate, @precision) * div(remaining_time * @precision, duration))
+      cond do
+        DateTime.compare(now, decay_starts_at) == :lt -> start_rate
+        DateTime.compare(now, decay_ends_at) == :gt -> 0
+        true -> trunc(div(start_rate, @precision) * div(remaining_time * @precision, duration))
+      end
 
     %{pool | start_rate: start_rate, current_rate: current_rate}
   end

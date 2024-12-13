@@ -12,7 +12,7 @@ defmodule Rujira.Merge.Account do
   ]
 
   @type t :: %__MODULE__{
-          pool: Pooo.t(),
+          pool: Pool.t(),
           account: String.t(),
           merged: integer(),
           shares: integer(),
