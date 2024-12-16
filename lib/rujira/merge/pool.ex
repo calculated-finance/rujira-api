@@ -114,8 +114,6 @@ defmodule Rujira.Merge.Pool do
   end
 
   defp calculate_rate(%__MODULE__{
-         merge_supply: merge_supply,
-         ruji_allocation: ruji_allocation,
          decay_ends_at: decay_ends_at,
          decay_starts_at: decay_starts_at,
          start_rate: start_rate
