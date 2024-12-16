@@ -1,6 +1,5 @@
 defmodule RujiraWeb.Resolvers.Balance do
   alias Absinthe.Resolution.Helpers
-  use Appsignal.Instrumentation.Decorators
 
   def cosmos(%{address: address, chain: chain}, _, _) do
     Helpers.async(fn ->
