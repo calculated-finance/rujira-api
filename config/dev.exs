@@ -67,3 +67,7 @@ config :phoenix, :plug_init_mode, :runtime
 config :rujira, :grpcs, [
   %{host: "thornode-devnet-grpc.bryanlabs.net", port: 443}
 ]
+
+config :appsignal, :config,
+  active: true,
+  env: :dev

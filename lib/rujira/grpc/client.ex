@@ -22,8 +22,8 @@ defmodule Rujira.Grpc.Client do
   end
 
   defp reconnect_and_retry(worker_pid, stub_fn, req) do
-    with {:ok, new_channel} <- GenServer.call(worker_pid, :reconnect, @timeout) do
-      stub_fn.(new_channel, req)
+    with {:ok, _} <- GenServer.call(worker_pid, :reconnect, @timeout) do
+      stub(stub_fn, req)
     else
       {:error, reason} -> {:error, reason}
     end

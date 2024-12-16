@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Resolvers.Thorchain do
+  alias Absinthe.Resolution.Helpers
   alias Thorchain.Types.QueryInboundAddressesResponse
   alias Thorchain.Types.QueryInboundAddressesRequest
   alias Thorchain.Types.QueryPoolsResponse
@@ -45,21 +46,25 @@ defmodule RujiraWeb.Resolvers.Thorchain do
   end
 
   def pools(_, _, _) do
-    req = %QueryPoolsRequest{}
+    Helpers.async(fn ->
+      req = %QueryPoolsRequest{}
 
-    with {:ok, %QueryPoolsResponse{pools: pools}} <-
-           Rujira.Grpc.Client.stub(&Q.pools/2, req) do
-      {:ok, Enum.map(pools, &cast_pool/1)}
-    end
+      with {:ok, %QueryPoolsResponse{pools: pools}} <-
+             Rujira.Grpc.Client.stub(&Q.pools/2, req) do
+        {:ok, Enum.map(pools, &cast_pool/1)}
+      end
+    end)
   end
 
   def pool(_, %{asset: asset}, _) do
-    req = %QueryPoolRequest{asset: asset}
+    Helpers.async(fn ->
+      req = %QueryPoolRequest{asset: asset}
 
-    with {:ok, %QueryPoolResponse{} = pool} <-
-           Rujira.Grpc.Client.stub(&Q.pool/2, req) do
-      {:ok, cast_pool(pool)}
-    end
+      with {:ok, %QueryPoolResponse{} = pool} <-
+             Rujira.Grpc.Client.stub(&Q.pool/2, req) do
+        {:ok, cast_pool(pool)}
+      end
+    end)
   end
 
   defp cast_pool(pool) do
@@ -70,10 +75,12 @@ defmodule RujiraWeb.Resolvers.Thorchain do
   end
 
   def inbound_addresses(_, _, _) do
-    with {:ok, %QueryInboundAddressesResponse{inbound_addresses: inbound_addresses}} <-
-           Rujira.Grpc.Client.stub(&Q.inbound_addresses/2, %QueryInboundAddressesRequest{}) do
-      {:ok, inbound_addresses |> Enum.map(&cast_response/1)}
-    end
+    Helpers.async(fn ->
+      with {:ok, %QueryInboundAddressesResponse{inbound_addresses: inbound_addresses}} <-
+             Rujira.Grpc.Client.stub(&Q.inbound_addresses/2, %QueryInboundAddressesRequest{}) do
+        {:ok, inbound_addresses |> Enum.map(&cast_response/1)}
+      end
+    end)
   end
 
   defp cast_response(x) do

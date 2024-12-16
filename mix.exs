@@ -52,7 +52,8 @@ defmodule Rujira.MixProject do
       {:cors_plug, "~> 3.0"},
       {:tesla, "~> 1.11"},
       {:memoize, "~> 1.4"},
-      {:poolboy, "~> 1.5.1"}
+      {:poolboy, "~> 1.5.1"},
+      {:appsignal, "~> 2.8"}
     ]
   end
 
