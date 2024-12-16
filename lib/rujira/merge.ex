@@ -8,7 +8,7 @@ defmodule Rujira.Merge do
   alias Rujira.Merge.Pool
   alias Rujira.Merge.Account
 
-  @code_ids Application.compile_env(:kujira, __MODULE__, code_ids: [31])
+  @code_ids Application.compile_env(:kujira, __MODULE__, code_ids: [32])
             |> Keyword.get(:code_ids)
 
   @doc """
