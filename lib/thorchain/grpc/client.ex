@@ -1,4 +1,4 @@
-defmodule Rujira.Grpc.Client do
+defmodule Thorchain.Grpc.Client do
   @moduledoc """
   GRPC client with parallel connection attempts to all servers using Poolboy workers.
   """

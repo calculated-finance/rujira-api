@@ -24,7 +24,7 @@ defmodule Rujira.Application do
         :grpc_pool,
         [
           name: {:local, :grpc_pool},
-          worker_module: Rujira.Grpc.Worker,
+          worker_module: Thorchain.Grpc.Worker,
           size: length(grpc_list)*10,
           max_overflow: 5
         ],

@@ -1,4 +1,4 @@
-defmodule Rujira.Grpc.Worker do
+defmodule Thorchain.Grpc.Worker do
   use GenServer
 
   def start_link(grpc_list) do
