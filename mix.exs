@@ -53,7 +53,8 @@ defmodule Rujira.MixProject do
       {:tesla, "~> 1.11"},
       {:memoize, "~> 1.4"},
       {:poolboy, "~> 1.5.1"},
-      {:appsignal, "~> 2.8"}
+      {:appsignal, "~> 2.8"},
+      {:google_protos, "~> 0.4"},
     ]
   end
 
