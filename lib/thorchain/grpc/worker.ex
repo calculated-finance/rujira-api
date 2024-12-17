@@ -26,7 +26,7 @@ defmodule Thorchain.Grpc.Worker do
 
   def handle_call(:reconnect, _from, %{grpc_list: grpc_list}) do
     with {:ok, channel, new_grpc_list} <- connect(Enum.shuffle(grpc_list)) do
-      {:ok, %{grpc_list: new_grpc_list, connected: channel}}
+      {:reply, {:ok, channel}, %{grpc_list: new_grpc_list, connected: channel}}
     else
       {:error, reason} -> {:reply, {:error, reason}, %{grpc_list: grpc_list, connected: nil}}
     end
