@@ -20,6 +20,7 @@ require Logger
       {Finch, name: Rujira.Finch},
       {Rujira.Invalidator, pubsub: Rujira.PubSub},
       Thorchain.Node,
+      Thorchain.Block.Indexer,
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
