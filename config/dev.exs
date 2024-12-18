@@ -64,9 +64,12 @@ config :phoenix, :stacktrace_depth, 20
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
 
-config :rujira, :grpcs, [
-  %{host: "thornode-devnet-grpc.bryanlabs.net", port: 443}
-]
+config :rujira, Thorchain.Node,
+  websocket: "wss://rpc-kujira-testnet.starsquid.io",
+  subscriptions: ["tm.event='NewBlock'"],
+  grpcs: [
+    %{host: "thornode-devnet-grpc.bryanlabs.net", port: 443}
+  ]
 
 config :appsignal, :config,
   active: true,

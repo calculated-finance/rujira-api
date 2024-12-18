@@ -19,7 +19,7 @@ require Logger
       RujiraWeb.Endpoint,
       {Finch, name: Rujira.Finch},
       {Rujira.Invalidator, pubsub: Rujira.PubSub},
-      {Thorchain.Node, websocket: "wss://rpc-kujira-testnet.starsquid.io", subscriptions: ["tm.event='NewBlock'"]},
+      Thorchain.Node,
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

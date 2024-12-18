@@ -10,11 +10,11 @@ defmodule Thorchain.Node do
   end
 
   @impl true
-  def init(opts) do
-    pubsub = Keyword.get(opts, :pubsub, Rujira.PubSub)
-    subscriptions = Keyword.get(opts, :subscriptions, [])
-    websocket_endpoint = Keyword.fetch!(opts, :websocket)
-    grpc_list = Application.get_env(:rujira, :grpcs, [])
+  def init(_) do
+    websocket_endpoint = Application.fetch_env!(:rujira, Thorchain.Node)[:websocket]
+    subscriptions = Application.fetch_env!(:rujira, Thorchain.Node)[:subscriptions]
+    grpc_list = Application.fetch_env!(:rujira, Thorchain.Node)[:grpcs]
+    pubsub = Application.get_env(:rujira, :pubsub, Rujira.PubSub)
 
     children = [
       {Thorchain.Node.Websocket,
@@ -37,7 +37,7 @@ defmodule Thorchain.Node do
   end
 
   def subscribe(topic) do
-    pubsub = Application.fetch_env!(:rujira, :pubsub)
+    pubsub = Application.get_env(:rujira, :pubsub, Rujira.PubSub)
     Phoenix.PubSub.subscribe(pubsub, topic)
   end
 

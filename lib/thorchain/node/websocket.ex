@@ -5,8 +5,9 @@ defmodule Thorchain.Node.Websocket do
   def start_link(config) do
     endpoint = config[:websocket]
     subscriptions = Keyword.get(config, :subscriptions, [])
+    pubsub = Keyword.get(config, :pubsub)
     Logger.info("#{__MODULE__} Starting node websocket: #{endpoint}")
-    {:ok, pid} = WebSockex.start_link("#{endpoint}/websocket", __MODULE__, %{})
+    {:ok, pid} = WebSockex.start_link("#{endpoint}/websocket", __MODULE__, %{pubsub: pubsub})
     for {s, idx} <- Enum.with_index(subscriptions), do: subscribe(pid, idx, s)
     {:ok, pid}
   end
@@ -16,15 +17,15 @@ defmodule Thorchain.Node.Websocket do
     {:ok, state}
   end
 
-  def handle_disconnect(status, _state) do
+  def handle_disconnect(_status, _state) do
     raise "#{__MODULE__} Disconnected"
   end
 
   def handle_frame({:text, msg}, state) do
     case Jason.decode(msg, keys: :atoms) do
       {:ok, %{id: id, result: %{data: %{type: t, value: v}}}} ->
-        pubsub = Application.fetch_env!(:rujira, :pubsub)
         Logger.info("#{__MODULE__} Subscription #{id} event #{t}")
+        pubsub = state[:pubsub]
         Phoenix.PubSub.broadcast(pubsub, t, v)
 
         {:ok, state}
