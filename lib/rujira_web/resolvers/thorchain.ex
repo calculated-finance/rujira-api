@@ -35,7 +35,7 @@ defmodule RujiraWeb.Resolvers.Thorchain do
     }
 
     with {:ok, %QueryQuoteSwapResponse{} = res} <-
-           Thorchain.Grpc.Client.stub(&Q.quote_swap/2, req),
+           Thorchain.Node.stub(&Q.quote_swap/2, req),
          {:ok, expiry} <- DateTime.from_unix(res.expiry) do
       {:ok,
        %{res | expiry: expiry}
@@ -50,7 +50,7 @@ defmodule RujiraWeb.Resolvers.Thorchain do
       req = %QueryPoolsRequest{}
 
       with {:ok, %QueryPoolsResponse{pools: pools}} <-
-             Thorchain.Grpc.Client.stub(&Q.pools/2, req) do
+             Thorchain.Node.stub(&Q.pools/2, req) do
         {:ok, Enum.map(pools, &cast_pool/1)}
       end
     end)
@@ -61,7 +61,7 @@ defmodule RujiraWeb.Resolvers.Thorchain do
       req = %QueryPoolRequest{asset: asset}
 
       with {:ok, %QueryPoolResponse{} = pool} <-
-             Thorchain.Grpc.Client.stub(&Q.pool/2, req) do
+             Thorchain.Node.stub(&Q.pool/2, req) do
         {:ok, cast_pool(pool)}
       end
     end)
@@ -77,7 +77,7 @@ defmodule RujiraWeb.Resolvers.Thorchain do
   def inbound_addresses(_, _, _) do
     Helpers.async(fn ->
       with {:ok, %QueryInboundAddressesResponse{inbound_addresses: inbound_addresses}} <-
-             Thorchain.Grpc.Client.stub(&Q.inbound_addresses/2, %QueryInboundAddressesRequest{}) do
+             Thorchain.Node.stub(&Q.inbound_addresses/2, %QueryInboundAddressesRequest{}) do
         {:ok, inbound_addresses |> Enum.map(&cast_response/1)}
       end
     end)

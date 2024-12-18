@@ -55,6 +55,7 @@ defmodule Rujira.MixProject do
       {:poolboy, "~> 1.5.1"},
       {:appsignal, "~> 2.8"},
       {:google_protos, "~> 0.4"},
+      {:websockex, "~> 0.4.3"},
     ]
   end
 

@@ -1,4 +1,4 @@
-defmodule Thorchain.Grpc.Worker do
+defmodule Thorchain.Node.Grpc do
   use GenServer
 
   def start_link(grpc_list) do

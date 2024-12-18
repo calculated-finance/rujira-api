@@ -14,7 +14,7 @@ defmodule Rujira.Contract do
           {:ok, Cosmwasm.Wasm.V1.ContractInfo.t()} | {:error, GRPC.RPCError.t()}
   def info(address) do
     with {:ok, %{contract_info: contract_info}} <-
-           Thorchain.Grpc.Client.stub(
+           Thorchain.Node.stub(
              &Stub.contract_info/2,
              %QueryContractInfoRequest{address: address}
            ) do
@@ -37,7 +37,7 @@ defmodule Rujira.Contract do
 
   defp by_code_page(code_id, nil) do
     with {:ok, %{contracts: contracts, pagination: %{next_key: next_key}}} <-
-           Thorchain.Grpc.Client.stub(
+           Thorchain.Node.stub(
              &Stub.contracts_by_code/2,
              %QueryContractsByCodeRequest{code_id: code_id}
            ),
@@ -52,7 +52,7 @@ defmodule Rujira.Contract do
 
   defp by_code_page(code_id, key) do
     with {:ok, %{contracts: contracts, pagination: %{next_key: next_key}}} <-
-           Thorchain.Grpc.Client.stub(
+           Thorchain.Node.stub(
              &Stub.contracts_by_code/2,
              %QueryContractsByCodeRequest{
                code_id: code_id,
@@ -125,7 +125,7 @@ defmodule Rujira.Contract do
       {__MODULE__, :query_state_smart, [address, query]},
       fn ->
         with {:ok, %{data: data}} <-
-               Thorchain.Grpc.Client.stub(
+               Thorchain.Node.stub(
                  &Stub.smart_contract_state/2,
                  %QuerySmartContractStateRequest{
                    address: address,
@@ -155,7 +155,7 @@ defmodule Rujira.Contract do
 
   defp query_state_all_page(address, page) do
     with {:ok, %{models: models, pagination: %{next_key: next_key}}} when next_key != "" <-
-           Thorchain.Grpc.Client.stub(
+           Thorchain.Node.stub(
              &Stub.all_contract_state/2,
              %QueryAllContractStateRequest{address: address, pagination: page}
            ),
@@ -183,7 +183,7 @@ defmodule Rujira.Contract do
   def stream_state_all(address) do
     Stream.resource(
       fn ->
-        Thorchain.Grpc.Client.stub(
+        Thorchain.Node.stub(
           &Stub.all_contract_state/2,
           %QueryAllContractStateRequest{address: address}
         )
@@ -197,7 +197,7 @@ defmodule Rujira.Contract do
          }}
         when next_key != "" ->
           next =
-            Thorchain.Grpc.Client.stub(
+            Thorchain.Node.stub(
               &Stub.all_contract_state/2,
               %QueryAllContractStateRequest{
                 address: address,

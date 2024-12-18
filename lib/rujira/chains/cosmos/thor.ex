@@ -7,7 +7,7 @@ defmodule Rujira.Chains.Cosmos.Thor do
     req = %QueryAllBalancesRequest{address: address}
 
     with {:ok, %QueryAllBalancesResponse{balances: balances}} <-
-           Thorchain.Grpc.Client.stub(&all_balances/2, req) do
+           Thorchain.Node.stub(&all_balances/2, req) do
       {:ok, balances}
     end
   end

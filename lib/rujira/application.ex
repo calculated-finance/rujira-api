@@ -2,13 +2,12 @@ defmodule Rujira.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
+require Logger
 
   use Application
 
   @impl true
   def start(_type, _args) do
-    grpc_list = Application.get_env(:rujira, :grpcs, [])
-
     children = [
       RujiraWeb.Telemetry,
       Rujira.Repo,
@@ -20,16 +19,7 @@ defmodule Rujira.Application do
       RujiraWeb.Endpoint,
       {Finch, name: Rujira.Finch},
       {Rujira.Invalidator, pubsub: Rujira.PubSub},
-      :poolboy.child_spec(
-        :grpc_pool,
-        [
-          name: {:local, :grpc_pool},
-          worker_module: Thorchain.Grpc.Worker,
-          size: length(grpc_list)*10,
-          max_overflow: 5
-        ],
-        grpc_list
-      )
+      {Thorchain.Node, websocket: "wss://rpc-kujira-testnet.starsquid.io", subscriptions: ["tm.event='NewBlock'"]},
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
