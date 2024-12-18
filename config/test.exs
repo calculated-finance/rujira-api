@@ -26,10 +26,10 @@ config :logger, level: :warning
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
 
-config :rujira, :grpcs, [
-  %{host: "server1.broken.activateFailover.com", port: 443},
-  %{host: "thornode-devnet-grpc.bryanlabs.net", port: 443}
-]
+config :rujira, Thorchain.Node,
+  websocket: "",
+  subscriptions: ["tm.event='NewBlock'"],
+  grpcs: []
 
 config :appsignal, :config,
   active: true,

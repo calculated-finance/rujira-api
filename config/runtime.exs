@@ -105,8 +105,8 @@ if config_env() == :prod do
 
   config :rujira, Rujira.Prices.Coingecko, cg_key: coingecko_key
 
-  config :rujira, :grpcs, [
-    %{host: "server1.broken.activateFailover.com", port: 443},
-    %{host: "thornode-devnet-grpc.bryanlabs.net", port: 443}
-  ]
+  config :rujira, Thorchain.Node,
+  websocket: "",
+  subscriptions: ["tm.event='NewBlock'"],
+  grpcs: []
 end
