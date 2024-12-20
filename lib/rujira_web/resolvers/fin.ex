@@ -12,8 +12,8 @@ defmodule RujiraWeb.Resolvers.Fin do
 
   def account(%{address: address}, _, _) do
     Helpers.async(fn ->
-      with {:ok, orders} <- Rujira.Fin.list_all_orders(address),
-           {:ok, history} <- Rujira.Fin.account_history(address) do
+      with {:ok, orders} <- Fin.list_all_orders(address),
+           {:ok, history} <- Fin.account_history(address) do
         {:ok, %{orders: orders, history: history}}
       end
     end)

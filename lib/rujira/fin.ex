@@ -2,7 +2,6 @@ defmodule Rujira.Fin do
   @moduledoc """
   Rujira's 100% on-chain, central limit order book style decentralized token exchange.
   """
-  alias Rujira.Contract
   alias Rujira.Fin.Pair
   alias Rujira.Fin.Book
   alias Rujira.Fin.Order
@@ -18,7 +17,7 @@ defmodule Rujira.Fin do
 
   # @spec get_pair(String.t()) :: {:ok, Pair.t()} | {:error, :not_found}
   # def get_pair(address), do: Contract.get({Pair, address})
-  def get_pair(address) do
+  def get_pair(_address) do
     pair = %Pair{
       address: "sthor1qm7vtdca95aj7nvtrarqm3uah33nhffpnhhg3j",
       token_base: "gaia-kuji",
@@ -34,7 +33,7 @@ defmodule Rujira.Fin do
 
     with {:ok, pair} <- set_pair_history(pair),
          {:ok, pair} <- set_summary(pair),
-         {:ok, pair} <- set_candles(pair) do
+         {:ok, _pair} <- set_candles(pair) do
     end
 
     {:ok, pair}
@@ -108,7 +107,7 @@ defmodule Rujira.Fin do
   #   end
   # end
 
-  def load_pair(pair, limit \\ 100) do
+  def load_pair(pair, _limit \\ 100) do
     book = %Book{
       bids: [
         %Book.Price{price: 100, total: 10, side: :bid},
