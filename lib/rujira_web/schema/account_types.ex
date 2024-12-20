@@ -31,5 +31,9 @@ defmodule RujiraWeb.Schema.AccountTypes do
     field :merge, :merge_stats do
       resolve(&Resolvers.Merge.account/3)
     end
+
+    field :fin, :fin_account do
+      resolve(&Resolvers.Fin.account/3)
+    end
   end
 end
