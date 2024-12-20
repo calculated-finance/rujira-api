@@ -7,5 +7,9 @@ defmodule RujiraWeb.Schema.RujiraTypes do
     field :merge, non_null(list_of(non_null(:merge_pool))) do
       resolve(&Resolvers.Merge.resolver/3)
     end
+
+    field :fin, non_null(list_of(non_null(:fin_pair))) do
+      resolve(&Resolvers.Fin.resolver/3)
+    end
   end
 end

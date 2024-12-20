@@ -10,6 +10,14 @@ defmodule RujiraWeb.Resolvers.Fin do
     end)
   end
 
+  def resolver(_, _, _) do
+    Helpers.async(fn ->
+      with {:ok, pairs} <- Rujira.Fin.list_pairs() do
+        {:ok, Enum.map(pairs, &put_id/1)}
+      end
+    end)
+  end
+
   def account(%{address: address}, _, _) do
     Helpers.async(fn ->
       with {:ok, orders} <- Fin.list_all_orders(address),

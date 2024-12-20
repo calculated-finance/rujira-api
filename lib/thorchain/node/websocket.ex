@@ -24,7 +24,7 @@ defmodule Thorchain.Node.Websocket do
   def handle_frame({:text, msg}, state) do
     case Jason.decode(msg, keys: :atoms) do
       {:ok, %{id: id, result: %{data: %{type: t, value: v}}}} ->
-        Logger.info("#{__MODULE__} Subscription #{id} event #{t}")
+        Logger.debug("#{__MODULE__} Subscription #{id} event #{t}")
         pubsub = state[:pubsub]
         Phoenix.PubSub.broadcast(pubsub, t, v)
 
