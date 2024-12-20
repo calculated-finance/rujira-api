@@ -2,6 +2,7 @@ defmodule Rujira.Fin do
   @moduledoc """
   Rujira's 100% on-chain, central limit order book style decentralized token exchange.
   """
+  alias Rujira.Fin.Candle
   alias Rujira.Fin.Pair
   alias Rujira.Fin.Book
   alias Rujira.Fin.Order
@@ -19,7 +20,8 @@ defmodule Rujira.Fin do
   # def get_pair(address), do: Contract.get({Pair, address})
   def get_pair(address) do
     with {:ok, pairs} <- list_pairs(),
-         %Pair{} = pair <- Enum.find(pairs, &(&1.address == address)) do
+         %Pair{} = pair <- Enum.find(pairs, &(&1.address == address)),
+         {:ok, pair} <- set_summary(pair) do
       {:ok, pair}
     else
       nil -> {:error, :not_found}
@@ -169,12 +171,12 @@ defmodule Rujira.Fin do
   def load_pair(pair, _limit \\ 100) do
     book = %Book{
       bids: [
-        %Book.Price{price: 100, total: 10, side: :bid},
-        %Book.Price{price: 95, total: 20, side: :bid}
+        %Book.Price{price: 100, total: 10, side: :bid, value: 1000},
+        %Book.Price{price: 95, total: 20, side: :bid, value: 1900}
       ],
       asks: [
-        %Book.Price{price: 105, total: 15, side: :ask},
-        %Book.Price{price: 110, total: 25, side: :ask}
+        %Book.Price{price: 105, total: 15, side: :ask, value: 1575},
+        %Book.Price{price: 110, total: 25, side: :ask, value: 2750}
       ]
     }
 
@@ -241,7 +243,7 @@ defmodule Rujira.Fin do
     end
   end
 
-  def account_history(address) do
+  def account_history(_address) do
     {:ok, []}
   end
 
@@ -250,13 +252,21 @@ defmodule Rujira.Fin do
     {:ok, %{pair | history: history}}
   end
 
-  def set_candles(pair) do
-    candles = [{}]
-    {:ok, %{pair | candles: candles}}
-  end
-
   def set_summary(pair) do
     summary = [{}]
     {:ok, %{pair | summary: summary}}
+  end
+
+  def candles(_address, _from, _to, _resolution) do
+    candles = [
+      %Candle{
+        high: "1",
+        low: "2",
+        volume: "3",
+        time: "4"
+      }
+    ]
+
+    {:ok, candles}
   end
 end

@@ -23,8 +23,14 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :fee_taker, non_null(:bigint)
     field :fee_maker, non_null(:bigint)
     field :book, non_null(:book)
-    field :summary, :string #TODO type
-    field :candles, :string #TODO type
+    field :summary, :pair_summary
+
+    field :candles, list_of(:candle) do
+      arg(:from, :integer)
+      arg(:to, :integer)
+      arg(:resolution, :integer)
+      resolve(&RujiraWeb.Resolvers.Fin.candles/3)
+    end
     field :history, list_of(:trade)
   end
 
@@ -39,6 +45,8 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :price, :bigint
     field :total, :bigint
     field :type, :string
+    @desc "Value of the entry, calculated as total * price or total / price based on type."
+    field :value, :bigint
   end
 
   @desc "Collections of data of an account across all the fin pairs"
@@ -118,5 +126,23 @@ defmodule RujiraWeb.Schema.FinTypes do
         RujiraWeb.Resolvers.Token.denom(%{denom: denom}, x, y)
       end)
     end
+  end
+
+  @desc "Summary of the last trading data for a specific pair, including high, low, change, and volume."
+  object :pair_summary do
+    field :high, :bigint
+    field :low, :bigint
+    field :change, :bigint
+    field :volume, :bigint
+  end
+
+  @desc "Represents a candlestick chart data point for a specific time period, including high, low, open, close, volume, and timestamp."
+  object :candle do
+    field :high, :bigint
+    field :low, :bigint
+    field :open, :bigint
+    field :close, :bigint
+    field :volume, :bigint
+    field :time, :timestamp
   end
 end

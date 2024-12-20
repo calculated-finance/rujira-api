@@ -26,6 +26,14 @@ defmodule RujiraWeb.Resolvers.Fin do
       end
     end)
   end
+  
+  def candles(%{address: address}, %{to: to, from: from, resolution: resolution}, _) do
+    Helpers.async(fn ->
+      with {:ok, candles} <- Fin.candles(address, to, from, resolution) do
+        {:ok, candles}
+      end
+    end)
+  end
 
   defp put_id(%{address: address} = pair) do
     %{pair | id: RujiraWeb.Resolvers.Node.encode_id(:contract, :fin, address)}

@@ -11,7 +11,6 @@ defmodule Rujira.Fin.Pair do
     :book,
     :id,
     :history,
-    :summary,
-    :candles
+    :summary
   ]
 end
