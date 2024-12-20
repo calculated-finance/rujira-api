@@ -17,26 +17,13 @@ defmodule Rujira.Fin do
 
   # @spec get_pair(String.t()) :: {:ok, Pair.t()} | {:error, :not_found}
   # def get_pair(address), do: Contract.get({Pair, address})
-  def get_pair(_address) do
-    pair = %Pair{
-      address: "sthor1qm7vtdca95aj7nvtrarqm3uah33nhffpnhhg3j",
-      token_base: "gaia-kuji",
-      token_quote: "gaia-fuzn",
-      price_precision: 12,
-      decimal_delta: 2,
-      is_bootstrapping: false,
-      fee_taker: trunc(0.0015 * 1_000_000_000_000),
-      fee_maker: trunc(0.00075 * 1_000_000_000_000),
-      book: :not_loaded,
-      id: 1
-    }
-
-    with {:ok, pair} <- set_pair_history(pair),
-         {:ok, pair} <- set_summary(pair),
-         {:ok, _pair} <- set_candles(pair) do
+  def get_pair(address) do
+    with {:ok, pairs} <- list_pairs(),
+         %Pair{} = pair <- Enum.find(pairs, &(&1.address == address)) do
+      {:ok, pair}
+    else
+      nil -> {:error, :not_found}
     end
-
-    {:ok, pair}
   end
 
   @doc """
@@ -52,9 +39,9 @@ defmodule Rujira.Fin do
     {:ok,
      [
        %Pair{
-         address: "sthor1qm7vtdca95aj7nvtrarqm3uah33nhffpnhhg3j",
-         token_base: "gaia-kuji",
-         token_quote: "gaia-fuzn",
+         address: "sthor1",
+         token_base: "ruji",
+         token_quote: "eth-usdc-0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
          price_precision: 12,
          decimal_delta: 2,
          is_bootstrapping: false,
@@ -64,9 +51,9 @@ defmodule Rujira.Fin do
          id: 1
        },
        %Pair{
-         address: "sthor1qm7vtdca95aj7nvtrarqm3uah33nhffpnhhg3z",
-         token_base: "gaia-kuji",
-         token_quote: "rune",
+         address: "sthor2",
+         token_base: "rune",
+         token_quote: "eth-usdc-0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
          price_precision: 12,
          decimal_delta: 2,
          is_bootstrapping: false,
@@ -76,9 +63,9 @@ defmodule Rujira.Fin do
          id: 2
        },
        %Pair{
-         address: "sthor1qm7vtdca95aj7nvtrarqm3uah33nhffpnhhg32",
-         token_base: "gaia-kuji",
-         token_quote: "gaia-atom",
+         address: "sthor3",
+         token_base: "btc-btc",
+         token_quote: "eth-usdc-0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
          price_precision: 12,
          decimal_delta: 2,
          is_bootstrapping: false,
@@ -86,6 +73,78 @@ defmodule Rujira.Fin do
          fee_maker: trunc(0.00075 * 1_000_000_000_000),
          book: :not_loaded,
          id: 3
+       },
+       %Pair{
+         address: "sthor4",
+         token_base: "eth-eth",
+         token_quote: "eth-usdc-0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+         price_precision: 12,
+         decimal_delta: 2,
+         is_bootstrapping: false,
+         fee_taker: trunc(0.0015 * 1_000_000_000_000),
+         fee_maker: trunc(0.00075 * 1_000_000_000_000),
+         book: :not_loaded,
+         id: 4
+       },
+       %Pair{
+         address: "sthor5",
+         token_base: "ruji",
+         token_quote: "eth-usdt-0xdAC17F958D2ee523a2206206994597C13D831ec7",
+         price_precision: 12,
+         decimal_delta: 2,
+         is_bootstrapping: false,
+         fee_taker: trunc(0.0015 * 1_000_000_000_000),
+         fee_maker: trunc(0.00075 * 1_000_000_000_000),
+         book: :not_loaded,
+         id: 5
+       },
+       %Pair{
+         address: "sthor6",
+         token_base: "rune",
+         token_quote: "eth-usdt-0xdAC17F958D2ee523a2206206994597C13D831ec7",
+         price_precision: 12,
+         decimal_delta: 2,
+         is_bootstrapping: false,
+         fee_taker: trunc(0.0015 * 1_000_000_000_000),
+         fee_maker: trunc(0.00075 * 1_000_000_000_000),
+         book: :not_loaded,
+         id: 6
+       },
+       %Pair{
+         address: "sthor7",
+         token_base: "btc-btc",
+         token_quote: "eth-usdt-0xdAC17F958D2ee523a2206206994597C13D831ec7",
+         price_precision: 12,
+         decimal_delta: 2,
+         is_bootstrapping: false,
+         fee_taker: trunc(0.0015 * 1_000_000_000_000),
+         fee_maker: trunc(0.00075 * 1_000_000_000_000),
+         book: :not_loaded,
+         id: 7
+       },
+       %Pair{
+         address: "sthor8",
+         token_base: "eth-eth",
+         token_quote: "eth-usdt-0xdAC17F958D2ee523a2206206994597C13D831ec7",
+         price_precision: 12,
+         decimal_delta: 2,
+         is_bootstrapping: false,
+         fee_taker: trunc(0.0015 * 1_000_000_000_000),
+         fee_maker: trunc(0.00075 * 1_000_000_000_000),
+         book: :not_loaded,
+         id: 8
+       },
+       %Pair{
+         address: "sthor9",
+         token_base: "eth-usdc-0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+         token_quote: "eth-usdt-0xdAC17F958D2ee523a2206206994597C13D831ec7",
+         price_precision: 12,
+         decimal_delta: 2,
+         is_bootstrapping: false,
+         fee_taker: trunc(0.0015 * 1_000_000_000_000),
+         fee_maker: trunc(0.00075 * 1_000_000_000_000),
+         book: :not_loaded,
+         id: 9
        }
      ]}
   end

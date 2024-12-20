@@ -5,6 +5,7 @@ defmodule Rujira.Denoms do
 
   # Kujira-Native tokens
   def decimals(_), do: 6
+  def symbol("ruji"), do: "RUJI"
   def symbol("rune"), do: "RUNE"
   def symbol("ukuji"), do: "KUJI"
   def symbol("factory/kujira1sc6a0347cc5q3k890jj0pf3ylx2s38rh4sza4t/ufuzn"), do: "FUZN"
@@ -12,10 +13,10 @@ defmodule Rujira.Denoms do
   def symbol("factory/kujira1aaudpfr9y23lt9d45hrmskphpdfaq9ajxd3ukh/unstk"), do: "NSTK"
   def symbol("factory/kujira1tsekaqv9vmem0zwskmf90gpf0twl6k57e8vdnq/urkuji"), do: "rKUJI"
 
-  def symbol(x) do
-    case String.split(x, "-") do
-      [_, a] -> String.upcase(a)
-      _ -> String.upcase(x)
-    end
+  def symbol(str) do
+    # TODO: suport more delimiters
+    [_, v | _] = String.split(str, [".", "-"])
+    [sym | _] = String.split(v, "-")
+    String.upcase(sym)
   end
 end
