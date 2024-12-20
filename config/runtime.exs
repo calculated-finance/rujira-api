@@ -104,9 +104,4 @@ if config_env() == :prod do
       """
 
   config :rujira, Rujira.Prices.Coingecko, cg_key: coingecko_key
-
-  config :rujira, Thorchain.Node,
-  websocket: "",
-  subscriptions: ["tm.event='NewBlock'"],
-  grpcs: []
 end
