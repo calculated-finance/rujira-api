@@ -65,7 +65,7 @@ config :phoenix, :stacktrace_depth, 20
 config :phoenix, :plug_init_mode, :runtime
 
 config :rujira, Thorchain.Node,
-  websocket: "wss://rpc-kujira-testnet.starsquid.io",
+  websocket: "ws://thornode-devnet-rpc.bryanlabs.net",
   subscriptions: ["tm.event='NewBlock'"],
   grpcs: [
     %{host: "thornode-devnet-grpc.bryanlabs.net", port: 443}
