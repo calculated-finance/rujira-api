@@ -15,11 +15,7 @@ defmodule Thorchain.Block.Indexer do
 
   @impl true
 
-  def handle_info(
-        msg,
-        state
-      ) do
-    IO.inspect(msg)
+  def handle_info(msg, state) do
     {:noreply, state}
   end
 end
