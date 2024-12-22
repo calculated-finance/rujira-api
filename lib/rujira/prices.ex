@@ -1,7 +1,7 @@
 defmodule Rujira.Prices do
   def get("RUJI") do
     with {:ok, kuji} <- get("KUJI") do
-      {:ok, %{price: trunc(kuji.price / 0.37), change: kuji.change / 0.37}}
+      {:ok, %{price: trunc(kuji.price / 0.37), change: kuji.change}}
     end
   end
 
