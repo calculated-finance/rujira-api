@@ -22,79 +22,80 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :decimal_delta, non_null(:bigint)
     field :fee_taker, non_null(:bigint)
     field :fee_maker, non_null(:bigint)
-    field :book, non_null(:book)
-    field :summary, :pair_summary
+    field :book, non_null(:fin_book)
+    field :summary, :fin_pair_summary, resolve: &RujiraWeb.Resolvers.Fin.summary/3
 
-    field :candles, list_of(:candle) do
+    field :candles, non_null(list_of(non_null(:candle))) do
       arg(:from, :integer)
       arg(:to, :integer)
       arg(:resolution, :integer)
       resolve(&RujiraWeb.Resolvers.Fin.candles/3)
     end
-    field :history, list_of(:trade)
+
+    field :history, non_null(list_of(non_null(:fin_trade)))
   end
 
   @desc "Orderbook of a specific Fin pair"
-  object :book do
-    field :asks, list_of(:book_price)
-    field :bids, list_of(:book_price)
+  object :fin_book do
+    field :asks, non_null(list_of(non_null(:fin_book_entry)))
+    field :bids, non_null(list_of(non_null(:fin_book_entry)))
   end
 
   @desc "single entry of an orderbook"
-  object :book_price do
-    field :price, :bigint
-    field :total, :bigint
-    field :type, :string
-    @desc "Value of the entry, calculated as total * price or total / price based on type."
-    field :value, :bigint
+  object :fin_book_entry do
+    field :price, non_null(:bigint)
+    field :total, non_null(:bigint)
+    field :type, non_null(:string)
+    @desc "Value of the entry, calculated as total * price or total / price based on side."
+    field :value, non_null(:bigint)
   end
 
   @desc "Collections of data of an account across all the fin pairs"
   object :fin_account do
-    field :orders, list_of(:order)
-    field :history, list_of(:fin_account_action)
+    field :orders, non_null(list_of(non_null(:fin_order)))
+    field :history, non_null(list_of(non_null(:fin_account_action)))
   end
 
   @desc "Single order of an account on a fin pair"
-  object :order do
-    field :pair, :address
-    field :id, :bigint
-    field :owner, :address
-    field :price, :bigint
+  object :fin_order do
+    field :pair, non_null(:address)
+    field :id, non_null(:bigint)
+    field :owner, non_null(:address)
+    field :price, non_null(:bigint)
 
-    field :offer_token, :denom do
+    field :offer_token, non_null(:denom) do
       resolve(fn %{offer_token: denom}, x, y ->
         RujiraWeb.Resolvers.Token.denom(%{denom: denom}, x, y)
       end)
     end
 
-    field :original_offer_amount, :bigint
-    field :remaining_offer_amount, :bigint
-    field :filled_amount, :bigint
-    field :created_at, :timestamp
+    field :original_offer_amount, non_null(:bigint)
+    field :remaining_offer_amount, non_null(:bigint)
+    field :filled_amount, non_null(:bigint)
+    field :created_at, non_null(:timestamp)
   end
 
   @desc "Single trade executed by on a fin pair"
-  object :trade do
-    field :height, :bigint
-    field :tx_idx, :bigint
-    field :idx, :bigint
-    field :contract, :address
-    field :txhash, :string
-    field :quote_amount, :bigint
-    field :base_amount, :bigint
-    field :price, :bigint
-    field :type, :string
-    field :protocol, :string
-    field :timestamp, :timestamp
+  object :fin_trade do
+    field :height, non_null(:bigint)
+    field :tx_idx, non_null(:bigint)
+    field :idx, non_null(:bigint)
+    field :contract, non_null(:address)
+    field :txhash, non_null(:string)
+    field :quote_amount, non_null(:bigint)
+    field :base_amount, non_null(:bigint)
+    field :price, non_null(:bigint)
+    field :type, non_null(:string)
+    field :protocol, non_null(:string)
+    field :timestamp, non_null(:timestamp)
 
-    field :base_token, :denom do
+    field :base_token, non_null(:denom) do
       resolve(fn %{base_token: denom}, x, y ->
         RujiraWeb.Resolvers.Token.denom(%{denom: denom}, x, y)
       end)
     end
 
-    field :quote_token, :denom do
+    field :quote_token, non_null(:denom) do
       resolve(fn %{quote_token: denom}, x, y ->
         RujiraWeb.Resolvers.Token.denom(%{denom: denom}, x, y)
       end)
@@ -115,6 +116,7 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :price, :bigint
     field :protocol, :string
     field :timestamp, :timestamp
+
     field :base_token, :denom do
       resolve(fn %{base_token: denom}, x, y ->
         RujiraWeb.Resolvers.Token.denom(%{denom: denom}, x, y)
@@ -129,20 +131,22 @@ defmodule RujiraWeb.Schema.FinTypes do
   end
 
   @desc "Summary of the last trading data for a specific pair, including high, low, change, and volume."
-  object :pair_summary do
-    field :high, :bigint
-    field :low, :bigint
-    field :change, :bigint
-    field :volume, :bigint
+  object :fin_pair_summary do
+    field :last, non_null(:bigint)
+    field :last_usd, non_null(:bigint)
+    field :high, non_null(:bigint)
+    field :low, non_null(:bigint)
+    field :change, non_null(:bigint)
+    field :volume, non_null(:layer_1_balance)
   end
 
   @desc "Represents a candlestick chart data point for a specific time period, including high, low, open, close, volume, and timestamp."
   object :candle do
-    field :high, :bigint
-    field :low, :bigint
-    field :open, :bigint
-    field :close, :bigint
-    field :volume, :bigint
-    field :time, :timestamp
+    field :high, non_null(:bigint)
+    field :low, non_null(:bigint)
+    field :open, non_null(:bigint)
+    field :close, non_null(:bigint)
+    field :volume, non_null(:bigint)
+    field :time, non_null(:timestamp)
   end
 end

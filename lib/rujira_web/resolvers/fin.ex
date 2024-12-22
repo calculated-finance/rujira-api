@@ -18,6 +18,32 @@ defmodule RujiraWeb.Resolvers.Fin do
     end)
   end
 
+  def summary(%{token_base: base, token_quote: quot}, _, _) do
+    # TODO 1: Fetch from actual trading data
+    asset = quot |> String.replace("-", ".") |> String.upcase()
+    # TODO 2: we should be passing around the Layer 1 Asset notation here, not the x/bank denom
+    base = String.split(base, "-") |> Enum.at(1, base)
+    quot = String.split(quot, "-") |> Enum.at(1, quot)
+
+    with {:ok, base} <- Rujira.Prices.get(String.upcase(base)),
+         {:ok, quot} <- Rujira.Prices.get(String.upcase(quot)) do
+      IO.inspect(base)
+
+      {:ok,
+       %{
+         last: base.price,
+         last_usd: trunc(base.price / quot.price),
+         high: trunc(base.price * 1.3),
+         low: trunc(base.price * 0.8),
+         change: trunc(base.change * 1_000_000_000_000),
+         volume: %{
+           asset: asset,
+           amount: 1_000_000_000_000_000
+         }
+       }}
+    end
+  end
+
   def account(%{address: address}, _, _) do
     Helpers.async(fn ->
       with {:ok, orders} <- Fin.list_all_orders(address),
@@ -26,7 +52,7 @@ defmodule RujiraWeb.Resolvers.Fin do
       end
     end)
   end
-  
+
   def candles(%{address: address}, %{to: to, from: from, resolution: resolution}, _) do
     Helpers.async(fn ->
       with {:ok, candles} <- Fin.candles(address, to, from, resolution) do
