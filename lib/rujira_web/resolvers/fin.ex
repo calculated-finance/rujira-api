@@ -27,8 +27,6 @@ defmodule RujiraWeb.Resolvers.Fin do
 
     with {:ok, base} <- Rujira.Prices.get(String.upcase(base)),
          {:ok, quot} <- Rujira.Prices.get(String.upcase(quot)) do
-      IO.inspect(base)
-
       {:ok,
        %{
          last: base.price,
