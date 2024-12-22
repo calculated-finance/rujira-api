@@ -40,7 +40,7 @@ defmodule Thorchain.Node.Grpc do
     cred = GRPC.Credential.new(ssl: [verify: :verify_none])
 
     case GRPC.Stub.connect(host, port,
-           interceptors: [{GRPC.Client.Interceptors.Logger, level: :debug}],
+           interceptors: [GRPC.Client.Interceptors.Logger],
            cred: cred
          ) do
       {:ok, channel} ->

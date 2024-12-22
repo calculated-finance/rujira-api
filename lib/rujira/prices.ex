@@ -1,5 +1,9 @@
 defmodule Rujira.Prices do
-  def get("RUJI"), do: {:ok, %{price: 10 ** 12, change: 0}}
+  def get("RUJI") do
+    with {:ok, kuji} <- get("KUJI") do
+      {:ok, %{price: trunc(kuji.price / 0.37), change: kuji.change / 0.37}}
+    end
+  end
 
   def get(symbol) do
     with {:ok, id} <- __MODULE__.Coingecko.id(symbol),
