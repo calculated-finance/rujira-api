@@ -2,7 +2,7 @@ defmodule Rujira.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
-require Logger
+  require Logger
 
   use Application
 
@@ -19,8 +19,8 @@ require Logger
       RujiraWeb.Endpoint,
       {Finch, name: Rujira.Finch},
       {Rujira.Invalidator, pubsub: Rujira.PubSub},
-      Thorchain.Node,
-      Thorchain.Block.Indexer,
+      {Thorchain.Node, Application.get_env(:rujira, Thorchain.Node)},
+      Thorchain.Block.Indexer
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

@@ -10,30 +10,49 @@ defmodule Thorchain.Node do
   end
 
   @impl true
-  def init(_) do
-    websocket_endpoint = Application.fetch_env!(:rujira, Thorchain.Node)[:websocket]
-    subscriptions = Application.fetch_env!(:rujira, Thorchain.Node)[:subscriptions]
-    grpc_list = Application.fetch_env!(:rujira, Thorchain.Node)[:grpcs]
-    pubsub = Application.get_env(:rujira, :pubsub, Rujira.PubSub)
+  def init(x) do
+    websocket_endpoint = Keyword.get(x, :websocket, "")
+    subscriptions = Keyword.get(x, :subscriptions, [])
+    grpc_list = Keyword.get(x, :grpcs, [])
 
-    children = [
-      {Thorchain.Node.Websocket,
-       websocket: websocket_endpoint,
-       subscriptions: subscriptions,
-       pubsub: pubsub},
-       :poolboy.child_spec(
+    []
+    |> add_grpcs(grpc_list)
+    |> add_websocket(websocket_endpoint, subscriptions)
+    |> Supervisor.init(strategy: :one_for_one, name: Rujira.Supervisor)
+  end
+
+  def add_grpcs(children, []) do
+    children
+  end
+
+  def add_grpcs(children, grpcs) do
+    [
+      :poolboy.child_spec(
         :grpc,
         [
           name: {:local, :grpc},
           worker_module: Thorchain.Node.Grpc,
-          size: length(grpc_list) * 10,
+          size: length(grpcs) * 10,
           max_overflow: 5
         ],
-        grpc_list
+        grpcs
       )
+      | children
     ]
+  end
 
-    Supervisor.init(children, strategy: :one_for_one, name: Rujira.Supervisor)
+  def add_websocket(children, "", _) do
+    children
+  end
+
+  def add_websocket(children, websocket, subscriptions) do
+    pubsub = Application.get_env(:rujira, :pubsub, Rujira.PubSub)
+
+    [
+      {Thorchain.Node.Websocket,
+       websocket: websocket, subscriptions: subscriptions, pubsub: pubsub}
+      | children
+    ]
   end
 
   def subscribe(topic) do
