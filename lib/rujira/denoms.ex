@@ -3,8 +3,12 @@ defmodule Rujira.Denoms do
   Interfaces for interacting with Cosmos SDK x/bank token denominations
   """
 
+  # Cosmos assets are truncated or padded to 8 decimals in Bifrost
+  # https://gitlab.com/thorchain/thornode/-/blob/develop/bifrost/pkg/chainclients/gaia/util.go#L82-89
+  def decimals("gaia-" <> _), do: 8
   # Kujira-Native tokens
   def decimals(_), do: 6
+  def symbol("ruji"), do: "RUJI"
   def symbol("ruji"), do: "RUJI"
   def symbol("rune"), do: "RUNE"
   def symbol("ukuji"), do: "KUJI"
