@@ -10,7 +10,7 @@ defmodule RujiraWeb.Schema.TokenTypes do
     field :price, :price, resolve: &RujiraWeb.Resolvers.Token.price/3
 
     @desc "Explicit Layer 1 and Secured variants of a Layer 1 asset"
-    field :variants, :asset_variants
+    field :variants, non_null(:asset_variants), resolve: &RujiraWeb.Resolvers.Token.variants/3
   end
 
   node object(:denom) do
@@ -33,8 +33,12 @@ defmodule RujiraWeb.Schema.TokenTypes do
   end
 
   object :asset_variants do
-    field :layer1, non_null(:asset), resolve: &RujiraWeb.Resolvers.Token.layer1/3
-    field :secured, non_null(:asset), resolve: &RujiraWeb.Resolvers.Token.secured/3
+    @desc "The THORChain layer 1 asset string (eg BTC.BTC, THOR.RUNE, GAIA.ATOM)"
+    field :layer1, non_null(:asset)
+    @desc "The THORChain secured asset string (eg BTC-BTC, GAIA-ATOM)"
+    field :secured, :asset
+    @desc "The Cosmos SDK x/bank token denom string (eg btc-btc, rune, uatom)"
+    field :native, :denom
   end
 
   enum :asset_type do

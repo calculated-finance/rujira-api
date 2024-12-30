@@ -9,7 +9,6 @@ defmodule Rujira.Denoms do
   # Kujira-Native tokens
   def decimals(_), do: 6
   def symbol("ruji"), do: "RUJI"
-  def symbol("ruji"), do: "RUJI"
   def symbol("rune"), do: "RUNE"
   def symbol("ukuji"), do: "KUJI"
   def symbol("factory/kujira1sc6a0347cc5q3k890jj0pf3ylx2s38rh4sza4t/ufuzn"), do: "FUZN"

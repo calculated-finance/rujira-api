@@ -43,4 +43,21 @@ defmodule Rujira.Assets do
   def to_secured(str) do
     String.replace(str, ".", "-", global: false)
   end
+
+  @doc """
+  Converts an Asset string to a Cosmos SDK x/bank denom string
+
+  For Layer 1 assets, this will return a value if the Layer 1 chain is Cosmos SDK
+  For Secured assets, this will return the THORChain x/bank denom string for the secured asset
+  """
+  def to_native("THOR." <> denom), do: {:ok, String.downcase(denom)}
+
+  def to_native("GAIA.ATOM"), do: {:ok, "uatom"}
+
+  def to_native(asset) do
+    case String.split(asset, "-", parts: 2) do
+      [chain, token] -> {:ok, String.downcase(chain) <> "-" <> String.downcase(token)}
+      _ -> {:ok, nil}
+    end
+  end
 end

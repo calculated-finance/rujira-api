@@ -7,7 +7,7 @@ defmodule RujiraWeb.Resolvers.Token do
      %Assets.Asset{
        id: Node.encode_id(:asset, asset),
        asset: asset,
-       type: :native,
+       type: :layer_1,
        chain: :thor
      }}
   end
@@ -18,41 +18,47 @@ defmodule RujiraWeb.Resolvers.Token do
        id: Node.encode_id(:asset, asset),
        asset: asset,
        type: Rujira.Assets.type(asset),
-       chain: get_chain(asset),
-       variants: %{
-         asset: asset
-       }
+       chain: get_chain(asset)
      }}
   end
 
-  def layer1(%{asset: asset}, _, _) do
+  def variants(%{asset: asset}, _, _) do
     l1 = Rujira.Assets.to_layer_1(asset)
 
+    l1 = %Assets.Asset{
+      id: Node.encode_id(:asset, l1),
+      asset: l1,
+      type: :layer_1,
+      chain: get_chain(asset)
+    }
+
+    native = Rujira.Assets.to_native(asset)
+
     {:ok,
-     %Assets.Asset{
-       id: Node.encode_id(:asset, l1),
-       asset: l1,
-       type: :layer_1,
-       chain: get_chain(asset),
-       variants: %{
-         asset: asset
-       }
+     %{
+       layer1: l1,
+       secured: secured(l1.asset),
+       native:
+         case native do
+           {:ok, nil} -> nil
+           {:ok, denom} -> %{denom: denom}
+         end
      }}
   end
 
-  def secured(%{asset: asset}, _, _) do
+  def secured("THOR." <> _) do
+    nil
+  end
+
+  def secured(asset) do
     secured = Rujira.Assets.to_secured(asset)
 
-    {:ok,
-     %Assets.Asset{
-       id: Node.encode_id(:asset, secured),
-       asset: secured,
-       type: :secured,
-       chain: get_chain(asset),
-       variants: %{
-         asset: asset
-       }
-     }}
+    %Assets.Asset{
+      id: Node.encode_id(:asset, secured),
+      asset: secured,
+      type: :secured,
+      chain: get_chain(asset)
+    }
   end
 
   defp get_chain(sym) do
