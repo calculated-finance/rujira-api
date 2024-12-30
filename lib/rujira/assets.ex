@@ -30,8 +30,8 @@ defmodule Rujira.Assets do
 
   def type(str) do
     cond do
-      String.match?(str, Regex.compile!("^[A-Z]+\.")) -> :layer_1
-      String.match?(str, Regex.compile!("^[A-Z]+-")) -> :secured
+      String.match?(str, ~r/^[A-Z]+\./) -> :layer_1
+      String.match?(str, ~r/^[A-Z]+-/) -> :secured
       true -> :native
     end
   end
