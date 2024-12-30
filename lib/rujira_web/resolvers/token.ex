@@ -32,16 +32,20 @@ defmodule RujiraWeb.Resolvers.Token do
       chain: get_chain(asset)
     }
 
-    native = Rujira.Assets.to_native(asset)
-
     {:ok,
      %{
        layer1: l1,
        secured: secured(l1.asset),
        native:
-         case native do
-           {:ok, nil} -> nil
-           {:ok, denom} -> %{denom: denom}
+         case Rujira.Assets.to_native(asset) do
+           {:ok, nil} ->
+             nil
+
+           {:ok, denom} ->
+             %{
+               id: Node.encode_id(:denom, denom),
+               denom: denom
+             }
          end
      }}
   end
