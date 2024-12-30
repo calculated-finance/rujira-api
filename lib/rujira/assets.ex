@@ -54,10 +54,42 @@ defmodule Rujira.Assets do
 
   def to_native("GAIA.ATOM"), do: {:ok, "uatom"}
 
+  def to_native("GAIA.KUJI"),
+    do: {:ok, "ibc/4CC44260793F84006656DD868E017578F827A492978161DA31D7572BCB3F4289"}
+
+  def to_native("GAIA.RKUJI"),
+    do: {:ok, "ibc/50A69DC508ACCADE2DAC4B8B09AA6D9C9062FCBFA72BB4C6334367DECD972B06"}
+
+  def to_native("GAIA.FUZN"),
+    do: {:ok, "ibc/6BBBB4B63C51648E9B8567F34505A9D5D8BAAC4C31D768971998BE8C18431C26"}
+
+  def to_native("GAIA.WINK"),
+    do: {:ok, "ibc/4363FD2EF60A7090E405B79A6C4337C5E9447062972028F5A99FB041B9571942"}
+
+  def to_native("GAIA.NSTK"),
+    do: {:ok, "ibc/0B99C4EFF1BD05E56DEDEE1D88286DB79680C893724E0E7573BC369D79B5DDF3"}
+
+  def to_native("GAIA.LVN"),
+    do: {:ok, "ibc/6C95083ADD352D5D47FB4BA427015796E5FEF17A829463AD05ECD392EB38D889"}
+
   def to_native(asset) do
     case String.split(asset, "-", parts: 2) do
       [chain, token] -> {:ok, String.downcase(chain) <> "-" <> String.downcase(token)}
       _ -> {:ok, nil}
+    end
+  end
+
+  @doc """
+  Converts a denom string to a THORChain Layer 1 representation of the asset.
+
+  This will only convert
+  """
+  def from_native("rune"), do: {:ok, "THOR.RUNE"}
+
+  def from_native(asset) do
+    case String.split(asset, "-", parts: 2) do
+      [chain, token] -> {:ok, String.upcase(chain) <> "." <> String.upcase(token)}
+      _ -> {:error, :invalid_denom}
     end
   end
 end

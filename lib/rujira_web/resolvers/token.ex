@@ -22,6 +22,18 @@ defmodule RujiraWeb.Resolvers.Token do
      }}
   end
 
+  def asset(%{denom: denom}, _, _) do
+    with {:ok, asset} <- Rujira.Assets.from_native(denom) do
+      {:ok,
+       %Assets.Asset{
+         id: Node.encode_id(:asset, asset),
+         asset: asset,
+         type: Rujira.Assets.type(asset),
+         chain: get_chain(asset)
+       }}
+    end
+  end
+
   def variants(%{asset: asset}, _, _) do
     l1 = Rujira.Assets.to_layer_1(asset)
 

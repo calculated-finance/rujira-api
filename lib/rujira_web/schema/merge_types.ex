@@ -14,6 +14,12 @@ defmodule RujiraWeb.Schema.MergeTypes do
       end)
     end
 
+    field :merge_asset, non_null(:asset) do
+      resolve(fn %{merge_denom: denom}, x, y ->
+        RujiraWeb.Resolvers.Token.asset(%{denom: denom}, x, y)
+      end)
+    end
+
     field :merge_supply, non_null(:bigint)
 
     field :ruji_denom, non_null(:denom) do
