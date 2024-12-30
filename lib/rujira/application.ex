@@ -20,7 +20,7 @@ defmodule Rujira.Application do
       {Finch, name: Rujira.Finch},
       {Rujira.Invalidator, pubsub: Rujira.PubSub},
       {Thorchain.Node, Application.get_env(:rujira, Thorchain.Node)},
-      Thorchain.Block.Indexer
+      Thorchain.Swaps.Indexer
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
