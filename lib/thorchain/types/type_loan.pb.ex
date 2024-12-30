@@ -4,7 +4,7 @@ defmodule Thorchain.Types.Loan do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field :owner, 1, type: :string, deprecated: false
-  field :asset, 2, type: Common.Asset, deprecated: false
+  field :asset, 2, type: Thorchain.Common.Asset, deprecated: false
   field :debt_issued, 3, type: :string, json_name: "debtIssued", deprecated: false
   field :debt_repaid, 4, type: :string, json_name: "debtRepaid", deprecated: false
 

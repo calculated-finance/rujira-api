@@ -32,7 +32,7 @@ defmodule Thorchain.Types.PoolMod do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  field :asset, 1, type: Common.Asset, deprecated: false
+  field :asset, 1, type: Thorchain.Common.Asset, deprecated: false
   field :rune_amt, 2, type: :string, json_name: "runeAmt", deprecated: false
   field :rune_add, 3, type: :bool, json_name: "runeAdd"
   field :asset_amt, 4, type: :string, json_name: "assetAmt", deprecated: false
@@ -72,7 +72,7 @@ defmodule Thorchain.Types.EventSwap do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  field :pool, 1, type: Common.Asset, deprecated: false
+  field :pool, 1, type: Thorchain.Common.Asset, deprecated: false
   field :swap_target, 2, type: :string, json_name: "swapTarget", deprecated: false
   field :swap_slip, 3, type: :string, json_name: "swapSlip", deprecated: false
   field :liquidity_fee, 4, type: :string, json_name: "liquidityFee", deprecated: false
@@ -96,7 +96,7 @@ defmodule Thorchain.Types.EventAddLiquidity do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  field :pool, 1, type: Common.Asset, deprecated: false
+  field :pool, 1, type: Thorchain.Common.Asset, deprecated: false
   field :provider_units, 2, type: :string, json_name: "providerUnits", deprecated: false
   field :rune_address, 3, type: :string, json_name: "runeAddress", deprecated: false
   field :rune_amount, 4, type: :string, json_name: "runeAmount", deprecated: false
@@ -111,7 +111,7 @@ defmodule Thorchain.Types.EventWithdraw do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  field :pool, 1, type: Common.Asset, deprecated: false
+  field :pool, 1, type: Thorchain.Common.Asset, deprecated: false
   field :provider_units, 2, type: :string, json_name: "providerUnits", deprecated: false
   field :basis_points, 3, type: :int64, json_name: "basisPoints"
   field :asymmetry, 4, type: :bytes, deprecated: false
@@ -125,7 +125,7 @@ defmodule Thorchain.Types.EventPendingLiquidity do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  field :pool, 1, type: Common.Asset, deprecated: false
+  field :pool, 1, type: Thorchain.Common.Asset, deprecated: false
 
   field :pending_type, 2,
     type: Thorchain.Types.PendingLiquidityType,
@@ -145,7 +145,7 @@ defmodule Thorchain.Types.EventDonate do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  field :pool, 1, type: Common.Asset, deprecated: false
+  field :pool, 1, type: Thorchain.Common.Asset, deprecated: false
   field :in_tx, 2, type: Common.Tx, json_name: "inTx", deprecated: false
 end
 
@@ -154,7 +154,7 @@ defmodule Thorchain.Types.EventPool do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  field :pool, 1, type: Common.Asset, deprecated: false
+  field :pool, 1, type: Thorchain.Common.Asset, deprecated: false
   field :Status, 2, type: Thorchain.Types.PoolStatus, enum: true
 end
 
@@ -163,7 +163,7 @@ defmodule Thorchain.Types.PoolAmt do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  field :asset, 1, type: Common.Asset, deprecated: false
+  field :asset, 1, type: Thorchain.Common.Asset, deprecated: false
   field :amount, 2, type: :int64
 end
 
@@ -212,7 +212,7 @@ defmodule Thorchain.Types.GasPool do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  field :asset, 1, type: Common.Asset, deprecated: false
+  field :asset, 1, type: Thorchain.Common.Asset, deprecated: false
   field :rune_amt, 2, type: :string, json_name: "runeAmt", deprecated: false
   field :asset_amt, 3, type: :string, json_name: "assetAmt", deprecated: false
   field :count, 4, type: :int64
@@ -261,7 +261,7 @@ defmodule Thorchain.Types.EventSlash do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  field :pool, 1, type: Common.Asset, deprecated: false
+  field :pool, 1, type: Thorchain.Common.Asset, deprecated: false
 
   field :slash_amount, 2,
     repeated: true,
@@ -374,7 +374,7 @@ defmodule Thorchain.Types.EventTradeAccountDeposit do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field :amount, 1, type: :string, deprecated: false
-  field :asset, 2, type: Common.Asset, deprecated: false
+  field :asset, 2, type: Thorchain.Common.Asset, deprecated: false
   field :asset_address, 3, type: :string, json_name: "assetAddress", deprecated: false
   field :rune_address, 4, type: :string, json_name: "runeAddress", deprecated: false
   field :tx_id, 5, type: :string, json_name: "txId", deprecated: false
@@ -386,7 +386,7 @@ defmodule Thorchain.Types.EventTradeAccountWithdraw do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field :amount, 1, type: :string, deprecated: false
-  field :asset, 2, type: Common.Asset, deprecated: false
+  field :asset, 2, type: Thorchain.Common.Asset, deprecated: false
   field :asset_address, 3, type: :string, json_name: "assetAddress", deprecated: false
   field :rune_address, 4, type: :string, json_name: "runeAddress", deprecated: false
   field :tx_id, 5, type: :string, json_name: "txId", deprecated: false
@@ -398,7 +398,7 @@ defmodule Thorchain.Types.EventSecuredAssetDeposit do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field :amount, 1, type: :string, deprecated: false
-  field :asset, 2, type: Common.Asset, deprecated: false
+  field :asset, 2, type: Thorchain.Common.Asset, deprecated: false
   field :asset_address, 3, type: :string, json_name: "assetAddress", deprecated: false
   field :rune_address, 4, type: :string, json_name: "runeAddress", deprecated: false
   field :tx_id, 5, type: :string, json_name: "txId", deprecated: false
@@ -410,7 +410,7 @@ defmodule Thorchain.Types.EventSecuredAssetWithdraw do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field :amount, 1, type: :string, deprecated: false
-  field :asset, 2, type: Common.Asset, deprecated: false
+  field :asset, 2, type: Thorchain.Common.Asset, deprecated: false
   field :asset_address, 3, type: :string, json_name: "assetAddress", deprecated: false
   field :rune_address, 4, type: :string, json_name: "runeAddress", deprecated: false
   field :tx_id, 5, type: :string, json_name: "txId", deprecated: false
@@ -452,7 +452,10 @@ defmodule Thorchain.Types.EventLoanOpen do
     json_name: "collateralDeposited",
     deprecated: false
 
-  field :collateral_asset, 2, type: Common.Asset, json_name: "collateralAsset", deprecated: false
+  field :collateral_asset, 2,
+    type: Thorchain.Common.Asset,
+    json_name: "collateralAsset",
+    deprecated: false
 
   field :collateralization_ratio, 3,
     type: :string,
@@ -461,7 +464,12 @@ defmodule Thorchain.Types.EventLoanOpen do
 
   field :debt_issued, 4, type: :string, json_name: "debtIssued", deprecated: false
   field :owner, 5, type: :string, deprecated: false
-  field :target_asset, 6, type: Common.Asset, json_name: "targetAsset", deprecated: false
+
+  field :target_asset, 6,
+    type: Thorchain.Common.Asset,
+    json_name: "targetAsset",
+    deprecated: false
+
   field :tx_id, 7, type: :string, json_name: "txId", deprecated: false
 end
 
@@ -475,7 +483,11 @@ defmodule Thorchain.Types.EventLoanRepayment do
     json_name: "collateralWithdrawn",
     deprecated: false
 
-  field :collateral_asset, 2, type: Common.Asset, json_name: "collateralAsset", deprecated: false
+  field :collateral_asset, 2,
+    type: Thorchain.Common.Asset,
+    json_name: "collateralAsset",
+    deprecated: false
+
   field :debt_repaid, 3, type: :string, json_name: "debtRepaid", deprecated: false
   field :owner, 4, type: :string, deprecated: false
   field :tx_id, 7, type: :string, json_name: "txId", deprecated: false

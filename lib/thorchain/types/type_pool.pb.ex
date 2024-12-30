@@ -16,7 +16,7 @@ defmodule Thorchain.Types.Pool do
 
   field :balance_rune, 1, type: :string, json_name: "balanceRune", deprecated: false
   field :balance_asset, 2, type: :string, json_name: "balanceAsset", deprecated: false
-  field :asset, 3, type: Common.Asset, deprecated: false
+  field :asset, 3, type: Thorchain.Common.Asset, deprecated: false
   field :LP_units, 4, type: :string, json_name: "LPUnits", deprecated: false
   field :status, 5, type: Thorchain.Types.PoolStatus, enum: true
   field :status_since, 10, type: :int64, json_name: "statusSince"

@@ -13,7 +13,12 @@ defmodule Thorchain.Types.MsgSwap do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field :tx, 1, type: Common.Tx, deprecated: false
-  field :target_asset, 2, type: Common.Asset, json_name: "targetAsset", deprecated: false
+
+  field :target_asset, 2,
+    type: Thorchain.Common.Asset,
+    json_name: "targetAsset",
+    deprecated: false
+
   field :destination, 3, type: :string, deprecated: false
   field :trade_target, 4, type: :string, json_name: "tradeTarget", deprecated: false
   field :affiliate_address, 5, type: :string, json_name: "affiliateAddress", deprecated: false

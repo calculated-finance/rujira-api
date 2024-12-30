@@ -4,10 +4,20 @@ defmodule Thorchain.Types.MsgLoanOpen do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field :owner, 1, type: :string, deprecated: false
-  field :collateral_asset, 2, type: Common.Asset, json_name: "collateralAsset", deprecated: false
+
+  field :collateral_asset, 2,
+    type: Thorchain.Common.Asset,
+    json_name: "collateralAsset",
+    deprecated: false
+
   field :collateral_amount, 3, type: :string, json_name: "collateralAmount", deprecated: false
   field :target_address, 4, type: :string, json_name: "targetAddress", deprecated: false
-  field :target_asset, 5, type: Common.Asset, json_name: "targetAsset", deprecated: false
+
+  field :target_asset, 5,
+    type: Thorchain.Common.Asset,
+    json_name: "targetAsset",
+    deprecated: false
+
   field :min_out, 6, type: :string, json_name: "minOut", deprecated: false
   field :affiliate_address, 7, type: :string, json_name: "affiliateAddress", deprecated: false
 
@@ -34,7 +44,12 @@ defmodule Thorchain.Types.MsgLoanRepayment do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field :owner, 1, type: :string, deprecated: false
-  field :collateral_asset, 2, type: Common.Asset, json_name: "collateralAsset", deprecated: false
+
+  field :collateral_asset, 2,
+    type: Thorchain.Common.Asset,
+    json_name: "collateralAsset",
+    deprecated: false
+
   field :coin, 3, type: Common.Coin, deprecated: false
   field :min_out, 4, type: :string, json_name: "minOut", deprecated: false
   field :signer, 5, type: :bytes, deprecated: false

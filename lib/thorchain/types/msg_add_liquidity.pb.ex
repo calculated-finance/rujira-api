@@ -4,7 +4,7 @@ defmodule Thorchain.Types.MsgAddLiquidity do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field :tx, 1, type: Common.Tx, deprecated: false
-  field :asset, 2, type: Common.Asset, deprecated: false
+  field :asset, 2, type: Thorchain.Common.Asset, deprecated: false
   field :asset_amount, 3, type: :string, json_name: "assetAmount", deprecated: false
   field :rune_amount, 4, type: :string, json_name: "runeAmount", deprecated: false
   field :rune_address, 5, type: :string, json_name: "runeAddress", deprecated: false

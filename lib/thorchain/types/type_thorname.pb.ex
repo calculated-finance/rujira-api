@@ -15,6 +15,11 @@ defmodule Thorchain.Types.THORName do
   field :name, 1, type: :string
   field :expire_block_height, 2, type: :int64, json_name: "expireBlockHeight"
   field :owner, 3, type: :bytes, deprecated: false
-  field :preferred_asset, 4, type: Common.Asset, json_name: "preferredAsset", deprecated: false
+
+  field :preferred_asset, 4,
+    type: Thorchain.Common.Asset,
+    json_name: "preferredAsset",
+    deprecated: false
+
   field :aliases, 5, repeated: true, type: Thorchain.Types.THORNameAlias, deprecated: false
 end
