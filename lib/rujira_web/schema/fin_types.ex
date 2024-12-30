@@ -26,9 +26,9 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :summary, :fin_pair_summary, resolve: &RujiraWeb.Resolvers.Fin.summary/3
 
     field :candles, non_null(list_of(non_null(:candle))) do
-      arg(:from, :integer)
-      arg(:to, :integer)
-      arg(:resolution, :integer)
+      arg(:from, non_null(:integer))
+      arg(:to, non_null(:integer))
+      arg(:resolution, non_null(:integer))
       resolve(&RujiraWeb.Resolvers.Fin.candles/3)
     end
 
