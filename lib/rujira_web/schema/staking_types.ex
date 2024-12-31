@@ -12,9 +12,21 @@ defmodule RujiraWeb.Schema.StakingTypes do
       end)
     end
 
+    field :bond_asset, non_null(:asset) do
+      resolve(fn %{bond_denom: denom}, x, y ->
+        RujiraWeb.Resolvers.Token.asset(%{denom: denom}, x, y)
+      end)
+    end
+
     field :revenue_denom, non_null(:denom) do
       resolve(fn %{revenue_denom: denom}, x, y ->
         RujiraWeb.Resolvers.Token.denom(%{denom: denom}, x, y)
+      end)
+    end
+
+    field :revenue_asset, non_null(:asset) do
+      resolve(fn %{revenue_denom: denom}, x, y ->
+        RujiraWeb.Resolvers.Token.asset(%{denom: denom}, x, y)
       end)
     end
 
