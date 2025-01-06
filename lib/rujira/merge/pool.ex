@@ -76,8 +76,10 @@ defmodule Rujira.Merge.Pool do
       }) do
     with {merge_supply, ""} <- Integer.parse(merge_supply),
          {ruji_allocation, ""} <- Integer.parse(ruji_allocation),
-         {:ok, decay_ends_at} <- Rujira.parse_timestamp(decay_ends_at),
-         {:ok, decay_starts_at} <- Rujira.parse_timestamp(decay_starts_at) do
+         {decay_ends_at, ""} <- Integer.parse(decay_ends_at),
+         {decay_starts_at, ""} <- Integer.parse(decay_starts_at),
+         {:ok, decay_ends_at} <- DateTime.from_unix(decay_ends_at, :nanosecond),
+         {:ok, decay_starts_at} <- DateTime.from_unix(decay_starts_at, :nanosecond) do
       start_rate = trunc(div(ruji_allocation * @precision, merge_supply))
 
       %__MODULE__{
