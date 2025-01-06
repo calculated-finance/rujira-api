@@ -12,16 +12,42 @@ defmodule RujiraWeb.Schema.FinTypes do
       end)
     end
 
+    field :asset_base, non_null(:asset) do
+      resolve(fn %{token_base: denom}, x, y ->
+        RujiraWeb.Resolvers.Token.asset(%{denom: denom}, x, y)
+      end)
+    end
+
     field :token_quote, non_null(:denom) do
       resolve(fn %{token_quote: denom}, x, y ->
         RujiraWeb.Resolvers.Token.denom(%{denom: denom}, x, y)
       end)
     end
 
-    field :price_precision, non_null(:bigint)
-    field :decimal_delta, non_null(:bigint)
+    field :asset_quote, non_null(:asset) do
+      resolve(fn %{token_quote: denom}, x, y ->
+        RujiraWeb.Resolvers.Token.asset(%{denom: denom}, x, y)
+      end)
+    end
+
+    field :oracle_base, non_null(:pool) do
+      resolve(fn %{oracle_base: asset}, x, y ->
+        RujiraWeb.Resolvers.Thorchain.pool(x, %{asset: asset}, y)
+      end)
+    end
+
+    field :oracle_quote, non_null(:pool) do
+      resolve(fn %{oracle_quote: asset}, x, y ->
+        RujiraWeb.Resolvers.Thorchain.pool(x, %{asset: asset}, y)
+      end)
+    end
+
+    field :status, non_null(:pair_status)
+
+    field :tick, non_null(:bigint)
     field :fee_taker, non_null(:bigint)
     field :fee_maker, non_null(:bigint)
+    field :fee_address, non_null(:address)
     field :book, non_null(:fin_book)
     field :summary, :fin_pair_summary, resolve: &RujiraWeb.Resolvers.Fin.summary/3
 
@@ -45,7 +71,7 @@ defmodule RujiraWeb.Schema.FinTypes do
   object :fin_book_entry do
     field :price, non_null(:bigint)
     field :total, non_null(:bigint)
-    field :type, non_null(:string)
+    field :side, non_null(:string)
     @desc "Value of the entry, calculated as total * price or total / price based on side."
     field :value, non_null(:bigint)
   end
@@ -59,20 +85,15 @@ defmodule RujiraWeb.Schema.FinTypes do
   @desc "Single order of an account on a fin pair"
   object :fin_order do
     field :pair, non_null(:address)
-    field :id, non_null(:bigint)
     field :owner, non_null(:address)
-    field :price, non_null(:bigint)
-
-    field :offer_token, non_null(:denom) do
-      resolve(fn %{offer_token: denom}, x, y ->
-        RujiraWeb.Resolvers.Token.denom(%{denom: denom}, x, y)
-      end)
-    end
-
-    field :original_offer_amount, non_null(:bigint)
-    field :remaining_offer_amount, non_null(:bigint)
-    field :filled_amount, non_null(:bigint)
-    field :created_at, non_null(:timestamp)
+    field :side, non_null(:string)
+    field :rate, non_null(:bigint)
+    field :updated_at, non_null(:timestamp)
+    field :offer, non_null(:bigint)
+    field :remaining, non_null(:bigint)
+    field :filled, non_null(:bigint)
+    field :type, non_null(:string)
+    field :deviation, :bigint
   end
 
   @desc "Single trade executed by on a fin pair"
@@ -148,5 +169,10 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :close, non_null(:bigint)
     field :volume, non_null(:bigint)
     field :time, non_null(:timestamp)
+  end
+
+  object :pair_status do
+    field :status, non_null(:string)
+    field :price, :bigint
   end
 end

@@ -2,29 +2,23 @@ defmodule Rujira.Fin do
   @moduledoc """
   Rujira's 100% on-chain, central limit order book style decentralized token exchange.
   """
+  alias Rujira.Contract
   alias Rujira.Fin.Candle
   alias Rujira.Fin.Pair
   alias Rujira.Fin.Book
   alias Rujira.Fin.Order
 
-  @pair_code_ids Application.compile_env(:rujira, __MODULE__, pair_code_ids: [])
+  @pair_code_ids Application.compile_env(:rujira, __MODULE__, pair_code_ids: [37])
                  |> Keyword.get(:pair_code_ids)
-
-  # TODO - REMOVE COMMENT AND DELETE MOCK FUNCTION ONCE THE CONTRACTS ARE READY
 
   @doc """
   Fetches the Pair contract and its current config from the chain
   """
 
-  # @spec get_pair(String.t()) :: {:ok, Pair.t()} | {:error, :not_found}
-  # def get_pair(address), do: Contract.get({Pair, address})
+  @spec get_pair(String.t()) :: {:ok, Pair.t()} | {:error, GRPC.RPCError.t()}
   def get_pair(address) do
-    with {:ok, pairs} <- list_pairs(),
-         %Pair{} = pair <- Enum.find(pairs, &(&1.address == address)),
-         {:ok, pair} <- set_summary(pair) do
-      {:ok, pair}
-    else
-      nil -> {:error, :not_found}
+    with {:ok, pair} <- Contract.get({Pair, address}) do
+      load_status(pair)
     end
   end
 
@@ -32,201 +26,57 @@ defmodule Rujira.Fin do
   Fetches all Pairs
   """
 
-  # @spec list_pairs(list(integer())) ::
-  #         {:ok, list(Pair.t())} | {:error, GRPC.RPCError.t()}
-  # def list_pairs(code_ids \\ @pair_code_ids) when is_list(code_ids),
-  #   do: Contract.list(Pair, code_ids)
+  @spec list_pairs(list(integer())) ::
+          {:ok, list(Pair.t())} | {:error, GRPC.RPCError.t()}
+  def list_pairs(code_ids \\ @pair_code_ids) when is_list(code_ids),
+    do: Contract.list(Pair, code_ids)
 
-  def list_pairs(code_ids \\ @pair_code_ids) when is_list(code_ids) do
-    {:ok,
-     [
-       %Pair{
-         address: "sthor1",
-         token_base: "ruji",
-         token_quote: "eth-usdc-0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-         price_precision: 12,
-         decimal_delta: 2,
-         is_bootstrapping: false,
-         fee_taker: trunc(0.0015 * 1_000_000_000_000),
-         fee_maker: trunc(0.00075 * 1_000_000_000_000),
-         book: :not_loaded,
-         id: 1
-       },
-       %Pair{
-         address: "sthor2",
-         token_base: "rune",
-         token_quote: "eth-usdc-0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-         price_precision: 12,
-         decimal_delta: 2,
-         is_bootstrapping: false,
-         fee_taker: trunc(0.0015 * 1_000_000_000_000),
-         fee_maker: trunc(0.00075 * 1_000_000_000_000),
-         book: :not_loaded,
-         id: 2
-       },
-       %Pair{
-         address: "sthor3",
-         token_base: "btc-btc",
-         token_quote: "eth-usdc-0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-         price_precision: 12,
-         decimal_delta: 2,
-         is_bootstrapping: false,
-         fee_taker: trunc(0.0015 * 1_000_000_000_000),
-         fee_maker: trunc(0.00075 * 1_000_000_000_000),
-         book: :not_loaded,
-         id: 3
-       },
-       %Pair{
-         address: "sthor4",
-         token_base: "eth-eth",
-         token_quote: "eth-usdc-0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-         price_precision: 12,
-         decimal_delta: 2,
-         is_bootstrapping: false,
-         fee_taker: trunc(0.0015 * 1_000_000_000_000),
-         fee_maker: trunc(0.00075 * 1_000_000_000_000),
-         book: :not_loaded,
-         id: 4
-       },
-       %Pair{
-         address: "sthor5",
-         token_base: "ruji",
-         token_quote: "eth-usdt-0xdAC17F958D2ee523a2206206994597C13D831ec7",
-         price_precision: 12,
-         decimal_delta: 2,
-         is_bootstrapping: false,
-         fee_taker: trunc(0.0015 * 1_000_000_000_000),
-         fee_maker: trunc(0.00075 * 1_000_000_000_000),
-         book: :not_loaded,
-         id: 5
-       },
-       %Pair{
-         address: "sthor6",
-         token_base: "rune",
-         token_quote: "eth-usdt-0xdAC17F958D2ee523a2206206994597C13D831ec7",
-         price_precision: 12,
-         decimal_delta: 2,
-         is_bootstrapping: false,
-         fee_taker: trunc(0.0015 * 1_000_000_000_000),
-         fee_maker: trunc(0.00075 * 1_000_000_000_000),
-         book: :not_loaded,
-         id: 6
-       },
-       %Pair{
-         address: "sthor7",
-         token_base: "btc-btc",
-         token_quote: "eth-usdt-0xdAC17F958D2ee523a2206206994597C13D831ec7",
-         price_precision: 12,
-         decimal_delta: 2,
-         is_bootstrapping: false,
-         fee_taker: trunc(0.0015 * 1_000_000_000_000),
-         fee_maker: trunc(0.00075 * 1_000_000_000_000),
-         book: :not_loaded,
-         id: 7
-       },
-       %Pair{
-         address: "sthor8",
-         token_base: "eth-eth",
-         token_quote: "eth-usdt-0xdAC17F958D2ee523a2206206994597C13D831ec7",
-         price_precision: 12,
-         decimal_delta: 2,
-         is_bootstrapping: false,
-         fee_taker: trunc(0.0015 * 1_000_000_000_000),
-         fee_maker: trunc(0.00075 * 1_000_000_000_000),
-         book: :not_loaded,
-         id: 8
-       },
-       %Pair{
-         address: "sthor9",
-         token_base: "eth-usdc-0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-         token_quote: "eth-usdt-0xdAC17F958D2ee523a2206206994597C13D831ec7",
-         price_precision: 12,
-         decimal_delta: 2,
-         is_bootstrapping: false,
-         fee_taker: trunc(0.0015 * 1_000_000_000_000),
-         fee_maker: trunc(0.00075 * 1_000_000_000_000),
-         book: :not_loaded,
-         id: 9
-       }
-     ]}
+  @doc """
+  Load the Status of a Pair
+  """
+
+  @spec load_status(Pair.t()) ::
+          {:ok, Pair.t()} | {:error, GRPC.RPCError.t()}
+  def load_status(pair) do
+    with {:ok, res} <- Contract.query_state_smart(pair.address, %{status: %{}}),
+         {:ok, status} <- Pair.Status.from_query(res) do
+      {:ok, %{pair | status: status}}
+    end
   end
 
   @doc """
   Loads the current Book into the Pair
   """
 
-  # @spec load_pair(Pair.t(), integer()) ::
-  #         {:ok, Pair.t()} | {:error, GRPC.RPCError.t()}
-  # def load_pair(pair, limit \\ 100) do
-  #   with {:ok, res} <-
-  #          Contract.query_state_smart(pair.address, %{book: %{limit: limit}}),
-  #        {:ok, book} <- Book.from_query(res) do
-  #     {:ok, %{pair | book: book}}
-  #   else
-  #     err ->
-  #       err
-  #   end
-  # end
-
-  def load_pair(pair, _limit \\ 100) do
-    book = %Book{
-      bids: [
-        %Book.Price{price: 100, total: 10, side: :bid, value: 1000},
-        %Book.Price{price: 95, total: 20, side: :bid, value: 1900}
-      ],
-      asks: [
-        %Book.Price{price: 105, total: 15, side: :ask, value: 1575},
-        %Book.Price{price: 110, total: 25, side: :ask, value: 2750}
-      ]
-    }
-
-    {:ok, %{pair | book: book}}
+  @spec load_pair(Pair.t(), integer()) ::
+          {:ok, Pair.t()} | {:error, GRPC.RPCError.t()}
+  def load_pair(pair, limit \\ 100) do
+    with {:ok, res} <-
+           Contract.query_state_smart(pair.address, %{book: %{limit: limit}}),
+         {:ok, book} <- Book.from_query(res) do
+      {:ok, %{pair | book: book}}
+    else
+      err ->
+        err
+    end
   end
 
   @doc """
   Fetches all Orders for a pair
   """
 
-  # @spec list_orders(Pair.t(), String.t()) ::
-  #         {:ok, list(Order.t())} | {:error, GRPC.RPCError.t()}
-  # def list_orders(pair, address) do
-  #   with {:ok, %{"orders" => orders}} <-
-  #          Contract.query_state_smart(pair.address, %{
-  #            orders_by_user: %{address: address}
-  #          }) do
-  #     {:ok, Enum.map(orders, &Order.from_query(pair, &1))}
-  #   else
-  #     err ->
-  #       err
-  #   end
-  # end
-
-  def list_orders(pair, address) do
-    {:ok,
-     [
-       %Order{
-         pair: pair.address,
-         id: "order1",
-         owner: address,
-         price: 105,
-         offer_token: "gaia-kuji",
-         original_offer_amount: 1000,
-         remaining_offer_amount: 500,
-         filled_amount: 500,
-         created_at: ~U[2024-12-20T10:00:00Z]
-       },
-       %Order{
-         pair: pair.address,
-         id: "order2",
-         owner: address,
-         price: 95,
-         offer_token: "gaia-fuzn",
-         original_offer_amount: 2000,
-         remaining_offer_amount: 1500,
-         filled_amount: 500,
-         created_at: ~U[2024-12-19T15:30:00Z]
-       }
-     ]}
+  @spec list_orders(Pair.t(), String.t()) ::
+          {:ok, list(Order.t())} | {:error, GRPC.RPCError.t()}
+  def list_orders(pair, address, offset \\ 0, limit \\ 30) do
+    with {:ok, %{"orders" => orders}} <-
+           Contract.query_state_smart(pair.address, %{
+             orders: %{owner: address, offset: offset, limit: limit}
+           }) do
+      {:ok, Enum.map(orders, &Order.from_query(pair, &1))}
+    else
+      err ->
+        err
+    end
   end
 
   def list_all_orders(address) do

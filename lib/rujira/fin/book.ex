@@ -1,8 +1,49 @@
 defmodule Rujira.Fin.Book do
-
   defmodule Price do
     defstruct [:price, :total, :side, :value]
+
+    @type side :: :bid | :ask
+    @type t :: %__MODULE__{
+            price: Decimal.t(),
+            total: integer(),
+            side: side,
+            value: Decimal.t()
+          }
+
+    @spec from_query(side, map()) :: t() | {:error, :parse_error}
+    def from_query(side, %{"price" => price_str, "total" => total_str}) do
+      with {price, ""} <- Decimal.parse(price_str),
+           {total, ""} <- Integer.parse(total_str) do
+        value = Decimal.mult(price, Decimal.new(total))
+
+        %__MODULE__{
+          side: side,
+          total: total,
+          price: price,
+          value: value
+        }
+      else
+        _ -> {:error, :parse_error}
+      end
+    end
   end
 
   defstruct [:bids, :asks]
+
+  @type t :: %__MODULE__{
+          bids: list(Price.t()),
+          asks: list(Price.t())
+        }
+
+  @spec from_query(map()) :: :error | {:ok, __MODULE__.t()}
+  def from_query(%{
+        "base" => asks,
+        "quote" => bids
+      }) do
+    {:ok,
+     %__MODULE__{
+       asks: Enum.map(asks, &Price.from_query(:ask, &1)),
+       bids: Enum.map(bids, &Price.from_query(:bid, &1))
+     }}
+  end
 end

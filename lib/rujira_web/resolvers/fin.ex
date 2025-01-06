@@ -4,7 +4,8 @@ defmodule RujiraWeb.Resolvers.Fin do
 
   def node(%{address: address}, _, _) do
     Helpers.async(fn ->
-      with {:ok, pair} <- Rujira.Fin.get_pair(address) do
+      with {:ok, pair} <- Rujira.Fin.get_pair(address),
+           {:ok, pair} <- Rujira.Fin.load_pair(pair) do
         {:ok, put_id(pair)}
       end
     end)

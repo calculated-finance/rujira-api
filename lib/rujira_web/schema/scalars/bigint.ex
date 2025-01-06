@@ -18,4 +18,11 @@ defmodule RujiraWeb.Schema.Scalars.BigInt do
   defp serialize_bigint(value) when is_integer(value), do: Integer.to_string(value)
   defp serialize_bigint(""), do: nil
   defp serialize_bigint(value) when is_binary(value), do: value
+
+  defp serialize_bigint(%Decimal{} = value) do
+    value
+    |> Decimal.mult(1_000_000_000_000)
+    |> Decimal.round()
+    |> Decimal.to_integer()
+  end
 end
