@@ -37,12 +37,8 @@ defmodule Thorchain.Node.Grpc do
     end
   end
 
-  def handle_info({:gun_down, _pid, _protocol, {:error, error}, []}, state) do
-    {:stop, {:gun_down, error}, state}
-  end
-
-  def handle_info({:gun_down, _}, _state) do
-    {:stop, :gun_down}
+  def handle_info({:gun_down, _pid, _protocol, message, _}, state) do
+    {:stop, {:gun_down, message}, state}
   end
 
   def handle_call({:request, stub_fn, req}, _, channel) do
