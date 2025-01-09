@@ -14,12 +14,13 @@ defmodule Thorchain.Node do
   def init(x) do
     websocket = Keyword.get(x, :websocket, "")
     grpcs = Keyword.get(x, :grpcs, [])
+    size = Keyword.get(x, :size, 2)
     pubsub = Application.get_env(:rujira, :pubsub, Rujira.PubSub)
 
     poolboy_config = [
       {:name, {:local, @pool_name}},
       {:worker_module, __MODULE__.Grpc},
-      {:size, 2},
+      {:size, size},
       {:max_overflow, 2}
     ]
 
