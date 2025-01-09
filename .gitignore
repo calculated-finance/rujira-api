@@ -27,3 +27,5 @@ rujira-*.tar
 
 # Ignore .DS_Store files on macOS
 .DS_Store
+
+config/dev.*.exs

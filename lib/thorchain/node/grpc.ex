@@ -1,55 +1,54 @@
 defmodule Thorchain.Node.Grpc do
+  require Logger
   use GenServer
 
-  def start_link(grpc_list) do
-    GenServer.start_link(__MODULE__, grpc_list)
+  def start_link(grpcs) do
+    GenServer.start_link(__MODULE__, Enum.shuffle(grpcs))
   end
 
-  def init(grpc_list) do
-    with {:ok, channel, new_grpc_list} <- connect(Enum.shuffle(grpc_list)) do
-      {:ok, %{grpc_list: new_grpc_list, connected: channel}}
+  def init(grpcs) do
+    do_init(grpcs)
+  end
+
+  defp do_init([grpc | rest]) do
+    case connect(grpc) do
+      {:ok, connection} ->
+        Logger.info("gRPC Connected to #{connection.host}")
+        {:ok, connection}
+
+      {:error, error} ->
+        Logger.error("gRPC Failed for #{grpc}, #{error}")
+        do_init(rest)
     end
   end
 
-  # This is not good - gun goes up and down every second because i'm missing something
-  def handle_info(_msg, state) do
-    {:noreply, state}
+  defp do_init([]) do
+    Logger.error("No available gRPC connections")
+    {:stop, :no_connections}
   end
 
-  def handle_call(:channel, _from, %{connected: nil} = state) do
-    {:reply, {:error, "GRPC connection not ready"}, state}
-  end
+  def connect(addr) do
+    if String.ends_with?(addr, ":443") do
+      cred = GRPC.Credential.new(ssl: [verify: :verify_none])
 
-  def handle_call(:channel, _from, %{connected: channel} = state) do
-    {:reply, {:ok, channel}, state}
-  end
-
-  def handle_call(:reconnect, _from, %{grpc_list: grpc_list}) do
-    with {:ok, channel, new_grpc_list} <- connect(Enum.shuffle(grpc_list)) do
-      {:reply, {:ok, channel}, %{grpc_list: new_grpc_list, connected: channel}}
+      GRPC.Stub.connect(addr, interceptors: [GRPC.Client.Interceptors.Logger], cred: cred)
     else
-      {:error, reason} -> {:reply, {:error, reason}, %{grpc_list: grpc_list, connected: nil}}
+      GRPC.Stub.connect(addr, interceptors: [GRPC.Client.Interceptors.Logger])
     end
   end
 
-  def handle_call(_request, _from, state) do
-    {:reply, :ok, state}
+  def handle_info({:gun_down, _pid, _protocol, {:error, error}, []}, state) do
+    {:stop, {:gun_down, error}, state}
   end
 
-  def connect([%{host: host, port: port} = el | rest]) do
-    cred = GRPC.Credential.new(ssl: [verify: :verify_none])
+  def handle_info({:gun_down, _}, _state) do
+    {:stop, :gun_down}
+  end
 
-    case GRPC.Stub.connect(host, port,
-           interceptors: [GRPC.Client.Interceptors.Logger],
-           cred: cred
-         ) do
-      {:ok, channel} ->
-        IO.puts("Successfully connected to GRPC server.")
-        {:ok, channel, rest ++ [el]}
-
-      {:error, _} ->
-        IO.puts("Connection failed, trying next GRPC server...")
-        connect(rest ++ [el])
+  def handle_call({:request, stub_fn, req}, _, channel) do
+    case stub_fn.(channel, req) do
+      {:ok, res} -> {:reply, {:ok, res}, channel}
+      {:error, error} -> {:stop, error, channel}
     end
   end
 end

@@ -46,15 +46,6 @@ config :memoize, cache_strategy: Rujira.CacheStrategy
 
 target = System.get_env("TARGET") || "dev"
 
-config :appsignal, :config,
-  otp_app: :appsignal_phoenix_example,
-  name: "rujira",
-  push_api_key: "96acf591-1717-4e1d-aa2c-769453fed4b9",
-  env: Mix.env(),
-  active: true
-
-config = if config_env() === :test, do: :test, else: target
-
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
-import_config "#{config}.exs"
+import_config "#{config_env()}.exs"

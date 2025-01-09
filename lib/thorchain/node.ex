@@ -3,6 +3,7 @@ defmodule Thorchain.Node do
   require Logger
 
   @timeout 500
+  @pool_name :grpc_pool
 
   def start_link(opts \\ []) do
     Logger.info("Starting link ")
@@ -11,48 +12,23 @@ defmodule Thorchain.Node do
 
   @impl true
   def init(x) do
-    websocket_endpoint = Keyword.get(x, :websocket, "")
-    subscriptions = Keyword.get(x, :subscriptions, [])
-    grpc_list = Keyword.get(x, :grpcs, [])
-
-    []
-    |> add_grpcs(grpc_list)
-    |> add_websocket(websocket_endpoint, subscriptions)
-    |> Supervisor.init(strategy: :one_for_one, name: Rujira.Supervisor)
-  end
-
-  def add_grpcs(children, []) do
-    children
-  end
-
-  def add_grpcs(children, grpcs) do
-    [
-      :poolboy.child_spec(
-        :grpc,
-        [
-          name: {:local, :grpc},
-          worker_module: Thorchain.Node.Grpc,
-          size: length(grpcs) * 10,
-          max_overflow: 5
-        ],
-        grpcs
-      )
-      | children
-    ]
-  end
-
-  def add_websocket(children, "", _) do
-    children
-  end
-
-  def add_websocket(children, websocket, subscriptions) do
+    websocket = Keyword.get(x, :websocket, "")
+    grpcs = Keyword.get(x, :grpcs, [])
     pubsub = Application.get_env(:rujira, :pubsub, Rujira.PubSub)
 
-    [
-      {Thorchain.Node.Websocket,
-       websocket: websocket, subscriptions: subscriptions, pubsub: pubsub}
-      | children
+    poolboy_config = [
+      {:name, {:local, @pool_name}},
+      {:worker_module, __MODULE__.Grpc},
+      {:size, 2},
+      {:max_overflow, 2}
     ]
+
+    children = [
+      :poolboy.child_spec(@pool_name, poolboy_config, grpcs),
+      {__MODULE__.Websocket, websocket: websocket, pubsub: pubsub}
+    ]
+
+    Supervisor.init(children, strategy: :one_for_one)
   end
 
   def subscribe(topic) do
@@ -61,23 +37,8 @@ defmodule Thorchain.Node do
   end
 
   def stub(stub_fn, req) do
-    :poolboy.transaction(:grpc, fn worker_pid ->
-      try do
-        with {:ok, channel} <- GenServer.call(worker_pid, :channel, @timeout) do
-          stub_fn.(channel, req)
-        end
-      catch
-        :error, _ ->
-          reconnect_and_retry(worker_pid, stub_fn, req)
-      end
+    :poolboy.transaction(@pool_name, fn worker_pid ->
+      GenServer.call(worker_pid, {:request, stub_fn, req}, @timeout)
     end)
-  end
-
-  defp reconnect_and_retry(worker_pid, stub_fn, req) do
-    with {:ok, _} <- GenServer.call(worker_pid, :reconnect, @timeout) do
-      stub(stub_fn, req)
-    else
-      {:error, reason} -> {:error, reason}
-    end
   end
 end

@@ -104,4 +104,32 @@ if config_env() == :prod do
       """
 
   config :rujira, Rujira.Prices.Coingecko, cg_key: coingecko_key
+
+  appsignal_key =
+    System.get_env("APPSIGNAL_API_KEY")
+
+  if !is_nil(appsignal_key) do
+    config :appsignal, :config,
+      otp_app: :appsignal_phoenix_example,
+      name: "rujira",
+      push_api_key: appsignal_key,
+      env: Mix.env(),
+      active: true
+  end
+
+  websocket =
+    System.get_env("NODE_WEBSOCKET") ||
+      raise """
+      environment variable NODE_WEBSOCKET is missing.
+      """
+
+  grpcs =
+    System.get_env("NODE_GRPCS") ||
+      raise """
+      environment variable NODE_GRPCS is missing.
+      """
+
+  config :rujira, Thorchain.Node,
+    websocket: websocket,
+    grpcs: String.split(grpcs, ",")
 end

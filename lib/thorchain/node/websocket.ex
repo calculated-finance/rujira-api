@@ -2,14 +2,23 @@ defmodule Thorchain.Node.Websocket do
   use WebSockex
   require Logger
 
+  @subscriptions ["tm.event='NewBlock'"]
+
   def start_link(config) do
     endpoint = config[:websocket]
-    subscriptions = Keyword.get(config, :subscriptions, [])
     pubsub = Keyword.get(config, :pubsub)
     Logger.info("#{__MODULE__} Starting node websocket: #{endpoint}")
-    {:ok, pid} = WebSockex.start_link("#{endpoint}/websocket", __MODULE__, %{pubsub: pubsub})
-    for {s, idx} <- Enum.with_index(subscriptions), do: subscribe(pid, idx, s)
-    {:ok, pid}
+
+    case WebSockex.start_link("#{endpoint}/websocket", __MODULE__, %{pubsub: pubsub}) do
+      {:ok, pid} ->
+        for {s, idx} <- Enum.with_index(@subscriptions), do: subscribe(pid, idx, s)
+        {:ok, pid}
+
+      {:error, _} ->
+        Logger.error("Error connecting to websocket #{endpoint}")
+        # Ignore for now
+        :ignore
+    end
   end
 
   def handle_connect(_conn, state) do
