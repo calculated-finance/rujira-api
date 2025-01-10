@@ -31,9 +31,12 @@ defmodule Thorchain.Node.Grpc do
     if String.ends_with?(addr, ":443") do
       cred = GRPC.Credential.new(ssl: [verify: :verify_none])
 
-      GRPC.Stub.connect(addr, interceptors: [GRPC.Client.Interceptors.Logger], cred: cred)
+      GRPC.Stub.connect(addr,
+        interceptors: [{GRPC.Client.Interceptors.Logger, level: :debug}],
+        cred: cred
+      )
     else
-      GRPC.Stub.connect(addr, interceptors: [GRPC.Client.Interceptors.Logger])
+      GRPC.Stub.connect(addr, interceptors: [{GRPC.Client.Interceptors.Logger, level: :debug}])
     end
   end
 

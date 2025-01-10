@@ -129,7 +129,11 @@ if config_env() == :prod do
       environment variable NODE_GRPCS is missing.
       """
 
+  size =
+    System.get_env("NODE_GRPC_POOL_SIZE") || 5
+
   config :rujira, Thorchain.Node,
     websocket: websocket,
+    size: size,
     grpcs: String.split(grpcs, ",")
 end
