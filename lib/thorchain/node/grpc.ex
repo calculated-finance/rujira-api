@@ -44,7 +44,7 @@ defmodule Thorchain.Node.Grpc do
   def handle_call({:request, stub_fn, req}, _, channel) do
     case stub_fn.(channel, req) do
       {:ok, res} -> {:reply, {:ok, res}, channel}
-      {:error, error} -> {:stop, error, channel}
+      {:error, error} -> {:reply, {:error, error}, channel}
     end
   end
 end
