@@ -30,14 +30,14 @@ defmodule RujiraWeb.Resolvers.Fin do
          {:ok, quot} <- Rujira.Prices.get(String.upcase(quot)) do
       {:ok,
        %{
-         last: base.price,
-         last_usd: trunc(base.price / quot.price) * 10 ** 12,
+         last: trunc(base.price * 10 ** 12 / quot.price),
+         last_usd: base.price,
          high: trunc(base.price * 1.3),
          low: trunc(base.price * 0.8),
          change: trunc(base.change * 1_000_000_000_000),
          volume: %{
            asset: asset,
-           amount: 1_736_773_000_000_000_000_000_000
+           amount: 1_736_773_000_000
          }
        }}
     end
