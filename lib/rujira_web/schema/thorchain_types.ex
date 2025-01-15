@@ -120,6 +120,6 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :gas_rate_units, :string
     field :outbound_tx_size, :bigint
     field :outbound_fee, non_null(:bigint)
-    field :dust_threshold, :bigint
+    field :dust_threshold, non_null(:bigint)
   end
 end
