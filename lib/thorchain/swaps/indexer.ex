@@ -17,19 +17,20 @@ defmodule Thorchain.Swaps.Indexer do
   @impl true
   def handle_info(
         %{
-          block: %{header: %{height: height}},
-          result_finalize_block: %{events: events}
+          header: %{height: height, time: time},
+          txs: txs,
+          begin_block_events: begin_events,
+          end_block_events: events
         },
         state
       ) do
-    # Assign max number as this is end block, IS this valid for TC? TODO
     index = 2_147_483_647
-    scan_events(height, index, events)
+    scan_events(height, index, time, events)
 
     {:noreply, state}
   end
 
-  defp scan_events(height, tx_idx, events) do
+  defp scan_events(height, tx_idx, time, events) do
     swaps = Enum.flat_map(events, &scan_event/1)
 
     for {swap, idx} <- Enum.with_index(swaps) do
@@ -38,7 +39,7 @@ defmodule Thorchain.Swaps.Indexer do
         height: height,
         tx_idx: tx_idx,
         idx: idx,
-        timestamp: DateTime.now!("Etc/UTC")
+        timestamp: time
       })
       |> Swaps.insert_swap()
     end
@@ -48,25 +49,31 @@ defmodule Thorchain.Swaps.Indexer do
     scan_attributes(attributes)
   end
 
+  # API returns a list of attributes inside the list of events without key :attributes
+  defp scan_event(attributes) when is_map(attributes) do
+    scan_attributes(Rujira.convert_attributes(attributes))
+  end
+
   defp scan_attributes(attributes, collection \\ [])
 
   defp scan_attributes(
          [
-           %{value: pool, key: "pool"},
-           %{value: swap_target, key: "swap_target"},
-           %{value: swap_slip, key: "swap_slip"},
+           %{value: chain, key: "chain"},
+           %{value: coin, key: "coin"},
+           %{value: emit_asset, key: "emit_asset"},
+           %{value: from, key: "from"},
+           %{value: id, key: "id"},
            %{value: liquidity_fee, key: "liquidity_fee"},
            %{value: liquidity_fee_in_rune, key: "liquidity_fee_in_rune"},
-           %{value: emit_asset, key: "emit_asset"},
-           %{value: streaming_swap_quantity, key: "streaming_swap_quantity"},
-           %{value: streaming_swap_count, key: "streaming_swap_count"},
+           %{value: memo, key: "memo"},
+           %{value: _mode, key: "mode"},
+           %{value: pool, key: "pool"},
            %{value: pool_slip, key: "pool_slip"},
-           %{value: id, key: "id"},
-           %{value: chain, key: "chain"},
-           %{value: from, key: "from"},
-           %{value: to, key: "to"},
-           %{value: coin, key: "coin"},
-           %{value: memo, key: "memo"}
+           %{value: streaming_swap_count, key: "streaming_swap_count"},
+           %{value: streaming_swap_quantity, key: "streaming_swap_quantity"},
+           %{value: swap_slip, key: "swap_slip"},
+           %{value: swap_target, key: "swap_target"},
+           %{value: to, key: "to"}
            | rest
          ],
          collection

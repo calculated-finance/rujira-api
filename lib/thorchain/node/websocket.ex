@@ -2,6 +2,12 @@ defmodule Thorchain.Node.Websocket do
   use WebSockex
   require Logger
 
+  use Tesla
+
+  plug Tesla.Middleware.BaseUrl, "https://thornode-devnet-api.bryanlabs.net"
+  plug Tesla.Middleware.JSON
+  plug Tesla.Middleware.Headers, [{"Content-Type", "application/json"}]
+
   @subscriptions ["tm.event='NewBlock'"]
 
   def start_link(config) do
@@ -35,7 +41,21 @@ defmodule Thorchain.Node.Websocket do
       {:ok, %{id: id, result: %{data: %{type: t, value: v}}}} ->
         Logger.debug("#{__MODULE__} Subscription #{id} event #{t}")
         pubsub = state[:pubsub]
-        Phoenix.PubSub.broadcast(pubsub, t, v)
+
+        height =
+          v
+          |> Map.get(:block)
+          |> Map.get(:header)
+          |> Map.get(:height)
+
+        # TODO move to GRPC once the parsing is alligned with the API
+        case get("/thorchain/block", query: [height: height]) do
+          {:ok, response} ->
+            Phoenix.PubSub.broadcast(pubsub, t, Rujira.convert_map(response.body))
+
+          {:error, reason} ->
+            Logger.error("#{__MODULE__} Error fetching block data: #{reason}")
+        end
 
         {:ok, state}
 
