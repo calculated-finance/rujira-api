@@ -22,16 +22,32 @@ defmodule Rujira.Assets do
     sym
   end
 
-  # https://dev.thorchain.org/concepts/querying-thorchain.html#decimals-and-base-units
-  defmemo decimals(asset) do
-    req = %QueryPoolRequest{asset: asset}
+  def decimals("AVAX.USDC" <> _), do: 6
+  def decimals("AVAX" <> _), do: 18
+  def decimals("BASE.USDC" <> _), do: 6
+  def decimals("BASE" <> _), do: 18
+  def decimals("BCH" <> _), do: 8
+  def decimals("BTC" <> _), do: 8
+  def decimals("BSC.USDC" <> _), do: 8
+  def decimals("BSC" <> _), do: 18
+  def decimals("DOGE" <> _), do: 8
+  def decimals("ETH.USDC" <> _), do: 6
+  def decimals("ETH" <> _), do: 18
+  def decimals("GAIA" <> _), do: 6
+  def decimals("LTC" <> _), do: 8
+  def decimals("THOR" <> _), do: 6
 
-    case Thorchain.Node.stub(&Q.pool/2, req) do
-      {:ok, %{decimals: 0}} -> 8
-      {:ok, %{decimals: d}} -> d
-      _ -> 8
-    end
-  end
+  # TODO: Decimals differ between Layer 1 balances and THORChain secured asset balance
+  # https://dev.thorchain.org/concepts/querying-thorchain.html#decimals-and-base-units
+  # defmemo decimals(asset) do
+  #   req = %QueryPoolRequest{asset: asset}
+
+  #   case Thorchain.Node.stub(&Q.pool/2, req) do
+  #     {:ok, %{decimals: 0}} -> 8
+  #     {:ok, %{decimals: d}} -> d
+  #     _ -> 8
+  #   end
+  # end
 
   def type(str) do
     cond do
