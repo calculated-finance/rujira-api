@@ -117,6 +117,12 @@ if config_env() == :prod do
       active: true
   end
 
+  api =
+    System.get_env("NODE_API") ||
+      raise """
+      environment variable NODE_API is missing.
+      """
+
   websocket =
     System.get_env("NODE_WEBSOCKET") ||
       raise """
@@ -133,6 +139,7 @@ if config_env() == :prod do
     System.get_env("NODE_GRPC_POOL_SIZE") || 5
 
   config :rujira, Thorchain.Node,
+    api: api,
     websocket: websocket,
     size: size,
     grpcs: String.split(grpcs, ",")

@@ -8,7 +8,7 @@ defmodule Rujira.Repo.Migrations.CreateSwaps do
       add :idx, :integer, primary_key: true
 
       add :pool, :string
-      add :swap_target, :integer
+      add :swap_target, :bigint
       add :swap_slip, :integer
       add :liquidity_fee, :integer
       add :liquidity_fee_in_rune, :integer
@@ -26,6 +26,5 @@ defmodule Rujira.Repo.Migrations.CreateSwaps do
 
       timestamps(type: :utc_datetime_usec)
     end
-
   end
 end

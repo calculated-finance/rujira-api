@@ -2,20 +2,15 @@ defmodule Thorchain.Node.Websocket do
   use WebSockex
   require Logger
 
-  use Tesla
-
-  plug Tesla.Middleware.BaseUrl, "https://thornode-devnet-api.bryanlabs.net"
-  plug Tesla.Middleware.JSON
-  plug Tesla.Middleware.Headers, [{"Content-Type", "application/json"}]
-
   @subscriptions ["tm.event='NewBlock'"]
 
   def start_link(config) do
     endpoint = config[:websocket]
     pubsub = Keyword.get(config, :pubsub)
+    api = Keyword.get(config, :api)
     Logger.info("#{__MODULE__} Starting node websocket: #{endpoint}")
 
-    case WebSockex.start_link("#{endpoint}/websocket", __MODULE__, %{pubsub: pubsub}) do
+    case WebSockex.start_link("#{endpoint}/websocket", __MODULE__, %{pubsub: pubsub, api: api}) do
       {:ok, pid} ->
         for {s, idx} <- Enum.with_index(@subscriptions), do: subscribe(pid, idx, s)
         {:ok, pid}
@@ -41,6 +36,7 @@ defmodule Thorchain.Node.Websocket do
       {:ok, %{id: id, result: %{data: %{type: t, value: v}}}} ->
         Logger.debug("#{__MODULE__} Subscription #{id} event #{t}")
         pubsub = state[:pubsub]
+        api = state[:api]
 
         height =
           v
@@ -49,7 +45,14 @@ defmodule Thorchain.Node.Websocket do
           |> Map.get(:height)
 
         # TODO move to GRPC once the parsing is alligned with the API
-        case get("/thorchain/block", query: [height: height]) do
+        client =
+          Tesla.client([
+            {Tesla.Middleware.BaseUrl, api},
+            Tesla.Middleware.JSON,
+            {Tesla.Middleware.Headers, [{"Content-Type", "application/json"}]}
+          ])
+
+        case Tesla.get(client, "/thorchain/block", query: [height: height]) do
           {:ok, response} ->
             Phoenix.PubSub.broadcast(pubsub, t, Rujira.convert_map(response.body))
 

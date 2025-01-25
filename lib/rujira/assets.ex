@@ -19,6 +19,7 @@ defmodule Rujira.Assets do
   end
 
   def decimals("AVAX" <> _), do: 18
+  def decimals("BASE" <> _), do: 18
   def decimals("BCH" <> _), do: 8
   def decimals("BTC" <> _), do: 8
   def decimals("BSC" <> _), do: 18
