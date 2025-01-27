@@ -16,7 +16,7 @@ defimpl Rujira.Chains.Layer1.Adapter, for: Rujira.Chains.Layer1.Thor do
   alias Cosmos.Bank.V1beta1.QueryAllBalancesResponse
   import Cosmos.Bank.V1beta1.Query.Stub
 
-  def balances(_a, address) do
+  def balances(_a, address, _assets) do
     req = %QueryAllBalancesRequest{address: address}
 
     with {:ok, %QueryAllBalancesResponse{balances: balances}} <-

@@ -64,7 +64,7 @@ defmodule Rujira.Chains.Layer1.Gaia do
 end
 
 defimpl Rujira.Chains.Layer1.Adapter, for: Rujira.Chains.Layer1.Gaia do
-  def balances(a, address) do
+  def balances(a, address, _assets) do
     req = %QueryAllBalancesRequest{address: address}
 
     with {:ok, conn} <- Rujira.Chains.Layer1.Gaia.connection(a),

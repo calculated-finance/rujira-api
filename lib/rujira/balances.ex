@@ -1,6 +1,10 @@
 defmodule Rujira.Balances do
   alias Rujira.Chains.Layer1.Adapter
 
+  alias Thorchain.Types.QueryPoolsResponse
+  alias Thorchain.Types.QueryPoolsRequest
+  alias Thorchain.Types.Query.Stub, as: Q
+
   @doc """
   Fetches the balances of Cosmos SDK x/bank tokens.
 
@@ -17,8 +21,12 @@ defmodule Rujira.Balances do
   @spec native_balances(atom(), String.t()) ::
           {:ok, list(%{asset: String.t(), amount: String.t()})} | {:error, any()}
   def native_balances(chain, address) do
-    with {:ok, adapter} <- Rujira.Chains.get_native_adapter(chain) do
-      Adapter.balances(adapter, address)
+    with {:ok, adapter} <- Rujira.Chains.get_native_adapter(chain),
+    {:ok, %QueryPoolsResponse{pools: pools}} <-
+      Thorchain.Node.stub(&Q.pools/2, %QueryPoolsRequest{}),
+       assets <- Rujira.Assets.supported_assets(pools, chain) do
+      Adapter.balances(adapter, address, assets)
     end
   end
+
 end

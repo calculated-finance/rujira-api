@@ -56,6 +56,8 @@ defmodule Rujira.MixProject do
       {:appsignal, "~> 2.8"},
       {:google_protos, "~> 0.4"},
       {:websockex, "~> 0.4.3"},
+      {:ex_abi, "~> 0.5"},
+      {:ex_keccak, "~> 0.7.6"}
     ]
   end
 
