@@ -1,7 +1,21 @@
 defmodule Rujira.Assets do
   use Memoize
-  alias Thorchain.Types.QueryPoolRequest
+  alias Thorchain.Types.QueryPoolsRequest
   alias Thorchain.Types.Query.Stub, as: Q
+
+  defmemo assets() do
+    with {:ok, %{pools: pools}} <- Thorchain.Node.stub(&Q.pools/2, %QueryPoolsRequest{}) do
+      Enum.map(
+        pools,
+        &{&1.asset,
+         if &1.decimals == 0 do
+           8
+         else
+           &1.decimals
+         end}
+      )
+    end
+  end
 
   @moduledoc """
   Interfaces for interacting with THORChain Asset values
