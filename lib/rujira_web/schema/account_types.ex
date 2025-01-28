@@ -9,7 +9,6 @@ defmodule RujiraWeb.Schema.AccountTypes do
     field :chain, non_null(:chain)
 
     field :balances, list_of(non_null(:layer_1_balance)) do
-      arg(:tokens, list_of(:string))
       @desc "A list of contract addresses for ERC-20, SPL etc token balances"
       resolve(&Resolvers.Balance.native/3)
     end
