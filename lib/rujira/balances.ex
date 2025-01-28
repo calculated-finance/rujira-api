@@ -22,11 +22,8 @@ defmodule Rujira.Balances do
           {:ok, list(%{asset: String.t(), amount: String.t()})} | {:error, any()}
   def native_balances(chain, address) do
     with {:ok, adapter} <- Rujira.Chains.get_native_adapter(chain),
-    {:ok, %QueryPoolsResponse{pools: pools}} <-
-      Thorchain.Node.stub(&Q.pools/2, %QueryPoolsRequest{}),
-       assets <- Rujira.Assets.supported_assets(pools, chain) do
+         assets <- Rujira.Assets.by_chain(chain) do
       Adapter.balances(adapter, address, assets)
     end
   end
-
 end

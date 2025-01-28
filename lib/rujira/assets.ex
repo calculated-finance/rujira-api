@@ -17,6 +17,14 @@ defmodule Rujira.Assets do
     end
   end
 
+  def by_chain(chain) do
+    chain_name = chain |> Atom.to_string() |> String.upcase()
+
+    assets()
+    |> Enum.filter(fn {asset, _decimal} -> chain(asset) == chain_name end)
+    |> Enum.map(fn {asset, _decimal} -> asset end)
+  end
+
   @moduledoc """
   Interfaces for interacting with THORChain Asset values
   """
@@ -128,12 +136,6 @@ defmodule Rujira.Assets do
     end
   end
 
-  def supported_assets(pools, chain) do
-    pools
-    |> Enum.filter(&(chain(&1.asset) == String.upcase(Atom.to_string(chain))))
-    |> Enum.map(& &1.asset)
-  end
-
   def to_contract(asset) do
     case String.split(asset, ".", parts: 2) do
       [_chain, token] ->
@@ -141,7 +143,9 @@ defmodule Rujira.Assets do
           [_token, contract] -> {:ok, contract}
           _ -> {:ok, nil}
         end
-      _ -> {:ok, nil}
+
+      _ ->
+        {:ok, nil}
     end
   end
 end
