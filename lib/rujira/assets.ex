@@ -53,19 +53,19 @@ defmodule Rujira.Assets do
   end
 
   def decimals("AVAX.USDC" <> _), do: 6
-  def decimals("AVAX" <> _), do: 18
+  def decimals("AVAX." <> _), do: 18
   def decimals("BASE.USDC" <> _), do: 6
-  def decimals("BASE" <> _), do: 18
-  def decimals("BCH" <> _), do: 8
-  def decimals("BTC" <> _), do: 8
+  def decimals("BASE." <> _), do: 18
+  def decimals("BCH." <> _), do: 8
+  def decimals("BTC." <> _), do: 8
   def decimals("BSC.USDC" <> _), do: 8
-  def decimals("BSC" <> _), do: 18
-  def decimals("DOGE" <> _), do: 8
+  def decimals("BSC." <> _), do: 18
+  def decimals("DOGE." <> _), do: 8
   def decimals("ETH.USDC" <> _), do: 6
-  def decimals("ETH" <> _), do: 18
-  def decimals("GAIA" <> _), do: 6
-  def decimals("LTC" <> _), do: 8
-  def decimals("THOR" <> _), do: 6
+  def decimals("ETH." <> _), do: 18
+  def decimals("GAIA." <> _), do: 6
+  def decimals("LTC." <> _), do: 8
+  def decimals(_), do: 8
 
   # TODO: Decimals differ between Layer 1 balances and THORChain secured asset balance
   # https://dev.thorchain.org/concepts/querying-thorchain.html#decimals-and-base-units
