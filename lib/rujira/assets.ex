@@ -107,12 +107,6 @@ defmodule Rujira.Assets do
   def to_native("GAIA.LVN"),
     do: {:ok, "ibc/6C95083ADD352D5D47FB4BA427015796E5FEF17A829463AD05ECD392EB38D889"}
 
-  def to_native("ETH.AAVE"),
-    do: {:ok, "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9"}
-
-  def to_native("ETH.USDC"),
-    do: {:ok, "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"}
-
   def to_native(asset) do
     case String.split(asset, "-", parts: 2) do
       [chain, token] -> {:ok, String.downcase(chain) <> "-" <> String.downcase(token)}
@@ -137,5 +131,17 @@ defmodule Rujira.Assets do
   def supported_assets(pools, chain) do
     pools
     |> Enum.filter(&(chain(&1.asset) == String.upcase(Atom.to_string(chain))))
+    |> Enum.map(& &1.asset)
+  end
+
+  def to_contract(asset) do
+    case String.split(asset, ".", parts: 2) do
+      [_chain, token] ->
+        case String.split(token, "-", parts: 2) do
+          [_token, contract] -> {:ok, contract}
+          _ -> {:ok, nil}
+        end
+      _ -> {:ok, nil}
+    end
   end
 end

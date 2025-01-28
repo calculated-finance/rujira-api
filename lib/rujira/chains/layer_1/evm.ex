@@ -11,7 +11,7 @@ defmodule Rujira.Chains.Layer1.Evm do
       ABI.encode("balanceOf(address)", [Base.decode16!(address, case: :mixed)])
       |> Base.encode16(case: :lower)
 
-    with {:ok, contract_address} <- Rujira.Assets.to_native(assets),
+    with {:ok, contract_address} <- Rujira.Assets.to_contract(assets),
          {:ok, "0x" <> balance_bytes} <-
            Ethereumex.HttpClient.eth_call(
              %{
@@ -27,7 +27,7 @@ defmodule Rujira.Chains.Layer1.Evm do
         |> ABI.TypeDecoder.decode_raw([{:uint, 256}])
         |> List.first()
 
-      {:ok, [%{asset: assets, amount: balance}]}
+      {:ok, %{asset: assets, amount: balance}}
     end
   end
 
