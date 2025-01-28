@@ -6,13 +6,13 @@ defmodule Rujira.Chains.Layer1.Evm do
     end
   end
 
-  def balance_of(rpc, "0x" <> address, assets) do
+  def balance_of(rpc, "0x" <> address, {asset, contract_address}) do
     abi_encoded_data =
-      ABI.encode("balanceOf(address)", [Base.decode16!(address, case: :mixed)])
+      "balanceOf(address)"
+      |> ABI.encode([Base.decode16!(address, case: :mixed)])
       |> Base.encode16(case: :lower)
 
-    with {:ok, contract_address} <- Rujira.Assets.to_contract(assets),
-         {:ok, "0x" <> balance_bytes} <-
+    with {:ok, "0x" <> balance_bytes} <-
            Ethereumex.HttpClient.eth_call(
              %{
                data: "0x" <> abi_encoded_data,
@@ -21,13 +21,15 @@ defmodule Rujira.Chains.Layer1.Evm do
              "latest",
              url: rpc
            ),
-         {:ok, decoded_balance} <- Base.decode16(balance_bytes, case: :lower) do
-      balance =
-        decoded_balance
-        |> ABI.TypeDecoder.decode_raw([{:uint, 256}])
-        |> List.first()
+         {:ok, decoded_balance} <- Base.decode16(balance_bytes, case: :lower),
+         [balance] <- ABI.TypeDecoder.decode_raw(decoded_balance, [{:uint, 256}]) do
+      {:ok, %{asset: asset, amount: balance}}
+    else
+      {:error, %{"message" => message}} ->
+        {:error, message}
 
-      {:ok, %{asset: assets, amount: balance}}
+      _ ->
+        {:error, :unknown_error}
     end
   end
 

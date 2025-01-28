@@ -17,12 +17,20 @@ defmodule Rujira.Assets do
     end
   end
 
-  def by_chain(chain) do
+  def erc20(chain) do
     chain_name = chain |> Atom.to_string() |> String.upcase()
 
     assets()
-    |> Enum.filter(fn {asset, _decimal} -> chain(asset) == chain_name end)
-    |> Enum.map(fn {asset, _decimal} -> asset end)
+    |> Enum.reduce([], fn
+      {^chain_name <> _ = asset, _decimal}, acc ->
+        case String.split(asset, "-0X") do
+          [_, address] -> [{asset, "0x" <> address} | acc]
+          _ -> acc
+        end
+
+      _, acc ->
+        acc
+    end)
   end
 
   @moduledoc """
@@ -133,19 +141,6 @@ defmodule Rujira.Assets do
     case String.split(asset, "-", parts: 2) do
       [chain, token] -> {:ok, String.upcase(chain) <> "." <> String.upcase(token)}
       _ -> {:error, :invalid_denom}
-    end
-  end
-
-  def to_contract(asset) do
-    case String.split(asset, ".", parts: 2) do
-      [_chain, token] ->
-        case String.split(token, "-", parts: 2) do
-          [_token, contract] -> {:ok, contract}
-          _ -> {:ok, nil}
-        end
-
-      _ ->
-        {:ok, nil}
     end
   end
 end
