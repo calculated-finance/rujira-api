@@ -31,9 +31,9 @@ defmodule Rujira.Chains.Layer1.Evm do
     end
   end
 
-  def balances_of(rpc, "0x" <> address, assets) do
+  def balances_of(rpc, address, assets) do
     with {:ok, balances} <-
-           Task.async_stream(assets, &balance_of(rpc, "0x" <> address, &1))
+           Task.async_stream(assets, &balance_of(rpc, address, &1))
            |> Enum.reduce({:ok, []}, fn
              {:ok, {:ok, balance}}, {:ok, acc} -> {:ok, [balance | acc]}
              {:ok, {:error, error}}, _ -> {:error, error}
