@@ -88,11 +88,11 @@ defmodule Rujira.Assets do
   end
 
   def to_layer_1(str) do
-    String.replace(str, "-", ".", global: false)
+    String.replace(str, ~r/\-\./, ".", global: false)
   end
 
   def to_secured(str) do
-    String.replace(str, ".", "-", global: false)
+    String.replace(str, ".", "-", global: true)
   end
 
   @doc """
