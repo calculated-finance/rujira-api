@@ -14,6 +14,34 @@ defmodule Rujira.Chains.Kuji do
     )
   end
 
+  def to_denom("KUJI.KUJI"), do: {:ok, "ukuji"}
+
+  def to_denom("KUJI.RKUJI"),
+    do: {:ok, "factory/kujira1tsekaqv9vmem0zwskmf90gpf0twl6k57e8vdnq/urkuji"}
+
+  def to_denom("KUJI.FUZN"),
+    do: {:ok, "factory/kujira1sc6a0347cc5q3k890jj0pf3ylx2s38rh4sza4t/ufuzn"}
+
+  def to_denom("KUJI.WINK"),
+    do: {:ok, "factory/kujira12cjjeytrqcj25uv349thltcygnp9k0kukpct0e/uwink"}
+
+  def to_denom("KUJI.NSTK"),
+    do: {:ok, "factory/kujira1aaudpfr9y23lt9d45hrmskphpdfaq9ajxd3ukh/unstk"}
+
+  def to_denom("KUJI.AUTO"),
+    do: {:ok, "factory/kujira13x2l25mpkhwnwcwdzzd34cr8fyht9jlj7xu9g4uffe36g3fmln8qkvm3qn/uauto"}
+
+  def to_denom("KUJI.BOON"),
+    do: {:ok, "factory/kujira1gewwffxhaygxe8tacd3z9h4uyvpd2h7v9qtfmaw8jjhwalxxpd7qlqld4m/boon"}
+
+  def to_denom("KUJI.MNTA"),
+    do: {:ok, "factory/kujira1643jxg8wasy5cfcn7xm8rd742yeazcksqlg4d7/umnta"}
+
+  def to_denom("KUJI.NAMI"),
+    do: {:ok, "factory/kujira13x2l25mpkhwnwcwdzzd34cr8fyht9jlj7xu9g4uffe36g3fmln8qkvm3qn/unami"}
+
+  def to_denom(_), do: {:error, :unknown_asset}
+
   def map_coin(%{
         denom: "ukuji",
         amount: amount
