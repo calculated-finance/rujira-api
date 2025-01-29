@@ -14,7 +14,7 @@ defmodule Thorchain.Node.Grpc do
   defp do_init([grpc | rest]) do
     case connect(grpc) do
       {:ok, connection} ->
-        Logger.info("gRPC Connected to #{connection.host}")
+        Logger.debug("gRPC Connected to #{connection.host}")
         {:ok, connection}
 
       {:error, error} ->
