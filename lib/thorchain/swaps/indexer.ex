@@ -18,8 +18,8 @@ defmodule Thorchain.Swaps.Indexer do
   def handle_info(
         %{
           header: %{height: height, time: time},
-          txs: txs,
-          begin_block_events: begin_events,
+          txs: _txs,
+          begin_block_events: _begin_events,
           end_block_events: events
         },
         state

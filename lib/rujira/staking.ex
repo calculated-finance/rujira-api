@@ -4,7 +4,6 @@ defmodule Rujira.Staking do
   """
 
   alias Rujira.Staking.Account
-  alias Rujira.Contract
   alias Rujira.Staking.Pool
   alias Rujira.Staking.Account
 
