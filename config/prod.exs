@@ -37,4 +37,6 @@ config :logger, level: :info
 #
 # Check `Plug.SSL` for all available options in `force_ssl`.
 
-config :appsignal, :config, active: true
+config :appsignal, :config,
+  active: true,
+  revision: System.get_env("SOURCE_VERSION")
