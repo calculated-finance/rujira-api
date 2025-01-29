@@ -114,9 +114,9 @@ defimpl Rujira.Chains.Adapter, for: Rujira.Chains.Kuji do
   def balances(a, address, _assets) do
     req = %QueryAllBalancesRequest{address: address, pagination: %PageRequest{limit: 100}}
 
-    with {:ok, conn} <- Rujira.Chains.Kuji.connection(a) |> IO.inspect(),
+    with {:ok, conn} <- Rujira.Chains.Kuji.connection(a),
          {:ok, %QueryAllBalancesResponse{balances: balances}} <-
-           all_balances(conn, req) |> IO.inspect() do
+           all_balances(conn, req) do
       balances =
         Enum.reduce(balances, [], fn e, agg ->
           case Rujira.Chains.Kuji.map_coin(e) do
