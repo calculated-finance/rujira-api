@@ -1,4 +1,4 @@
-defmodule Rujira.Chains.Layer1.Thor do
+defmodule Rujira.Chains.Thor do
   defstruct []
 
   def map_denom("rune"), do: {:ok, "THOR.RUNE"}
@@ -11,7 +11,7 @@ defmodule Rujira.Chains.Layer1.Thor do
   end
 end
 
-defimpl Rujira.Chains.Layer1.Adapter, for: Rujira.Chains.Layer1.Thor do
+defimpl Rujira.Chains.Adapter, for: Rujira.Chains.Thor do
   alias Cosmos.Bank.V1beta1.QueryAllBalancesRequest
   alias Cosmos.Bank.V1beta1.QueryAllBalancesResponse
   import Cosmos.Bank.V1beta1.Query.Stub
@@ -23,7 +23,7 @@ defimpl Rujira.Chains.Layer1.Adapter, for: Rujira.Chains.Layer1.Thor do
            Thorchain.Node.stub(&all_balances/2, req) do
       Enum.reduce(balances, {:ok, []}, fn el, acc ->
         with {:ok, acc} <- acc,
-             {:ok, asset} <- Rujira.Chains.Layer1.Thor.map_denom(el.denom) do
+             {:ok, asset} <- Rujira.Chains.Thor.map_denom(el.denom) do
           {:ok, [%{asset: asset, amount: el.amount} | acc]}
         end
       end)

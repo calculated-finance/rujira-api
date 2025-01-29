@@ -1,10 +1,10 @@
 defmodule Rujira.Chains do
-  alias __MODULE__.Layer1.Adapter
+  alias __MODULE__.Adapter
   @spec get_native_adapter(atom()) :: {:ok, Adapter.t()} | {:error, any()}
   def get_native_adapter(chain) do
     try do
       name = chain |> Atom.to_string() |> String.capitalize()
-      module = Module.concat([__MODULE__, :Layer1, name])
+      module = Module.concat([__MODULE__, name])
       {:ok, struct(module, [])}
     catch
       _ ->

@@ -1,4 +1,4 @@
-defmodule Rujira.Chains.Layer1.Evm do
+defmodule Rujira.Chains.Evm do
   def native_balance(rpc, address, asset) do
     with {:ok, "0x" <> hex} <-
            Ethereumex.HttpClient.eth_get_balance(address, "latest", url: rpc) do

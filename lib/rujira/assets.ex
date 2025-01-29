@@ -44,6 +44,7 @@ defmodule Rujira.Assets do
   end
 
   def symbol("GAIA.RKUJI"), do: "rKUJI"
+  def symbol("KUJI.RKUJI"), do: "rKUJI"
 
   def symbol(str) do
     # TODO: suport more delimiters
@@ -64,6 +65,7 @@ defmodule Rujira.Assets do
   def decimals("ETH.USDC" <> _), do: 6
   def decimals("ETH." <> _), do: 18
   def decimals("GAIA." <> _), do: 6
+  def decimals("KUJI." <> _), do: 6
   def decimals("LTC." <> _), do: 8
   def decimals(_), do: 8
 
