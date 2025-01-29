@@ -8,7 +8,7 @@ defmodule Rujira.Chains.Layer1.Gaia do
   def connection(%__MODULE__{}) do
     cred = GRPC.Credential.new(ssl: [verify: :verify_none])
 
-    GRPC.Stub.connect("cosmos-grpc.publicnode.com", 443,
+    GRPC.Stub.connect("cosmos-grpc.bryanlabs.net", 443,
       interceptors: [{GRPC.Client.Interceptors.Logger, level: :debug}],
       cred: cred
     )
