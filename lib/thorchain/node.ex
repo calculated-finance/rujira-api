@@ -22,7 +22,8 @@ defmodule Thorchain.Node do
       {:name, {:local, @pool_name}},
       {:worker_module, __MODULE__.Grpc},
       {:size, size},
-      {:max_overflow, 2}
+      {:max_overflow, 2},
+      {:restart, :transient}
     ]
 
     children = [

@@ -7,6 +7,7 @@ defmodule Thorchain.Node.Grpc do
   end
 
   def init(grpcs) do
+    Process.flag(:trap_exit, true)
     do_init(grpcs)
   end
 
@@ -40,8 +41,8 @@ defmodule Thorchain.Node.Grpc do
     end
   end
 
-  def handle_info({:gun_down, _pid, _protocol, message, _}, state) do
-    {:stop, {:gun_down, message}, state}
+  def handle_info({:gun_down, _pid, _protocol, _message, _}, state) do
+    {:stop, :normal, state}
   end
 
   def handle_call({:request, stub_fn, req}, _, channel) do
