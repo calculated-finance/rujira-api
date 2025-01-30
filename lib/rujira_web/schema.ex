@@ -17,8 +17,6 @@ defmodule RujiraWeb.Schema do
   import_types(RujiraWeb.Schema.StakingTypes)
 
   def middleware(middleware, field, object) do
-    IO.inspect(field)
-    IO.inspect(object)
     [RujiraWeb.Profiler | middleware]
   end
 
