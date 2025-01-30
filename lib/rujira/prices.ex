@@ -16,6 +16,7 @@ defmodule Rujira.Prices do
             a
         end
       end)
+      |> Enum.sort_by(&elem(&1, 1))
 
     with {:ok, res} <- __MODULE__.Coingecko.prices(Enum.map(map, &elem(&1, 1))) do
       {:ok,
