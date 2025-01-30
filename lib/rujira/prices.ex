@@ -38,5 +38,3 @@ defmodule Rujira.Prices do
     %{price: trunc(price * 10 ** 12), change: change}
   end
 end
-
-{{"yearn-finance", %{change: 4.4653562142002166, price: 7278.36}}, {"YFI", "yearn-finance"}}
