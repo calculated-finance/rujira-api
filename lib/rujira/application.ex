@@ -23,6 +23,8 @@ defmodule Rujira.Application do
       Thorchain.Swaps.Indexer
     ]
 
+    Thorchain.Node.Appsignal.attach()
+
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Rujira.Supervisor]

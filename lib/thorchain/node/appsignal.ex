@@ -1,0 +1,61 @@
+defmodule Thorchain.Node.Appsignal do
+  require Logger
+
+  @tracer Application.compile_env(:appsignal, :appsignal_tracer, Appsignal.Tracer)
+  @span Application.compile_env(:appsignal, :appsignal_span, Appsignal.Span)
+
+  @moduledoc false
+
+  def attach do
+    handlers = %{
+      [:grpc, :client, :rpc, :start] => &__MODULE__.grpc_request_start/4,
+      [:grpc, :client, :rpc, :stop] => &__MODULE__.grpc_request_stop/4,
+      [:grpc, :client, :rpc, :exception] => &__MODULE__.grpc_request_stop/4
+    }
+
+    for {event, fun} <- handlers do
+      case :telemetry.attach({__MODULE__, event}, event, fun, :ok) |> IO.inspect() do
+        :ok ->
+          _ =
+            Appsignal.IntegrationLogger.debug(
+              "Thorchain.Node.Appsignal attached to #{inspect(event)}"
+            )
+
+          :ok
+
+        {:error, _} = error ->
+          Logger.warning(
+            "Thorchain.Node.Appsignal not attached to #{inspect(event)}: #{inspect(error)}"
+          )
+
+          error
+      end
+    end
+  end
+
+  def grpc_request_start(
+        _event,
+        _measurements,
+        %{stream: %{path: path}},
+        _config
+      ) do
+    do_grpc_request_start(@tracer.current_span(), path)
+  end
+
+  defp do_grpc_request_start(nil, _request), do: nil
+
+  defp do_grpc_request_start(parent, path) do
+    "grpc_request"
+    |> @tracer.create_span(parent)
+    |> @span.set_name(path)
+    |> @span.set_attribute("appsignal:category", "request.grpc")
+  end
+
+  def grpc_request_stop(_event, _measurements, %{request: _request}, _config) do
+    @tracer.close_span(@tracer.current_span())
+  end
+
+  def grpc_request_stop(_event, _measurements, _metadata, _config) do
+    nil
+  end
+end

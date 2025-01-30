@@ -46,11 +46,9 @@ defmodule Thorchain.Node.Grpc do
   end
 
   def handle_call({:request, stub_fn, req}, _, channel) do
-    Appsignal.instrument("grpc", "grpc.#{req.__struct__}", fn ->
-      case stub_fn.(channel, req) do
-        {:ok, res} -> {:reply, {:ok, res}, channel}
-        {:error, error} -> {:reply, {:error, error}, channel}
-      end
-    end)
+    case stub_fn.(channel, req) do
+      {:ok, res} -> {:reply, {:ok, res}, channel}
+      {:error, error} -> {:reply, {:error, error}, channel}
+    end
   end
 end
