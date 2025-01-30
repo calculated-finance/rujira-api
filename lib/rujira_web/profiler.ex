@@ -1,10 +1,4 @@
 defmodule RujiraWeb.Profiler do
-  @moduledoc """
-  Gather and report telemetry about an individual field resolution
-  """
-  @field_start [:absinthe, :resolve, :field, :start]
-  @field_stop [:absinthe, :resolve, :field, :stop]
-
   @behaviour Absinthe.Middleware
 
   @impl Absinthe.Middleware
