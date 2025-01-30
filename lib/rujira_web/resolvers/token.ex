@@ -99,20 +99,8 @@ defmodule RujiraWeb.Resolvers.Token do
     {:ok, %{symbol: symbol, decimals: decimals}}
   end
 
-  def price(%{asset: asset}, _, _) do
-    symbol = Rujira.Assets.symbol(asset)
-
-    with {:ok, %{price: price, change: change}} <- Rujira.Prices.get(symbol) do
-      {:ok, %{current: price, change_day: change}}
-    end
-  end
-
-  def price(%{denom: denom}, _, _) do
-    symbol = Rujira.Denoms.symbol(denom)
-
-    with {:ok, %{price: price, change: change}} <- Rujira.Prices.get(symbol) do
-      {:ok, %{current: price, change_day: change}}
-    end
+  def prices(_, b) do
+    Rujira.Prices.get(b)
   end
 
   def quote(%{request: %{to_asset: asset}, expected_amount_out: amount}, _, _) do

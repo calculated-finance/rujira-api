@@ -14,7 +14,7 @@ defmodule Thorchain.Node.Appsignal do
     }
 
     for {event, fun} <- handlers do
-      case :telemetry.attach({__MODULE__, event}, event, fun, :ok) |> IO.inspect() do
+      case :telemetry.attach({__MODULE__, event}, event, fun, :ok) do
         :ok ->
           _ =
             Appsignal.IntegrationLogger.debug(

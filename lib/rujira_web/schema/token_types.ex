@@ -7,7 +7,19 @@ defmodule RujiraWeb.Schema.TokenTypes do
     field :type, non_null(:asset_type)
     field :chain, non_null(:chain)
     field :metadata, non_null(:metadata), resolve: &RujiraWeb.Resolvers.Token.metadata/3
-    field :price, :price, resolve: &RujiraWeb.Resolvers.Token.price/3
+
+    field :price, :price do
+      resolve(fn %{asset: asset}, _, _ ->
+        sym = Rujira.Assets.symbol(asset)
+
+        batch({RujiraWeb.Resolvers.Token, :prices}, sym, fn x ->
+          with {:ok, prices} <- x,
+               %{price: price, change: change} <- Map.get(prices, sym) do
+            {:ok, %{current: price, change: change}}
+          end
+        end)
+      end)
+    end
 
     @desc "Explicit Layer 1 and Secured variants of a Layer 1 asset"
     field :variants, non_null(:asset_variants), resolve: &RujiraWeb.Resolvers.Token.variants/3
@@ -16,7 +28,21 @@ defmodule RujiraWeb.Schema.TokenTypes do
   node object(:denom) do
     field :denom, non_null(:string)
     field :metadata, non_null(:metadata), resolve: &RujiraWeb.Resolvers.Token.metadata/3
-    field :price, :price, resolve: &RujiraWeb.Resolvers.Token.price/3
+
+    field :price, :price do
+      resolve(fn %{denom: denom}, _, _ ->
+        sym = Rujira.Denoms.symbol(denom)
+
+        batch({RujiraWeb.Resolvers.Token, :prices}, sym, fn x ->
+          with {:ok, prices} <- x,
+               %{price: price, change: change} <- Map.get(prices, sym) do
+            {:ok, %{current: price, change: change}}
+          end
+        end)
+      end)
+    end
+
+    # , resolve: &RujiraWeb.Resolvers.Token.price/3
   end
 
   @desc "Metadata for a token"
