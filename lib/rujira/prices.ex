@@ -16,13 +16,13 @@ defmodule Rujira.Prices do
             a
         end
       end)
-      |> Enum.sort_by(&elem(&1, 1))
 
     with {:ok, res} <- __MODULE__.Coingecko.prices(Enum.map(map, &elem(&1, 1))) do
       {:ok,
-       res
-       |> Enum.zip(map)
-       |> Enum.map(fn {{_id, res}, {sym, _}} -> {sym, normalize(res)} end)
+       map
+       |> Enum.map(fn {sym, id} ->
+         {sym, normalize(Map.get(res, id))}
+       end)
        |> Map.new()}
     end
   end
