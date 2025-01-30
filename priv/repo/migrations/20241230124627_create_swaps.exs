@@ -10,7 +10,7 @@ defmodule Rujira.Repo.Migrations.CreateSwaps do
       add :pool, :string
       add :swap_target, :bigint
       add :swap_slip, :integer
-      add :liquidity_fee, :integer
+      add :liquidity_fee, :bigint
       add :liquidity_fee_in_rune, :integer
       add :emit_asset, :string
       add :streaming_swap_quantity, :integer

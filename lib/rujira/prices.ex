@@ -6,12 +6,22 @@ defmodule Rujira.Prices do
   end
 
   def get(symbols) when is_list(symbols) do
-    with {:ok, ids} <- __MODULE__.Coingecko.ids(symbols),
-         {:ok, res} <- __MODULE__.Coingecko.prices(ids) do
+    map =
+      Enum.reduce(symbols, [], fn v, a ->
+        case __MODULE__.Coingecko.id(v) do
+          {:ok, id} ->
+            [{v, id} | a]
+
+          _ ->
+            a
+        end
+      end)
+
+    with {:ok, res} <- __MODULE__.Coingecko.prices(Enum.map(map, &elem(&1, 1))) do
       {:ok,
        res
-       |> Enum.zip(symbols)
-       |> Enum.map(fn {{_id, v}, sym} -> {sym, normalize(v)} end)
+       |> Enum.zip(map)
+       |> Enum.map(fn {{_id, res}, {sym, _}} -> {sym, normalize(res)} end)
        |> Map.new()}
     end
   end
@@ -27,3 +37,5 @@ defmodule Rujira.Prices do
     %{price: trunc(price * 10 ** 12), change: change}
   end
 end
+
+{{"yearn-finance", %{change: 4.4653562142002166, price: 7278.36}}, {"YFI", "yearn-finance"}}

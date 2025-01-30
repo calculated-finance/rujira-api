@@ -4,6 +4,25 @@ defmodule Rujira.Prices.Coingecko do
   def id("BTC"), do: {:ok, "bitcoin"}
   def id("rKUJI"), do: {:ok, "kujira"}
   def id("KUJI"), do: {:ok, "kujira"}
+  def id("AAVE"), do: {:ok, "aave"}
+  def id("DAI"), do: {:ok, "dai"}
+  def id("DPI"), do: {:ok, "defipulse-index"}
+  def id("FLIP"), do: {:ok, "chainflip"}
+  def id("FOX"), do: {:ok, "shapeshift-fox-token"}
+  def id("GUSD"), do: {:ok, "gemini-dollar"}
+  def id("LINK"), do: {:ok, "chainlink"}
+  def id("LUSD"), do: {:ok, "ripple-usd"}
+  def id("RAZE"), do: {:ok, "craze"}
+  def id("SNX"), do: {:ok, "havven"}
+  def id("TGT"), do: {:ok, "thorwallet"}
+  def id("THOR"), do: {:ok, "thorswap"}
+  def id("USDC"), do: {:ok, "usd-coin"}
+  def id("USDP"), do: {:ok, "paxos-standard"}
+  def id("USDT"), do: {:ok, "tether"}
+  def id("WBTC"), do: {:ok, "wrapped-bitcoin"}
+  def id("XDEFI"), do: {:ok, "xdefi"}
+  def id("XRUNE"), do: {:ok, "thorstarter"}
+  def id("YFI"), do: {:ok, "yearn-finance"}
   def id(symbol), do: lookup_id(symbol)
 
   def ids(symbols) do

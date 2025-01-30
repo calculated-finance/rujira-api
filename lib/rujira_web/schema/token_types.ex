@@ -13,9 +13,8 @@ defmodule RujiraWeb.Schema.TokenTypes do
         sym = Rujira.Assets.symbol(asset)
 
         batch({RujiraWeb.Resolvers.Token, :prices}, sym, fn x ->
-          with {:ok, prices} <- x,
-               %{price: price, change: change} <- Map.get(prices, sym) do
-            {:ok, %{current: price, change: change}}
+          with {:ok, prices} <- x do
+            {:ok, map(Map.get(prices, sym))}
           end
         end)
       end)
@@ -34,9 +33,8 @@ defmodule RujiraWeb.Schema.TokenTypes do
         sym = Rujira.Denoms.symbol(denom)
 
         batch({RujiraWeb.Resolvers.Token, :prices}, sym, fn x ->
-          with {:ok, prices} <- x,
-               %{price: price, change: change} <- Map.get(prices, sym) do
-            {:ok, %{current: price, change: change}}
+          with {:ok, prices} <- x do
+            {:ok, map(Map.get(prices, sym))}
           end
         end)
       end)
@@ -72,4 +70,7 @@ defmodule RujiraWeb.Schema.TokenTypes do
     value(:secured)
     value(:native)
   end
+
+  defp map(%{price: price, change: change}), do: %{current: price, change: change}
+  defp map(nil), do: nil
 end
