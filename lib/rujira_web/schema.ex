@@ -16,10 +16,6 @@ defmodule RujiraWeb.Schema do
   import_types(RujiraWeb.Schema.FinTypes)
   import_types(RujiraWeb.Schema.StakingTypes)
 
-  def middleware(middleware, field, object) do
-    [RujiraWeb.Profiler | middleware]
-  end
-
   query do
     field :node, :node do
       arg(:id, non_null(:id))
