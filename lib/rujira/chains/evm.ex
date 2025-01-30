@@ -1,4 +1,7 @@
 defmodule Rujira.Chains.Evm do
+  use Appsignal.Instrumentation.Decorators
+
+  @decorate transaction_event()
   def native_balance(rpc, address, asset) do
     with {:ok, "0x" <> hex} <-
            Ethereumex.HttpClient.eth_get_balance(address, "latest", url: rpc) do
@@ -6,6 +9,7 @@ defmodule Rujira.Chains.Evm do
     end
   end
 
+  @decorate transaction_event()
   def balance_of(rpc, "0x" <> address, {asset, contract_address}) do
     abi_encoded_data =
       "balanceOf(address)"
@@ -33,6 +37,7 @@ defmodule Rujira.Chains.Evm do
     end
   end
 
+  @decorate transaction_event()
   def balances_of(rpc, address, assets) do
     with {:ok, balances} <-
            Task.async_stream(assets, &balance_of(rpc, address, &1))
