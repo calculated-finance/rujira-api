@@ -15,7 +15,10 @@ defmodule RujiraWeb.Profiler do
           |> String.trim_leading("RujiraWeb.Resolvers.")
 
         parent = Appsignal.Tracer.current_span()
-        Appsignal.Tracer.create_span(name, parent)
+
+        "absinthe_resolver"
+        |> Appsignal.Tracer.create_span(parent)
+        |> Appsignal.Span.set_name(name)
 
         %{
           resolution
