@@ -71,6 +71,6 @@ defmodule RujiraWeb.Schema.TokenTypes do
     value(:native)
   end
 
-  defp map(%{price: price, change: change}), do: %{current: price, change: change}
+  defp map(%{price: price, change: change}), do: %{current: price, change_day: change}
   defp map(nil), do: nil
 end
