@@ -6,6 +6,9 @@ defmodule Rujira.Chains.Evm do
     with {:ok, "0x" <> hex} <-
            Ethereumex.HttpClient.eth_get_balance(address, "latest", url: rpc) do
       {:ok, [%{asset: asset, amount: String.to_integer(hex, 16)}]}
+    else
+      {:error, %{"error" => %{"message" => message}}} -> {:error, message}
+      err -> err
     end
   end
 
@@ -43,6 +46,7 @@ defmodule Rujira.Chains.Evm do
            Task.async_stream(assets, &balance_of(rpc, address, &1))
            |> Enum.reduce({:ok, []}, fn
              {:ok, {:ok, balance}}, {:ok, acc} -> {:ok, [balance | acc]}
+             {:ok, {:error, %{"error" => %{"message" => message}}}}, _ -> {:error, message}
              {:ok, {:error, error}}, _ -> {:error, error}
              {:error, err}, _ -> {:error, err}
            end) do
