@@ -26,11 +26,10 @@ defmodule RujiraWeb.Profiler do
         %{
           resolution
           | middleware:
-              (resolution.middleware ++
-                 [
-                   {{__MODULE__, :on_complete}, []}
-                 ])
-              |> IO.inspect()
+              resolution.middleware ++
+                [
+                  {{__MODULE__, :on_complete}, []}
+                ]
         }
 
       _ ->
@@ -40,7 +39,6 @@ defmodule RujiraWeb.Profiler do
 
   def on_complete(%{state: :resolved} = resolution, _) do
     Appsignal.Tracer.current_span()
-    |> IO.inspect(label: :complete)
     |> Appsignal.Tracer.close_span()
 
     resolution
