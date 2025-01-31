@@ -93,7 +93,7 @@ defmodule Rujira.Fin do
     end
   end
 
-  def account_history(_address) do
+  def trade_history(_address) do
     {:ok, []}
   end
 

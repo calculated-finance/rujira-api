@@ -26,6 +26,7 @@ defmodule RujiraWeb.Resolvers.Fin do
   end
 
   def book(%{book: book}, _, _), do: {:ok, book}
+  def history(_, _, _), do: {:ok, []}
 
   def summary(%{token_base: base, token_quote: quot}, _, _) do
     # TODO 1: Fetch from actual trading data

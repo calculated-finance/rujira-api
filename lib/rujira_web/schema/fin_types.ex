@@ -58,7 +58,8 @@ defmodule RujiraWeb.Schema.FinTypes do
       resolve(&RujiraWeb.Resolvers.Fin.candles/3)
     end
 
-    field :history, non_null(list_of(non_null(:fin_trade)))
+    field :history, non_null(list_of(non_null(:fin_trade))),
+      resolve: &RujiraWeb.Resolvers.Fin.history/3
   end
 
   @desc "Orderbook of a specific Fin pair"
