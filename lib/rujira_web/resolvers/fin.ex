@@ -19,6 +19,14 @@ defmodule RujiraWeb.Resolvers.Fin do
     end)
   end
 
+  def book(%{book: :not_loaded} = pair, _, _) do
+    with {:ok, %{book: book}} <- Rujira.Fin.load_pair(pair) |> IO.inspect() do
+      {:ok, book}
+    end
+  end
+
+  def book(%{book: book}, _, _), do: {:ok, book}
+
   def summary(%{token_base: base, token_quote: quot}, _, _) do
     # TODO 1: Fetch from actual trading data
     asset = quot |> String.replace("-", ".") |> String.upcase()

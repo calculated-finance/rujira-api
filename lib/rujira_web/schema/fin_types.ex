@@ -48,7 +48,7 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :fee_taker, non_null(:bigint)
     field :fee_maker, non_null(:bigint)
     field :fee_address, non_null(:address)
-    field :book, non_null(:fin_book)
+    field :book, non_null(:fin_book), resolve: &RujiraWeb.Resolvers.Fin.book/3
     field :summary, :fin_pair_summary, resolve: &RujiraWeb.Resolvers.Fin.summary/3
 
     field :candles, non_null(list_of(non_null(:candle))) do

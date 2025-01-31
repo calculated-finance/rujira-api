@@ -2,7 +2,7 @@ defmodule Thorchain.Node do
   use Supervisor
   require Logger
 
-  @timeout 500
+  @timeout 2000
   @pool_name :grpc_pool
 
   def start_link(opts \\ []) do
