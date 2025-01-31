@@ -14,17 +14,29 @@ defmodule Rujira.Fin.Book do
     def from_query(side, %{"price" => price_str, "total" => total_str}) do
       with {price, ""} <- Decimal.parse(price_str),
            {total, ""} <- Integer.parse(total_str) do
-        value = Decimal.mult(price, Decimal.new(total))
-
         %__MODULE__{
           side: side,
           total: total,
           price: price,
-          value: value
+          value: value(side, price, total)
         }
       else
         _ -> {:error, :parse_error}
       end
+    end
+
+    defp value(:ask, price, total) do
+      total
+      |> Decimal.new()
+      |> Decimal.mult(price)
+      |> Decimal.div(Decimal.new(1_000_000_000_000))
+    end
+
+    defp value(:bid, price, total) do
+      total
+      |> Decimal.new()
+      |> Decimal.div(price)
+      |> Decimal.div(Decimal.new(1_000_000_000_000))
     end
   end
 

@@ -20,7 +20,7 @@ defmodule RujiraWeb.Resolvers.Fin do
   end
 
   def book(%{book: :not_loaded} = pair, _, _) do
-    with {:ok, %{book: book}} <- Rujira.Fin.load_pair(pair) |> IO.inspect() do
+    with {:ok, %{book: book}} <- Rujira.Fin.load_pair(pair) do
       {:ok, book}
     end
   end
