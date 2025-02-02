@@ -5,18 +5,9 @@ defmodule Rujira.Invalidator do
 
   @impl true
   def init(opts) do
-    PubSub.subscribe(opts[:pubsub], "tendermint/event/Tx")
-    PubSub.subscribe(opts[:pubsub], "tendermint/event/NewBlockHeader")
+    PubSub.subscribe(Rujira.PubSub, "tendermint/event/NewBlock")
 
     {:ok, opts}
-  end
-
-  def subscriptions() do
-    [
-      "message.action='/cosmwasm.wasm.v1.MsgExecuteContract'"
-      # This required to catch blocks that the revenue converter trades in EndBlock
-      # "wasm-trade._contract_address EXISTS"
-    ]
   end
 
   def start_link(default) do
@@ -24,34 +15,21 @@ defmodule Rujira.Invalidator do
   end
 
   @impl true
-  def handle_info(%{TxResult: %{result: %{events: events}}}, state) do
-    Enum.flat_map(events, &scan_event/1)
+  def handle_info(%{txs: txs}, state) do
+    txs
+    |> Enum.flat_map(& &1["result"]["events"])
+    |> scan_attributes()
     |> Enum.uniq()
     |> Enum.map(&invalidate/1)
 
     {:noreply, state}
-  end
-
-  def handle_info(
-        %{result_end_block: %{events: events}},
-        state
-      ) do
-    Enum.flat_map(events, &scan_event/1)
-    |> Enum.uniq()
-    |> Enum.map(&invalidate/1)
-
-    {:noreply, state}
-  end
-
-  defp scan_event(%{attributes: attributes}) do
-    scan_attributes(attributes)
   end
 
   defp scan_attributes(attributes, collection \\ [])
 
   defp scan_attributes(
          [
-           %{key: "_contract_address", value: value}
+           %{"_contract_address" => address}
            | rest
          ],
          collection
@@ -59,8 +37,8 @@ defmodule Rujira.Invalidator do
     # Here we can just invalidate the address for all protocols.
     # Only the one where it actually matches the protocol will be affected
     scan_attributes(rest, [
-      {Rujira.Contract, :query_state_all, [value]},
-      {Rujira.Contract, :query_state_smart, [value, :_]} | collection
+      {Rujira.Contract, :query_state_all, [address]},
+      {Rujira.Contract, :query_state_smart, [address, :_]} | collection
     ])
   end
 
