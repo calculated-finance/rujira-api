@@ -60,4 +60,24 @@ defmodule RujiraWeb.Schema do
     field :id, non_null(:id)
     resolve_type(&RujiraWeb.Resolvers.Node.type/2)
   end
+
+  subscription do
+    field :account_changed, :layer_1_account do
+      @desc """
+      The account ID with the `account:` prefix omitted
+
+      E.g. sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4
+           eth:0x328973ce1433d7593191271f75a428af55c6527e
+      """
+      arg(:account, non_null(:string))
+
+      config(fn %{account: address}, _ ->
+        {:ok, topic: address}
+      end)
+
+      resolve(fn address, x, _ ->
+        RujiraWeb.Resolvers.Node.id(%{id: "account:#{address}"}, x)
+      end)
+    end
+  end
 end

@@ -5,9 +5,9 @@ defmodule Thorchain.Node do
   @timeout 2000
   @pool_name :grpc_pool
 
-  def start_link(opts \\ []) do
+  def start_link(_opts \\ []) do
     Logger.info("Starting link ")
-    Supervisor.start_link(__MODULE__, opts, name: __MODULE__)
+    Supervisor.start_link(__MODULE__, Application.get_env(:rujira, __MODULE__), name: __MODULE__)
   end
 
   @impl true

@@ -17,9 +17,11 @@ defmodule Rujira.Application do
       # {Rujira.Worker, arg},
       # Start to serve requests, typically the last entry
       RujiraWeb.Endpoint,
+      {Absinthe.Subscription, RujiraWeb.Endpoint},
       {Finch, name: Rujira.Finch},
-      {Rujira.Invalidator, pubsub: Rujira.PubSub},
-      {Thorchain.Node, Application.get_env(:rujira, Thorchain.Node)},
+      Thorchain.Node,
+      Rujira.Balances,
+      Rujira.Invalidator,
       Thorchain.Swaps.Indexer
     ]
 

@@ -7,7 +7,11 @@ defmodule RujiraWeb.Router do
 
   scope "/api" do
     pipe_through :api
-    forward "/graphiql", Absinthe.Plug.GraphiQL, schema: RujiraWeb.Schema
+
+    forward "/graphiql", Absinthe.Plug.GraphiQL,
+      schema: RujiraWeb.Schema,
+      socket: RujiraWeb.UserSocket
+
     forward "/", Absinthe.Plug, schema: RujiraWeb.Schema
   end
 
