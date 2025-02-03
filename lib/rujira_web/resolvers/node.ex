@@ -74,5 +74,6 @@ defmodule RujiraWeb.Resolvers.Node do
   def encode_id(:account, chain, address), do: "account:#{chain}:#{address}"
   def encode_id(:contract, :merge, address), do: "contract:merge:#{address}"
   def encode_id(:contract, :fin, address), do: "contract:fin:#{address}"
+  def encode_id(:contract, :fin, address, :book), do: "contract:fin:#{address}:book"
   def encode_id(:contract, :staking, address), do: "contract:staking:#{address}"
 end

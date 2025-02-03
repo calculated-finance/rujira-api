@@ -40,7 +40,7 @@ defmodule Rujira.Fin.Book do
     end
   end
 
-  defstruct [:bids, :asks]
+  defstruct [:id, :bids, :asks]
 
   @type t :: %__MODULE__{
           bids: list(Price.t()),

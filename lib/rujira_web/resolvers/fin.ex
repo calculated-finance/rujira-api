@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Resolvers.Fin do
+  alias RujiraWeb.Resolvers.Node
   alias Rujira.Fin
   alias Absinthe.Resolution.Helpers
 
@@ -21,11 +22,13 @@ defmodule RujiraWeb.Resolvers.Fin do
 
   def book(%{book: :not_loaded} = pair, _, _) do
     with {:ok, %{book: book}} <- Rujira.Fin.load_pair(pair) do
-      {:ok, book}
+      {:ok, %{book | id: Node.encode_id(:contract, :fin, pair.address, :book)}}
     end
   end
 
-  def book(%{book: book}, _, _), do: {:ok, book}
+  def book(%{address: address, book: book}, _, _),
+    do: {:ok, %{book | id: Node.encode_id(:contract, :fin, address, :book)}}
+
   def history(_, _, _), do: {:ok, []}
 
   def summary(%{token_base: base, token_quote: quot}, _, _) do
