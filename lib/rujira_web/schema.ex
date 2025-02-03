@@ -62,21 +62,20 @@ defmodule RujiraWeb.Schema do
   end
 
   subscription do
-    field :account_changed, :layer_1_account do
+    field :node, :node do
       @desc """
-      The account ID with the `account:` prefix omitted
-
-      E.g. sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4
-           eth:0x328973ce1433d7593191271f75a428af55c6527e
+      The account ID
       """
-      arg(:account, non_null(:string))
+      arg(:id, non_null(:id))
 
-      config(fn %{account: address}, _ ->
-        {:ok, topic: address}
+      config(fn %{id: id}, _ ->
+        with {:ok, %{id: id}} <- Absinthe.Relay.Node.from_global_id(id, __MODULE__) do
+          {:ok, topic: id}
+        end
       end)
 
-      resolve(fn address, x, _ ->
-        RujiraWeb.Resolvers.Node.id(%{id: "account:#{address}"}, x)
+      resolve(fn id, x, _ ->
+        RujiraWeb.Resolvers.Node.id(%{id: id}, x)
       end)
     end
   end

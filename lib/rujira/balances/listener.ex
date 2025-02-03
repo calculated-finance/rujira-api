@@ -28,12 +28,9 @@ defmodule Rujira.Balances.Listener do
     for a <- addresses do
       Logger.debug("#{__MODULE__} change #{a}")
 
-      Absinthe.Subscription.publish(
-        RujiraWeb.Endpoint,
-        # Let the schema query and resolve the new data
-        a,
-        account_changed: a
-      )
+      # TODO: Not happy with the Rujira app needing to know the graphql id schema.
+      id = "account:thor:#{a}"
+      Absinthe.Subscription.publish(RujiraWeb.Endpoint, id, node: id)
     end
 
     {:noreply, state}

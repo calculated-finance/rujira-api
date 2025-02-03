@@ -19,6 +19,7 @@ defmodule RujiraWeb.Endpoint do
   socket "/socket", RujiraWeb.Socket,
     websocket: [
       check_origin: [
+        "http://localhost:4000",
         "http://localhost:5173",
         "https://rujira-ui-main.vercel.app",
         "https://rujira-ui-main-git-*-rujira.vercel.app",
