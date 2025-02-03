@@ -30,67 +30,38 @@ defmodule Thorchain.Swaps do
     |> Repo.aggregate(:count)
   end
 
-  @spec total_volume(resolution :: :all | :daily | :weekly | :monthly) :: String.t() | nil
+  @spec total_volume(:all | :daily | :weekly | :monthly) :: integer() | nil
   def total_volume(resolution \\ :all) do
-    case resolution do
-      :all ->
-        Swap
-        |> select(
-          [s],
-          fragment(
-            "CAST(SUM(CAST(COALESCE(NULLIF(?, ''), '0') AS bigint)) AS TEXT)",
-            s.volume_usd
-          )
-        )
-        |> Repo.one()
-
-      resolution ->
-        with {:ok, start} <- resolution(DateTime.utc_now(), resolution) do
+    query =
+      case resolution do
+        :all ->
           Swap
-          |> where([s], s.timestamp >= ^start)
-          |> select(
-            [s],
-            fragment(
-              "CAST(SUM(CAST(COALESCE(NULLIF(?, ''), '0') AS bigint)) AS TEXT)",
-              s.volume_usd
-            )
-          )
-          |> Repo.one()
-        end
-    end
+
+        resolution ->
+          with {:ok, start} <- resolution(DateTime.utc_now(), resolution) do
+            from(s in Swap, where: s.timestamp >= ^start)
+          end
+      end
+
+    (Repo.aggregate(query, :sum, :volume_usd) || 0) |> Decimal.to_integer()
   end
 
-  @spec total_affiliate_volume(resolution :: :all | :daily | :weekly | :monthly) ::
-          String.t() | nil
+  @spec total_affiliate_volume(:all | :daily | :weekly | :monthly) :: integer()
   def total_affiliate_volume(resolution \\ :all) do
-    case resolution do
-      :all ->
-        Swap
-        |> where([s], not is_nil(s.affiliate) and s.affiliate != "")
-        |> select(
-          [s],
-          fragment(
-            "CAST(SUM(CAST(COALESCE(NULLIF(?, ''), '0') AS bigint)) AS TEXT)",
-            s.volume_usd
-          )
-        )
-        |> Repo.one()
+    query =
+      case resolution do
+        :all ->
+          from(s in Swap, where: not is_nil(s.affiliate) and s.affiliate != "")
 
-      resolution ->
-        with {:ok, start} <- resolution(DateTime.utc_now(), resolution) do
-          Swap
-          |> where([s], s.timestamp >= ^start)
-          |> where([s], not is_nil(s.affiliate) and s.affiliate != "")
-          |> select(
-            [s],
-            fragment(
-              "CAST(SUM(CAST(COALESCE(NULLIF(?, ''), '0') AS bigint)) AS TEXT)",
-              s.volume_usd
+        resolution ->
+          with {:ok, start} <- resolution(DateTime.utc_now(), resolution) do
+            from(s in Swap,
+              where: s.timestamp >= ^start and not is_nil(s.affiliate) and s.affiliate != ""
             )
-          )
-          |> Repo.one()
-        end
-    end
+          end
+      end
+
+    (Repo.aggregate(query, :sum, :volume_usd) || 0) |> Decimal.to_integer()
   end
 
   defp resolution(now, :daily), do: {:ok, DateTime.add(now, -24 * 60 * 60, :second)}
