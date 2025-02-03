@@ -34,7 +34,11 @@ defmodule Rujira.Prices do
     end
   end
 
-  defp normalize(%{price: price, change: change}) do
+  def normalize(%{price: price, change: change}) do
     %{price: trunc(price * 10 ** 12), change: change}
+  end
+
+  def normalize(price, decimal \\ 8) when is_number(price) and is_integer(decimal) and decimal >= 0 do
+    trunc(price * 10 ** (12 - decimal))
   end
 end

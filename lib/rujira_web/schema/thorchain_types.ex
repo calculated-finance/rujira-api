@@ -37,6 +37,10 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
         {:ok, %{id: Node.encode_id(:denom, "rune"), denom: "rune"}}
       end)
     end
+
+    field :summary, :thorchain_summary do
+      resolve(&Resolvers.Thorchain.summary/3)
+    end
   end
 
   object :quote do
@@ -121,5 +125,23 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :outbound_tx_size, :bigint
     field :outbound_fee, non_null(:bigint)
     field :dust_threshold, non_null(:bigint)
+  end
+
+  object :thorchain_summary do
+    field :unique_swappers, :bigint
+    field :total_validator_bond, :bigint
+
+    field :tvl, :bigint
+    field :pools_liquidity, :bigint
+    field :total_pool_earnings, :bigint
+
+    field :total_transactions, :bigint
+    field :total_swaps, :bigint
+    field :daily_swap_volume, :bigint
+    field :total_swap_volume, :bigint
+    field :affiliate_volume, :bigint
+    field :affiliate_transactions, :bigint
+    field :running_since, :bigint
+    field :blockchain_integrated, :bigint
   end
 end

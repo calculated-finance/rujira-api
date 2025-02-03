@@ -1,4 +1,5 @@
 defmodule Thorchain.Swaps.Indexer do
+  alias Rujira.Prices
   alias Thorchain.Swaps
   alias Phoenix.PubSub
   use GenServer
@@ -33,15 +34,28 @@ defmodule Thorchain.Swaps.Indexer do
   defp scan_events(height, tx_idx, time, events) do
     swaps = Enum.flat_map(events, &scan_event/1)
 
-    for {swap, idx} <- Enum.with_index(swaps) do
-      swap
-      |> Map.merge(%{
-        height: height,
-        tx_idx: tx_idx,
-        idx: idx,
-        timestamp: time
-      })
-      |> Swaps.insert_swap()
+    with {:ok, %{rune_price_in_tor: price}} <- Thorchain.network(),
+         price <- String.to_integer(price) do
+      for {swap, idx} <- Enum.with_index(swaps) do
+        liquidity_fee_in_usd =
+          Prices.normalize(String.to_integer(swap.liquidity_fee_in_rune) * price, 16)
+
+        volume_usd = get_volume(swap, price)
+
+        aff_data = get_affiliate_data(swap, price, volume_usd)
+
+        swap
+        |> Map.merge(%{
+          height: height,
+          tx_idx: tx_idx,
+          idx: idx,
+          timestamp: time,
+          liquidity_fee_in_usd: Integer.to_string(liquidity_fee_in_usd),
+          volume_usd: Integer.to_string(volume_usd)
+        })
+        |> Map.merge(aff_data)
+        |> Swaps.insert_swap()
+      end
     end
   end
 
@@ -63,16 +77,16 @@ defmodule Thorchain.Swaps.Indexer do
            %{value: emit_asset, key: "emit_asset"},
            %{value: from, key: "from"},
            %{value: id, key: "id"},
-           %{value: liquidity_fee, key: "liquidity_fee"},
+           %{value: _liquidity_fee, key: "liquidity_fee"},
            %{value: liquidity_fee_in_rune, key: "liquidity_fee_in_rune"},
            %{value: memo, key: "memo"},
            %{value: _mode, key: "mode"},
            %{value: pool, key: "pool"},
-           %{value: pool_slip, key: "pool_slip"},
+           %{value: _pool_slip, key: "pool_slip"},
            %{value: streaming_swap_count, key: "streaming_swap_count"},
            %{value: streaming_swap_quantity, key: "streaming_swap_quantity"},
-           %{value: swap_slip, key: "swap_slip"},
-           %{value: swap_target, key: "swap_target"},
+           %{value: _swap_slip, key: "swap_slip"},
+           %{value: _swap_target, key: "swap_target"},
            %{value: to, key: "to"}
            | rest
          ],
@@ -80,24 +94,22 @@ defmodule Thorchain.Swaps.Indexer do
        ) do
     scan_attributes(
       rest,
-      insert_swap(
-        collection,
-        pool,
-        swap_slip,
-        swap_target,
-        liquidity_fee,
-        liquidity_fee_in_rune,
-        emit_asset,
-        streaming_swap_quantity,
-        streaming_swap_count,
-        pool_slip,
-        id,
-        chain,
-        from,
-        to,
-        coin,
-        memo
-      )
+      [
+        %{
+          pool: pool,
+          liquidity_fee_in_rune: liquidity_fee_in_rune,
+          emit_asset: emit_asset,
+          streaming_swap_quantity: streaming_swap_quantity,
+          streaming_swap_count: streaming_swap_count,
+          id: id,
+          chain: chain,
+          from: from,
+          to: to,
+          coin: coin,
+          memo: memo
+        }
+        | collection
+      ]
     )
   end
 
@@ -107,50 +119,41 @@ defmodule Thorchain.Swaps.Indexer do
 
   defp scan_attributes([], collection), do: collection
 
-  defp insert_swap(
-         collection,
-         pool,
-         swap_slip,
-         swap_target,
-         liquidity_fee,
-         liquidity_fee_in_rune,
-         emit_asset,
-         streaming_swap_quantity,
-         streaming_swap_count,
-         pool_slip,
-         id,
-         chain,
-         from,
-         to,
-         coin,
-         memo
-       ) do
-    swap_slip = String.to_integer(swap_slip)
-    swap_target = String.to_integer(swap_target)
-    liquidity_fee = String.to_integer(liquidity_fee)
-    liquidity_fee_in_rune = String.to_integer(liquidity_fee_in_rune)
-    streaming_swap_quantity = String.to_integer(streaming_swap_quantity)
-    streaming_swap_count = String.to_integer(streaming_swap_count)
-    pool_slip = String.to_integer(pool_slip)
+  defp get_volume(swap, price) do
+    [coin_amount, coin_type] = String.split(swap.coin, " ", parts: 2)
+    [emit_amount, emit_type] = String.split(swap.emit_asset, " ", parts: 2)
 
-    swap_data = %{
-      pool: pool,
-      swap_slip: swap_slip,
-      swap_target: swap_target,
-      liquidity_fee: liquidity_fee,
-      liquidity_fee_in_rune: liquidity_fee_in_rune,
-      emit_asset: emit_asset,
-      streaming_swap_quantity: streaming_swap_quantity,
-      streaming_swap_count: streaming_swap_count,
-      pool_slip: pool_slip,
-      id: id,
-      chain: chain,
-      from: from,
-      to: to,
-      coin: coin,
-      memo: memo
-    }
+    volume =
+      cond do
+        String.contains?(coin_type, "THOR.RUNE") -> String.to_integer(coin_amount) * price
+        String.contains?(emit_type, "THOR.RUNE") -> String.to_integer(emit_amount) * price
+        true -> 0
+      end
 
-    [swap_data | collection]
+    Rujira.Prices.normalize(volume, 16)
+  end
+
+  defp get_affiliate_data(swap, price, volume_usd) do
+    case Thorchain.get_affiliate(swap.memo) do
+      {:ok, {aff, bps}} ->
+        case Integer.parse(bps) do
+          {bps_value, ""} ->
+            affiliate_fee = volume_usd * bps_value / 10_000
+
+            %{
+              affiliate: aff,
+              affiliate_bps: Integer.to_string(bps_value),
+              affiliate_fee_in_rune:
+                Integer.to_string(Prices.normalize(affiliate_fee / price, 4)),
+              affiliate_fee_in_usd: Integer.to_string(Float.round(affiliate_fee) |> trunc())
+            }
+
+          :error ->
+            %{}
+        end
+
+      {:error, :no_affiliate} ->
+        %{}
+    end
   end
 end

@@ -116,4 +116,28 @@ defmodule RujiraWeb.Resolvers.Thorchain do
       x -> x
     end)
   end
+
+  def summary(_, _, _) do
+    with {:ok, total_bonds} <- Thorchain.total_bonds(),
+         {:ok, tvl} <- Thorchain.tvl(),
+         {:ok, chains} <- Thorchain.chains(),
+         {:ok, swaps_data} <- Thorchain.swaps_data() do
+      {:ok,
+       %{
+         unique_swappers: 1000,
+         total_validator_bond: total_bonds,
+         tvl: tvl + total_bonds,
+         pools_liquidity: tvl,
+         total_pool_earnings: 200_000,
+         total_transactions: 15000,
+         total_swaps: swaps_data.total_swaps,
+         daily_swap_volume: swaps_data.daily_swap_volume,
+         total_swap_volume: swaps_data.total_swap_volume,
+         affiliate_volume: swaps_data.affiliate_volume,
+         affiliate_transactions: swaps_data.affiliate_transactions,
+         running_since: 2018,
+         blockchain_integrated: length(chains) - 1
+       }}
+    end
+  end
 end
