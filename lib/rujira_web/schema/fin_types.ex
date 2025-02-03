@@ -63,7 +63,7 @@ defmodule RujiraWeb.Schema.FinTypes do
   end
 
   @desc "Orderbook of a specific Fin pair"
-  object :fin_book do
+  node object(:fin_book) do
     field :asks, non_null(list_of(non_null(:fin_book_entry)))
     field :bids, non_null(list_of(non_null(:fin_book_entry)))
   end
