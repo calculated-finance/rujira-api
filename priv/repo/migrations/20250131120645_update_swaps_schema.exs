@@ -2,30 +2,26 @@ defmodule Rujira.Repo.Migrations.UpdateSwapsSchema do
   use Ecto.Migration
 
   def change do
+    rename table(:swaps), :emit_asset, to: :emit_asset_asset
+    rename table(:swaps), :coin, to: :coin_asset
+
     alter table(:swaps) do
-      remove :swap_target, :string
-      remove :swap_slip, :string
-      remove :liquidity_fee, :string
-      remove :pool_slip, :string
+      remove :swap_target
+      remove :swap_slip
+      remove :liquidity_fee
+      remove :pool_slip
 
-      modify :liquidity_fee_in_rune, :string
-      modify :streaming_swap_quantity, :string
-      modify :streaming_swap_count, :string
+      modify :liquidity_fee_in_rune, :bigint
 
-      add :volume_usd, :string
-      add :liquidity_fee_in_usd, :string
+      add :emit_asset_amount, :bigint
+      add :coin_amount, :bigint
+
+      add :volume_usd, :bigint
+      add :liquidity_fee_in_usd, :bigint
       add :affiliate, :string
-      add :affiliate_bps, :string
-      add :affiliate_fee_in_rune, :string
-      add :affiliate_fee_in_usd, :string
+      add :affiliate_bps, :integer
+      add :affiliate_fee_in_rune, :bigint
+      add :affiliate_fee_in_usd, :bigint
     end
-
-    execute """
-    UPDATE swaps
-    SET
-      liquidity_fee_in_rune = liquidity_fee_in_rune::text,
-      streaming_swap_quantity = streaming_swap_quantity::text,
-      streaming_swap_count = streaming_swap_count::text
-    """
   end
 end

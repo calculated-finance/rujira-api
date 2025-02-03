@@ -13,23 +13,29 @@ defmodule Thorchain.Swaps.Swap do
     field :idx, :integer, primary_key: true
 
     field :pool, :string
-    field :liquidity_fee_in_rune, :string
-    field :liquidity_fee_in_usd, :string
-    field :emit_asset, :string
-    field :streaming_swap_quantity, :string
-    field :streaming_swap_count, :string
+    field :liquidity_fee_in_rune, :integer
+    field :liquidity_fee_in_usd, :integer
+
+    field :emit_asset_asset, :string
+    field :emit_asset_amount, :integer
+
+    field :streaming_swap_quantity, :integer
+    field :streaming_swap_count, :integer
     field :id, :string
     field :chain, :string
     field :from, :string
     field :to, :string
-    field :coin, :string
+    field :coin_asset, :string
+    field :coin_amount, :integer
+
     field :memo, :string
     field :timestamp, :utc_datetime_usec
-    field :volume_usd, :string
+
+    field :volume_usd, :integer
     field :affiliate, :string
-    field :affiliate_bps, :string
-    field :affiliate_fee_in_rune, :string
-    field :affiliate_fee_in_usd, :string
+    field :affiliate_bps, :integer
+    field :affiliate_fee_in_rune, :integer
+    field :affiliate_fee_in_usd, :integer
 
     timestamps(type: :utc_datetime_usec)
   end
@@ -42,18 +48,20 @@ defmodule Thorchain.Swaps.Swap do
       :idx,
       :pool,
       :liquidity_fee_in_rune,
-      :emit_asset,
+      :liquidity_fee_in_usd,
+      :emit_asset_asset,
+      :emit_asset_amount,
       :streaming_swap_quantity,
       :streaming_swap_count,
       :id,
       :chain,
       :from,
       :to,
-      :coin,
+      :coin_asset,
+      :coin_amount,
       :memo,
       :timestamp,
       :volume_usd,
-      :liquidity_fee_in_usd,
       :affiliate,
       :affiliate_bps,
       :affiliate_fee_in_rune,
@@ -65,18 +73,18 @@ defmodule Thorchain.Swaps.Swap do
       :idx,
       :pool,
       :liquidity_fee_in_rune,
-      :emit_asset,
-      :streaming_swap_quantity,
-      :streaming_swap_count,
+      :liquidity_fee_in_usd,
+      :emit_asset_asset,
+      :emit_asset_amount,
       :id,
       :chain,
       :from,
       :to,
-      :coin,
+      :coin_asset,
+      :coin_amount,
       :memo,
       :timestamp,
-      :volume_usd,
-      :liquidity_fee_in_usd
+      :volume_usd
     ])
     |> unique_constraint([:height, :tx_idx, :idx], name: "swaps_pkey")
   end
