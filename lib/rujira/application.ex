@@ -22,7 +22,7 @@ defmodule Rujira.Application do
       Thorchain.Node,
       Rujira.Balances,
       Rujira.Invalidator,
-      Thorchain.Swaps.Indexer
+      Thorchain.Swaps
     ]
 
     Thorchain.Node.Appsignal.attach()

@@ -4,13 +4,11 @@ defmodule RujiraWeb.Socket do
   use Absinthe.Phoenix.Socket,
     schema: RujiraWeb.Schema
 
-  def id(socket) do
-    IO.inspect(socket)
+  def id(_) do
     nil
   end
 
-  def connect(params, socket, _connect_info) do
-    IO.inspect(params, label: :connect)
+  def connect(_params, socket, _connect_info) do
     {:ok, socket}
   end
 end
