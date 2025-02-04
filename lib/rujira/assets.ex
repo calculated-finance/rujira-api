@@ -67,20 +67,20 @@ defmodule Rujira.Assets do
     sym
   end
 
-  def decimals(%{chain: "AVAX", symbol: "USDC"}), do: 6
-  def decimals(%{chain: "AVAX"}), do: 18
-  def decimals(%{chain: "BASE", symbol: "USDC"}), do: 6
-  def decimals(%{chain: "BASE"}), do: 18
-  def decimals(%{chain: "BCH"}), do: 8
-  def decimals(%{chain: "BTC"}), do: 8
-  def decimals(%{chain: "BSC", symbol: "USDC"}), do: 8
-  def decimals(%{chain: "BSC"}), do: 18
-  def decimals(%{chain: "DOGE"}), do: 8
-  def decimals(%{chain: "ETH", symbol: "USDC"}), do: 6
-  def decimals(%{chain: "ETH"}), do: 18
-  def decimals(%{chain: "GAIA"}), do: 6
-  def decimals(%{chain: "KUJI"}), do: 6
-  def decimals(%{chain: "LTC"}), do: 8
+  def decimals(%{type: :layer_1, chain: "AVAX", symbol: "USDC"}), do: 6
+  def decimals(%{type: :layer_1, chain: "AVAX"}), do: 18
+  def decimals(%{type: :layer_1, chain: "BASE", symbol: "USDC"}), do: 6
+  def decimals(%{type: :layer_1, chain: "BASE"}), do: 18
+  def decimals(%{type: :layer_1, chain: "BCH"}), do: 8
+  def decimals(%{type: :layer_1, chain: "BTC"}), do: 8
+  def decimals(%{type: :layer_1, chain: "BSC", symbol: "USDC"}), do: 8
+  def decimals(%{type: :layer_1, chain: "BSC"}), do: 18
+  def decimals(%{type: :layer_1, chain: "DOGE"}), do: 8
+  def decimals(%{type: :layer_1, chain: "ETH", symbol: "USDC"}), do: 6
+  def decimals(%{type: :layer_1, chain: "ETH"}), do: 18
+  def decimals(%{type: :layer_1, chain: "GAIA"}), do: 6
+  def decimals(%{type: :layer_1, chain: "KUJI"}), do: 6
+  def decimals(%{type: :layer_1, chain: "LTC"}), do: 8
   def decimals(_), do: 8
 
   def type(str) do
