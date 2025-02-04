@@ -50,8 +50,11 @@ defmodule Rujira.Assets do
   end
 
   def ticker(str) do
+    IO.inspect(str)
     [_, v] = String.split(str, [".", "-"], parts: 2)
+    IO.inspect(v)
     [sym | _] = String.split(v, "-")
+    IO.inspect(sym)
     sym
   end
 
@@ -109,14 +112,16 @@ defmodule Rujira.Assets do
 
   def from_denom(denom) do
     case denom |> String.upcase() |> String.split("-", parts: 2) do
-      [chain, token] ->
+      [chain, symbol] ->
+        [ticker | _] = String.split(symbol, "-")
+
         {:ok,
          %Asset{
-           id: "#{chain}-#{token}",
+           id: "#{chain}-#{symbol}",
            type: :secured,
            chain: chain,
-           symbol: token,
-           ticker: token
+           symbol: symbol,
+           ticker: ticker
          }}
 
       _ ->

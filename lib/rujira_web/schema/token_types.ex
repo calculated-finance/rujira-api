@@ -9,10 +9,12 @@ defmodule RujiraWeb.Schema.TokenTypes do
     field :metadata, non_null(:metadata), resolve: &RujiraWeb.Resolvers.Token.metadata/3
 
     field :price, :price do
-      resolve(fn %{symbol: symbol}, _, _ ->
-        batch({RujiraWeb.Resolvers.Token, :prices}, symbol, fn x ->
+      resolve(fn %{ticker: ticker}, _, _ ->
+        IO.inspect(ticker)
+
+        batch({RujiraWeb.Resolvers.Token, :prices}, ticker, fn x ->
           with {:ok, prices} <- x do
-            {:ok, map(Map.get(prices, symbol))}
+            {:ok, map(Map.get(prices, ticker))}
           end
         end)
       end)
