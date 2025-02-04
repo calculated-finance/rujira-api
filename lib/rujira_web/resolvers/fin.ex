@@ -75,10 +75,19 @@ defmodule RujiraWeb.Resolvers.Fin do
     end)
   end
 
-  def candles(%{address: address}, %{to: to, from: from, resolution: resolution}, _) do
+  def candles(%{address: address}, %{before: to, after: from, resolution: resolution}, _) do
     Helpers.async(fn ->
       with {:ok, candles} <- Fin.candles(address, to, from, resolution) do
-        {:ok, candles}
+        {:ok,
+         %{
+           page_info: %{
+             start_cursor: <<>>,
+             end_cursor: <<>>,
+             has_previous_page: false,
+             has_next_page: false
+           },
+           edges: Enum.map(candles, &%{cursor: <<>>, node: &1})
+         }}
       end
     end)
   end

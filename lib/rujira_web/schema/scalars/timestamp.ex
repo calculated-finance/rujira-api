@@ -9,12 +9,12 @@ defmodule RujiraWeb.Schema.Scalars.Timestamp do
   be converted to UTC and any UTC offset other than 0 will be rejected.
   """
   scalar :timestamp, name: "Timestamp" do
-    serialize(&DateTime.to_iso8601/1)
+    serialize(&NaiveDateTime.to_iso8601/1)
     parse(&parse_datetime/1)
   end
 
   defp parse_datetime(%Input.String{value: value}) do
-    DateTime.from_unix(value)
+    NaiveDateTime.from_iso8601(value)
   end
 
   defp parse_datetime(%Input.Null{}) do

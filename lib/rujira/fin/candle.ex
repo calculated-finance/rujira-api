@@ -6,11 +6,12 @@ defmodule Rujira.Fin.Candle do
   import Ecto.Query
 
   defstruct [
+    :id,
     :bin,
     :open,
+    :close,
     :high,
     :low,
-    :close,
     :volume
   ]
 

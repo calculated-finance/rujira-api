@@ -65,8 +65,8 @@ defmodule RujiraWeb.Resolvers.Node do
       # ["contract", "fin", address, "trade", id] ->
       #   Rujira.Fin.get_trade(address, id)
 
-      # ["contract", "fin", address, "candle", id] ->
-      #   Rujira.Fin.get_candle(address, id)
+      ["contract", "fin", address, "candle", id] ->
+        {:ok, %Fin.Candle{}}
 
       ["contract", "staking", address] ->
         RujiraWeb.Resolvers.Staking.node(%{address: address}, nil, nil)

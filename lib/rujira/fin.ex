@@ -125,11 +125,14 @@ defmodule Rujira.Fin do
 
   def candles(_address, _from, _to, _resolution) do
     candles = [
-      %{
-        high: "1",
-        low: "2",
-        volume: "3",
-        time: "4"
+      %Candle{
+        id: "TODO",
+        high: 300_000_000_000,
+        low: 100_000_000_000,
+        open: 150_000_000_000,
+        close: 250_000_000_000,
+        volume: 300_000_000_000,
+        bin: NaiveDateTime.utc_now()
       }
     ]
 

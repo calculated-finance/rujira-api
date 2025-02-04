@@ -52,8 +52,8 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :summary, :fin_pair_summary, resolve: &RujiraWeb.Resolvers.Fin.summary/3
 
     connection field :candles, node_type: :fin_candle do
-      arg(:from, non_null(:timestamp))
-      arg(:to, non_null(:timestamp))
+      arg(:after, non_null(:timestamp))
+      arg(:before, non_null(:timestamp))
       arg(:resolution, non_null(:string))
       resolve(&RujiraWeb.Resolvers.Fin.candles/3)
     end
