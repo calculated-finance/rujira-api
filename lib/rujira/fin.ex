@@ -2,7 +2,12 @@ defmodule Rujira.Fin do
   use GenServer
 
   def start_link(_) do
-    Supervisor.start_link([__MODULE__.Listener], strategy: :one_for_one)
+    children = [
+      __MODULE__.Listener,
+      __MODULE__.Trades.Indexer
+    ]
+
+    Supervisor.start_link(children, strategy: :one_for_one)
   end
 
   @impl true
@@ -120,7 +125,7 @@ defmodule Rujira.Fin do
 
   def candles(_address, _from, _to, _resolution) do
     candles = [
-      %Candle{
+      %{
         high: "1",
         low: "2",
         volume: "3",
