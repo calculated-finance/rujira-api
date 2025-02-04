@@ -3,7 +3,7 @@ defmodule RujiraWeb.Schema.MergeTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
 
-  @merge_denom "ruji"
+  @merge_denom Assets.from_string("THOR.RUJI")
 
   @desc "A merge_pool represents the configuration about a rujira-merge contract"
   node object(:merge_pool) do
@@ -57,14 +57,14 @@ defmodule RujiraWeb.Schema.MergeTypes do
       resolve(fn %{total_size: deposit_size}, _, _ ->
         # Simulate a smaller deposit for now
         deposit_size = trunc(deposit_size * 0.8)
-        {:ok, %{amount: deposit_size, denom: @merge_denom}}
+        {:ok, %{amount: deposit_size, asset: @merge_denom}}
       end)
     end
 
     @desc "The total amount of merge token that all `shares` are worth"
     field :total_size, non_null(:balance) do
       resolve(fn %{total_size: total_size}, _, _ ->
-        {:ok, %{amount: total_size, denom: @merge_denom}}
+        {:ok, %{amount: total_size, asset: @merge_denom}}
       end)
     end
   end
@@ -75,7 +75,7 @@ defmodule RujiraWeb.Schema.MergeTypes do
     @desc "The amount of merge token that has been deposited by the account"
     field :merged, non_null(:balance) do
       resolve(fn %{merged: merged, pool: %{merge_denom: merge_denom}}, _, _ ->
-        {:ok, %{amount: merged, denom: merge_denom}}
+        {:ok, %{amount: merged, asset: merge_denom}}
       end)
     end
 
@@ -84,7 +84,7 @@ defmodule RujiraWeb.Schema.MergeTypes do
     @desc "The amount of ruji token that `shares` are worth"
     field :size, non_null(:balance) do
       resolve(fn %{size: size}, _, _ ->
-        {:ok, %{amount: size, denom: @merge_denom}}
+        {:ok, %{amount: size, asset: @merge_denom}}
       end)
     end
 
