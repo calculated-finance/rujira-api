@@ -27,6 +27,7 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Fin.Pair{}, _), do: :fin_pair
   def type(%Fin.Book{}, _), do: :fin_book
   # def type(%Fin.Trade{}, _), do: :fin_trade
+  def type(%Fin.Candle{}, _), do: :fin_candle
   def type(%Staking.Pool{}, _), do: :staking_pool
 
   defp decode_id(id) do
@@ -64,6 +65,9 @@ defmodule RujiraWeb.Resolvers.Node do
       # ["contract", "fin", address, "trade", id] ->
       #   Rujira.Fin.get_trade(address, id)
 
+      # ["contract", "fin", address, "candle", id] ->
+      #   Rujira.Fin.get_candle(address, id)
+
       ["contract", "staking", address] ->
         RujiraWeb.Resolvers.Staking.node(%{address: address}, nil, nil)
 
@@ -81,4 +85,5 @@ defmodule RujiraWeb.Resolvers.Node do
   def encode_id(:contract, :fin, address), do: "contract:fin:#{address}"
   def encode_id(:contract, :fin, address, :book), do: "contract:fin:#{address}:book"
   def encode_id(:contract, :fin, address, :trade, id), do: "contract:fin:#{address}:trade:#{id}"
+  def encode_id(:contract, :fin, address, :candle, id), do: "contract:fin:#{address}:candle:#{id}"
 end

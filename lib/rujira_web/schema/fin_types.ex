@@ -51,7 +51,7 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :book, non_null(:fin_book), resolve: &RujiraWeb.Resolvers.Fin.book/3
     field :summary, :fin_pair_summary, resolve: &RujiraWeb.Resolvers.Fin.summary/3
 
-    field :candles, non_null(list_of(non_null(:candle))) do
+    connection field :candles, node_type: :fin_candle do
       arg(:from, non_null(:integer))
       arg(:to, non_null(:integer))
       arg(:resolution, non_null(:integer))
@@ -64,6 +64,7 @@ defmodule RujiraWeb.Schema.FinTypes do
   end
 
   connection(node_type: :fin_trade)
+  connection(node_type: :fin_candle)
 
   @desc "Orderbook of a specific Fin pair"
   node object(:fin_book) do
@@ -166,7 +167,7 @@ defmodule RujiraWeb.Schema.FinTypes do
   end
 
   @desc "Represents a candlestick chart data point for a specific time period, including high, low, open, close, volume, and timestamp."
-  object :candle do
+  node object(:fin_candle) do
     field :high, non_null(:bigint)
     field :low, non_null(:bigint)
     field :open, non_null(:bigint)
