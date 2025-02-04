@@ -29,7 +29,18 @@ defmodule RujiraWeb.Resolvers.Fin do
   def book(%{address: address, book: book}, _, _),
     do: {:ok, %{book | id: Node.encode_id(:contract, :fin, address, :book)}}
 
-  def history(_, _, _), do: {:ok, []}
+  def trades(_, _, _),
+    do:
+      {:ok,
+       %{
+         page_info: %{
+           start_cursor: <<>>,
+           end_cursor: <<>>,
+           has_previous_page: false,
+           has_next_page: false
+         },
+         edges: []
+       }}
 
   def summary(%{token_base: base, token_quote: quot}, _, _) do
     # TODO 1: Fetch from actual trading data

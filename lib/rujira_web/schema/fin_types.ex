@@ -58,9 +58,12 @@ defmodule RujiraWeb.Schema.FinTypes do
       resolve(&RujiraWeb.Resolvers.Fin.candles/3)
     end
 
-    field :history, non_null(list_of(non_null(:fin_trade))),
-      resolve: &RujiraWeb.Resolvers.Fin.history/3
+    connection field :trades, node_type: :fin_trade do
+      resolve(&RujiraWeb.Resolvers.Fin.trades/3)
+    end
   end
+
+  connection(node_type: :fin_trade)
 
   @desc "Orderbook of a specific Fin pair"
   node object(:fin_book) do
@@ -98,7 +101,7 @@ defmodule RujiraWeb.Schema.FinTypes do
   end
 
   @desc "Single trade executed by on a fin pair"
-  object :fin_trade do
+  node object(:fin_trade) do
     field :height, non_null(:bigint)
     field :tx_idx, non_null(:bigint)
     field :idx, non_null(:bigint)
