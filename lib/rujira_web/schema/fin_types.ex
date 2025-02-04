@@ -65,6 +65,8 @@ defmodule RujiraWeb.Schema.FinTypes do
 
   connection(node_type: :fin_trade)
   connection(node_type: :fin_candle)
+  connection(node_type: :fin_order)
+  connection(node_type: :fin_account_action)
 
   @desc "Orderbook of a specific Fin pair"
   node object(:fin_book) do
@@ -83,12 +85,17 @@ defmodule RujiraWeb.Schema.FinTypes do
 
   @desc "Collections of data of an account across all the fin pairs"
   object :fin_account do
-    field :orders, non_null(list_of(non_null(:fin_order)))
-    field :history, non_null(list_of(non_null(:fin_account_action)))
+    connection field :orders, node_type: :fin_order do
+      resolve(&RujiraWeb.Resolvers.Fin.orders/3)
+    end
+
+    connection field :history, node_type: :fin_account_action do
+      resolve(&RujiraWeb.Resolvers.Fin.history/3)
+    end
   end
 
   @desc "Single order of an account on a fin pair"
-  object :fin_order do
+  node object(:fin_order) do
     field :pair, non_null(:address)
     field :owner, non_null(:address)
     field :side, non_null(:string)

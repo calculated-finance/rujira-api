@@ -67,10 +67,39 @@ defmodule RujiraWeb.Resolvers.Fin do
   end
 
   def account(%{address: address}, _, _) do
+    {:ok, %{address: address, orders: nil, history: nil}}
+  end
+
+  def orders(%{address: address}, _, _) do
     Helpers.async(fn ->
-      with {:ok, orders} <- Fin.list_all_orders(address),
-           {:ok, history} <- Fin.account_history(address) do
-        {:ok, %{orders: orders, history: history}}
+      with {:ok, orders} <- Fin.list_all_orders(address) do
+        {:ok,
+         %{
+           page_info: %{
+             start_cursor: <<>>,
+             end_cursor: <<>>,
+             has_previous_page: false,
+             has_next_page: false
+           },
+           edges: Enum.map(orders, &%{cursor: <<>>, node: &1})
+         }}
+      end
+    end)
+  end
+
+  def history(%{address: address}, _, _) do
+    Helpers.async(fn ->
+      with {:ok, history} <- Fin.account_history(address) do
+        {:ok,
+         %{
+           page_info: %{
+             start_cursor: <<>>,
+             end_cursor: <<>>,
+             has_previous_page: false,
+             has_next_page: false
+           },
+           edges: Enum.map(history, &%{cursor: <<>>, node: &1})
+         }}
       end
     end)
   end

@@ -2,6 +2,7 @@ defmodule Rujira.Fin.Order do
   alias Rujira.Fin.Pair
 
   defstruct [
+    :id,
     :pair,
     :owner,
     :side,
@@ -40,7 +41,7 @@ defmodule Rujira.Fin.Order do
         "remaining" => remaining,
         "filled" => filled
       }) do
-    with {type, deviation} <- parse_price(price),
+    with {type, deviation, price} <- parse_price(price),
          {rate, ""} <- Decimal.parse(rate),
          {updated_at, ""} <- Integer.parse(updated_at),
          {:ok, updated_at} <- DateTime.from_unix(updated_at, :nanosecond),
@@ -48,6 +49,7 @@ defmodule Rujira.Fin.Order do
          {remaining, ""} <- Integer.parse(remaining),
          {filled, ""} <- Integer.parse(filled) do
       %__MODULE__{
+        id: "contract:fin:#{pair_address}:order:#{price}",
         pair: pair_address,
         owner: owner,
         side: String.to_atom(side),
@@ -62,6 +64,6 @@ defmodule Rujira.Fin.Order do
     end
   end
 
-  def parse_price(%{"fixed" => _}), do: {:fixed, nil}
-  def parse_price(%{"oracle" => deviation}), do: {:oracle, deviation}
+  def parse_price(%{"fixed" => v}), do: {:fixed, nil, "fixed/#{v}"}
+  def parse_price(%{"oracle" => deviation}), do: {:oracle, deviation, "oracle/#{deviation}"}
 end
