@@ -71,6 +71,7 @@ defmodule Rujira.Staking.Pool do
       }) do
     {:ok,
      %__MODULE__{
+       id: address,
        address: address,
        bond_denom: bond_denom,
        revenue_denom: revenue_denom,

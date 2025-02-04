@@ -3,9 +3,11 @@ defmodule Rujira.Chains.Doge do
 end
 
 defimpl Rujira.Chains.Adapter, for: Rujira.Chains.Doge do
+  alias Rujira.Assets
+
   def balances(_a, address, _assets) do
     with {:ok, balance} <- CryptoApis.Api.get_balance("dogecoin", address, 8) do
-      {:ok, [%{amount: balance, asset: "DOGE.DOGE"}]}
+      {:ok, [%{amount: balance, asset: Assets.from_string("DOGE.DOGE")}]}
     end
   end
 end

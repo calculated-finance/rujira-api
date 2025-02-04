@@ -72,4 +72,8 @@ defmodule Rujira.Fin.Candle do
 
   defp fill_blanks(agg, [x | rest]), do: fill_blanks([x | agg], rest)
   defp fill_blanks(agg, []), do: agg
+
+  def to_id(address, res, bin) do
+    "#{address}:#{res}:#{DateTime.to_unix(bin)}"
+  end
 end

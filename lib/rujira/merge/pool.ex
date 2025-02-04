@@ -83,6 +83,7 @@ defmodule Rujira.Merge.Pool do
       start_rate = trunc(div(ruji_allocation * @precision, merge_supply))
 
       %__MODULE__{
+        id: address,
         address: address,
         merge_denom: merge_denom,
         merge_supply: merge_supply,

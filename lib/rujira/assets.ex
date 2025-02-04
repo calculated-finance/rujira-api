@@ -2,6 +2,7 @@ defmodule Rujira.Assets do
   use Memoize
   alias Thorchain.Types.QueryPoolsRequest
   alias Thorchain.Types.Query.Stub, as: Q
+  alias __MODULE__.Asset
 
   defmemo assets() do
     with {:ok, %{pools: pools}} <- Thorchain.Node.stub(&Q.pools/2, %QueryPoolsRequest{}) do
@@ -33,12 +34,26 @@ defmodule Rujira.Assets do
     end)
   end
 
+  @doc """
+  Convert string notation to an Assets.Asset
+  """
+  def from_string(id) do
+    %Asset{
+      id: id,
+      type: type(id),
+      chain: chain(id),
+      symbol: symbol(id),
+      ticker: symbol(id)
+    }
+  end
+
+  def to_string(%Asset{id: id}), do: id
+
   @moduledoc """
   Interfaces for interacting with THORChain Asset values
   """
 
   def chain(str) do
-    # TODO: suport more delimiters
     [c | _] = String.split(str, [".", "-"])
     c
   end
@@ -47,39 +62,26 @@ defmodule Rujira.Assets do
   def symbol("KUJI.RKUJI"), do: "rKUJI"
 
   def symbol(str) do
-    # TODO: suport more delimiters
     [_, v | _] = String.split(str, [".", "-"])
     [sym | _] = String.split(v, "-")
     sym
   end
 
-  def decimals("AVAX.USDC" <> _), do: 6
-  def decimals("AVAX." <> _), do: 18
-  def decimals("BASE.USDC" <> _), do: 6
-  def decimals("BASE." <> _), do: 18
-  def decimals("BCH." <> _), do: 8
-  def decimals("BTC." <> _), do: 8
-  def decimals("BSC.USDC" <> _), do: 8
-  def decimals("BSC." <> _), do: 18
-  def decimals("DOGE." <> _), do: 8
-  def decimals("ETH.USDC" <> _), do: 6
-  def decimals("ETH." <> _), do: 18
-  def decimals("GAIA." <> _), do: 6
-  def decimals("KUJI." <> _), do: 6
-  def decimals("LTC." <> _), do: 8
+  def decimals(%{chain: "AVAX", symbol: "USDC"}), do: 6
+  def decimals(%{chain: "AVAX"}), do: 18
+  def decimals(%{chain: "BASE", symbol: "USDC"}), do: 6
+  def decimals(%{chain: "BASE"}), do: 18
+  def decimals(%{chain: "BCH"}), do: 8
+  def decimals(%{chain: "BTC"}), do: 8
+  def decimals(%{chain: "BSC", symbol: "USDC"}), do: 8
+  def decimals(%{chain: "BSC"}), do: 18
+  def decimals(%{chain: "DOGE"}), do: 8
+  def decimals(%{chain: "ETH", symbol: "USDC"}), do: 6
+  def decimals(%{chain: "ETH"}), do: 18
+  def decimals(%{chain: "GAIA"}), do: 6
+  def decimals(%{chain: "KUJI"}), do: 6
+  def decimals(%{chain: "LTC"}), do: 8
   def decimals(_), do: 8
-
-  # TODO: Decimals differ between Layer 1 balances and THORChain secured asset balance
-  # https://dev.thorchain.org/concepts/querying-thorchain.html#decimals-and-base-units
-  # defmemo decimals(asset) do
-  #   req = %QueryPoolRequest{asset: asset}
-
-  #   case Thorchain.Node.stub(&Q.pool/2, req) do
-  #     {:ok, %{decimals: 0}} -> 8
-  #     {:ok, %{decimals: d}} -> d
-  #     _ -> 8
-  #   end
-  # end
 
   def type(str) do
     cond do
@@ -89,25 +91,6 @@ defmodule Rujira.Assets do
     end
   end
 
-  def to_layer_1(str) do
-    String.replace(str, ~r/[\-\.]/, ".", global: false)
-  end
-
-  def to_secured(str) do
-    String.replace(str, ".", "-", global: true)
-  end
-
-  @doc """
-  Converts an Asset string to a Cosmos SDK x/bank denom string
-
-  For Layer 1 assets, this will return a value if the Layer 1 chain is Cosmos SDK
-  For Secured assets, this will return the THORChain x/bank denom string for the secured asset
-  """
-  def to_native("THOR." <> denom), do: {:ok, String.downcase(denom)}
-
-  def to_native("KUJI." <> _ = denom), do: Rujira.Chains.Kuji.to_denom(denom)
-  def to_native("GAIA." <> _ = denom), do: Rujira.Chains.Gaia.to_denom(denom)
-
   def to_native(asset) do
     case String.split(asset, "-", parts: 2) do
       [chain, token] -> {:ok, String.downcase(chain) <> "-" <> String.downcase(token)}
@@ -115,17 +98,41 @@ defmodule Rujira.Assets do
     end
   end
 
+  def to_layer1(%Asset{chain: "THOR"}), do: nil
+
+  def to_layer1(%Asset{id: id} = a) do
+    %{a | type: :layer_1, id: String.replace(id, ~r/[\.\-]/, ".")}
+  end
+
+  def to_secured(%Asset{chain: "THOR"}), do: nil
+
+  def to_secured(%Asset{id: id} = a) do
+    %{a | type: :secured, id: String.replace(id, ~r/[\.\-]/, "-")}
+  end
+
   @doc """
-  Converts a denom string to a THORChain Layer 1 representation of the asset.
+  Converts a denom string to a THORChain asset - native token or
 
   This will only convert
   """
-  def from_native("rune"), do: {:ok, "THOR.RUNE"}
+  def from_denom("rune"),
+    do:
+      {:ok, %Asset{id: "THOR.RUNE", type: :native, chain: "THOR", symbol: "RUNE", ticker: "RUNE"}}
 
-  def from_native(asset) do
-    case String.split(asset, "-", parts: 2) do
-      [chain, token] -> {:ok, String.upcase(chain) <> "." <> String.upcase(token)}
-      _ -> {:error, :invalid_denom}
+  def from_denom(denom) do
+    case denom |> String.upcase() |> String.split("-", parts: 2) do
+      [chain, token] ->
+        {:ok,
+         %Asset{
+           id: "#{chain}-#{token}",
+           type: :secured,
+           chain: chain,
+           symbol: token,
+           ticker: token
+         }}
+
+      _ ->
+        {:error, :invalid_denom}
     end
   end
 end

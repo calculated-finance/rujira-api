@@ -27,6 +27,7 @@ defmodule Rujira.Fin.Pair do
   end
 
   defstruct [
+    :id,
     :address,
     :token_base,
     :token_quote,
@@ -38,12 +39,12 @@ defmodule Rujira.Fin.Pair do
     :fee_address,
     :status,
     :book,
-    :id,
     :history,
     :summary
   ]
 
   @type t :: %__MODULE__{
+          id: String.t(),
           address: String.t(),
           token_base: String.t(),
           token_quote: String.t(),
@@ -72,6 +73,7 @@ defmodule Rujira.Fin.Pair do
          {:ok, oracle_quote} <- get_asset(Enum.at(oracles, 1)) do
       {:ok,
        %__MODULE__{
+         id: address,
          address: address,
          token_base: Enum.at(denoms, 0),
          token_quote: Enum.at(denoms, 1),

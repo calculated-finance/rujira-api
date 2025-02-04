@@ -3,13 +3,13 @@ defmodule RujiraWeb.Schema.BalanceTypes do
 
   @desc "The balance of a token or coin on a layer 1 chain"
   object :layer_1_balance do
-    field :asset, non_null(:asset), resolve: &RujiraWeb.Resolvers.Token.asset/3
+    field :asset, non_null(:asset)
     field :amount, non_null(:bigint)
   end
 
-  @desc "The balance of a token or coin on the app layer"
+  @desc "Relacement for layer_1_balance"
   object :balance do
-    field :denom, non_null(:denom), resolve: &RujiraWeb.Resolvers.Token.denom/3
+    field :asset, non_null(:asset)
     field :amount, non_null(:bigint)
   end
 end

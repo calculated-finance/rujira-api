@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Schema.MergeTypes do
+  alias Rujira.Assets
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
 
@@ -8,23 +9,17 @@ defmodule RujiraWeb.Schema.MergeTypes do
   node object(:merge_pool) do
     field :address, non_null(:string)
 
-    field :merge_denom, non_null(:denom) do
-      resolve(fn %{merge_denom: denom}, x, y ->
-        RujiraWeb.Resolvers.Token.denom(%{denom: denom}, x, y)
-      end)
-    end
-
     field :merge_asset, non_null(:asset) do
-      resolve(fn %{merge_denom: denom}, x, y ->
-        RujiraWeb.Resolvers.Token.asset(%{denom: denom}, x, y)
+      resolve(fn %{merge_denom: denom}, _, _ ->
+        Assets.from_denom(denom)
       end)
     end
 
     field :merge_supply, non_null(:bigint)
 
-    field :ruji_denom, non_null(:denom) do
-      resolve(fn %{ruji_denom: denom}, x, y ->
-        RujiraWeb.Resolvers.Token.denom(%{denom: denom}, x, y)
+    field :ruji_asset, non_null(:asset) do
+      resolve(fn %{ruji_denom: denom}, _, _ ->
+        Assets.from_denom(denom)
       end)
     end
 
@@ -35,7 +30,10 @@ defmodule RujiraWeb.Schema.MergeTypes do
     field :current_rate, non_null(:bigint)
     @desc "Start Rate with 12 Decimals place"
     field :start_rate, non_null(:bigint)
-    field :status, :merge_status
+
+    field :status, :merge_status do
+      resolve(&RujiraWeb.Resolvers.Merge.status/3)
+    end
   end
 
   @desc "A merge_status represents current status about the rujira-merge contract"

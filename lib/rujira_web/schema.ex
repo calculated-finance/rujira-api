@@ -51,11 +51,6 @@ defmodule RujiraWeb.Schema do
     @desc """
       The globally unique identifier for this object.
       This ID is Relay-compatible and can be used to refetch the object.
-      Examples
-      - account:sthor1qm7vtdca95aj7nvtrarqm3uah33nhffpnhhg3j for a native account
-      - account:btc:bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh for a layer 1 Bitcoin account
-      - token:asset:BTC.BTC
-      - token:denom:rune
     """
     field :id, non_null(:id)
     resolve_type(&RujiraWeb.Resolvers.Node.type/2)
@@ -87,7 +82,7 @@ defmodule RujiraWeb.Schema do
       @desc """
       The ID of the Edge Node, omitting the ID element, eg
 
-      contract:fin:{address}:trade
+      base64(FinTrade:{address})
       """
       arg(:prefix, non_null(:string))
 

@@ -49,7 +49,7 @@ defmodule Rujira.Fin.Order do
          {remaining, ""} <- Integer.parse(remaining),
          {filled, ""} <- Integer.parse(filled) do
       %__MODULE__{
-        id: "contract:fin:#{pair_address}:order:#{price}",
+        id: "#{pair_address}:#{price}",
         pair: pair_address,
         owner: owner,
         side: String.to_atom(side),
@@ -66,4 +66,7 @@ defmodule Rujira.Fin.Order do
 
   def parse_price(%{"fixed" => v}), do: {:fixed, nil, "fixed/#{v}"}
   def parse_price(%{"oracle" => deviation}), do: {:oracle, deviation, "oracle/#{deviation}"}
+
+  def from_id(_) do
+  end
 end

@@ -1,101 +1,44 @@
 defmodule RujiraWeb.Resolvers.Token do
+  alias Rujira.Assets.Asset
   alias Rujira.Assets
-  alias RujiraWeb.Resolvers.Node
 
-  def asset(%{asset: "THOR." <> _ = asset}, _, _) do
-    {:ok,
-     %Assets.Asset{
-       id: Node.encode_id(:asset, asset),
-       asset: asset,
-       type: :layer_1,
-       chain: :thor
-     }}
-  end
+  def string(%Asset{} = asset, _, _), do: {:ok, Assets.to_string(asset)}
+  def layer1(%{asset: %Asset{} = asset}, _, _), do: {:ok, Assets.to_layer1(asset)}
+  def secured(%{asset: %Asset{} = asset}, _, _), do: {:ok, Assets.to_secured(asset)}
 
-  def asset(%{asset: asset}, _, _) do
-    {:ok,
-     %Assets.Asset{
-       id: Node.encode_id(:asset, asset),
-       asset: asset,
-       type: Rujira.Assets.type(asset),
-       chain: get_chain(asset)
-     }}
-  end
+  @doc """
+  Converts an Asset string to a Cosmos SDK x/bank denom string
 
-  def asset(%{denom: denom}, _, _) do
-    with {:ok, asset} <- Rujira.Assets.from_native(denom) do
-      {:ok,
-       %Assets.Asset{
-         id: Node.encode_id(:asset, asset),
-         asset: asset,
-         type: Rujira.Assets.type(asset),
-         chain: get_chain(asset)
-       }}
+  For Layer 1 assets, this will return a value if the Layer 1 chain is Cosmos SDK
+  For Secured assets, this will return the THORChain x/bank denom string for the secured asset
+  """
+  def denom(%{asset: %Asset{type: :secured, id: id}}, _, _),
+    do: {:ok, %{denom: String.downcase(id)}}
+
+  def denom(%{asset: %Asset{chain: "THOR", symbol: symbol}}, _, _),
+    do: {:ok, %{denom: String.downcase(symbol)}}
+
+  def denom(%{asset: %Asset{chain: "KUJI", symbol: symbol}}, _, _) do
+    with {:ok, denom} <- Rujira.Chains.Kuji.to_denom(symbol) do
+      {:ok, %{denom: denom}}
+    else
+      _ -> {:ok, nil}
     end
   end
 
-  def variants(%{asset: asset}, _, _) do
-    l1 = Rujira.Assets.to_layer_1(asset)
-
-    l1 = %Assets.Asset{
-      id: Node.encode_id(:asset, l1),
-      asset: l1,
-      type: :layer_1,
-      chain: get_chain(asset)
-    }
-
-    {:ok,
-     %{
-       layer1: l1,
-       secured: secured(l1.asset),
-       native:
-         case Rujira.Assets.to_native(asset) do
-           {:ok, nil} ->
-             nil
-
-           {:ok, denom} ->
-             %{
-               id: Node.encode_id(:denom, denom),
-               denom: denom
-             }
-         end
-     }}
+  def denom(%{asset: %Asset{chain: "GAIA", symbol: symbol}}, _, _) do
+    with {:ok, denom} <- Rujira.Chains.Gaia.to_denom(symbol) do
+      {:ok, %{denom: denom}}
+    else
+      _ -> {:ok, nil}
+    end
   end
 
-  def secured("THOR." <> _) do
-    nil
-  end
+  def chain(%{chain: chain}, _, _),
+    do: {:ok, chain |> String.downcase() |> String.to_existing_atom()}
 
-  def secured(asset) do
-    secured = Rujira.Assets.to_secured(asset)
-
-    %Assets.Asset{
-      id: Node.encode_id(:asset, secured),
-      asset: secured,
-      type: :secured,
-      chain: get_chain(asset)
-    }
-  end
-
-  defp get_chain(sym) do
-    Rujira.Assets.chain(sym) |> String.downcase() |> String.to_existing_atom()
-  end
-
-  @spec denom(%{:denom => any(), optional(any()) => any()}, any(), any()) ::
-          {:ok, %{denom: any(), id: <<_::64, _::_*8>>}}
-  def denom(%{denom: denom}, _, _) do
-    {:ok, %{id: Node.encode_id(:denom, denom), denom: denom}}
-  end
-
-  def metadata(%{asset: asset}, _, _) do
-    symbol = Rujira.Assets.symbol(asset)
+  def metadata(%Asset{symbol: symbol} = asset, _, _) do
     decimals = Rujira.Assets.decimals(asset)
-    {:ok, %{symbol: symbol, decimals: decimals}}
-  end
-
-  def metadata(%{denom: denom}, _, _) do
-    symbol = Rujira.Denoms.symbol(denom)
-    decimals = Rujira.Denoms.decimals(denom)
     {:ok, %{symbol: symbol, decimals: decimals}}
   end
 

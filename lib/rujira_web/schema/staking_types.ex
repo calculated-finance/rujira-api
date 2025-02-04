@@ -1,32 +1,21 @@
 defmodule RujiraWeb.Schema.StakingTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
+  alias Rujira.Assets
 
   @desc "A staking_pool represents the configuration about a rujira-staking contract"
   node object(:staking_pool) do
     field :address, non_null(:string)
 
-    field :bond_denom, non_null(:denom) do
-      resolve(fn %{bond_denom: denom}, x, y ->
-        RujiraWeb.Resolvers.Token.denom(%{denom: denom}, x, y)
-      end)
-    end
-
     field :bond_asset, non_null(:asset) do
-      resolve(fn %{bond_denom: denom}, x, y ->
-        RujiraWeb.Resolvers.Token.asset(%{denom: denom}, x, y)
-      end)
-    end
-
-    field :revenue_denom, non_null(:denom) do
-      resolve(fn %{revenue_denom: denom}, x, y ->
-        RujiraWeb.Resolvers.Token.denom(%{denom: denom}, x, y)
+      resolve(fn %{bond_denom: denom}, _, _ ->
+        Assets.from_denom(denom)
       end)
     end
 
     field :revenue_asset, non_null(:asset) do
-      resolve(fn %{revenue_denom: denom}, x, y ->
-        RujiraWeb.Resolvers.Token.asset(%{denom: denom}, x, y)
+      resolve(fn %{revenue_denom: denom}, _, _ ->
+        Assets.from_denom(denom)
       end)
     end
 
@@ -36,7 +25,9 @@ defmodule RujiraWeb.Schema.StakingTypes do
       end)
     end
 
-    field :status, :staking_status
+    field :status, :staking_status do
+      resolve(&RujiraWeb.Resolvers.Staking.status/3)
+    end
 
     field :summary, non_null(list_of(non_null(:summary))) do
       arg(:resolution, non_null(:integer))
@@ -93,5 +84,4 @@ defmodule RujiraWeb.Schema.StakingTypes do
     field :execute_msg, non_null(:string)
     field :limit, non_null(:bigint)
   end
-
 end

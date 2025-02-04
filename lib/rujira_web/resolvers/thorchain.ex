@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Resolvers.Thorchain do
+  alias Rujira.Assets
   alias Thorchain.Types.QueryInboundAddressResponse
   alias Absinthe.Resolution.Helpers
   alias Thorchain.Types.QueryInboundAddressesResponse
@@ -70,6 +71,7 @@ defmodule RujiraWeb.Resolvers.Thorchain do
 
   defp cast_pool(pool) do
     pool
+    |> Map.put(:asset, Assets.from_string(pool.asset))
     |> Map.put(:lp_units, Map.get(pool, :LP_units))
     |> Map.update(:derived_depth_bps, "0", &String.to_integer/1)
     |> Map.update(:savers_fill_bps, "0", &String.to_integer/1)

@@ -1,6 +1,5 @@
 defmodule RujiraWeb.Resolvers.Node do
   alias Rujira.Assets
-  alias Rujira.Denoms
   alias Rujira.Accounts
   alias Rujira.Merge
   alias Rujira.Fin
@@ -21,7 +20,6 @@ defmodule RujiraWeb.Resolvers.Node do
 
   def type(%Accounts.Account{}, _), do: :account
   def type(%Accounts.Layer1{}, _), do: :layer_1_account
-  def type(%Denoms.Denom{}, _), do: :denom
   def type(%Assets.Asset{}, _), do: :asset
   def type(%Merge.Pool{}, _), do: :merge_pool
   def type(%Fin.Pair{}, _), do: :fin_pair
@@ -32,63 +30,40 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Staking.Pool{}, _), do: :staking_pool
 
   defp decode_id(id) do
-    case String.split(id, ":") do
-      ["account", chain, address] ->
-        try do
-          {:ok,
-           %Accounts.Layer1{
-             id: id,
-             chain: String.to_existing_atom(chain),
-             address: address
-           }}
-        rescue
-          ArgumentError -> {:error, "invalid chain #{chain}"}
-        end
+    case Absinthe.Relay.Node.from_global_id(id, RujiraWeb.Schema) do
+      {:ok, %{type: :account, id: id}} ->
+        {:ok, %Accounts.Account{id: id, chain: :thor, address: id}}
 
-      ["account", address] ->
-        {:ok, %Accounts.Account{id: id, chain: :thor, address: address}}
+      {:ok, %{type: :layer_1_account, id: id}} ->
+        [chain, address] = String.split(id, ":")
+        {:ok, %Accounts.Layer1{id: id, chain: String.to_existing_atom(chain), address: address}}
 
-      ["asset", asset] ->
-        RujiraWeb.Resolvers.Token.asset(%{asset: asset}, nil, nil)
+      {:ok, %{type: :asset, id: id}} ->
+        {:ok, Assets.from_string(id)}
 
-      ["denom", denom] ->
-        {:ok, %Denoms.Denom{id: id, denom: denom}}
+      {:ok, %{type: :merge_pool, id: id}} ->
+        {:ok, %Merge.Pool{id: id, address: id}}
 
-      ["contract", "merge", address] ->
-        RujiraWeb.Resolvers.Merge.node(%{address: address}, nil, nil)
+      {:ok, %{type: :fin_pair, id: id}} ->
+        {:ok, %Fin.Pair{id: id, address: id}}
 
-      ["contract", "fin", address] ->
-        RujiraWeb.Resolvers.Fin.node(%{address: address}, nil, nil)
+      {:ok, %{type: :fin_book, id: id}} ->
+        {:ok, %Fin.Book{id: id}}
 
-      ["contract", "fin", address, "book"] ->
-        RujiraWeb.Resolvers.Fin.book(%{book: :not_loaded, address: address}, nil, nil)
-
-      # ["contract", "fin", address, "trade", id] ->
-      #   Rujira.Fin.get_trade(address, id)
-
-      ["contract", "fin", _, "candle", _] ->
+      {:ok, %{type: :fin_candle, id: id}} ->
         {:ok, %Fin.Candle{id: id}}
 
-      ["contract", "fin", address, "order" | _] ->
-        {:ok, %Fin.Order{id: id, pair: address}}
+      {:ok, %{type: :fin_order, id: id}} ->
+        Fin.order_from_id(id)
 
-      ["contract", "staking", address] ->
-        RujiraWeb.Resolvers.Staking.node(%{address: address}, nil, nil)
+      {:ok, %{type: :staking_pool, id: id}} ->
+        {:ok, %Staking.Pool{id: id, address: id}}
 
-      _ ->
-        {:error, "Invalid ID"}
+      {:error, error} ->
+        {:error, error}
     end
   end
 
-  def encode_id(:asset, asset), do: "asset:#{asset}"
-  def encode_id(:account, address), do: "account:#{address}"
-  def encode_id(:denom, denom), do: "denom:#{denom}"
-  def encode_id(:account, chain, address), do: "account:#{chain}:#{address}"
-  def encode_id(:contract, :merge, address), do: "contract:merge:#{address}"
-  def encode_id(:contract, :staking, address), do: "contract:staking:#{address}"
-  def encode_id(:contract, :fin, address), do: "contract:fin:#{address}"
-  def encode_id(:contract, :fin, address, :book), do: "contract:fin:#{address}:book"
-  def encode_id(:contract, :fin, address, :trade, id), do: "contract:fin:#{address}:trade:#{id}"
-  def encode_id(:contract, :fin, address, :candle, id), do: "contract:fin:#{address}:candle:#{id}"
-  def encode_id(:contract, :fin, address, :order, id), do: "contract:fin:#{address}:order:#{id}"
+  def encode_id(node_name, id),
+    do: Absinthe.Relay.Node.to_global_id(node_name, id, RujiraWeb.Schema)
 end

@@ -1,23 +1,23 @@
 defmodule RujiraWeb.Resolvers.Merge do
+  alias Rujira.Merge.Pool
   alias Absinthe.Resolution.Helpers
 
   def node(%{address: address}, _, _) do
     Helpers.async(fn ->
-      with {:ok, pool} <- Rujira.Merge.get_pool(address),
-           {:ok, pool} <- Rujira.Merge.load_pool(pool) do
-        {:ok, put_id(pool)}
+      Rujira.Merge.get_pool(address)
+    end)
+  end
+
+  def status(%Pool{} = pool, _, _) do
+    Helpers.async(fn ->
+      with {:ok, %{status: status}} <- Rujira.Merge.load_pool(pool) do
+        {:ok, status}
       end
     end)
   end
 
   def resolver(_, _, _) do
-    Helpers.async(fn ->
-      with {:ok, res} <- Rujira.Merge.load_pools() do
-        res
-        |> Enum.map(&put_id/1)
-        |> then(&{:ok, &1})
-      end
-    end)
+    Helpers.async(&Rujira.Merge.load_pools/0)
   end
 
   def account(%{address: address}, _, _) do
@@ -30,9 +30,5 @@ defmodule RujiraWeb.Resolvers.Merge do
          }}
       end
     end)
-  end
-
-  defp put_id(%{address: address} = pool) do
-    %{pool | id: RujiraWeb.Resolvers.Node.encode_id(:contract, :merge, address)}
   end
 end

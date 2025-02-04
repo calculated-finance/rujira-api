@@ -1,6 +1,7 @@
 alias Cosmos.Bank.V1beta1.QueryAllBalancesRequest
 alias Cosmos.Bank.V1beta1.QueryAllBalancesResponse
 import Cosmos.Bank.V1beta1.Query.Stub
+alias Rujira.Assets
 
 defmodule Rujira.Chains.Kuji do
   defstruct []
@@ -14,30 +15,30 @@ defmodule Rujira.Chains.Kuji do
     )
   end
 
-  def to_denom("KUJI.KUJI"), do: {:ok, "ukuji"}
+  def to_denom("KUJI"), do: {:ok, "ukuji"}
 
-  def to_denom("KUJI.RKUJI"),
+  def to_denom("RKUJI"),
     do: {:ok, "factory/kujira1tsekaqv9vmem0zwskmf90gpf0twl6k57e8vdnq/urkuji"}
 
-  def to_denom("KUJI.FUZN"),
+  def to_denom("FUZN"),
     do: {:ok, "factory/kujira1sc6a0347cc5q3k890jj0pf3ylx2s38rh4sza4t/ufuzn"}
 
-  def to_denom("KUJI.WINK"),
+  def to_denom("WINK"),
     do: {:ok, "factory/kujira12cjjeytrqcj25uv349thltcygnp9k0kukpct0e/uwink"}
 
-  def to_denom("KUJI.NSTK"),
+  def to_denom("NSTK"),
     do: {:ok, "factory/kujira1aaudpfr9y23lt9d45hrmskphpdfaq9ajxd3ukh/unstk"}
 
-  def to_denom("KUJI.AUTO"),
+  def to_denom("AUTO"),
     do: {:ok, "factory/kujira13x2l25mpkhwnwcwdzzd34cr8fyht9jlj7xu9g4uffe36g3fmln8qkvm3qn/uauto"}
 
-  def to_denom("KUJI.BOON"),
+  def to_denom("BOON"),
     do: {:ok, "factory/kujira1gewwffxhaygxe8tacd3z9h4uyvpd2h7v9qtfmaw8jjhwalxxpd7qlqld4m/boon"}
 
-  def to_denom("KUJI.MNTA"),
+  def to_denom("MNTA"),
     do: {:ok, "factory/kujira1643jxg8wasy5cfcn7xm8rd742yeazcksqlg4d7/umnta"}
 
-  def to_denom("KUJI.NAMI"),
+  def to_denom("NAMI"),
     do: {:ok, "factory/kujira13x2l25mpkhwnwcwdzzd34cr8fyht9jlj7xu9g4uffe36g3fmln8qkvm3qn/unami"}
 
   def to_denom(_), do: {:error, :unknown_asset}
@@ -46,63 +47,63 @@ defmodule Rujira.Chains.Kuji do
         denom: "ukuji",
         amount: amount
       }) do
-    %{asset: "KUJI.KUJI", amount: amount}
+    %{asset: Assets.from_string("KUJI.KUJI"), amount: amount}
   end
 
   def map_coin(%{
         denom: "factory/kujira1tsekaqv9vmem0zwskmf90gpf0twl6k57e8vdnq/urkuji",
         amount: amount
       }) do
-    %{asset: "KUJI.RKUJI", amount: amount}
+    %{asset: Assets.from_string("KUJI.RKUJI"), amount: amount}
   end
 
   def map_coin(%{
         denom: "factory/kujira1sc6a0347cc5q3k890jj0pf3ylx2s38rh4sza4t/ufuzn",
         amount: amount
       }) do
-    %{asset: "KUJI.FUZN", amount: amount}
+    %{asset: Assets.from_string("KUJI.FUZN"), amount: amount}
   end
 
   def map_coin(%{
         denom: "factory/kujira12cjjeytrqcj25uv349thltcygnp9k0kukpct0e/uwink",
         amount: amount
       }) do
-    %{asset: "KUJI.WINK", amount: amount}
+    %{asset: Assets.from_string("KUJI.WINK"), amount: amount}
   end
 
   def map_coin(%{
         denom: "factory/kujira1aaudpfr9y23lt9d45hrmskphpdfaq9ajxd3ukh/unstk",
         amount: amount
       }) do
-    %{asset: "KUJI.NSTK", amount: amount}
+    %{asset: Assets.from_string("KUJI.NSTK"), amount: amount}
   end
 
   def map_coin(%{
         denom: "factory/kujira13x2l25mpkhwnwcwdzzd34cr8fyht9jlj7xu9g4uffe36g3fmln8qkvm3qn/uauto",
         amount: amount
       }) do
-    %{asset: "KUJI.AUTO", amount: amount}
+    %{asset: Assets.from_string("KUJI.AUTO"), amount: amount}
   end
 
   def map_coin(%{
         denom: "factory/kujira1gewwffxhaygxe8tacd3z9h4uyvpd2h7v9qtfmaw8jjhwalxxpd7qlqld4m/boon",
         amount: amount
       }) do
-    %{asset: "KUJI.BOON", amount: amount}
+    %{asset: Assets.from_string("KUJI.BOON"), amount: amount}
   end
 
   def map_coin(%{
         denom: "factory/kujira1643jxg8wasy5cfcn7xm8rd742yeazcksqlg4d7/umnta",
         amount: amount
       }) do
-    %{asset: "KUJI.MNTA", amount: amount}
+    %{asset: Assets.from_string("KUJI.MNTA"), amount: amount}
   end
 
   def map_coin(%{
         denom: "factory/kujira13x2l25mpkhwnwcwdzzd34cr8fyht9jlj7xu9g4uffe36g3fmln8qkvm3qn/unami",
         amount: amount
       }) do
-    %{asset: "KUJI.NAMI", amount: amount}
+    %{asset: Assets.from_string("KUJI.NAMI"), amount: amount}
   end
 
   def map_coin(_), do: nil

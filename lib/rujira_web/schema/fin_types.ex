@@ -1,32 +1,21 @@
 defmodule RujiraWeb.Schema.FinTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
+  alias Rujira.Assets
 
   @desc "A fin_pair represents informations about a specific rujira-fin contract"
   node object(:fin_pair) do
     field :address, non_null(:address)
 
-    field :token_base, non_null(:denom) do
-      resolve(fn %{token_base: denom}, x, y ->
-        RujiraWeb.Resolvers.Token.denom(%{denom: denom}, x, y)
-      end)
-    end
-
     field :asset_base, non_null(:asset) do
-      resolve(fn %{token_base: denom}, x, y ->
-        RujiraWeb.Resolvers.Token.asset(%{denom: denom}, x, y)
-      end)
-    end
-
-    field :token_quote, non_null(:denom) do
-      resolve(fn %{token_quote: denom}, x, y ->
-        RujiraWeb.Resolvers.Token.denom(%{denom: denom}, x, y)
+      resolve(fn %{token_base: denom}, _, _ ->
+        Assets.from_denom(denom)
       end)
     end
 
     field :asset_quote, non_null(:asset) do
-      resolve(fn %{token_quote: denom}, x, y ->
-        RujiraWeb.Resolvers.Token.asset(%{denom: denom}, x, y)
+      resolve(fn %{token_quote: denom}, _, _ ->
+        Assets.from_denom(denom)
       end)
     end
 
@@ -122,15 +111,15 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :protocol, non_null(:string)
     field :timestamp, non_null(:timestamp)
 
-    field :base_token, non_null(:denom) do
-      resolve(fn %{base_token: denom}, x, y ->
-        RujiraWeb.Resolvers.Token.denom(%{denom: denom}, x, y)
+    field :asset_base, non_null(:asset) do
+      resolve(fn %{base_token: denom}, _, _ ->
+        Assets.from_denom(denom)
       end)
     end
 
-    field :quote_token, non_null(:denom) do
-      resolve(fn %{quote_token: denom}, x, y ->
-        RujiraWeb.Resolvers.Token.denom(%{denom: denom}, x, y)
+    field :asset_quote, non_null(:asset) do
+      resolve(fn %{quote_token: denom}, _, _ ->
+        Assets.from_denom(denom)
       end)
     end
   end
@@ -150,15 +139,15 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :protocol, :string
     field :timestamp, :timestamp
 
-    field :base_token, :denom do
-      resolve(fn %{base_token: denom}, x, y ->
-        RujiraWeb.Resolvers.Token.denom(%{denom: denom}, x, y)
+    field :asset_base, :asset do
+      resolve(fn %{base_token: denom}, _, _ ->
+        Assets.from_denom(denom)
       end)
     end
 
-    field :quote_token, :denom do
-      resolve(fn %{quote_token: denom}, x, y ->
-        RujiraWeb.Resolvers.Token.denom(%{denom: denom}, x, y)
+    field :asset_quote, :asset do
+      resolve(fn %{quote_token: denom}, _, _ ->
+        Assets.from_denom(denom)
       end)
     end
   end

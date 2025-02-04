@@ -1,5 +1,4 @@
 defmodule RujiraWeb.Resolvers.Fin do
-  alias RujiraWeb.Resolvers.Node
   alias Rujira.Fin
   alias Absinthe.Resolution.Helpers
 
@@ -7,7 +6,7 @@ defmodule RujiraWeb.Resolvers.Fin do
     Helpers.async(fn ->
       with {:ok, pair} <- Rujira.Fin.get_pair(address),
            {:ok, pair} <- Rujira.Fin.load_pair(pair) do
-        {:ok, put_id(pair)}
+        {:ok, pair}
       end
     end)
   end
@@ -15,19 +14,18 @@ defmodule RujiraWeb.Resolvers.Fin do
   def resolver(_, _, _) do
     Helpers.async(fn ->
       with {:ok, pairs} <- Rujira.Fin.list_pairs() do
-        {:ok, Enum.map(pairs, &put_id/1)}
+        {:ok, pairs}
       end
     end)
   end
 
   def book(%{book: :not_loaded} = pair, _, _) do
     with {:ok, %{book: book}} <- Rujira.Fin.load_pair(pair) do
-      {:ok, %{book | id: Node.encode_id(:contract, :fin, pair.address, :book)}}
+      {:ok, book}
     end
   end
 
-  def book(%{address: address, book: book}, _, _),
-    do: {:ok, %{book | id: Node.encode_id(:contract, :fin, address, :book)}}
+  def book(%{book: book}, _, _), do: {:ok, book}
 
   def trades(_, _, _),
     do:
@@ -119,9 +117,5 @@ defmodule RujiraWeb.Resolvers.Fin do
          }}
       end
     end)
-  end
-
-  defp put_id(%{address: address} = pair) do
-    %{pair | id: RujiraWeb.Resolvers.Node.encode_id(:contract, :fin, address)}
   end
 end
