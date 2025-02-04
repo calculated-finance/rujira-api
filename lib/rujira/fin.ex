@@ -1,4 +1,15 @@
 defmodule Rujira.Fin do
+  use GenServer
+
+  def start_link(_) do
+    Supervisor.start_link([__MODULE__.Listener], strategy: :one_for_one)
+  end
+
+  @impl true
+  def init(state) do
+    {:ok, state}
+  end
+
   @moduledoc """
   Rujira's 100% on-chain, central limit order book style decentralized token exchange.
   """

@@ -21,6 +21,7 @@ defmodule Rujira.Application do
       {Finch, name: Rujira.Finch},
       Thorchain.Node,
       Rujira.Balances,
+      Rujira.Fin,
       Rujira.Invalidator,
       Thorchain.Swaps
     ]
