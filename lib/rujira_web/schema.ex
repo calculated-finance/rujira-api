@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Schema do
+  alias RujiraWeb.Resolvers.Node
   use Absinthe.Schema
   use Absinthe.Relay.Schema, :modern
   import_types(RujiraWeb.Schema.AccountTypes)
@@ -64,14 +65,10 @@ defmodule RujiraWeb.Schema do
       arg(:id, non_null(:id))
 
       config(fn %{id: id}, _ ->
-        with {:ok, %{id: id}} <- Absinthe.Relay.Node.from_global_id(id, __MODULE__) do
-          {:ok, topic: id}
-        end
+        {:ok, topic: id}
       end)
 
-      resolve(fn id, x, _ ->
-        RujiraWeb.Resolvers.Node.id(%{id: id}, x)
-      end)
+      resolve(&RujiraWeb.Resolvers.Node.id/2)
     end
 
     @desc """

@@ -6,13 +6,13 @@ defmodule RujiraWeb.Resolvers.Node do
   alias Rujira.Staking
 
   def id(%{id: encoded_id}, _) do
-    decode_id(encoded_id)
+    resolve_id(encoded_id)
   end
 
   def list(_, %{ids: ids}, _) do
     Enum.reduce(ids, {:ok, []}, fn id, agg ->
       with {:ok, agg} <- agg,
-           {:ok, id} <- decode_id(id) do
+           {:ok, id} <- resolve_id(id) do
         {:ok, [id | agg]}
       end
     end)
@@ -29,7 +29,7 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Fin.Order{}, _), do: :fin_order
   def type(%Staking.Pool{}, _), do: :staking_pool
 
-  defp decode_id(id) do
+  defp resolve_id(id) do
     case Absinthe.Relay.Node.from_global_id(id, RujiraWeb.Schema) do
       {:ok, %{type: :account, id: id}} ->
         {:ok, %Accounts.Account{id: id, chain: :thor, address: id}}
@@ -45,10 +45,10 @@ defmodule RujiraWeb.Resolvers.Node do
         {:ok, %Merge.Pool{id: id, address: id}}
 
       {:ok, %{type: :fin_pair, id: id}} ->
-        {:ok, %Fin.Pair{id: id, address: id}}
+        Fin.pair_from_id(id)
 
       {:ok, %{type: :fin_book, id: id}} ->
-        {:ok, %Fin.Book{id: id}}
+        Fin.book_from_id(id)
 
       {:ok, %{type: :fin_candle, id: id}} ->
         {:ok, %Fin.Candle{id: id}}

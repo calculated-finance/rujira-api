@@ -164,12 +164,13 @@ defmodule RujiraWeb.Schema.FinTypes do
 
   @desc "Represents a candlestick chart data point for a specific time period, including high, low, open, close, volume, and timestamp."
   node object(:fin_candle) do
+    field :resolution, non_null(:string)
     field :high, non_null(:bigint)
     field :low, non_null(:bigint)
     field :open, non_null(:bigint)
     field :close, non_null(:bigint)
     field :volume, non_null(:bigint)
-    field :time, non_null(:timestamp)
+    field :bin, non_null(:timestamp)
   end
 
   object :pair_status do

@@ -1,5 +1,6 @@
 defmodule RujiraWeb.Schema.ThorchainTypes do
   use Absinthe.Schema.Notation
+  alias Rujira.Assets
   alias RujiraWeb.Resolvers
   alias RujiraWeb.Resolvers.Node
 
@@ -32,9 +33,9 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
       resolve(&Resolvers.Thorchain.pools/3)
     end
 
-    field :rune, :denom do
+    field :rune, :asset do
       resolve(fn _, _, _ ->
-        {:ok, %{id: Node.encode_id(:denom, "rune"), denom: "rune"}}
+        {:ok, Assets.from_string("THOR.RUNE")}
       end)
     end
 

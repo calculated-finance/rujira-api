@@ -1,4 +1,5 @@
 defmodule Rujira.Balances.Listener do
+  alias Rujira.Accounts.Layer1
   use GenServer
   require Logger
 
@@ -28,9 +29,10 @@ defmodule Rujira.Balances.Listener do
     for a <- addresses do
       Logger.debug("#{__MODULE__} change #{a}")
 
-      # TODO: Not happy with the Rujira app needing to know the graphql id schema.
-      id = "account:thor:#{a}"
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, id, node: id)
+      id =
+        Absinthe.Relay.Node.to_global_id(:layer_1_account, "thor:#{a}", RujiraWeb.Schema)
+
+      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
     end
 
     {:noreply, state}

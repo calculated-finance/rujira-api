@@ -69,7 +69,7 @@ defmodule Rujira.Fin do
   def load_pair(pair, limit \\ 100) do
     with {:ok, res} <-
            Contract.query_state_smart(pair.address, %{book: %{limit: limit}}),
-         {:ok, book} <- Book.from_query(res) do
+         {:ok, book} <- Book.from_query(pair.address, res) do
       {:ok, %{pair | book: book}}
     else
       err ->
@@ -124,7 +124,7 @@ defmodule Rujira.Fin do
   end
 
   def candles(address, _, _, resolution) do
-    bin = NaiveDateTime.utc_now()
+    bin = DateTime.utc_now()
 
     candles = [
       %Candle{
@@ -139,6 +139,21 @@ defmodule Rujira.Fin do
     ]
 
     {:ok, candles}
+  end
+
+  def pair_from_id(id) do
+    get_pair(id)
+  end
+
+  def book_from_id(id) do
+    with {:ok, res} <-
+           Contract.query_state_smart(id, %{book: %{}}),
+         {:ok, book} <- Book.from_query(id, res) do
+      {:ok, book}
+    else
+      err ->
+        err
+    end
   end
 
   def order_from_id(id) do

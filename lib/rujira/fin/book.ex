@@ -43,17 +43,19 @@ defmodule Rujira.Fin.Book do
   defstruct [:id, :bids, :asks]
 
   @type t :: %__MODULE__{
+          id: String.t(),
           bids: list(Price.t()),
           asks: list(Price.t())
         }
 
-  @spec from_query(map()) :: :error | {:ok, __MODULE__.t()}
-  def from_query(%{
+  @spec from_query(String.t(), map()) :: :error | {:ok, __MODULE__.t()}
+  def from_query(address, %{
         "base" => asks,
         "quote" => bids
       }) do
     {:ok,
      %__MODULE__{
+       id: address,
        asks: Enum.map(asks, &Price.from_query(:ask, &1)),
        bids: Enum.map(bids, &Price.from_query(:bid, &1))
      }}

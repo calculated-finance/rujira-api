@@ -22,9 +22,11 @@ defmodule Rujira.Fin.Listener do
 
     for a <- addresses do
       Logger.debug("#{__MODULE__} change #{a}")
-      # TODO: Not happy with the Rujira app needing to know the graphql id schema.
-      id = "contract:fin:#{a}:book"
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, id, node: id)
+
+      id =
+        Absinthe.Relay.Node.to_global_id(:fin_book, a, RujiraWeb.Schema)
+
+      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
     end
 
     {:noreply, state}

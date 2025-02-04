@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Resolvers.Fin do
+  alias Rujira.Assets
   alias Rujira.Fin
   alias Absinthe.Resolution.Helpers
 
@@ -42,8 +43,7 @@ defmodule RujiraWeb.Resolvers.Fin do
 
   def summary(%{token_base: base, token_quote: quot}, _, _) do
     # TODO 1: Fetch from actual trading data
-    asset = quot |> String.replace("-", ".") |> String.upcase()
-    # TODO 2: we should be passing around the Layer 1 Asset notation here, not the x/bank denom
+    asset = quot |> String.replace("-", ".") |> String.upcase() |> Assets.from_string()
     base = String.split(base, "-") |> Enum.at(1, base)
     quot = String.split(quot, "-") |> Enum.at(1, quot)
 
