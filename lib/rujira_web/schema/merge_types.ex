@@ -75,7 +75,9 @@ defmodule RujiraWeb.Schema.MergeTypes do
     @desc "The amount of merge token that has been deposited by the account"
     field :merged, non_null(:balance) do
       resolve(fn %{merged: merged, pool: %{merge_denom: merge_denom}}, _, _ ->
-        {:ok, %{amount: merged, asset: merge_denom}}
+        with {:ok, asset} <- Assets.from_denom(merge_denom) do
+          {:ok, %{amount: merged, asset: asset}}
+        end
       end)
     end
 
