@@ -62,10 +62,10 @@ defmodule RujiraWeb.Schema do
   end
 
   subscription do
+    @desc """
+    Subscribes to updates for the given Node ID
+    """
     field :node, :node do
-      @desc """
-      The account ID
-      """
       arg(:id, non_null(:id))
 
       config(fn %{id: id}, _ ->
@@ -78,5 +78,31 @@ defmodule RujiraWeb.Schema do
         RujiraWeb.Resolvers.Node.id(%{id: id}, x)
       end)
     end
+
+    @desc """
+    Subscribes to new Edges on a connection,
+    """
+
+    field :edge, :node_edge do
+      @desc """
+      The ID of the Edge Node, omitting the ID element, eg
+
+      contract:fin:{address}:trade
+      """
+      arg(:prefix, non_null(:string))
+
+      config(fn %{prefix: prefix}, _ ->
+        {:ok, topic: prefix}
+      end)
+
+      resolve(fn id, x, _ ->
+        RujiraWeb.Resolvers.Node.id(%{id: id}, x)
+      end)
+    end
+  end
+
+  object :node_edge do
+    field :cursor, :string
+    field :node, :node
   end
 end
