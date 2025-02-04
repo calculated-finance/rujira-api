@@ -34,12 +34,17 @@ defmodule RujiraWeb.Resolvers.Token do
     end
   end
 
+  def denom(_, _, _) do
+    {:ok, nil}
+  end
+
   def chain(%{chain: chain}, _, _),
     do: {:ok, chain |> String.downcase() |> String.to_existing_atom()}
 
-  def metadata(%Asset{symbol: symbol} = asset, _, _) do
+  def metadata(%Asset{ticker: ticker} = asset, _, _) do
     decimals = Rujira.Assets.decimals(asset)
-    {:ok, %{symbol: symbol, decimals: decimals}}
+    # As per THORChain, ticker is the short version
+    {:ok, %{symbol: ticker, decimals: decimals}}
   end
 
   def prices(_, b) do

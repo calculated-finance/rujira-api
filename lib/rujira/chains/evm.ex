@@ -13,7 +13,9 @@ defmodule Rujira.Chains.Evm do
   end
 
   @decorate transaction_event()
-  def balance_of(rpc, "0x" <> address, {asset, contract_address}) do
+  def balance_of(rpc, "0x" <> address, asset) do
+    [_, contract_address] = String.split(asset.symbol, "-")
+
     abi_encoded_data =
       "balanceOf(address)"
       |> ABI.encode([Base.decode16!(address, case: :mixed)])

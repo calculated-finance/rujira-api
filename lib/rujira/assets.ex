@@ -6,32 +6,13 @@ defmodule Rujira.Assets do
 
   defmemo assets() do
     with {:ok, %{pools: pools}} <- Thorchain.Node.stub(&Q.pools/2, %QueryPoolsRequest{}) do
-      Enum.map(
-        pools,
-        &{&1.asset,
-         if &1.decimals == 0 do
-           8
-         else
-           &1.decimals
-         end}
-      )
+      Enum.map(pools, &from_string(&1.asset))
     end
   end
 
   def erc20(chain) do
     chain_name = chain |> Atom.to_string() |> String.upcase()
-
-    assets()
-    |> Enum.reduce([], fn
-      {^chain_name <> _ = asset, _decimal}, acc ->
-        case String.split(asset, "-0X") do
-          [_, address] -> [{asset, "0x" <> address} | acc]
-          _ -> acc
-        end
-
-      _, acc ->
-        acc
-    end)
+    Enum.filter(assets(), &(&1.chain == chain_name && &1.chain != &1.symbol))
   end
 
   @doc """
@@ -43,7 +24,7 @@ defmodule Rujira.Assets do
       type: type(id),
       chain: chain(id),
       symbol: symbol(id),
-      ticker: symbol(id)
+      ticker: ticker(id)
     }
   end
 
@@ -62,7 +43,12 @@ defmodule Rujira.Assets do
   def symbol("KUJI.RKUJI"), do: "rKUJI"
 
   def symbol(str) do
-    [_, v | _] = String.split(str, [".", "-"])
+    [_, v] = String.split(str, [".", "-"], parts: 2)
+    v
+  end
+
+  def ticker(str) do
+    [_, v] = String.split(str, [".", "-"], parts: 2)
     [sym | _] = String.split(v, "-")
     sym
   end
