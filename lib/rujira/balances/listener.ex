@@ -1,5 +1,4 @@
 defmodule Rujira.Balances.Listener do
-  alias Rujira.Accounts.Layer1
   use GenServer
   require Logger
 

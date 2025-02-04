@@ -2,7 +2,6 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
   use Absinthe.Schema.Notation
   alias Rujira.Assets
   alias RujiraWeb.Resolvers
-  alias RujiraWeb.Resolvers.Node
 
   object :thorchain do
     field :inbound_addresses, non_null(list_of(non_null(:inbound_address))) do

@@ -16,39 +16,31 @@ defmodule Rujira.Fin.Trades.Indexer do
   @impl true
   def handle_info(
         %{
-          header: %{height: height, time: time, last_block_id: %{hash: hash}},
-          txs: txs,
-          begin_block_events: begin_block_events,
-          end_block_events: end_block_events
+          header: %{height: height, time: time},
+          txs: txs
         },
         state
       ) do
-    scan_events(height, 0, hash, begin_block_events, time)
-    scan_events(height, 2_147_483_647, hash, end_block_events, time)
-
-    for {%{hash: txhash, result: %{events: events}}, idx} <- Enum.with_index(txs) do
-      scan_events(height, idx, txhash, events, time)
+    for %{"hash" => txhash, "result" => %{"events" => events}} <- txs do
+      scan_events(height, txhash, events, time)
     end
 
     {:noreply, state}
   end
 
-  defp scan_events(height, tx_idx, txhash, events, time) do
+  defp scan_events(height, txhash, events, time) do
     events
     |> scan_attributes()
     |> Enum.with_index()
     |> Enum.each(fn {trade, idx} ->
-      trade
-      |> Map.merge(%{
+      Map.merge(trade, %{
         height: height,
-        tx_idx: tx_idx,
         idx: idx,
         txhash: txhash,
         timestamp: time,
         protocol: "fin"
       })
-      |> IO.inspect()
-      # |> Trades.insert_trade()
+      |> Trades.insert_trade()
     end)
   end
 
@@ -61,7 +53,9 @@ defmodule Rujira.Fin.Trades.Indexer do
              "type" => "wasm-rujira-fin/trade",
              "rate" => rate,
              "offer" => offer,
-             "bid" => bid
+             "bid" => bid,
+             "msg_index" => msg_index,
+             "side" => side
            }
            | rest
          ],
@@ -69,23 +63,25 @@ defmodule Rujira.Fin.Trades.Indexer do
        ) do
     scan_attributes(
       rest,
-      insert_trade(collection, contract_address, rate, offer, bid, "wasm-rujira-fin/trade")
+      insert_trade(collection, contract_address, rate, offer, bid, msg_index, side)
     )
   end
 
   defp scan_attributes([_ | rest], collection), do: scan_attributes(rest, collection)
   defp scan_attributes([], collection), do: collection
 
-  defp insert_trade(collection, contract_address, rate, offer, bid, type) do
+  defp insert_trade(collection, contract_address, rate, offer, bid, msg_index, side) do
     with {offer, _} <- Integer.parse(offer),
          {bid, _} <- Integer.parse(bid),
+         {tx_idx, _} <- Integer.parse(msg_index),
          {rate, _} <- Float.parse(rate) do
       trade = %{
         contract_address: contract_address,
         offer: offer,
         bid: bid,
         rate: rate,
-        type: type
+        side: side,
+        tx_idx: tx_idx
       }
 
       [trade | collection]

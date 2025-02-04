@@ -1,5 +1,4 @@
 defmodule RujiraWeb.Schema do
-  alias RujiraWeb.Resolvers.Node
   use Absinthe.Schema
   use Absinthe.Relay.Schema, :modern
   import_types(RujiraWeb.Schema.AccountTypes)
