@@ -10,8 +10,6 @@ defmodule RujiraWeb.Schema.TokenTypes do
 
     field :price, :price do
       resolve(fn %{ticker: ticker}, _, _ ->
-        IO.inspect(ticker)
-
         batch({RujiraWeb.Resolvers.Token, :prices}, ticker, fn x ->
           with {:ok, prices} <- x do
             {:ok, map(Map.get(prices, ticker))}
