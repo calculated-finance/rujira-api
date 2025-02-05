@@ -56,6 +56,13 @@ defmodule RujiraWeb do
     end
   end
 
+  def check_origin(%{scheme: "http", host: "localhost"}), do: true
+  def check_origin(%{scheme: "https", host: "rujira.network"}), do: true
+  def check_origin(%{scheme: "https", host: "rujira-ui-main.vercel.app"}), do: true
+
+  def check_origin(%{scheme: "https", host: host}),
+    do: Regex.match?(~r/rujira-ui-main-git-[a-z]+-rujira\.vercel\.app/, host)
+
   @doc """
   When used, dispatch to the appropriate controller/live_view/etc.
   """

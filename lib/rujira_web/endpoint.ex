@@ -17,15 +17,7 @@ defmodule RujiraWeb.Endpoint do
     longpoll: [connect_info: [session: @session_options]]
 
   socket "/socket", RujiraWeb.Socket,
-    websocket: [
-      check_origin: [
-        "http://localhost:4000",
-        "http://localhost:5173",
-        "https://rujira-ui-main.vercel.app",
-        "https://rujira-ui-main-git-*-rujira.vercel.app",
-        "https://rujira.network"
-      ]
-    ],
+    websocket: [check_origin: {RujiraWeb, :check_origin, []}],
     longpoll: false
 
   # Serve at "/" the static files from "priv/static" directory.
