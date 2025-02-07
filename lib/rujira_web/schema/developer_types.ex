@@ -11,8 +11,7 @@ defmodule RujiraWeb.Schema.DeveloperTypes do
   end
 
   @desc "A stored wasm binary"
-  object :code do
-    field :id, non_null(:integer)
+  node object(:code) do
     field :checksum, non_null(:string)
     field :creator, non_null(:address)
 
