@@ -18,6 +18,7 @@ defmodule Rujira.Invalidator do
   def handle_info(%{txs: txs}, state) do
     txs
     |> Enum.flat_map(& &1["result"]["events"])
+    |> IO.inspect()
     |> scan_attributes()
     |> Enum.uniq()
     |> Enum.map(&invalidate/1)
@@ -29,6 +30,7 @@ defmodule Rujira.Invalidator do
 
   defp scan_attributes(
          [
+           %{"action" => "/cosmwasm.wasm.v1.MsgExecuteContract"},
            %{"_contract_address" => address}
            | rest
          ],
@@ -40,6 +42,27 @@ defmodule Rujira.Invalidator do
       {Rujira.Contract, :query_state_all, [address]},
       {Rujira.Contract, :query_state_smart, [address, :_]} | collection
     ])
+  end
+
+  defp scan_attributes(
+         [
+           %{"action" => "/cosmwasm.wasm.v1.MsgStoreCode"}
+           | rest
+         ],
+         collection
+       ) do
+    scan_attributes(rest, [{Rujira.Contract, :codes} | collection])
+  end
+
+  defp scan_attributes(
+         [
+           %{"action" => "/cosmwasm.wasm.v1.MsgInstantiateContract"},
+           %{"code_id" => code_id}
+           | rest
+         ],
+         collection
+       ) do
+    scan_attributes(rest, [{Rujira.Contract, :by_code, [code_id]} | collection])
   end
 
   defp scan_attributes([_ | rest], collection), do: scan_attributes(rest, collection)

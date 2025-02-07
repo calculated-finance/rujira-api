@@ -42,6 +42,10 @@ defmodule Rujira.CacheStrategy do
     expired_at
   end
 
+  def read(_, {:error, %{message: "Error parsing into type" <> _}}, _) do
+    :ok
+  end
+
   def read(key, {:error, _}, _) do
     invalidate(key)
     :ok

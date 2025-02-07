@@ -4,12 +4,12 @@ defmodule RujiraWeb.Schema do
   import_types(RujiraWeb.Schema.AccountTypes)
   import_types(RujiraWeb.Schema.BalanceTypes)
   import_types(RujiraWeb.Schema.ChainTypes)
+  import_types(RujiraWeb.Schema.DeveloperTypes)
   import_types(RujiraWeb.Schema.ThorchainTypes)
   import_types(RujiraWeb.Schema.TokenTypes)
   import_types(RujiraWeb.Schema.Scalars.Address)
   import_types(RujiraWeb.Schema.Scalars.Asset)
   import_types(RujiraWeb.Schema.Scalars.BigInt)
-  import_types(RujiraWeb.Schema.Scalars.Contract)
   import_types(RujiraWeb.Schema.Scalars.Timestamp)
   import_types(RujiraWeb.Schema.RujiraTypes)
   import_types(RujiraWeb.Schema.MergeTypes)
@@ -44,6 +44,11 @@ defmodule RujiraWeb.Schema do
     @desc "Rujira related queries"
     field :rujira, :rujira do
       resolve(fn _, _, _ -> {:ok, %{rujira: %{}}} end)
+    end
+
+    @desc "Developer-related CosmWasm queries"
+    field :developer, :developer do
+      resolve(fn _, _, _ -> {:ok, %{developer: %{}}} end)
     end
   end
 

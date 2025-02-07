@@ -2,6 +2,8 @@ defmodule Rujira.Contract do
   @moduledoc """
   Convenience methods for querying CosmWasm smart contracts
   """
+  alias Cosmwasm.Wasm.V1.CodeInfoResponse
+  alias Cosmwasm.Wasm.V1.QueryCodesRequest
   alias Cosmos.Base.Query.V1beta1.PageRequest
   alias Cosmwasm.Wasm.V1.Query.Stub
   alias Cosmwasm.Wasm.V1.QueryAllContractStateRequest
@@ -9,6 +11,7 @@ defmodule Rujira.Contract do
   alias Cosmwasm.Wasm.V1.QuerySmartContractStateRequest
   alias Cosmwasm.Wasm.V1.QueryContractsByCodeRequest
   alias Cosmwasm.Wasm.V1.Model
+  use Memoize
 
   @spec info(String.t()) ::
           {:ok, Cosmwasm.Wasm.V1.ContractInfo.t()} | {:error, GRPC.RPCError.t()}
@@ -22,15 +25,43 @@ defmodule Rujira.Contract do
     end
   end
 
+  @spec codes() :: {:ok, list(CodeInfoResponse.t())} | {:error, GRPC.RPCError.t()}
+  defmemo codes() do
+    codes_page()
+  end
+
+  defp codes_page(key \\ nil)
+
+  defp codes_page(nil) do
+    with {:ok, %{code_infos: code_infos, pagination: %{next_key: next_key}}} <-
+           Thorchain.Node.stub(
+             &Stub.codes/2,
+             %QueryCodesRequest{}
+           ),
+         {:ok, next} <- codes_page(next_key) do
+      {:ok, Enum.concat(code_infos, next)}
+    end
+  end
+
+  defp codes_page("") do
+    {:ok, []}
+  end
+
+  defp codes_page(key) do
+    with {:ok, %{code_infos: code_infos, pagination: %{next_key: next_key}}} <-
+           Thorchain.Node.stub(
+             &Stub.codes/2,
+             %QueryCodesRequest{pagination: %PageRequest{key: key}}
+           ),
+         {:ok, next} <- codes_page(next_key) do
+      {:ok, Enum.concat(code_infos, next)}
+    end
+  end
+
   @spec by_code(integer()) ::
           {:ok, list(String.t())} | {:error, GRPC.RPCError.t()}
-  def by_code(code_id) do
-    Memoize.Cache.get_or_run(
-      {__MODULE__, :by_code, [code_id]},
-      fn ->
-        by_code_page(code_id)
-      end
-    )
+  defmemo by_code(code_id) do
+    by_code_page(code_id)
   end
 
   defp by_code_page(code_id, key \\ nil)

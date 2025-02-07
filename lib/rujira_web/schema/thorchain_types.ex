@@ -51,7 +51,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :outbound_delay_blocks, non_null(:integer)
     field :outbound_delay_seconds, non_null(:integer)
     field :fees, non_null(:fees)
-    field :router, :contract
+    field :router, :address
     field :expiry, non_null(:timestamp)
     field :warning, non_null(:string)
     field :notes, non_null(:string)
