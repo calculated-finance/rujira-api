@@ -71,4 +71,9 @@ defmodule Rujira.Invalidator do
     Logger.debug("#{__MODULE__} invalidating #{module}.#{function} #{Enum.join(args, ",")}")
     Memoize.invalidate(module, function, args)
   end
+
+  defp invalidate({module, function}) do
+    Logger.debug("#{__MODULE__} invalidating #{module}.#{function}")
+    Memoize.invalidate(module, function)
+  end
 end
