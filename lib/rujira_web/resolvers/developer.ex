@@ -8,7 +8,11 @@ defmodule RujiraWeb.Resolvers.Developer do
       {:ok,
        Enum.map(
          codes,
-         &%{id: &1.code_id, creator: &1.creator, checksum: Base.encode16(&1.data_hash)}
+         &%{
+           id: &1.code_id,
+           creator: &1.creator,
+           checksum: Base.encode16(&1.data_hash)
+         }
        )}
     end
   end

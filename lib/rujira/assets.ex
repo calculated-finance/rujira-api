@@ -50,11 +50,8 @@ defmodule Rujira.Assets do
   end
 
   def ticker(str) do
-    IO.inspect(str)
     [_, v] = String.split(str, [".", "-"], parts: 2)
-    IO.inspect(v)
     [sym | _] = String.split(v, "-")
-    IO.inspect(sym)
     sym
   end
 

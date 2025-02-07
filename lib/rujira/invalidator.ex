@@ -18,7 +18,6 @@ defmodule Rujira.Invalidator do
   def handle_info(%{txs: txs}, state) do
     txs
     |> Enum.flat_map(& &1["result"]["events"])
-    |> IO.inspect()
     |> scan_attributes()
     |> Enum.uniq()
     |> Enum.map(&invalidate/1)
