@@ -14,6 +14,16 @@ defmodule Rujira.Fin.Listener do
 
   @impl true
   def handle_info(%{txs: txs}, state) do
+    scan_txs(txs)
+    {:noreply, state}
+  end
+
+  def handle_info(%{id: %{txs: txs}}, state) do
+    scan_txs(txs)
+    {:noreply, state}
+  end
+
+  defp scan_txs(txs) do
     addresses =
       txs
       |> Enum.flat_map(& &1["result"]["events"])
@@ -28,8 +38,6 @@ defmodule Rujira.Fin.Listener do
 
       Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
     end
-
-    {:noreply, state}
   end
 
   defp scan_attributes(attributes, collection \\ [])
