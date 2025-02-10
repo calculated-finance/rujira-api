@@ -24,7 +24,7 @@ defmodule Rujira.Fin do
   alias Rujira.Fin.Book
   alias Rujira.Fin.Order
 
-  @pair_code_ids Application.compile_env(:rujira, __MODULE__, pair_code_ids: [37])
+  @pair_code_ids Application.compile_env(:rujira, __MODULE__, pair_code_ids: [39])
                  |> Keyword.get(:pair_code_ids)
 
   @doc """
