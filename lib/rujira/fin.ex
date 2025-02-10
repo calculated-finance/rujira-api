@@ -33,9 +33,7 @@ defmodule Rujira.Fin do
 
   @spec get_pair(String.t()) :: {:ok, Pair.t()} | {:error, GRPC.RPCError.t()}
   def get_pair(address) do
-    with {:ok, pair} <- Contract.get({Pair, address}) do
-      load_status(pair)
-    end
+    Contract.get({Pair, address})
   end
 
   @doc """
@@ -46,19 +44,6 @@ defmodule Rujira.Fin do
           {:ok, list(Pair.t())} | {:error, GRPC.RPCError.t()}
   def list_pairs(code_ids \\ @pair_code_ids) when is_list(code_ids),
     do: Contract.list(Pair, code_ids)
-
-  @doc """
-  Load the Status of a Pair
-  """
-
-  @spec load_status(Pair.t()) ::
-          {:ok, Pair.t()} | {:error, GRPC.RPCError.t()}
-  def load_status(pair) do
-    with {:ok, res} <- Contract.query_state_smart(pair.address, %{status: %{}}),
-         {:ok, status} <- Pair.Status.from_query(res) do
-      {:ok, %{pair | status: status}}
-    end
-  end
 
   @doc """
   Loads the current Book into the Pair

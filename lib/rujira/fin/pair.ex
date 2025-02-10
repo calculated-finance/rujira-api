@@ -1,31 +1,6 @@
 defmodule Rujira.Fin.Pair do
   alias Rujira.Fin.Book
 
-  defmodule Status do
-    defstruct [
-      :status,
-      :price
-    ]
-
-    @type(status :: :active, :paused)
-    @type t :: %__MODULE__{
-            status: status,
-            price: Decimal.t() | nil
-          }
-
-    @spec from_query(map()) ::
-            {:error, :parse_error} | {:ok, :paused | Rujira.Fin.Pair.Status.t()}
-    def from_query(%{"active" => %{"price" => price}}) do
-      with {price, ""} <- Decimal.parse(price) do
-        {:ok, %__MODULE__{status: :active, price: price}}
-      else
-        _ -> {:error, :parse_error}
-      end
-    end
-
-    def from_query(%{"paused" => _}), do: {:ok, %__MODULE__{status: :paused, price: nil}}
-  end
-
   defstruct [
     :id,
     :address,
@@ -37,7 +12,6 @@ defmodule Rujira.Fin.Pair do
     :fee_taker,
     :fee_maker,
     :fee_address,
-    :status,
     :book,
     :history,
     :summary
@@ -54,7 +28,6 @@ defmodule Rujira.Fin.Pair do
           fee_taker: Decimal.t(),
           fee_maker: Decimal.t(),
           fee_address: String.t(),
-          status: :not_loaded | Status.t(),
           book: :not_loaded | Book.t()
         }
 
@@ -83,7 +56,6 @@ defmodule Rujira.Fin.Pair do
          fee_taker: fee_taker,
          fee_maker: fee_maker,
          fee_address: fee_address,
-         status: :not_loaded,
          book: :not_loaded
        }}
     end
