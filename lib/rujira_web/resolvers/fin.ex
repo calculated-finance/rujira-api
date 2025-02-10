@@ -42,22 +42,20 @@ defmodule RujiraWeb.Resolvers.Fin do
        }}
 
   def summary(%{token_base: base, token_quote: quot}, _, _) do
+    {:ok, base} = Assets.from_denom(base)
+    {:ok, quot} = Assets.from_denom(quot)
     # TODO 1: Fetch from actual trading data
-    asset = quot |> String.replace("-", ".") |> String.upcase() |> Assets.from_string()
-    base = String.split(base, "-") |> Enum.at(1, base)
-    quot = String.split(quot, "-") |> Enum.at(1, quot)
-
-    with {:ok, base} <- Rujira.Prices.get(String.upcase(base)),
-         {:ok, quot} <- Rujira.Prices.get(String.upcase(quot)) do
+    with {:ok, base_p} <- Rujira.Prices.get(String.upcase(base.symbol)),
+         {:ok, quot_p} <- Rujira.Prices.get(String.upcase(quot.symbol)) do
       {:ok,
        %{
-         last: trunc(base.price * 10 ** 12 / quot.price),
-         last_usd: base.price,
-         high: trunc(base.price * 1.3),
-         low: trunc(base.price * 0.8),
-         change: trunc(base.change * 1_000_000_000_000),
+         last: trunc(base_p.price * 10 ** 12 / quot_p.price),
+         last_usd: base_p.price,
+         high: trunc(base_p.price * 1.3),
+         low: trunc(base_p.price * 0.8),
+         change: trunc(base_p.change * 1_000_000_000_000),
          volume: %{
-           asset: asset,
+           asset: quot,
            amount: 1_736_773_000_000
          }
        }}

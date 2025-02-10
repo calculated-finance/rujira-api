@@ -69,8 +69,8 @@ defmodule Rujira.Fin.Pair do
       }) do
     with {fee_taker, ""} <- Decimal.parse(fee_taker),
          {fee_maker, ""} <- Decimal.parse(fee_maker),
-         {:ok, oracle_base} <- get_asset(Enum.at(oracles, 0)),
-         {:ok, oracle_quote} <- get_asset(Enum.at(oracles, 1)) do
+         {:ok, oracle_base} <- get_asset(Enum.at(oracles || [], 0)),
+         {:ok, oracle_quote} <- get_asset(Enum.at(oracles || [], 1)) do
       {:ok,
        %__MODULE__{
          id: address,
@@ -92,4 +92,6 @@ defmodule Rujira.Fin.Pair do
   def get_asset(%{"chain" => chain, "symbol" => symbol}) do
     {:ok, String.upcase(chain) <> "." <> symbol}
   end
+
+  def get_asset(nil), do: {:ok, nil}
 end
