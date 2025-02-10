@@ -26,7 +26,12 @@ defmodule Rujira.Fin.Listener do
   defp scan_txs(txs) do
     addresses =
       txs
-      |> Enum.flat_map(& &1["result"]["events"])
+      |> Enum.flat_map(fn x ->
+        case x["result"]["events"] do
+          nil -> []
+          xs when is_list(xs) -> xs
+        end
+      end)
       |> scan_attributes()
       |> Enum.uniq()
 
