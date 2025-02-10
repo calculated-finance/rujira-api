@@ -97,8 +97,8 @@ defmodule Thorchain do
     parts = String.split(memo, ":")
 
     if length(parts) >= 6 do
-      affiliate_id = Enum.at(parts, 4)
-      affiliate_bp = Enum.at(parts, 5)
+      affiliate_id = Enum.at(parts, 4) |> String.split("/") |> Enum.at(0)
+      affiliate_bp = Enum.at(parts, 5) |> String.split("/") |> Enum.at(0)
 
       {:ok, {affiliate_id, affiliate_bp}}
     else
