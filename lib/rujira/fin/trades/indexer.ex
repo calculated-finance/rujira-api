@@ -50,12 +50,13 @@ defmodule Rujira.Fin.Trades.Indexer do
          [
            %{
              "_contract_address" => contract_address,
-             "type" => "wasm-rujira-fin/trade",
-             "rate" => rate,
-             "offer" => offer,
              "bid" => bid,
              "msg_index" => msg_index,
-             "side" => side
+             "offer" => offer,
+             "price" => _,
+             "rate" => rate,
+             "side" => side,
+             "type" => "wasm-rujira-fin/trade"
            }
            | rest
          ],
@@ -77,7 +78,7 @@ defmodule Rujira.Fin.Trades.Indexer do
          {rate, _} <- Float.parse(rate) do
       if offer > 100 && bid > 100 do
         trade = %{
-          contract_address: contract_address,
+          contract: contract_address,
           offer: offer,
           bid: bid,
           rate: rate,

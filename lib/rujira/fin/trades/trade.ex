@@ -17,7 +17,7 @@ defmodule Rujira.Fin.Trades.Trade do
     field :offer, :integer
     field :bid, :integer
     field :rate, :decimal
-    field :type, :string
+    field :side, :string
     field :protocol, :string
     field :timestamp, :utc_datetime_usec
 
@@ -35,7 +35,7 @@ defmodule Rujira.Fin.Trades.Trade do
       :offer,
       :bid,
       :rate,
-      :type,
+      :side,
       :protocol,
       :timestamp
     ])
@@ -48,10 +48,10 @@ defmodule Rujira.Fin.Trades.Trade do
       :offer,
       :bid,
       :rate,
-      :type,
+      :side,
       :protocol,
       :timestamp
     ])
-    |> unique_constraint([:height, :tx_idx, :idx], name: "trades_pkey")
+    |> unique_constraint([:height, :tx_idx, :idx], name: :trades_pkey)
   end
 end
