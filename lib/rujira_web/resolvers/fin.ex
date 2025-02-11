@@ -56,8 +56,9 @@ defmodule RujiraWeb.Resolvers.Fin do
       if t.side == "base", do: {t.bid, t.offer}, else: {t.offer, t.bid}
 
     %{
-      cursor: t.timestamp,
+      cursor: t.id,
       node: %{
+        id: t.id,
         height: t.height,
         tx_idx: t.tx_idx,
         idx: t.idx,

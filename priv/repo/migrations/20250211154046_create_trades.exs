@@ -2,7 +2,7 @@ defmodule Rujira.Repo.Migrations.CreateTrades do
   use Ecto.Migration
 
   def change do
-    create table(:trades, primary_key: false) do
+    create table(:trades) do
       add :height, :integer, null: false
       add :tx_idx, :integer, null: false
       add :idx, :integer, null: false
@@ -21,6 +21,6 @@ defmodule Rujira.Repo.Migrations.CreateTrades do
 
     create index(:trades, :contract)
     create index(:trades, :side)
-    create unique_index(:trades, [:height, :tx_idx, :idx], name: :trades_pkey)
+    create unique_index(:trades, [:height, :tx_idx, :idx], name: :trades_key)
   end
 end

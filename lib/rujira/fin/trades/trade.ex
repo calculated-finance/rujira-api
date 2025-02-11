@@ -6,11 +6,10 @@ defmodule Rujira.Fin.Trades.Trade do
   A normalized Trade event. Primary key is on the (height, tx_idx, idx) tuple
   """
 
-  @primary_key false
   schema "trades" do
-    field :height, :integer, primary_key: true
-    field :tx_idx, :integer, primary_key: true
-    field :idx, :integer, primary_key: true
+    field :height, :integer
+    field :tx_idx, :integer
+    field :idx, :integer
 
     field :contract, :string
     field :txhash, :string
@@ -52,6 +51,6 @@ defmodule Rujira.Fin.Trades.Trade do
       :protocol,
       :timestamp
     ])
-    |> unique_constraint([:height, :tx_idx, :idx], name: :trades_pkey)
+    |> unique_constraint([:height, :tx_idx, :idx], name: :trades_key)
   end
 end
