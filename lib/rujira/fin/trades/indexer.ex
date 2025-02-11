@@ -75,16 +75,20 @@ defmodule Rujira.Fin.Trades.Indexer do
          {bid, _} <- Integer.parse(bid),
          {tx_idx, _} <- Integer.parse(msg_index),
          {rate, _} <- Float.parse(rate) do
-      trade = %{
-        contract_address: contract_address,
-        offer: offer,
-        bid: bid,
-        rate: rate,
-        side: side,
-        tx_idx: tx_idx
-      }
+      if offer > 100 && bid > 100 do
+        trade = %{
+          contract_address: contract_address,
+          offer: offer,
+          bid: bid,
+          rate: rate,
+          side: side,
+          tx_idx: tx_idx
+        }
 
-      [trade | collection]
+        [trade | collection]
+      else
+        collection
+      end
     end
   end
 end
