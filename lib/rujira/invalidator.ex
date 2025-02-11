@@ -55,8 +55,7 @@ defmodule Rujira.Invalidator do
 
   defp scan_attributes(
          [
-           %{"action" => "/cosmwasm.wasm.v1.MsgInstantiateContract"},
-           %{"code_id" => code_id}
+           %{"action" => "/cosmwasm.wasm.v1.MsgInstantiateContract", "code_id" => code_id}
            | rest
          ],
          collection

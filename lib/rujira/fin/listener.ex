@@ -32,7 +32,7 @@ defmodule Rujira.Fin.Listener do
           xs when is_list(xs) -> xs
         end
       end)
-      |> scan_attributes()
+      |> scan_events()
       |> Enum.uniq()
 
     for a <- addresses do
@@ -45,21 +45,16 @@ defmodule Rujira.Fin.Listener do
     end
   end
 
-  defp scan_attributes(attributes, collection \\ [])
+  defp scan_events(attributes, collection \\ [])
 
-  defp scan_attributes(
-         [
-           %{
-             "_contract_address" => address,
-             "type" => "wasm-rujira-fin/" <> _
-           }
-           | rest
-         ],
+  defp scan_events(
+         [%{"type" => "wasm-rujira-fin/" <> _} = event | rest],
          collection
        ) do
-    scan_attributes(rest, [address | collection])
+    address = Map.get(event, "_contract_address")
+    scan_events(rest, [address | collection])
   end
 
-  defp scan_attributes([_ | rest], collection), do: scan_attributes(rest, collection)
-  defp scan_attributes([], collection), do: collection
+  defp scan_events([_ | rest], collection), do: scan_events(rest, collection)
+  defp scan_events([], collection), do: collection
 end
