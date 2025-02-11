@@ -81,26 +81,10 @@ defmodule RujiraWeb.Resolvers.Thorchain do
   end
 
   def inbound_addresses(_, _, _) do
-    tc = %QueryInboundAddressResponse{
-      chain: "THOR",
-      pub_key: "",
-      address: "thor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38cg2q6y",
-      router: "",
-      halted: false,
-      global_trading_paused: false,
-      chain_trading_paused: false,
-      chain_lp_actions_paused: false,
-      gas_rate: "0",
-      gas_rate_units: "0",
-      outbound_tx_size: "0",
-      outbound_fee: "0",
-      dust_threshold: "0"
-    }
-
     Helpers.async(fn ->
       with {:ok, %QueryInboundAddressesResponse{inbound_addresses: inbound_addresses}} <-
              Thorchain.Node.stub(&Q.inbound_addresses/2, %QueryInboundAddressesRequest{}) do
-        {:ok, Enum.map([tc | inbound_addresses], &cast_response/1)}
+        {:ok, Enum.map(inbound_addresses, &cast_response/1)}
       end
     end)
   end
