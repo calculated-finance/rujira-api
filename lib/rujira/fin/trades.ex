@@ -16,11 +16,12 @@ defmodule Rujira.Fin.Trades do
 
   @spec list_trades(String.t(), non_neg_integer(), :asc | :desc) :: [Trade.t()]
   def list_trades(contract, limit \\ 100, sort \\ :desc) do
-    Trade
-    |> where(contract: ^contract)
-    |> sort(sort)
-    |> limit(^limit)
-    |> Repo.all()
+    {:ok,
+     Trade
+     |> where(contract: ^contract)
+     |> sort(sort)
+     |> limit(^limit)
+     |> Repo.all()}
   end
 
   def insert_trade(params) do

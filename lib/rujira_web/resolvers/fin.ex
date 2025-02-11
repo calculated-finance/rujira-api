@@ -1,4 +1,6 @@
 defmodule RujiraWeb.Resolvers.Fin do
+  alias Rujira.Fin.Trades.Trade
+  alias Rujira.Fin.Trades
   alias Rujira.Assets
   alias Rujira.Fin
   alias Absinthe.Resolution.Helpers
@@ -28,8 +30,10 @@ defmodule RujiraWeb.Resolvers.Fin do
 
   def book(%{book: book}, _, _), do: {:ok, book}
 
-  def trades(_, _, _),
-    do:
+  def trades(%{address: address, token_base: token_base, token_quote: token_quote}, _, _) do
+    with {:ok, trades} <- Trades.list_trades(address),
+         {:ok, asset_base} <- Assets.from_denom(token_base),
+         {:ok, asset_quote} <- Assets.from_denom(token_quote) do
       {:ok,
        %{
          page_info: %{
@@ -38,8 +42,38 @@ defmodule RujiraWeb.Resolvers.Fin do
            has_previous_page: false,
            has_next_page: false
          },
-         edges: []
+         edges:
+           Enum.map(
+             trades,
+             &resolve_trade(&1, asset_base, asset_quote)
+           )
        }}
+    end
+  end
+
+  defp resolve_trade(%Trade{} = t, asset_base, asset_quote) do
+    {base_amount, quote_amount} =
+      if t.side == "base", do: {t.bid, t.offer}, else: {t.offer, t.bid}
+
+    %{
+      cursor: t.timestamp,
+      node: %{
+        height: t.height,
+        tx_idx: t.tx_idx,
+        idx: t.idx,
+        contract: t.contract,
+        txhash: t.txhash,
+        quote_amount: quote_amount,
+        base_amount: base_amount,
+        price: t.rate,
+        type: if(t.side == "base", do: "buy", else: "sell"),
+        protocol: t.protocol,
+        timestamp: t.timestamp,
+        asset_base: asset_base,
+        asset_quote: asset_quote
+      }
+    }
+  end
 
   def summary(%{token_base: base, token_quote: quot}, _, _) do
     {:ok, base} = Assets.from_denom(base)
