@@ -2,7 +2,7 @@ defmodule Rujira.Chains.Base do
   defstruct rpc: "https://base.api.onfinality.io/public"
 end
 
-defimpl Rujira.Chains.Adapter, for: Rujira.Chains.Avax do
+defimpl Rujira.Chains.Adapter, for: Rujira.Chains.Base do
   alias Rujira.Assets
 
   def balances(a, address, assets) do
