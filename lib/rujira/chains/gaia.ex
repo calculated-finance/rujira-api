@@ -35,6 +35,15 @@ defmodule Rujira.Chains.Gaia do
   def to_denom("LVN"),
     do: {:ok, "ibc/6C95083ADD352D5D47FB4BA427015796E5FEF17A829463AD05ECD392EB38D889"}
 
+  def to_denom("NAMI"),
+    do: {:ok, "ibc/4622E82B845FFC6AA8B45C1EB2F507133A9E876A5FEA1BA64585D5F564405453"}
+
+  def to_denom("AUTO"),
+    do: {:ok, "ibc/7D20C448700E7C56DC4577DA46666BA7993AEC6BFA223E67FA23CC4333B28745"}
+
+  def to_denom("MNTA"),
+    do: {:ok, "ibc/CF52BFC8A11248F05151BFEC0FB033C3531E40C7BAFC72E277F49346EF76E981"}
+
   def to_denom(_), do: {:error, :unknown_asset}
 
   def map_coin(%{denom: "uatom", amount: amount}) do
@@ -81,6 +90,27 @@ defmodule Rujira.Chains.Gaia do
         amount: amount
       }) do
     %{asset: Assets.from_string("GAIA.LVN"), amount: amount}
+  end
+
+  def map_coin(%{
+        denom: "ibc/4622E82B845FFC6AA8B45C1EB2F507133A9E876A5FEA1BA64585D5F564405453",
+        amount: amount
+      }) do
+    %{asset: Assets.from_string("GAIA.NAMI"), amount: amount}
+  end
+
+  def map_coin(%{
+        denom: "ibc/7D20C448700E7C56DC4577DA46666BA7993AEC6BFA223E67FA23CC4333B28745",
+        amount: amount
+      }) do
+    %{asset: Assets.from_string("GAIA.AUTO"), amount: amount}
+  end
+
+  def map_coin(%{
+        denom: "ibc/CF52BFC8A11248F05151BFEC0FB033C3531E40C7BAFC72E277F49346EF76E981",
+        amount: amount
+      }) do
+    %{asset: Assets.from_string("GAIA.MNTA"), amount: amount}
   end
 
   def map_coin(_), do: nil
