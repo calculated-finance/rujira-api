@@ -11,6 +11,8 @@ defmodule Rujira.Assets do
   end
 
   def erc20(chain) do
+    chain = chain |> Kernel.to_string() |> String.upcase()
+
     Enum.filter(
       assets(),
       &(&1.chain == chain && String.starts_with?(&1.symbol, "#{&1.ticker}-0X"))
