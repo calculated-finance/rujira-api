@@ -57,16 +57,16 @@ defmodule Rujira.Assets do
     sym
   end
 
-  def decimals(%{type: :layer_1, chain: "AVAX", symbol: "USDC"}), do: 6
+  def decimals(%{type: :layer_1, chain: "AVAX", ticker: "USDC"}), do: 6
   def decimals(%{type: :layer_1, chain: "AVAX"}), do: 18
-  def decimals(%{type: :layer_1, chain: "BASE", symbol: "USDC"}), do: 6
+  def decimals(%{type: :layer_1, chain: "BASE", ticker: "USDC"}), do: 6
   def decimals(%{type: :layer_1, chain: "BASE"}), do: 18
   def decimals(%{type: :layer_1, chain: "BCH"}), do: 8
   def decimals(%{type: :layer_1, chain: "BTC"}), do: 8
-  def decimals(%{type: :layer_1, chain: "BSC", symbol: "USDC"}), do: 8
+  def decimals(%{type: :layer_1, chain: "BSC", ticker: "USDC"}), do: 8
   def decimals(%{type: :layer_1, chain: "BSC"}), do: 18
   def decimals(%{type: :layer_1, chain: "DOGE"}), do: 8
-  def decimals(%{type: :layer_1, chain: "ETH", symbol: "USDC"}), do: 6
+  def decimals(%{type: :layer_1, chain: "ETH", ticker: "USDC"}), do: 6
   def decimals(%{type: :layer_1, chain: "ETH"}), do: 18
   def decimals(%{type: :layer_1, chain: "GAIA"}), do: 6
   def decimals(%{type: :layer_1, chain: "KUJI"}), do: 6
