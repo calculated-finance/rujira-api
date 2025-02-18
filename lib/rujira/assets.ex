@@ -105,9 +105,14 @@ defmodule Rujira.Assets do
 
   This will only convert
   """
-  def from_denom("rune"),
-    do:
-      {:ok, %Asset{id: "THOR.RUNE", type: :native, chain: "THOR", symbol: "RUNE", ticker: "RUNE"}}
+  def from_denom("rune") do
+    {:ok, %Asset{id: "THOR.RUNE", type: :native, chain: "THOR", symbol: "RUNE", ticker: "RUNE"}}
+  end
+
+  def from_denom("thor.mimir") do
+    {:ok,
+     %Asset{id: "THOR.MIMIR", type: :native, chain: "THOR", symbol: "MIMIR", ticker: "MIMIR"}}
+  end
 
   def from_denom(denom) do
     case denom |> String.upcase() |> String.split("-", parts: 2) do
@@ -124,7 +129,7 @@ defmodule Rujira.Assets do
          }}
 
       _ ->
-        {:error, :invalid_denom}
+        {:error, "Invalid Denom #{denom}"}
     end
   end
 end

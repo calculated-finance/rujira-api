@@ -18,11 +18,6 @@ defmodule Rujira.Fin.Listener do
     {:noreply, state}
   end
 
-  def handle_info(%{id: %{txs: txs}}, state) do
-    scan_txs(txs)
-    {:noreply, state}
-  end
-
   defp scan_txs(txs) do
     addresses =
       txs
