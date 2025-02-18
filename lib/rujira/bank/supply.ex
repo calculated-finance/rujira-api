@@ -74,7 +74,6 @@ defmodule Rujira.Bank.Supply do
   defp handle_events(events) do
     events
     |> scan_events()
-    |> IO.inspect()
     |> Enum.uniq()
     |> Enum.reduce(%{}, fn denom, acc ->
       case Thorchain.Node.stub(
