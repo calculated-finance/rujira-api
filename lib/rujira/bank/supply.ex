@@ -48,8 +48,22 @@ defmodule Rujira.Bank.Supply do
   end
 
   @impl true
-  def handle_info(%{txs: txs}, state) do
-    {:noreply, Map.merge(state, scan_txs(txs))}
+  def handle_info(
+        %{txs: txs, begin_block_events: begin_block_events, end_block_events: end_block_events},
+        state
+      ) do
+    events =
+      txs
+      |> Enum.flat_map(fn x ->
+        case x["result"]["events"] do
+          nil -> []
+          xs when is_list(xs) -> xs
+        end
+      end)
+      |> Enum.concat(begin_block_events)
+      |> Enum.concat(end_block_events)
+
+    {:noreply, Map.merge(state, handle_events(events))}
   end
 
   @impl true
@@ -57,15 +71,10 @@ defmodule Rujira.Bank.Supply do
     {:reply, state, state}
   end
 
-  defp scan_txs(txs) do
-    txs
-    |> Enum.flat_map(fn x ->
-      case x["result"]["events"] do
-        nil -> []
-        xs when is_list(xs) -> xs
-      end
-    end)
+  defp handle_events(events) do
+    events
     |> scan_events()
+    |> IO.inspect()
     |> Enum.uniq()
     |> Enum.reduce(%{}, fn denom, acc ->
       case Thorchain.Node.stub(
@@ -73,6 +82,8 @@ defmodule Rujira.Bank.Supply do
              %QuerySupplyOfRequest{denom: denom}
            ) do
         {:ok, %QuerySupplyOfResponse{amount: %{amount: amount}}} ->
+          Logger.debug("#{__MODULE__} change #{denom}")
+
           Map.put(acc, denom, amount)
 
         _ ->
