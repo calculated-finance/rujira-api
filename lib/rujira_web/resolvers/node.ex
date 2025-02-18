@@ -1,6 +1,7 @@
 defmodule RujiraWeb.Resolvers.Node do
   alias Rujira.Assets
   alias Rujira.Accounts
+  alias Rujira.Bank
   alias Rujira.Merge
   alias Rujira.Fin
   alias Rujira.Staking
@@ -21,6 +22,7 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Accounts.Account{}, _), do: :account
   def type(%Accounts.Layer1{}, _), do: :layer_1_account
   def type(%Assets.Asset{}, _), do: :asset
+  def type(%Bank.Supply{}, _), do: :bank_supply
   def type(%Merge.Pool{}, _), do: :merge_pool
   def type(%Fin.Pair{}, _), do: :fin_pair
   def type(%Fin.Book{}, _), do: :fin_book
@@ -40,6 +42,9 @@ defmodule RujiraWeb.Resolvers.Node do
 
       {:ok, %{type: :asset, id: id}} ->
         {:ok, Assets.from_string(id)}
+
+      {:ok, %{type: :bank_supply, id: id}} ->
+        Bank.supply(id)
 
       {:ok, %{type: :merge_pool, id: id}} ->
         {:ok, %Merge.Pool{id: id, address: id}}

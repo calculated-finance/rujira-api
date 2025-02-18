@@ -16,8 +16,8 @@ defmodule RujiraWeb.Schema.RujiraTypes do
       resolve(&Resolvers.Staking.resolver/3)
     end
 
-    field :tokens, non_null(list_of(non_null(:balance))) do
-      resolve(&Resolvers.Bank.total_supply/3)
+    field :bank, non_null(:bank) do
+      resolve(&Resolvers.Bank.resolver/3)
     end
   end
 end

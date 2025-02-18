@@ -15,4 +15,11 @@ defmodule Rujira.Bank do
   def total_supply() do
     {:ok, GenServer.call(Supply, :get)}
   end
+
+  def supply(denom) do
+    case Map.get(GenServer.call(Supply, :get), denom) do
+      nil -> {:error, :not_found}
+      supply -> {:ok, supply}
+    end
+  end
 end

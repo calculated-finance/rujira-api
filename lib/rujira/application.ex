@@ -21,10 +21,10 @@ defmodule Rujira.Application do
       {Finch, name: Rujira.Finch},
       Thorchain.Node,
       Rujira.Balances,
+      Rujira.Bank,
       Rujira.Fin,
       Rujira.Invalidator,
-      Thorchain.Swaps,
-      Rujira.Bank
+      Thorchain.Swaps
     ]
 
     Thorchain.Node.Appsignal.attach()

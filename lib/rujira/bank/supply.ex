@@ -1,4 +1,5 @@
 defmodule Rujira.Bank.Supply do
+  alias Rujira.Assets
   alias Cosmos.Bank.V1beta1.QuerySupplyOfResponse
   alias Cosmos.Bank.V1beta1.QuerySupplyOfRequest
   alias Cosmos.Base.Query.V1beta1.PageRequest
@@ -7,6 +8,8 @@ defmodule Rujira.Bank.Supply do
 
   use GenServer
   require Logger
+
+  defstruct [:id, :balance]
 
   def start_link(_) do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
@@ -21,7 +24,26 @@ defmodule Rujira.Bank.Supply do
              &Stub.total_supply/2,
              %QueryTotalSupplyRequest{pagination: %PageRequest{limit: 100}}
            ) do
-      {:ok, Enum.reduce(supply, %{}, &Map.put(&2, &1.denom, &1.amount))}
+      {:ok,
+       Enum.reduce(
+         supply,
+         %{},
+         fn v, agg ->
+           case Assets.from_denom(v.denom) do
+             {:ok, asset} ->
+               Map.put(agg, asset.id, %__MODULE__{
+                 id: asset.id,
+                 balance: %{
+                   amount: v.amount,
+                   asset: asset
+                 }
+               })
+
+             _ ->
+               agg
+           end
+         end
+       )}
     end
   end
 
