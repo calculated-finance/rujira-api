@@ -21,7 +21,6 @@ defmodule Rujira.Chains.Gaia.Balances.Listener do
       events
       |> Enum.flat_map(&scan_event/1)
       |> Enum.uniq()
-      |> IO.inspect(label: "Addresses")
 
     for a <- addresses do
       Logger.debug("#{__MODULE__} change #{a}")
