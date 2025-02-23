@@ -86,7 +86,7 @@ defmodule Rujira.Assets do
   end
 
   def to_native(%{id: "THOR.RUNE"}), do: {:ok, "rune"}
-  def to_native(%{id: "THOR.MIMIR"}), do: {:ok, "thor.mimir"}
+  def to_native(%{id: "THOR." <> _ = id}), do: {:ok, String.downcase(id)}
   def to_native(%{id: "x/" <> _ = denom}), do: {:ok, denom}
 
   def to_native(%{type: "SECURED", chain: chain, symbol: symbol}) do
@@ -116,9 +116,11 @@ defmodule Rujira.Assets do
     {:ok, %Asset{id: "THOR.RUNE", type: :native, chain: "THOR", symbol: "RUNE", ticker: "RUNE"}}
   end
 
-  def from_denom("thor.mimir") do
+  def from_denom("thor." <> symbol) do
+    symbol = String.upcase(symbol)
+
     {:ok,
-     %Asset{id: "THOR.MIMIR", type: :native, chain: "THOR", symbol: "MIMIR", ticker: "MIMIR"}}
+     %Asset{id: "THOR.#{symbol}", type: :native, chain: "THOR", symbol: symbol, ticker: symbol}}
   end
 
   def from_denom("x/" <> id = denom) do
