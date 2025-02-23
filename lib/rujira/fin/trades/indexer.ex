@@ -31,6 +31,7 @@ defmodule Rujira.Fin.Trades.Indexer do
   defp scan_events(height, txhash, events, time) do
     events
     |> scan_attributes()
+    |> Enum.reverse()
     |> Enum.with_index()
     |> Enum.each(fn {trade, idx} ->
       Map.merge(trade, %{
