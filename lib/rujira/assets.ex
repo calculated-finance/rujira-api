@@ -81,6 +81,8 @@ defmodule Rujira.Assets do
     end
   end
 
+  def to_native("x/" <> _ = denom), do: {:ok, denom}
+
   def to_native(asset) do
     case String.split(asset, "-", parts: 2) do
       [chain, token] -> {:ok, String.downcase(chain) <> "-" <> String.downcase(token)}
@@ -112,6 +114,17 @@ defmodule Rujira.Assets do
   def from_denom("thor.mimir") do
     {:ok,
      %Asset{id: "THOR.MIMIR", type: :native, chain: "THOR", symbol: "MIMIR", ticker: "MIMIR"}}
+  end
+
+  def from_denom("x/" <> id = denom) do
+    {:ok,
+     %Asset{
+       id: denom,
+       type: :native,
+       chain: "THOR",
+       symbol: String.upcase(id),
+       ticker: String.upcase(id)
+     }}
   end
 
   def from_denom(denom) do
