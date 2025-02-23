@@ -56,11 +56,12 @@ defmodule Rujira.Invalidator do
 
   defp scan_attributes(
          [
-           %{"action" => "/cosmwasm.wasm.v1.MsgInstantiateContract", "code_id" => code_id}
+           %{"action" => "/cosmwasm.wasm.v1.MsgInstantiateContract"} = event
            | rest
          ],
          collection
        ) do
+    code_id = Map.get(event, "code_id")
     scan_attributes(rest, [{Rujira.Contract, :by_code, [code_id]} | collection])
   end
 
