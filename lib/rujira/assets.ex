@@ -85,6 +85,8 @@ defmodule Rujira.Assets do
     end
   end
 
+  def to_native(%{id: "THOR.RUNE"}), do: {:ok, "rune"}
+  def to_native(%{id: "THOR.MIMIR"}), do: {:ok, "thor.mimir"}
   def to_native(%{id: "x/" <> _ = denom}), do: {:ok, denom}
 
   def to_native(%{type: "SECURED", chain: chain, symbol: symbol}) do
