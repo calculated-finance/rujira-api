@@ -37,12 +37,14 @@ defmodule Rujira.Assets do
   @moduledoc """
   Interfaces for interacting with THORChain Asset values
   """
+  def chain("x/" <> _), do: "THOR"
 
   def chain(str) do
     [c | _] = String.split(str, [".", "-"])
     c
   end
 
+  def symbol("x/" <> id), do: String.upcase(id)
   def symbol("GAIA.RKUJI"), do: "rKUJI"
   def symbol("KUJI.RKUJI"), do: "rKUJI"
 
@@ -50,6 +52,8 @@ defmodule Rujira.Assets do
     [_, v] = String.split(str, [".", "-"], parts: 2)
     v
   end
+
+  def ticker("x/" <> id), do: String.upcase(id)
 
   def ticker(str) do
     [_, v] = String.split(str, [".", "-"], parts: 2)
@@ -81,14 +85,13 @@ defmodule Rujira.Assets do
     end
   end
 
-  def to_native("x/" <> _ = denom), do: {:ok, denom}
+  def to_native(%{id: "x/" <> _ = denom}), do: {:ok, denom}
 
-  def to_native(asset) do
-    case String.split(asset, "-", parts: 2) do
-      [chain, token] -> {:ok, String.downcase(chain) <> "-" <> String.downcase(token)}
-      _ -> {:ok, nil}
-    end
+  def to_native(%{type: "SECURED", chain: chain, symbol: symbol}) do
+    {:ok, String.downcase(chain) <> "-" <> String.downcase(symbol)}
   end
+
+  def to_native(_), do: {:ok, nil}
 
   def to_layer1(%Asset{chain: "THOR"}), do: nil
 

@@ -15,8 +15,11 @@ defmodule RujiraWeb.Resolvers.Token do
   def denom(%{asset: %Asset{type: :secured, id: id}}, _, _),
     do: {:ok, %{denom: String.downcase(id)}}
 
-  def denom(%{asset: %Asset{chain: "THOR", symbol: symbol}}, _, _),
-    do: {:ok, %{denom: String.downcase(symbol)}}
+  def denom(%{asset: %Asset{chain: "THOR"} = a}, _, _) do
+    with {:ok, denom} <- Assets.to_native(a) do
+      {:ok, %{denom: denom}}
+    end
+  end
 
   def denom(%{asset: %Asset{chain: "KUJI", symbol: symbol}}, _, _) do
     with {:ok, denom} <- Rujira.Chains.Kuji.to_denom(symbol) do
