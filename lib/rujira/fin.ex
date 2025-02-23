@@ -108,22 +108,8 @@ defmodule Rujira.Fin do
     {:ok, %{pair | summary: summary}}
   end
 
-  def candles(address, _, _, resolution) do
-    bin = DateTime.utc_now()
-
-    candles = [
-      %Candle{
-        id: Candle.to_id(address, resolution, bin),
-        high: 300_000_000_000,
-        low: 100_000_000_000,
-        open: 150_000_000_000,
-        close: 250_000_000_000,
-        volume: 300_000_000_000,
-        bin: bin
-      }
-    ]
-
-    {:ok, candles}
+  def candles(address, from, to, resolution) do
+    Candle.list_candles(address, from, to, resolution)
   end
 
   def pair_from_id(id) do

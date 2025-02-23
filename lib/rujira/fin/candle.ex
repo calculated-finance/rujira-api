@@ -30,12 +30,12 @@ defmodule Rujira.Fin.Candle do
     |> select([t, b], %{
       bin: b.min,
       timestamp: t.timestamp,
-      trade_price: t.price,
+      trade_price: t.rate,
       bid: t.bid,
-      high: over(max(t.price), :bins),
-      low: over(min(t.price), :bins),
-      open: over(first_value(t.price), :bins),
-      close: over(last_value(t.price), :bins),
+      high: over(max(t.rate), :bins),
+      low: over(min(t.rate), :bins),
+      open: over(first_value(t.rate), :bins),
+      close: over(last_value(t.rate), :bins),
       volume: over(sum(t.bid), :bins),
       rank: over(rank(), :bins),
       row_number: over(row_number(), :bins)
@@ -50,6 +50,7 @@ defmodule Rujira.Fin.Candle do
     |> subquery()
     |> group_by([:bin, :open, :close, :high, :low, :volume])
     |> select([b], %{
+      id: fragment("concat(?::varchar, '/', ?)", ^precision, b.bin),
       bin: b.bin,
       high: b.high,
       low: b.low,
@@ -61,9 +62,15 @@ defmodule Rujira.Fin.Candle do
     |> Repo.all()
     |> fill_blanks()
     |> Enum.reverse()
+    |> Enum.map(&struct(__MODULE__, &1))
   end
 
   defp fill_blanks(agg \\ [], _rem)
+
+  # If this is a first item and it's blank, drop it
+  defp fill_blanks([], [%{close: nil, high: nil, low: nil, open: nil} | rest]) do
+    fill_blanks([], rest)
+  end
 
   defp fill_blanks([prev | agg], [%{close: nil, high: nil, low: nil, open: nil} = el | rest]) do
     filled = %{el | close: prev.close, high: prev.close, low: prev.close, open: prev.close}
