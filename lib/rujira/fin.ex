@@ -173,34 +173,28 @@ defmodule Rujira.Fin do
 
   def update_candles(trades) do
     now = DateTime.utc_now()
-    active = TradingView.active(now)
 
     entries =
       trades
-      |> Enum.group_by(& &1.contract)
-      |> Enum.flat_map(fn {k, v} ->
-        rates = Enum.map(v, & &1.rate)
-        high = Enum.max(rates, &Decimal.gte?/2)
-        low = Enum.min(rates, &Decimal.gte?/2)
-        open = Enum.at(rates, 0)
-        close = Enum.at(rates, -1)
+      |> Enum.flat_map(fn v ->
+        candles = TradingView.active(v.timestamp)
 
-        volume =
-          Enum.reduce(trades, 0, fn
-            %{side: :base, offer: offer}, a -> a + offer
-            %{side: :quote, bid: bid}, a -> a + bid
-          end)
+        size =
+          case v do
+            %{side: :base, offer: offer} -> offer
+            %{side: :quote, bid: bid} -> bid
+          end
 
-        Enum.map(active, fn {r, b} ->
+        Enum.map(candles, fn {r, b} ->
           %{
-            contract: k,
+            contract: v.contract,
             resolution: r,
             bin: b,
-            high: high,
-            low: low,
-            open: open,
-            close: close,
-            volume: volume,
+            high: v.rate,
+            low: v.rate,
+            open: v.rate,
+            close: v.rate,
+            volume: size,
             inserted_at: now,
             updated_at: now
           }
