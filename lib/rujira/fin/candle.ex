@@ -4,7 +4,7 @@ defmodule Rujira.Fin.Candle do
 
   @primary_key false
   schema "candles" do
-    field :id, :string, virtual: true
+    field :id, :string
 
     field :contract, :string, primary_key: true
     field :resolution, :string, primary_key: true
@@ -22,7 +22,7 @@ defmodule Rujira.Fin.Candle do
   @doc false
   def changeset(candle, attrs) do
     candle
-    |> cast(attrs, [:contract, :resolution, :bin, :high, :low, :open, :close, :volume])
-    |> validate_required([:contract, :resolution, :bin, :high, :low, :open, :close, :volume])
+    |> cast(attrs, [:id, :contract, :resolution, :bin, :high, :low, :open, :close, :volume])
+    |> validate_required([:id, :contract, :resolution, :bin, :high, :low, :open, :close, :volume])
   end
 end

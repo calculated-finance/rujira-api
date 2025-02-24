@@ -105,22 +105,15 @@ defmodule Rujira.Fin do
   end
 
   def get_candle(id) do
-    [contract, resolution, bin] = String.split(id, "/")
-
     Candle
-    |> where(
-      [c],
-      c.contract == ^contract and c.resolution == ^resolution and c.bin == ^bin
-    )
+    |> where([c], c.id == ^id)
     |> Repo.one()
-    |> set_candle_id()
   end
 
   def list_candles(ids) do
     Candle
-    |> where([c], fragment("concat(?, '/', ?, '/', ?)", c.contract, c.resolution, c.bin) in ^ids)
+    |> where([c], c.id in ^ids)
     |> Repo.all()
-    |> Enum.map(&set_candle_id/1)
   end
 
   def pair_from_id(id) do
@@ -181,6 +174,7 @@ defmodule Rujira.Fin do
         |> TradingView.active()
         |> Enum.map(fn {r, b} ->
           %{
+            id: "#{v.contract}/#{r}/#{DateTime.to_iso8601(b)}",
             contract: v.contract,
             resolution: r,
             bin: b,
@@ -223,7 +217,6 @@ defmodule Rujira.Fin do
       )
 
     for c <- candles do
-      c = set_candle_id(c)
       Logger.debug("#{__MODULE__} candle #{c.id}")
 
       id =
@@ -235,11 +228,5 @@ defmodule Rujira.Fin do
 
       Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
     end
-  end
-
-  def set_candle_id(nil), do: nil
-
-  def set_candle_id(%Candle{contract: contract, resolution: resolution, bin: bin} = c) do
-    %{c | id: "#{contract}/#{resolution}/#{DateTime.to_iso8601(bin)}"}
   end
 end
