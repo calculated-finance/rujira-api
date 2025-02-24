@@ -29,23 +29,6 @@ defmodule Rujira.Invalidator do
 
   defp scan_attributes(
          [
-           %{"action" => "/cosmwasm.wasm.v1.MsgExecuteContract"} = event
-           | rest
-         ],
-         collection
-       ) do
-    address = Map.get(event, "_contract_address")
-
-    # Here we can just invalidate the address for all protocols.
-    # Only the one where it actually matches the protocol will be affected
-    scan_attributes(rest, [
-      {Rujira.Contract, :query_state_all, [address]},
-      {Rujira.Contract, :query_state_smart, [address, :_]} | collection
-    ])
-  end
-
-  defp scan_attributes(
-         [
            %{"action" => "/cosmwasm.wasm.v1.MsgStoreCode"}
            | rest
          ],
