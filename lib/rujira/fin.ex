@@ -105,10 +105,12 @@ defmodule Rujira.Fin do
   end
 
   def get_candle(id) do
+    [contract, resolution, bin] = String.split(id, "/")
+
     case Candle
          |> where(
            [c],
-           fragment("concat(?, '/', ?, '/', ?)", c.contract, c.resolution, c.bin) == ^id
+           c.contract == ^contract and c.resolution == ^resolution and c.bin == ^bin
          )
          |> Repo.one() do
       nil ->
