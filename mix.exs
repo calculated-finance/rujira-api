@@ -58,6 +58,7 @@ defmodule Rujira.MixProject do
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:tesla, "~> 1.11"},
+      {:timex, "~> 3.7.11"},
       {:websockex, "~> 0.4.3"}
     ]
   end

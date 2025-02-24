@@ -15,8 +15,6 @@ defmodule Rujira.Repo.Migrations.CreateTrades do
       add :side, :string, null: false
       add :protocol, :string, null: false
       add :timestamp, :utc_datetime_usec, null: false
-
-      timestamps(type: :utc_datetime_usec)
     end
 
     create index(:trades, :contract)

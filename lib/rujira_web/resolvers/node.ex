@@ -56,7 +56,7 @@ defmodule RujiraWeb.Resolvers.Node do
         Fin.book_from_id(id)
 
       {:ok, %{type: :fin_candle, id: id}} ->
-        {:ok, %Fin.Candle{id: id}}
+        Fin.candle_from_id(id)
 
       {:ok, %{type: :fin_order, id: id}} ->
         Fin.order_from_id(id)

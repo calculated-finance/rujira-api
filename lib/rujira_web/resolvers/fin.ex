@@ -1,6 +1,5 @@
 defmodule RujiraWeb.Resolvers.Fin do
   alias Rujira.Fin.Trades.Trade
-  alias Rujira.Fin.Trades
   alias Rujira.Assets
   alias Rujira.Fin
   alias Absinthe.Resolution.Helpers
@@ -31,7 +30,7 @@ defmodule RujiraWeb.Resolvers.Fin do
   def book(%{book: book}, _, _), do: {:ok, book}
 
   def trades(%{address: address, token_base: token_base, token_quote: token_quote}, _, _) do
-    with {:ok, trades} <- Trades.list_trades(address),
+    with trades <- Fin.list_trades(address),
          {:ok, asset_base} <- Assets.from_denom(token_base),
          {:ok, asset_quote} <- Assets.from_denom(token_quote) do
       {:ok,
@@ -120,7 +119,7 @@ defmodule RujiraWeb.Resolvers.Fin do
 
   def history(%{address: address}, _, _) do
     Helpers.async(fn ->
-      with {:ok, history} <- Fin.account_history(address) do
+      with {:ok, history} <- Fin.list_account_history(address) do
         {:ok,
          %{
            page_info: %{
@@ -135,7 +134,7 @@ defmodule RujiraWeb.Resolvers.Fin do
     end)
   end
 
-  def candles(%{address: address}, %{before: to, after: from, resolution: resolution}, _) do
+  def candles(_, _, _) do
     Helpers.async(fn ->
       {:ok,
        %{
@@ -145,7 +144,7 @@ defmodule RujiraWeb.Resolvers.Fin do
            has_previous_page: false,
            has_next_page: false
          },
-         edges: Enum.map(Fin.candles(address, from, to, resolution), &%{cursor: <<>>, node: &1})
+         edges: []
        }}
     end)
   end

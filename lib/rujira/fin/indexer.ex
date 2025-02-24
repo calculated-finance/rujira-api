@@ -1,5 +1,4 @@
-defmodule Rujira.Fin.Trades.Indexer do
-  alias Rujira.Fin.Trades
+defmodule Rujira.Fin.Indexer do
   use GenServer
   require Logger
 
@@ -21,6 +20,8 @@ defmodule Rujira.Fin.Trades.Indexer do
         },
         state
       ) do
+    {:ok, time, 0} = DateTime.from_iso8601(time)
+
     for %{"hash" => txhash, "result" => %{"events" => events}} <- txs do
       scan_events(height, txhash, events, time)
     end
@@ -33,16 +34,16 @@ defmodule Rujira.Fin.Trades.Indexer do
     |> scan_attributes()
     |> Enum.reverse()
     |> Enum.with_index()
-    |> Enum.each(fn {trade, idx} ->
+    |> Enum.map(fn {trade, idx} ->
       Map.merge(trade, %{
         height: height,
         idx: idx,
         txhash: txhash,
         timestamp: time,
-        protocol: "fin"
+        protocol: :fin
       })
-      |> Trades.insert_trade()
     end)
+    |> Rujira.Fin.insert_trades()
   end
 
   defp scan_attributes(attributes, collection \\ [])
@@ -83,7 +84,7 @@ defmodule Rujira.Fin.Trades.Indexer do
           offer: offer,
           bid: bid,
           rate: rate,
-          side: side,
+          side: String.to_existing_atom(side),
           tx_idx: tx_idx
         }
 
