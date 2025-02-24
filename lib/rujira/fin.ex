@@ -107,19 +107,13 @@ defmodule Rujira.Fin do
   def get_candle(id) do
     [contract, resolution, bin] = String.split(id, "/")
 
-    case Candle
-         |> where(
-           [c],
-           c.contract == ^contract and c.resolution == ^resolution and c.bin == ^bin
-         )
-         |> Repo.one() do
-      nil ->
-        # TODO: Generate a new one based on the last
-        nil
-
-      %Candle{} = candle ->
-        set_candle_id(candle)
-    end
+    Candle
+    |> where(
+      [c],
+      c.contract == ^contract and c.resolution == ^resolution and c.bin == ^bin
+    )
+    |> Repo.one()
+    |> set_candle_id()
   end
 
   def list_candles(ids) do
@@ -251,7 +245,9 @@ defmodule Rujira.Fin do
     end
   end
 
-  def set_candle_id(c) do
-    %{c | id: "#{c.contract}/#{c.resolution}/#{DateTime.to_iso8601(c.bin)}"}
+  def set_candle_id(nil), do: nil
+
+  def set_candle_id(%Candle{contract: contract, resolution: resolution, bin: bin} = c) do
+    %{c | id: "#{contract}/#{resolution}/#{DateTime.to_iso8601(bin)}"}
   end
 end
