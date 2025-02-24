@@ -177,15 +177,9 @@ defmodule Rujira.Fin do
     entries =
       trades
       |> Enum.flat_map(fn v ->
-        candles = TradingView.active(v.timestamp)
-
-        size =
-          case v do
-            %{side: :base, offer: offer} -> offer
-            %{side: :quote, bid: bid} -> bid
-          end
-
-        Enum.map(candles, fn {r, b} ->
+        v.timestamp
+        |> TradingView.active()
+        |> Enum.map(fn {r, b} ->
           %{
             contract: v.contract,
             resolution: r,
@@ -194,7 +188,11 @@ defmodule Rujira.Fin do
             low: v.rate,
             open: v.rate,
             close: v.rate,
-            volume: size,
+            volume:
+              case v do
+                %{side: :base, offer: offer} -> offer
+                %{side: :quote, bid: bid} -> bid
+              end,
             inserted_at: now,
             updated_at: now
           }
