@@ -19,9 +19,7 @@ defmodule RujiraWeb.Resolvers.Developer do
 
   def contracts(%{id: id}, _, _) do
     Helpers.async(fn ->
-      with {:ok, contracts} <- Rujira.Contract.by_code(id) do
-        {:ok, Enum.map(contracts, &%{address: &1})}
-      end
+      Rujira.Contract.by_code(id)
     end)
   end
 
@@ -35,5 +33,21 @@ defmodule RujiraWeb.Resolvers.Developer do
     end)
   end
 
+  def info(%{address: address}, _, _) do
+    Helpers.async(fn ->
+      Rujira.Contract.info(address)
+    end)
+  end
+
   def from_config(_address, map), do: Jason.encode(map)
+
+  def query_smart(x, _, _) do
+    IO.inspect(x)
+    {:ok, "{}"}
+  end
+
+  def query_raw_all(x, _, _) do
+    IO.inspect(x)
+    {:ok, "{}"}
+  end
 end

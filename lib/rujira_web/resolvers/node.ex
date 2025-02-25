@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Resolvers.Node do
+  alias Rujira.Contract
   alias Rujira.Assets
   alias Rujira.Accounts
   alias Rujira.Bank
@@ -30,6 +31,7 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Fin.Candle{}, _), do: :fin_candle
   def type(%Fin.Order{}, _), do: :fin_order
   def type(%Staking.Pool{}, _), do: :staking_pool
+  def type(%Contract{}, _), do: :contract
 
   defp resolve_id(id) do
     case Absinthe.Relay.Node.from_global_id(id, RujiraWeb.Schema) do
@@ -42,6 +44,9 @@ defmodule RujiraWeb.Resolvers.Node do
 
       {:ok, %{type: :asset, id: id}} ->
         {:ok, Assets.from_string(id)}
+
+      {:ok, %{type: :contract, id: id}} ->
+        Contract.from_id(id)
 
       {:ok, %{type: :bank_supply, id: id}} ->
         Bank.supply(id)

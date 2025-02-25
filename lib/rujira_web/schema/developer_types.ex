@@ -20,12 +20,35 @@ defmodule RujiraWeb.Schema.DeveloperTypes do
     end
   end
 
-  object :contract do
-    field :address, non_null(:address)
-    field :admin, :address
+  node object(:contract) do
+    field :address, :address
+
+    field :info, :contract_info do
+      resolve(&Resolvers.Developer.info/3)
+    end
+
     @desc "JSON encoded response to a { config: {} } request"
     field :config, :string do
       resolve(&Resolvers.Developer.config/3)
     end
+
+    field :query_smart, :string do
+      arg(:query, :string)
+      resolve(&Resolvers.Developer.query_smart/3)
+    end
+
+    field :query_raw_all, :string do
+      resolve(&Resolvers.Developer.query_raw_all/3)
+    end
+  end
+
+  object :contract_info do
+    field :code_id, non_null(:integer)
+    field :creator, non_null(:address)
+    field :admin, :address
+    field :label, non_null(:string)
+    # field :created, 5, type: Cosmwasm.Wasm.V1.AbsoluteTxPosition
+    field :ibc_port_id, :string
+    field :extension, :string
   end
 end

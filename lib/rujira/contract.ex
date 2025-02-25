@@ -13,9 +13,15 @@ defmodule Rujira.Contract do
   alias Cosmwasm.Wasm.V1.Model
   use Memoize
 
+  defstruct [:id, :address, :info]
+
+  def from_id(id) do
+    {:ok, %__MODULE__{id: id, address: id}}
+  end
+
   @spec info(String.t()) ::
           {:ok, Cosmwasm.Wasm.V1.ContractInfo.t()} | {:error, GRPC.RPCError.t()}
-  def info(address) do
+  defmemo info(address) do
     with {:ok, %{contract_info: contract_info}} <-
            Thorchain.Node.stub(
              &Stub.contract_info/2,
@@ -61,7 +67,9 @@ defmodule Rujira.Contract do
   @spec by_code(integer()) ::
           {:ok, list(String.t())} | {:error, GRPC.RPCError.t()}
   defmemo by_code(code_id) do
-    by_code_page(code_id)
+    with {:ok, contracts} <- by_code_page(code_id) do
+      {:ok, Enum.map(contracts, &%__MODULE__{id: &1, address: &1})}
+    end
   end
 
   defp by_code_page(code_id, key \\ nil)
