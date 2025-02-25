@@ -144,4 +144,9 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :running_since, :bigint
     field :blockchain_integrated, :bigint
   end
+
+  object :tx_id do
+    field :block_height, :bigint
+    field :tx_index, :bigint
+  end
 end

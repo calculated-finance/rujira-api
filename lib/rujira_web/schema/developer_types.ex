@@ -47,7 +47,7 @@ defmodule RujiraWeb.Schema.DeveloperTypes do
     field :creator, non_null(:address)
     field :admin, :address
     field :label, non_null(:string)
-    # field :created, 5, type: Cosmwasm.Wasm.V1.AbsoluteTxPosition
+    field :created, :tx_id
     field :ibc_port_id, :string
     field :extension, :string
   end
