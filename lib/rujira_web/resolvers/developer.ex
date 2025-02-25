@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Resolvers.Developer do
+  alias Rujira.Contract
   alias Absinthe.Resolution.Helpers
 
   defstruct []
@@ -41,13 +42,41 @@ defmodule RujiraWeb.Resolvers.Developer do
 
   def from_config(_address, map), do: Jason.encode(map)
 
-  def query_smart(x, _, _) do
-    IO.inspect(x)
-    {:ok, "{}"}
+  def query_smart(%{address: address}, %{query: query}, _) do
+    with {:ok, query} <- Jason.decode(query),
+         {:ok, response} <- Contract.query_state_smart(address, query) do
+      Jason.encode(response)
+    end
   end
 
-  def query_raw_all(x, _, _) do
-    IO.inspect(x)
-    {:ok, "{}"}
+  def state(%{address: address}, _, _) do
+    with {:ok, entries} <- Contract.query_state_all(address) do
+      {:ok,
+       Enum.map(entries, fn {k, v} ->
+         %{key: Base.encode16(k), key_ascii: to_ascii_string(k), value: Jason.encode!(v)}
+       end)}
+    end
+  end
+
+  def to_ascii_string(binary) do
+    binary
+    |> :binary.bin_to_list()
+    |> Enum.map(&byte_to_ascii/1)
+    |> Enum.join()
+  end
+
+  defp byte_to_ascii(byte) when byte in 32..126 do
+    <<byte>>
+  end
+
+  # Preserve tab as "\t"
+  defp byte_to_ascii(9), do: "\t"
+
+  defp byte_to_ascii(byte) do
+    ("\\x" <> Integer.to_string(byte, 16))
+    # pad to ensure two hex digits (modify padding if desired)
+    |> String.pad_leading(4, "0")
+    # remove extra zeros if you prefer
+    |> String.replace_prefix("00", "")
   end
 end

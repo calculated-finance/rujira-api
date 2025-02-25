@@ -37,8 +37,8 @@ defmodule RujiraWeb.Schema.DeveloperTypes do
       resolve(&Resolvers.Developer.query_smart/3)
     end
 
-    field :query_raw_all, :string do
-      resolve(&Resolvers.Developer.query_raw_all/3)
+    field :state, non_null(list_of(:state_entry)) do
+      resolve(&Resolvers.Developer.state/3)
     end
   end
 
@@ -50,5 +50,11 @@ defmodule RujiraWeb.Schema.DeveloperTypes do
     # field :created, 5, type: Cosmwasm.Wasm.V1.AbsoluteTxPosition
     field :ibc_port_id, :string
     field :extension, :string
+  end
+
+  object :state_entry do
+    field :key, :string
+    field :key_ascii, :string
+    field :value, :string
   end
 end
