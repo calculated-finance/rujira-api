@@ -2,6 +2,7 @@ defmodule Rujira.Contract do
   @moduledoc """
   Convenience methods for querying CosmWasm smart contracts
   """
+  alias Cosmwasm.Wasm.V1.ContractInfo
   alias Cosmwasm.Wasm.V1.CodeInfoResponse
   alias Cosmwasm.Wasm.V1.QueryCodesRequest
   alias Cosmos.Base.Query.V1beta1.PageRequest
@@ -14,6 +15,8 @@ defmodule Rujira.Contract do
   use Memoize
 
   defstruct [:id, :address, :info]
+
+  @type t :: %__MODULE__{id: String.t(), address: String.t(), info: ContractInfo.t()}
 
   def from_id(id) do
     {:ok, %__MODULE__{id: id, address: id}}
@@ -118,8 +121,11 @@ defmodule Rujira.Contract do
     end)
   end
 
-  @spec get({module(), String.t()} | struct()) ::
+  @spec get({module(), String.t() | __MODULE__.t()} | struct()) ::
           {:ok, struct()} | {:error, any()}
+
+  def get({module, %__MODULE__{address: address}}), do: get({module, address})
+
   def get({module, address}) do
     Memoize.Cache.get_or_run({__MODULE__, :get, [{module, address}]}, fn ->
       with {:ok, config} <- query_state_smart(address, %{config: %{}}),
