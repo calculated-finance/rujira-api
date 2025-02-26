@@ -168,8 +168,13 @@ defmodule RujiraWeb.Resolvers.Thorchain do
     %{chain_id: chain_id, height: height, time: time}
   end
 
-  defp cast_block_event(%BlockEvent{event_kv_pair: event_kv_pair}) do
-    %{attributes: event_kv_pair}
+  defp cast_block_event(%BlockEvent{
+         event_kv_pair: [
+           %{key: "type", value: type}
+           | attributes
+         ]
+       }) do
+    %{type: type, attributes: attributes}
   end
 
   defp cast_tx(%Tx{

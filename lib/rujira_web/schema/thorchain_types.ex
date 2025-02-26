@@ -196,6 +196,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
   end
 
   object :block_event do
+    field :type, non_null(:string)
     field :attributes, non_null(list_of(non_null(:block_event_attribute)))
   end
 
