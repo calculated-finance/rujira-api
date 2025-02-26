@@ -150,11 +150,9 @@ defmodule RujiraWeb.Resolvers.Thorchain do
     end)
   end
 
-  def block(height) do
+  defmemo block(height) do
     with {:ok, %QueryBlockResponse{} = block} <-
            Thorchain.Node.stub(&Q.block/2, %QueryBlockRequest{height: to_string(height)}) do
-      IO.inspect(block)
-
       {:ok,
        %{
          block
