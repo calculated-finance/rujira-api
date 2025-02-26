@@ -41,6 +41,11 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :summary, :thorchain_summary do
       resolve(&Resolvers.Thorchain.summary/3)
     end
+
+    field :tx_in, :tx_in do
+      arg(:hash, non_null(:string))
+      resolve(&Resolvers.Thorchain.tx_in/3)
+    end
   end
 
   object :quote do
@@ -148,5 +153,54 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
   object :tx_id do
     field :block_height, :bigint
     field :tx_index, :bigint
+  end
+
+  object :tx_in do
+    field :observed_tx, non_null(:observed_tx)
+
+    field :finalized_block, non_null(:block) do
+      resolve(fn %{finalised_height: height}, _, _ -> Resolvers.Thorchain.block(height) end)
+    end
+  end
+
+  object :observed_tx do
+    field :tx, :tx
+    field :status, :string
+  end
+
+  object :tx do
+    field :id, :string
+    field :chain, :chain
+    field :from_address, :address
+    field :to_address, :address
+    field :coins, non_null(list_of(non_null(:balance)))
+    field :gas, non_null(list_of(non_null(:balance)))
+    field :memo, :string
+  end
+
+  object :block do
+    field :id, non_null(:block_id)
+    field :header, non_null(:block_header)
+    field :begin_block_events, non_null(list_of(non_null(:block_event)))
+    field :end_block_events, non_null(list_of(non_null(:block_event)))
+  end
+
+  object :block_id do
+    field :hash, non_null(:string)
+  end
+
+  object :block_header do
+    field :chain_id, non_null(:string)
+    field :height, non_null(:bigint)
+    field :time, non_null(:timestamp)
+  end
+
+  object :block_event do
+    field :attributes, non_null(list_of(non_null(:block_event_attribute)))
+  end
+
+  object :block_event_attribute do
+    field :key, non_null(:string)
+    field :value, non_null(:string)
   end
 end

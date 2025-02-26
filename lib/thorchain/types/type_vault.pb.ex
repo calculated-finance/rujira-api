@@ -25,7 +25,7 @@ defmodule Thorchain.Types.Vault do
 
   field :block_height, 1, type: :int64, json_name: "blockHeight"
   field :pub_key, 2, type: :string, json_name: "pubKey", deprecated: false
-  field :coins, 3, repeated: true, type: Common.Coin, deprecated: false
+  field :coins, 3, repeated: true, type: Thorchain.Common.Coin, deprecated: false
   field :type, 4, type: Thorchain.Types.VaultType, enum: true
   field :status, 5, type: Thorchain.Types.VaultStatus, enum: true
   field :status_since, 6, type: :int64, json_name: "statusSince"

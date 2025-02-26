@@ -44,8 +44,8 @@ defmodule Thorchain.Types.EventLimitOrder do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  field :source, 1, type: Common.Coin, deprecated: false
-  field :target, 2, type: Common.Coin, deprecated: false
+  field :source, 1, type: Thorchain.Common.Coin, deprecated: false
+  field :target, 2, type: Thorchain.Common.Coin, deprecated: false
   field :tx_id, 3, type: :string, json_name: "txId", deprecated: false
 end
 
@@ -60,9 +60,9 @@ defmodule Thorchain.Types.EventStreamingSwap do
   field :count, 4, type: :uint64
   field :last_height, 5, type: :int64, json_name: "lastHeight"
   field :trade_target, 6, type: :string, json_name: "tradeTarget", deprecated: false
-  field :deposit, 7, type: Common.Coin, deprecated: false
-  field :in, 8, type: Common.Coin, deprecated: false
-  field :out, 9, type: Common.Coin, deprecated: false
+  field :deposit, 7, type: Thorchain.Common.Coin, deprecated: false
+  field :in, 8, type: Thorchain.Common.Coin, deprecated: false
+  field :out, 9, type: Thorchain.Common.Coin, deprecated: false
   field :failed_swaps, 10, repeated: true, type: :uint64, json_name: "failedSwaps"
   field :failed_swap_reasons, 11, repeated: true, type: :string, json_name: "failedSwapReasons"
 end
@@ -82,9 +82,9 @@ defmodule Thorchain.Types.EventSwap do
     json_name: "liquidityFeeInRune",
     deprecated: false
 
-  field :in_tx, 6, type: Common.Tx, json_name: "inTx", deprecated: false
-  field :out_txs, 7, type: Common.Tx, json_name: "outTxs", deprecated: false
-  field :emit_asset, 8, type: Common.Coin, json_name: "emitAsset", deprecated: false
+  field :in_tx, 6, type: Thorchain.Common.Tx, json_name: "inTx", deprecated: false
+  field :out_txs, 7, type: Thorchain.Common.Tx, json_name: "outTxs", deprecated: false
+  field :emit_asset, 8, type: Thorchain.Common.Coin, json_name: "emitAsset", deprecated: false
   field :synth_units, 9, type: :string, json_name: "synthUnits", deprecated: false
   field :streaming_swap_quantity, 10, type: :uint64, json_name: "streamingSwapQuantity"
   field :streaming_swap_count, 11, type: :uint64, json_name: "streamingSwapCount"
@@ -115,7 +115,7 @@ defmodule Thorchain.Types.EventWithdraw do
   field :provider_units, 2, type: :string, json_name: "providerUnits", deprecated: false
   field :basis_points, 3, type: :int64, json_name: "basisPoints"
   field :asymmetry, 4, type: :bytes, deprecated: false
-  field :in_tx, 5, type: Common.Tx, json_name: "inTx", deprecated: false
+  field :in_tx, 5, type: Thorchain.Common.Tx, json_name: "inTx", deprecated: false
   field :emit_asset, 6, type: :string, json_name: "emitAsset", deprecated: false
   field :emit_rune, 7, type: :string, json_name: "emitRune", deprecated: false
 end
@@ -146,7 +146,7 @@ defmodule Thorchain.Types.EventDonate do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field :pool, 1, type: Thorchain.Common.Asset, deprecated: false
-  field :in_tx, 2, type: Common.Tx, json_name: "inTx", deprecated: false
+  field :in_tx, 2, type: Thorchain.Common.Tx, json_name: "inTx", deprecated: false
 end
 
 defmodule Thorchain.Types.EventPool do
@@ -191,8 +191,8 @@ defmodule Thorchain.Types.EventRefund do
 
   field :code, 1, type: :uint32
   field :reason, 2, type: :string
-  field :in_tx, 3, type: Common.Tx, json_name: "inTx", deprecated: false
-  field :fee, 4, type: Common.Fee, deprecated: false
+  field :in_tx, 3, type: Thorchain.Common.Tx, json_name: "inTx", deprecated: false
+  field :fee, 4, type: Thorchain.Common.Fee, deprecated: false
 end
 
 defmodule Thorchain.Types.EventBond do
@@ -202,7 +202,7 @@ defmodule Thorchain.Types.EventBond do
 
   field :amount, 1, type: :string, deprecated: false
   field :bond_type, 2, type: Thorchain.Types.BondType, json_name: "bondType", enum: true
-  field :tx_in, 3, type: Common.Tx, json_name: "txIn", deprecated: false
+  field :tx_in, 3, type: Thorchain.Common.Tx, json_name: "txIn", deprecated: false
   field :node_address, 4, type: :bytes, json_name: "nodeAddress", deprecated: false
   field :bond_address, 5, type: :bytes, json_name: "bondAddress", deprecated: false
 end
@@ -236,7 +236,7 @@ defmodule Thorchain.Types.EventReserve do
     json_name: "reserveContributor",
     deprecated: false
 
-  field :in_tx, 2, type: Common.Tx, json_name: "inTx", deprecated: false
+  field :in_tx, 2, type: Thorchain.Common.Tx, json_name: "inTx", deprecated: false
 end
 
 defmodule Thorchain.Types.EventScheduledOutbound do
@@ -253,7 +253,7 @@ defmodule Thorchain.Types.EventSecurity do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field :msg, 1, type: :string
-  field :tx, 2, type: Common.Tx, deprecated: false
+  field :tx, 2, type: Thorchain.Common.Tx, deprecated: false
 end
 
 defmodule Thorchain.Types.EventSlash do
@@ -285,7 +285,7 @@ defmodule Thorchain.Types.EventFee do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field :tx_id, 1, type: :string, json_name: "txId", deprecated: false
-  field :fee, 2, type: Common.Fee, deprecated: false
+  field :fee, 2, type: Thorchain.Common.Fee, deprecated: false
   field :synth_units, 3, type: :string, json_name: "synthUnits", deprecated: false
 end
 
@@ -295,7 +295,7 @@ defmodule Thorchain.Types.EventOutbound do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field :in_tx_id, 1, type: :string, json_name: "inTxId", deprecated: false
-  field :tx, 2, type: Common.Tx, deprecated: false
+  field :tx, 2, type: Thorchain.Common.Tx, deprecated: false
 end
 
 defmodule Thorchain.Types.EventTssKeygenSuccess do

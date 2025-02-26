@@ -14,7 +14,11 @@ defmodule Thorchain.Types.QueryNodeResponse do
 
   field :node_address, 1, type: :string, json_name: "nodeAddress", deprecated: false
   field :status, 2, type: :string, deprecated: false
-  field :pub_key_set, 3, type: Common.PubKeySet, json_name: "pubKeySet", deprecated: false
+
+  field :pub_key_set, 3,
+    type: Thorchain.Common.PubKeySet,
+    json_name: "pubKeySet",
+    deprecated: false
 
   field :validator_cons_pub_key, 4,
     type: :string,

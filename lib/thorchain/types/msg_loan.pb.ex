@@ -50,7 +50,7 @@ defmodule Thorchain.Types.MsgLoanRepayment do
     json_name: "collateralAsset",
     deprecated: false
 
-  field :coin, 3, type: Common.Coin, deprecated: false
+  field :coin, 3, type: Thorchain.Common.Coin, deprecated: false
   field :min_out, 4, type: :string, json_name: "minOut", deprecated: false
   field :signer, 5, type: :bytes, deprecated: false
   field :from, 6, type: :string, deprecated: false

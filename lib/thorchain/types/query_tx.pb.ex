@@ -48,14 +48,19 @@ defmodule Thorchain.Types.QueryTxStatusResponse do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  field :tx, 1, type: Common.Tx
+  field :tx, 1, type: Thorchain.Common.Tx
 
   field :planned_out_txs, 2,
     repeated: true,
     type: Thorchain.Types.PlannedOutTx,
     json_name: "plannedOutTxs"
 
-  field :out_txs, 3, repeated: true, type: Common.Tx, json_name: "outTxs", deprecated: false
+  field :out_txs, 3,
+    repeated: true,
+    type: Thorchain.Common.Tx,
+    json_name: "outTxs",
+    deprecated: false
+
   field :stages, 4, type: Thorchain.Types.QueryTxStagesResponse, deprecated: false
 end
 
@@ -93,7 +98,7 @@ defmodule Thorchain.Types.QueryObservedTx do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  field :tx, 1, type: Common.Tx, deprecated: false
+  field :tx, 1, type: Thorchain.Common.Tx, deprecated: false
   field :status, 2, type: :string
   field :out_hashes, 3, repeated: true, type: :string, json_name: "outHashes"
   field :block_height, 4, type: :int64, json_name: "blockHeight", deprecated: false
@@ -120,7 +125,13 @@ defmodule Thorchain.Types.QueryObservedTxVoter do
   field :height, 3, type: :int64, deprecated: false
   field :txs, 4, repeated: true, type: Thorchain.Types.QueryObservedTx, deprecated: false
   field :actions, 5, repeated: true, type: Thorchain.Types.TxOutItem, deprecated: false
-  field :out_txs, 6, repeated: true, type: Common.Tx, json_name: "outTxs", deprecated: false
+
+  field :out_txs, 6,
+    repeated: true,
+    type: Thorchain.Common.Tx,
+    json_name: "outTxs",
+    deprecated: false
+
   field :finalised_height, 7, type: :int64, json_name: "finalisedHeight"
   field :updated_vault, 8, type: :bool, json_name: "updatedVault"
   field :reverted, 9, type: :bool
@@ -143,7 +154,7 @@ defmodule Thorchain.Types.PlannedOutTx do
 
   field :chain, 1, type: :string, deprecated: false
   field :to_address, 2, type: :string, json_name: "toAddress", deprecated: false
-  field :coin, 3, type: Common.Coin, deprecated: false
+  field :coin, 3, type: Thorchain.Common.Coin, deprecated: false
   field :refund, 4, type: :bool, deprecated: false
 end
 

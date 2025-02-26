@@ -33,9 +33,15 @@ defmodule Thorchain.Types.QueryTxOutItem do
   field :chain, 1, type: :string, deprecated: false
   field :to_address, 2, type: :string, json_name: "toAddress", deprecated: false
   field :vault_pub_key, 3, type: :string, json_name: "vaultPubKey"
-  field :coin, 4, type: Common.Coin, deprecated: false
+  field :coin, 4, type: Thorchain.Common.Coin, deprecated: false
   field :memo, 5, type: :string
-  field :max_gas, 6, repeated: true, type: Common.Coin, json_name: "maxGas", deprecated: false
+
+  field :max_gas, 6,
+    repeated: true,
+    type: Thorchain.Common.Coin,
+    json_name: "maxGas",
+    deprecated: false
+
   field :gas_rate, 7, type: :int64, json_name: "gasRate"
   field :in_hash, 8, type: :string, json_name: "inHash"
   field :out_hash, 9, type: :string, json_name: "outHash"

@@ -3,7 +3,7 @@ defmodule Thorchain.Types.MsgUnBond do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  field :tx_in, 1, type: Common.Tx, json_name: "txIn", deprecated: false
+  field :tx_in, 1, type: Thorchain.Common.Tx, json_name: "txIn", deprecated: false
   field :node_address, 2, type: :bytes, json_name: "nodeAddress", deprecated: false
   field :bond_address, 5, type: :string, json_name: "bondAddress", deprecated: false
   field :amount, 6, type: :string, deprecated: false

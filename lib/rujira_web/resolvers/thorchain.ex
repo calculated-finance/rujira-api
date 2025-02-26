@@ -1,4 +1,14 @@
 defmodule RujiraWeb.Resolvers.Thorchain do
+  alias Thorchain.Types.BlockEvent
+  alias Thorchain.Types.BlockResponseHeader
+  alias Thorchain.Types.QueryBlockRequest
+  alias Thorchain.Types.QueryBlockResponse
+  alias Rujira.Assets.Asset
+  alias Thorchain.Common.Coin
+  alias Thorchain.Common.Tx
+  alias Thorchain.Types.QueryTxResponse
+  alias Thorchain.Types.QueryTxRequest
+  alias Thorchain.Types.QueryObservedTx
   alias Rujira.Assets
   alias Absinthe.Resolution.Helpers
   alias Thorchain.Types.QueryInboundAddressesResponse
@@ -127,5 +137,71 @@ defmodule RujiraWeb.Resolvers.Thorchain do
          blockchain_integrated: length(chains) - 1
        }}
     end
+  end
+
+  def tx_in(_, %{hash: hash}, _) do
+    Helpers.async(fn ->
+      with {:ok, %QueryTxResponse{observed_tx: observed_tx} = res} <-
+             Thorchain.Node.stub(&Q.tx/2, %QueryTxRequest{tx_id: hash}) do
+        {:ok, %{res | observed_tx: cast_tx(observed_tx.tx)}}
+      end
+    end)
+  end
+
+  def block(height) do
+    Helpers.async(fn ->
+      with {:ok, %QueryBlockResponse{} = block} <-
+             Thorchain.Node.stub(&Q.block/2, %QueryBlockRequest{height: to_string(height)}) do
+        {:ok,
+         %{
+           block
+           | header: cast_block_header(block.header),
+             begin_block_events: Enum.map(block.begin_block_events, &cast_block_event/1),
+             end_block_events: Enum.map(block.end_block_events, &cast_block_event/1)
+         }}
+      end
+    end)
+  end
+
+  defp cast_block_header(%BlockResponseHeader{chain_id: chain_id, height: height, time: time}) do
+    {:ok, time, 0} = DateTime.from_iso8601(time)
+    %{chain_id: chain_id, height: height, time: time}
+  end
+
+  defp cast_block_event(%BlockEvent{event_kv_pair: event_kv_pair}) do
+    %{attributes: event_kv_pair}
+  end
+
+  defp cast_tx(%Tx{
+         id: id,
+         chain: chain,
+         from_address: from_address,
+         to_address: to_address,
+         coins: coins,
+         gas: gas,
+         memo: memo
+       }) do
+    %{
+      id: id,
+      chain: String.to_existing_atom(String.downcase(chain)),
+      from_address: from_address,
+      to_address: to_address,
+      coins: Enum.map(coins, &cast_coin/1),
+      gas: Enum.map(gas, &cast_coin/1),
+      memo: memo
+    }
+  end
+
+  defp cast_coin(%Coin{asset: asset, amount: amount}) do
+    %{
+      asset: %Asset{
+        id: "#{asset.chain}.#{asset.symbol}",
+        type: :layer_1,
+        chain: asset.chain,
+        symbol: asset.symbol,
+        ticker: asset.ticker
+      },
+      amount: amount
+    }
   end
 end

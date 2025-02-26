@@ -28,7 +28,12 @@ defmodule Thorchain.Types.NodeAccount do
 
   field :node_address, 1, type: :bytes, json_name: "nodeAddress", deprecated: false
   field :status, 2, type: Thorchain.Types.NodeStatus, enum: true
-  field :pub_key_set, 3, type: Common.PubKeySet, json_name: "pubKeySet", deprecated: false
+
+  field :pub_key_set, 3,
+    type: Thorchain.Common.PubKeySet,
+    json_name: "pubKeySet",
+    deprecated: false
+
   field :validator_cons_pub_key, 4, type: :string, json_name: "validatorConsPubKey"
   field :bond, 5, type: :string, deprecated: false
   field :active_block_height, 6, type: :int64, json_name: "activeBlockHeight"

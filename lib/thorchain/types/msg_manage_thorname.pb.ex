@@ -6,7 +6,7 @@ defmodule Thorchain.Types.MsgManageTHORName do
   field :name, 1, type: :string
   field :chain, 2, type: :string, deprecated: false
   field :address, 3, type: :string, deprecated: false
-  field :coin, 4, type: Common.Coin, deprecated: false
+  field :coin, 4, type: Thorchain.Common.Coin, deprecated: false
   field :expire_block_height, 5, type: :int64, json_name: "expireBlockHeight"
 
   field :preferred_asset, 6,

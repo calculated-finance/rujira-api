@@ -4,7 +4,7 @@ defmodule Thorchain.Types.MsgRunePoolDeposit do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field :signer, 1, type: :bytes, deprecated: false
-  field :tx, 2, type: Common.Tx, deprecated: false
+  field :tx, 2, type: Thorchain.Common.Tx, deprecated: false
 end
 
 defmodule Thorchain.Types.MsgRunePoolWithdraw do
@@ -13,7 +13,7 @@ defmodule Thorchain.Types.MsgRunePoolWithdraw do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
   field :signer, 1, type: :bytes, deprecated: false
-  field :tx, 2, type: Common.Tx, deprecated: false
+  field :tx, 2, type: Thorchain.Common.Tx, deprecated: false
   field :basis_points, 3, type: :string, json_name: "basisPoints", deprecated: false
   field :affiliate_address, 4, type: :string, json_name: "affiliateAddress", deprecated: false
 

@@ -130,13 +130,13 @@ defmodule Thorchain.Thorchain.GenesisState do
 
   field :outbound_fee_withheld_rune, 34,
     repeated: true,
-    type: Common.Coin,
+    type: Thorchain.Common.Coin,
     json_name: "outboundFeeWithheldRune",
     deprecated: false
 
   field :outbound_fee_spent_rune, 35,
     repeated: true,
-    type: Common.Coin,
+    type: Thorchain.Common.Coin,
     json_name: "outboundFeeSpentRune",
     deprecated: false
 
@@ -157,7 +157,7 @@ defmodule Thorchain.Thorchain.GenesisState do
 
   field :loan_total_collateral, 40,
     repeated: true,
-    type: Common.Coin,
+    type: Thorchain.Common.Coin,
     json_name: "loanTotalCollateral",
     deprecated: false
 

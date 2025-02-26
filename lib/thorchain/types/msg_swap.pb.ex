@@ -12,7 +12,7 @@ defmodule Thorchain.Types.MsgSwap do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  field :tx, 1, type: Common.Tx, deprecated: false
+  field :tx, 1, type: Thorchain.Common.Tx, deprecated: false
 
   field :target_asset, 2,
     type: Thorchain.Common.Asset,

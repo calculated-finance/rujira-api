@@ -13,7 +13,7 @@ defmodule Thorchain.Types.ObservedTx do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  field :tx, 1, type: Common.Tx, deprecated: false
+  field :tx, 1, type: Thorchain.Common.Tx, deprecated: false
   field :status, 2, type: Thorchain.Types.Status, enum: true
   field :out_hashes, 3, repeated: true, type: :string, json_name: "outHashes"
   field :block_height, 4, type: :int64, json_name: "blockHeight"
@@ -40,7 +40,13 @@ defmodule Thorchain.Types.ObservedTxVoter do
   field :height, 3, type: :int64
   field :txs, 4, repeated: true, type: Thorchain.Types.ObservedTx, deprecated: false
   field :actions, 5, repeated: true, type: Thorchain.Types.TxOutItem, deprecated: false
-  field :out_txs, 6, repeated: true, type: Common.Tx, json_name: "outTxs", deprecated: false
+
+  field :out_txs, 6,
+    repeated: true,
+    type: Thorchain.Common.Tx,
+    json_name: "outTxs",
+    deprecated: false
+
   field :finalised_height, 7, type: :int64, json_name: "finalisedHeight"
   field :updated_vault, 8, type: :bool, json_name: "updatedVault"
   field :reverted, 9, type: :bool
