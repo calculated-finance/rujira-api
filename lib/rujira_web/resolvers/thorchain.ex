@@ -8,7 +8,6 @@ defmodule RujiraWeb.Resolvers.Thorchain do
   alias Thorchain.Common.Tx
   alias Thorchain.Types.QueryTxResponse
   alias Thorchain.Types.QueryTxRequest
-  alias Thorchain.Types.QueryObservedTx
   alias Rujira.Assets
   alias Absinthe.Resolution.Helpers
   alias Thorchain.Types.QueryInboundAddressesResponse
@@ -20,6 +19,7 @@ defmodule RujiraWeb.Resolvers.Thorchain do
   alias Thorchain.Types.QueryQuoteSwapResponse
   alias Thorchain.Types.QueryQuoteSwapRequest
   alias Thorchain.Types.Query.Stub, as: Q
+  use Memoize
 
   def quote(_prev, %{from_asset: from_asset, to_asset: to_asset, amount: amount} = x, _res) do
     streaming_interval = Map.get(x, :streaming_interval, nil)
@@ -148,19 +148,17 @@ defmodule RujiraWeb.Resolvers.Thorchain do
     end)
   end
 
-  def block(height) do
-    Helpers.async(fn ->
-      with {:ok, %QueryBlockResponse{} = block} <-
-             Thorchain.Node.stub(&Q.block/2, %QueryBlockRequest{height: to_string(height)}) do
-        {:ok,
-         %{
-           block
-           | header: cast_block_header(block.header),
-             begin_block_events: Enum.map(block.begin_block_events, &cast_block_event/1),
-             end_block_events: Enum.map(block.end_block_events, &cast_block_event/1)
-         }}
-      end
-    end)
+  defmemo block(height) do
+    with {:ok, %QueryBlockResponse{} = block} <-
+           Thorchain.Node.stub(&Q.block/2, %QueryBlockRequest{height: to_string(height)}) do
+      {:ok,
+       %{
+         block
+         | header: cast_block_header(block.header),
+           begin_block_events: Enum.map(block.begin_block_events, &cast_block_event/1),
+           end_block_events: Enum.map(block.end_block_events, &cast_block_event/1)
+       }}
+    end
   end
 
   defp cast_block_header(%BlockResponseHeader{chain_id: chain_id, height: height, time: time}) do
