@@ -164,11 +164,11 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
   end
 
   object :observed_tx do
-    field :tx, :tx
+    field :tx, :layer1_tx
     field :status, :string
   end
 
-  object :tx do
+  object :layer1_tx do
     field :id, :string
     field :chain, :chain
     field :from_address, :address
@@ -183,6 +183,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :header, non_null(:block_header)
     field :begin_block_events, non_null(list_of(non_null(:block_event)))
     field :end_block_events, non_null(list_of(non_null(:block_event)))
+    field :txs, non_null(list_of(non_null(:block_tx)))
   end
 
   object :block_id do
@@ -203,5 +204,22 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
   object :block_event_attribute do
     field :key, non_null(:string)
     field :value, non_null(:string)
+  end
+
+  object :block_tx do
+    field :hash, non_null(:string)
+    field :tx_data, non_null(:string)
+    field :result, non_null(:tx_result)
+  end
+
+  object :tx_result do
+    field :code, non_null(:integer)
+    field :data, :string
+    field :log, :string
+    field :info, :string
+    field :gas_wanted, non_null(:integer)
+    field :gas_used, non_null(:integer)
+    field :events, non_null(list_of(non_null(:block_event)))
+    field :codespace, :string
   end
 end

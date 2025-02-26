@@ -1,4 +1,6 @@
 defmodule RujiraWeb.Resolvers.Thorchain do
+  alias Thorchain.Types.QueryBlockTx
+  alias Thorchain.Types.BlockTxResult
   alias Thorchain.Types.BlockEvent
   alias Thorchain.Types.BlockResponseHeader
   alias Thorchain.Types.QueryBlockRequest
@@ -141,22 +143,25 @@ defmodule RujiraWeb.Resolvers.Thorchain do
 
   def tx_in(_, %{hash: hash}, _) do
     Helpers.async(fn ->
-      with {:ok, %QueryTxResponse{observed_tx: observed_tx} = res} <-
+      with {:ok, %QueryTxResponse{observed_tx: %{tx: tx} = observed_tx} = res} <-
              Thorchain.Node.stub(&Q.tx/2, %QueryTxRequest{tx_id: hash}) do
-        {:ok, %{res | observed_tx: cast_tx(observed_tx.tx)}}
+        {:ok, %{res | observed_tx: %{observed_tx | tx: cast_tx(tx)}}}
       end
     end)
   end
 
-  defmemo block(height) do
+  def block(height) do
     with {:ok, %QueryBlockResponse{} = block} <-
            Thorchain.Node.stub(&Q.block/2, %QueryBlockRequest{height: to_string(height)}) do
+      IO.inspect(block)
+
       {:ok,
        %{
          block
          | header: cast_block_header(block.header),
            begin_block_events: Enum.map(block.begin_block_events, &cast_block_event/1),
-           end_block_events: Enum.map(block.end_block_events, &cast_block_event/1)
+           end_block_events: Enum.map(block.end_block_events, &cast_block_event/1),
+           txs: Enum.map(block.txs, &cast_block_tx/1)
        }}
     end
   end
@@ -192,6 +197,40 @@ defmodule RujiraWeb.Resolvers.Thorchain do
       coins: Enum.map(coins, &cast_coin/1),
       gas: Enum.map(gas, &cast_coin/1),
       memo: memo
+    }
+  end
+
+  defp cast_block_tx(%QueryBlockTx{
+         hash: hash,
+         tx: tx,
+         result: result
+       }) do
+    %{
+      hash: hash,
+      tx_data: tx,
+      result: cast_block_tx_result(result)
+    }
+  end
+
+  defp cast_block_tx_result(%BlockTxResult{
+         code: code,
+         data: data,
+         log: log,
+         info: info,
+         gas_wanted: gas_wanted,
+         gas_used: gas_used,
+         events: events,
+         codespace: codespace
+       }) do
+    %{
+      code: code,
+      data: data,
+      log: log,
+      info: info,
+      gas_wanted: String.to_integer(gas_wanted),
+      gas_used: String.to_integer(gas_used),
+      events: Enum.map(events, &cast_block_event/1),
+      codespace: codespace
     }
   end
 
