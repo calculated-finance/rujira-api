@@ -19,14 +19,13 @@ defmodule Rujira.Application do
       RujiraWeb.Endpoint,
       {Absinthe.Subscription, RujiraWeb.Endpoint},
       {Finch, name: Rujira.Finch},
-      Thorchain.Node,
       Rujira.Balances,
       Rujira.Bank,
+      Rujira.Chains,
       Rujira.Fin,
       Rujira.Invalidator,
-      Thorchain.Swaps,
-      Rujira.Chains.Gaia.Websocket,
-      Rujira.Chains.Gaia.Balances
+      Thorchain.Node,
+      Thorchain.Swaps
     ]
 
     Thorchain.Node.Appsignal.attach()

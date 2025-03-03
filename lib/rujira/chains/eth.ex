@@ -1,86 +1,8 @@
 defmodule Rujira.Chains.Eth do
   @rpc "https://ethereum-rpc.publicnode.com"
-  @ws "wss://eth-mainnet.g.alchemy.com/v2/LIEhGG98f4Oybg-zy7ws7P--JDse4-_W"
+  @ws "wss://ethereum-rpc.publicnode.com"
 
-  @transfer "a9059cbb"
-  @transfer_from "23b872dd"
-
-  defstruct rpc: @rpc
-
-  use WebSockex
-  require Logger
-
-  def start_link(_) do
-    Logger.info("#{__MODULE__} Starting node websocket: #{@ws}")
-
-    case WebSockex.start_link(@ws, __MODULE__, %{}) do
-      {:ok, pid} ->
-        message =
-          Jason.encode!(%{
-            jsonrpc: "2.0",
-            method: "eth_subscribe",
-            id: 0,
-            params: ["alchemy_minedTransactions"]
-          })
-
-        WebSockex.send_frame(pid, {:text, message})
-
-        {:ok, pid}
-
-      {:error, _} ->
-        Logger.error("#{__MODULE__} Error connecting to websocket #{@ws}")
-        :ignore
-    end
-  end
-
-  def handle_connect(_conn, state) do
-    Logger.info("#{__MODULE__} Connected")
-    {:ok, state}
-  end
-
-  def handle_disconnect(_, _) do
-    Logger.error("#{__MODULE__} Disconnected")
-    raise "#{__MODULE__} Disconnected"
-  end
-
-  def handle_frame({:text, msg}, state) do
-    case Jason.decode(msg) do
-      {:ok, %{"params" => %{"result" => %{"transaction" => tx}}}} ->
-        handle_tx(tx)
-        {:ok, state}
-
-      {:ok, _} ->
-        {:ok, state}
-    end
-  end
-
-  defp handle_tx(%{"input" => "0x" <> @transfer <> _} = tx), do: handle_transfer("transfer", tx)
-
-  defp handle_tx(%{"input" => "0x" <> @transfer_from <> _} = tx),
-    do: handle_transfer("transfer_from", tx)
-
-  defp handle_tx(%{"from" => from, "to" => to}) do
-    Memoize.invalidate(Rujira.Chains.Evm, :native_balance, [@rpc, from])
-    Memoize.invalidate(Rujira.Chains.Evm, :native_balance, [@rpc, to])
-  end
-
-  defp handle_transfer(ty, %{
-         "input" => "0x" <> input,
-         "from" => sender,
-         "to" => contract
-       }) do
-    <<_function::binary-size(4), recipient::binary-size(32), _rest::binary>> =
-      Base.decode16!(input, case: :lower)
-
-    <<_padding::binary-size(12), recipient::binary-size(20)>> = recipient
-    recipient = "0x" <> Base.encode16(recipient, case: :lower)
-
-    Logger.debug("#{__MODULE__} #{ty} #{contract}:#{sender}:#{recipient}")
-    Memoize.invalidate(Rujira.Chains.Evm, :balance_of, [@rpc, contract, sender])
-    Memoize.invalidate(Rujira.Chains.Evm, :balance_of, [@rpc, contract, recipient])
-    Memoize.invalidate(Rujira.Chains.Evm, :native_balance, [@rpc, sender])
-    Memoize.invalidate(Rujira.Chains.Evm, :native_balance, [@rpc, contract])
-  end
+  use Rujira.Chains.Evm, rpc: @rpc, ws: @ws
 end
 
 defimpl Rujira.Chains.Adapter, for: Rujira.Chains.Eth do
@@ -89,9 +11,9 @@ defimpl Rujira.Chains.Adapter, for: Rujira.Chains.Eth do
   def balances(a, address, assets) do
     with {_native_asset, other_assets} <- Enum.split_with(assets, &(&1 == "ETH.ETH")),
          {:ok, native_balance} <-
-           Rujira.Chains.Evm.native_balance(a.rpc, address),
+           a.native_balance(address),
          {:ok, assets_balance} <-
-           Rujira.Chains.Evm.balances_of(a.rpc, address, other_assets) do
+           a.balances_of(address, other_assets) do
       {:ok, [%{asset: Assets.from_string("ETH.ETH"), amount: native_balance} | assets_balance]}
     end
   end

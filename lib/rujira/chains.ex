@@ -4,8 +4,11 @@ defmodule Rujira.Chains do
   def start_link(_) do
     Supervisor.start_link(
       [
-        __MODULE__.Eth
-        # __MODULE__.Gaia
+        __MODULE__.Avax,
+        __MODULE__.Base,
+        __MODULE__.Bsc,
+        __MODULE__.Eth,
+        __MODULE__.Gaia
       ],
       strategy: :one_for_one
     )

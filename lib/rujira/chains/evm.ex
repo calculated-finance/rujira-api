@@ -2,6 +2,86 @@ defmodule Rujira.Chains.Evm do
   use Appsignal.Instrumentation.Decorators
   use Memoize
 
+  defmacro __using__(opts) do
+    rpc = Keyword.fetch!(opts, :rpc)
+    ws = Keyword.fetch!(opts, :ws)
+
+    quote do
+      use Memoize
+      use WebSockex
+      require Logger
+
+      @rpc unquote(rpc)
+      @ws unquote(ws)
+      @transfer "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+
+      def start_link(_) do
+        Logger.info("#{__MODULE__} Starting node websocket: #{@ws}")
+
+        case WebSockex.start_link(@ws, __MODULE__, %{}) do
+          {:ok, pid} ->
+            message =
+              Jason.encode!(%{
+                jsonrpc: "2.0",
+                method: "eth_subscribe",
+                id: 0,
+                params: ["logs", %{"topics" => [@transfer]}]
+              })
+
+            WebSockex.send_frame(pid, {:text, message})
+
+            {:ok, pid}
+
+          {:error, _} ->
+            Logger.error("#{__MODULE__} Error connecting to websocket #{@ws}")
+            :ignore
+        end
+      end
+
+      def handle_connect(_conn, state) do
+        Logger.info("#{__MODULE__} Connected")
+        {:ok, state}
+      end
+
+      def handle_disconnect(_, _) do
+        Logger.error("#{__MODULE__} Disconnected")
+        raise "#{__MODULE__} Disconnected"
+      end
+
+      def handle_frame({:text, msg}, state) do
+        case Jason.decode(msg) do
+          {:ok, %{"params" => %{"result" => result}}} ->
+            handle_result(result)
+            {:ok, state}
+
+          {:ok, _} ->
+            {:ok, state}
+        end
+      end
+
+      defmemo native_balance(address) do
+        Rujira.Chains.Evm.native_balance(@rpc, address)
+      end
+
+      defmemo balance_of(address, asset) do
+        Rujira.Chains.Evm.balance_of(@rpc, address, asset)
+      end
+
+      def balances_of(address, assets) do
+        Rujira.Chains.Evm.balances_of(@rpc, address, assets)
+      end
+
+      defp handle_result(%{"address" => contract, "topics" => [_, sender, recipient | _]}) do
+        sender = "0x" <> String.slice(sender, -40, 40)
+        recipient = "0x" <> String.slice(recipient, -40, 40)
+
+        # Logger.debug("#{__MODULE__} #{contract}:#{sender}:#{recipient}")
+        Memoize.invalidate(__MODULE__, :balance_of, [contract, sender])
+        Memoize.invalidate(__MODULE__, :balance_of, [contract, recipient])
+      end
+    end
+  end
+
   @decorate transaction_event()
   def native_balance(rpc, address) do
     with {:ok, "0x" <> hex} <-
