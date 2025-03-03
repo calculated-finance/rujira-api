@@ -70,8 +70,29 @@ defmodule Rujira.Chains.Evm do
         Rujira.Chains.Evm.balance_of(@rpc, address, asset)
       end
 
+      @decorate transaction_event()
       def balances_of(address, assets) do
-        Rujira.Chains.Evm.balances_of(@rpc, address, assets)
+        with {:ok, balances} <-
+               assets
+               |> Task.async_stream(fn a ->
+                 [_, contract] = String.split(a.symbol, "-")
+                 {a, balance_of(address, Rujira.Chains.Evm.eip55(contract))}
+               end)
+               |> Enum.reduce({:ok, []}, fn
+                 {:ok, {asset, {:ok, balance}}}, {:ok, acc} ->
+                   {:ok, [%{asset: asset, amount: balance} | acc]}
+
+                 {:ok, {:error, %{"error" => %{"message" => message}}}}, _ ->
+                   {:error, message}
+
+                 {:ok, {:error, error}}, _ ->
+                   {:error, error}
+
+                 {:error, err}, _ ->
+                   {:error, err}
+               end) do
+          {:ok, balances}
+        end
       end
 
       defp handle_result(%{"address" => contract, "topics" => [_, sender, recipient | _]}) do
@@ -84,11 +105,8 @@ defmodule Rujira.Chains.Evm do
       end
 
       def balances(address, assets) do
-        with {_native_asset, other_assets} <- Enum.split_with(assets, &(&1 == @asset)),
-             {:ok, native_balance} <-
-               native_balance(address),
-             {:ok, assets_balance} <-
-               balances_of(address, other_assets) do
+        with {:ok, native_balance} <- native_balance(address),
+             {:ok, assets_balance} <- balances_of(address, assets) do
           {:ok, [%{asset: Assets.from_string(@asset), amount: native_balance} | assets_balance]}
         end
       end
@@ -107,9 +125,7 @@ defmodule Rujira.Chains.Evm do
   end
 
   @decorate transaction_event()
-  defmemo balance_of(rpc, "0x" <> address, asset) do
-    [_, contract_address] = String.split(asset.symbol, "-")
-
+  defmemo balance_of(rpc, "0x" <> address, contract) do
     abi_encoded_data =
       "balanceOf(address)"
       |> ABI.encode([Base.decode16!(address, case: :mixed)])
@@ -117,16 +133,13 @@ defmodule Rujira.Chains.Evm do
 
     with {:ok, "0x" <> balance_bytes} <-
            Ethereumex.HttpClient.eth_call(
-             %{
-               data: "0x" <> abi_encoded_data,
-               to: contract_address
-             },
+             %{data: "0x" <> abi_encoded_data, to: contract},
              "latest",
              url: rpc
            ),
          {:ok, decoded_balance} <- Base.decode16(balance_bytes, case: :lower),
          [balance] <- ABI.TypeDecoder.decode_raw(decoded_balance, [{:uint, 256}]) do
-      {:ok, %{asset: asset, amount: balance}}
+      {:ok, balance}
     else
       {:error, %{"message" => message}} ->
         {:error, message}
@@ -136,17 +149,54 @@ defmodule Rujira.Chains.Evm do
     end
   end
 
-  @decorate transaction_event()
-  def balances_of(rpc, address, assets) do
-    with {:ok, balances} <-
-           Task.async_stream(assets, &balance_of(rpc, address, &1))
-           |> Enum.reduce({:ok, []}, fn
-             {:ok, {:ok, balance}}, {:ok, acc} -> {:ok, [balance | acc]}
-             {:ok, {:error, %{"error" => %{"message" => message}}}}, _ -> {:error, message}
-             {:ok, {:error, error}}, _ -> {:error, error}
-             {:error, err}, _ -> {:error, err}
-           end) do
-      {:ok, balances}
+  defmemo eip55(address) when is_binary(address) do
+    # Remove the "0x" prefix if present and downcase the address.
+    addr =
+      address
+      |> String.trim()
+      |> remove_0x()
+      |> String.downcase()
+
+    # Compute the Keccak-256 hash of the lowercase address.
+    hash = keccak256(addr)
+
+    # For each character, if it is in [a-f] and the corresponding hash nibble is >= 8, uppercase it.
+    checksum_chars =
+      addr
+      |> String.graphemes()
+      |> Enum.with_index()
+      |> Enum.map(fn {char, index} ->
+        hash_nibble = String.at(hash, index)
+
+        if should_uppercase?(char, hash_nibble) do
+          String.upcase(char)
+        else
+          char
+        end
+      end)
+
+    "0x" <> Enum.join(checksum_chars, "")
+  end
+
+  defp remove_0x("0x" <> rest), do: rest
+  defp remove_0x("0X" <> rest), do: rest
+  defp remove_0x(other), do: other
+
+  defp keccak256(data) do
+    data
+    |> ExKeccak.hash_256()
+    |> Base.encode16(case: :lower)
+  end
+
+  defp should_uppercase?(char, hash_nibble) do
+    # Only consider alphabetic characters (a-f) for capitalization.
+    if char =~ ~r/[a-f]/ do
+      case Integer.parse(hash_nibble, 16) do
+        {num, _} when num >= 8 -> true
+        _ -> false
+      end
+    else
+      false
     end
   end
 end
