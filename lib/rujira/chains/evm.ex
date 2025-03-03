@@ -1,5 +1,6 @@
 defmodule Rujira.Chains.Evm do
   use Appsignal.Instrumentation.Decorators
+  use Memoize
 
   @decorate transaction_event()
   def native_balance(rpc, address, asset) do
@@ -13,7 +14,7 @@ defmodule Rujira.Chains.Evm do
   end
 
   @decorate transaction_event()
-  def balance_of(rpc, "0x" <> address, asset) do
+  defmemo balance_of(rpc, "0x" <> address, asset) do
     [_, contract_address] = String.split(asset.symbol, "-")
 
     abi_encoded_data =

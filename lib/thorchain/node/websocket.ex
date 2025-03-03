@@ -16,7 +16,7 @@ defmodule Thorchain.Node.Websocket do
         {:ok, pid}
 
       {:error, _} ->
-        Logger.error("Error connecting to websocket #{endpoint}")
+        Logger.error("#{__MODULE__} Error connecting to websocket #{endpoint}")
         # Ignore for now
         :ignore
     end

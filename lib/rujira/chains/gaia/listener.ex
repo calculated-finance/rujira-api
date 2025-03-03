@@ -1,4 +1,4 @@
-defmodule Rujira.Chains.Gaia.Balances.Listener do
+defmodule Rujira.Chains.Gaia.Listener do
   use GenServer
   require Logger
 

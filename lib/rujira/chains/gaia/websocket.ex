@@ -13,7 +13,7 @@ defmodule Rujira.Chains.Gaia.Websocket do
         {:ok, pid}
 
       {:error, _} ->
-        Logger.error("Error connecting to websocket #{config[:websocket]}")
+        Logger.error("#{__MODULE__} Error connecting to websocket #{config[:websocket]}")
         # Ignore for now
         :ignore
     end

@@ -1,10 +1,19 @@
-alias Cosmos.Bank.V1beta1.QueryAllBalancesRequest
-alias Cosmos.Bank.V1beta1.QueryAllBalancesResponse
-import Cosmos.Bank.V1beta1.Query.Stub
-alias Rujira.Assets
-
 defmodule Rujira.Chains.Gaia do
+  use GenServer
+  alias Rujira.Assets
+
   defstruct []
+
+  def start_link(_) do
+    Supervisor.start_link([__MODULE__.Websocket, __MODULE__.Listener],
+      strategy: :one_for_one
+    )
+  end
+
+  @impl true
+  def init(state) do
+    {:ok, state}
+  end
 
   def connection(%__MODULE__{}) do
     cred = GRPC.Credential.new(ssl: [verify: :verify_none])
@@ -115,6 +124,10 @@ defmodule Rujira.Chains.Gaia do
 
   def map_coin(_), do: nil
 end
+
+alias Cosmos.Bank.V1beta1.QueryAllBalancesRequest
+alias Cosmos.Bank.V1beta1.QueryAllBalancesResponse
+import Cosmos.Bank.V1beta1.Query.Stub
 
 defimpl Rujira.Chains.Adapter, for: Rujira.Chains.Gaia do
   def balances(a, address, _assets) do
