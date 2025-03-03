@@ -2,19 +2,5 @@ defmodule Rujira.Chains.Avax do
   @rpc "https://avalanche-c-chain-rpc.publicnode.com"
   @ws "wss://avalanche-c-chain-rpc.publicnode.com"
 
-  use Rujira.Chains.Evm, rpc: @rpc, ws: @ws
-end
-
-defimpl Rujira.Chains.Adapter, for: Rujira.Chains.Avax do
-  alias Rujira.Assets
-
-  def balances(a, address, assets) do
-    with {_native_asset, other_assets} <- Enum.split_with(assets, &(&1 == "AVAX.AVAX")),
-         {:ok, native_balance} <-
-           a.native_balance(address),
-         {:ok, assets_balance} <-
-           a.balances_of(address, other_assets) do
-      {:ok, [%{asset: Assets.from_string("AVAX.AVAX"), amount: native_balance} | assets_balance]}
-    end
-  end
+  use Rujira.Chains.Evm, rpc: @rpc, ws: @ws, asset: "AVAX.AVAX"
 end

@@ -3,6 +3,7 @@ defmodule Rujira.Chains.Evm do
   use Memoize
 
   defmacro __using__(opts) do
+    asset = Keyword.fetch!(opts, :asset)
     rpc = Keyword.fetch!(opts, :rpc)
     ws = Keyword.fetch!(opts, :ws)
 
@@ -10,7 +11,9 @@ defmodule Rujira.Chains.Evm do
       use Memoize
       use WebSockex
       require Logger
+      alias Rujira.Assets
 
+      @asset unquote(asset)
       @rpc unquote(rpc)
       @ws unquote(ws)
       @transfer "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
@@ -78,6 +81,16 @@ defmodule Rujira.Chains.Evm do
         # Logger.debug("#{__MODULE__} #{contract}:#{sender}:#{recipient}")
         Memoize.invalidate(__MODULE__, :balance_of, [contract, sender])
         Memoize.invalidate(__MODULE__, :balance_of, [contract, recipient])
+      end
+
+      def balances(address, assets) do
+        with {_native_asset, other_assets} <- Enum.split_with(assets, &(&1 == @asset)),
+             {:ok, native_balance} <-
+               native_balance(address),
+             {:ok, assets_balance} <-
+               balances_of(address, other_assets) do
+          {:ok, [%{asset: Assets.from_string(@asset), amount: native_balance} | assets_balance]}
+        end
       end
     end
   end

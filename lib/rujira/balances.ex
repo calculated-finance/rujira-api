@@ -1,6 +1,5 @@
 defmodule Rujira.Balances do
   alias Rujira.Assets.Asset
-  alias Rujira.Chains.Adapter
   use GenServer
 
   def start_link(_) do
@@ -18,9 +17,9 @@ defmodule Rujira.Balances do
   @spec balances(atom(), String.t()) ::
           {:ok, list(%{asset: Asset.t(), amount: String.t()})} | {:error, any()}
   def balances(chain, address) do
-    with {:ok, adapter} <- Rujira.Chains.get_native_adapter(chain),
+    with {:ok, module} <- Rujira.Chains.get_native_adapter(chain),
          assets <- Rujira.Assets.erc20(chain) do
-      Adapter.balances(adapter, address, assets)
+      module.balances(address, assets)
     end
   end
 end

@@ -1,8 +1,28 @@
 defmodule Rujira.Chains.Gaia do
   use GenServer
   alias Rujira.Assets
+  alias Cosmos.Bank.V1beta1.QueryAllBalancesRequest
+  alias Cosmos.Bank.V1beta1.QueryAllBalancesResponse
+  import Cosmos.Bank.V1beta1.Query.Stub
 
-  defstruct []
+  @rpc "cosmoshub.lavenderfive.com"
+
+  def balances(address, _assets) do
+    req = %QueryAllBalancesRequest{address: address}
+
+    with {:ok, conn} <- connection(),
+         {:ok, %QueryAllBalancesResponse{balances: balances}} <- all_balances(conn, req) do
+      balances =
+        Enum.reduce(balances, [], fn e, agg ->
+          case Rujira.Chains.Gaia.map_coin(e) do
+            nil -> agg
+            x -> [x | agg]
+          end
+        end)
+
+      {:ok, balances}
+    end
+  end
 
   def start_link(_) do
     Supervisor.start_link([__MODULE__.Websocket, __MODULE__.Listener],
@@ -15,10 +35,10 @@ defmodule Rujira.Chains.Gaia do
     {:ok, state}
   end
 
-  def connection(%__MODULE__{}) do
+  def connection() do
     cred = GRPC.Credential.new(ssl: [verify: :verify_none])
 
-    GRPC.Stub.connect("cosmoshub.lavenderfive.com", 443,
+    GRPC.Stub.connect(@rpc, 443,
       interceptors: [{GRPC.Client.Interceptors.Logger, level: :debug}],
       cred: cred
     )
@@ -123,27 +143,4 @@ defmodule Rujira.Chains.Gaia do
   end
 
   def map_coin(_), do: nil
-end
-
-alias Cosmos.Bank.V1beta1.QueryAllBalancesRequest
-alias Cosmos.Bank.V1beta1.QueryAllBalancesResponse
-import Cosmos.Bank.V1beta1.Query.Stub
-
-defimpl Rujira.Chains.Adapter, for: Rujira.Chains.Gaia do
-  def balances(a, address, _assets) do
-    req = %QueryAllBalancesRequest{address: address}
-
-    with {:ok, conn} <- Rujira.Chains.Gaia.connection(a),
-         {:ok, %QueryAllBalancesResponse{balances: balances}} <- all_balances(conn, req) do
-      balances =
-        Enum.reduce(balances, [], fn e, agg ->
-          case Rujira.Chains.Gaia.map_coin(e) do
-            nil -> agg
-            x -> [x | agg]
-          end
-        end)
-
-      {:ok, balances}
-    end
-  end
 end

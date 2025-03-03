@@ -1,14 +1,10 @@
 defmodule Rujira.Chains.Thor do
-  defstruct []
-end
-
-defimpl Rujira.Chains.Adapter, for: Rujira.Chains.Thor do
   alias Cosmos.Bank.V1beta1.QueryAllBalancesRequest
   alias Cosmos.Bank.V1beta1.QueryAllBalancesResponse
   import Cosmos.Bank.V1beta1.Query.Stub
   alias Rujira.Assets
 
-  def balances(_a, address, _assets) do
+  def balances(address, _assets) do
     req = %QueryAllBalancesRequest{address: address}
 
     with {:ok, %QueryAllBalancesResponse{balances: balances}} <-

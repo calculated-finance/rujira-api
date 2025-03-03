@@ -1,15 +1,34 @@
-alias Cosmos.Bank.V1beta1.QueryAllBalancesRequest
-alias Cosmos.Bank.V1beta1.QueryAllBalancesResponse
-import Cosmos.Bank.V1beta1.Query.Stub
-alias Rujira.Assets
-
 defmodule Rujira.Chains.Kuji do
-  defstruct []
+  alias Cosmos.Bank.V1beta1.QueryAllBalancesRequest
+  alias Cosmos.Bank.V1beta1.QueryAllBalancesResponse
+  import Cosmos.Bank.V1beta1.Query.Stub
+  alias Rujira.Assets
+  alias Cosmos.Base.Query.V1beta1.PageRequest
 
-  def connection(%__MODULE__{}) do
+  @rpc "kujira-grpc.bryanlabs.net"
+
+  def balances(address, _assets) do
+    req = %QueryAllBalancesRequest{address: address, pagination: %PageRequest{limit: 100}}
+
+    with {:ok, conn} <- connection(),
+         {:ok, %QueryAllBalancesResponse{balances: balances}} <-
+           all_balances(conn, req) do
+      balances =
+        Enum.reduce(balances, [], fn e, agg ->
+          case Rujira.Chains.Kuji.map_coin(e) do
+            nil -> agg
+            x -> [x | agg]
+          end
+        end)
+
+      {:ok, balances}
+    end
+  end
+
+  def connection() do
     cred = GRPC.Credential.new(ssl: [verify: :verify_none])
 
-    GRPC.Stub.connect("kujira-grpc.bryanlabs.net", 443,
+    GRPC.Stub.connect(@rpc, 443,
       interceptors: [{GRPC.Client.Interceptors.Logger, level: :debug}],
       cred: cred
     )
@@ -107,26 +126,4 @@ defmodule Rujira.Chains.Kuji do
   end
 
   def map_coin(_), do: nil
-end
-
-defimpl Rujira.Chains.Adapter, for: Rujira.Chains.Kuji do
-  alias Cosmos.Base.Query.V1beta1.PageRequest
-
-  def balances(a, address, _assets) do
-    req = %QueryAllBalancesRequest{address: address, pagination: %PageRequest{limit: 100}}
-
-    with {:ok, conn} <- Rujira.Chains.Kuji.connection(a),
-         {:ok, %QueryAllBalancesResponse{balances: balances}} <-
-           all_balances(conn, req) do
-      balances =
-        Enum.reduce(balances, [], fn e, agg ->
-          case Rujira.Chains.Kuji.map_coin(e) do
-            nil -> agg
-            x -> [x | agg]
-          end
-        end)
-
-      {:ok, balances}
-    end
-  end
 end
