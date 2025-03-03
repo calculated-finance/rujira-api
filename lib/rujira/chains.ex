@@ -19,7 +19,6 @@ defmodule Rujira.Chains do
     {:ok, state}
   end
 
-  alias __MODULE__.Adapter
   @spec get_native_adapter(atom()) :: {:ok, module()} | {:error, any()}
   def get_native_adapter(chain) do
     try do
