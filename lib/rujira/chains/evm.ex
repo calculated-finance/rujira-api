@@ -3,10 +3,10 @@ defmodule Rujira.Chains.Evm do
   use Memoize
 
   @decorate transaction_event()
-  def native_balance(rpc, address, asset) do
+  def native_balance(rpc, address) do
     with {:ok, "0x" <> hex} <-
            Ethereumex.HttpClient.eth_get_balance(address, "latest", url: rpc) do
-      {:ok, [%{asset: asset, amount: String.to_integer(hex, 16)}]}
+      {:ok, String.to_integer(hex, 16)}
     else
       {:error, %{"error" => %{"message" => message}}} -> {:error, message}
       err -> err

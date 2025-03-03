@@ -8,10 +8,10 @@ defimpl Rujira.Chains.Adapter, for: Rujira.Chains.Avax do
   def balances(a, address, assets) do
     with {_native_asset, other_assets} <- Enum.split_with(assets, &(&1 == "AVAX.AVAX")),
          {:ok, native_balance} <-
-           Rujira.Chains.Evm.native_balance(a.rpc, address, Assets.from_string("AVAX.AVAX")),
+           Rujira.Chains.Evm.native_balance(a.rpc, address),
          {:ok, assets_balance} <-
            Rujira.Chains.Evm.balances_of(a.rpc, address, other_assets) do
-      {:ok, native_balance |> Enum.concat(assets_balance)}
+      {:ok, [%{asset: Assets.from_string("AVAX.AVAX"), amount: native_balance} | assets_balance]}
     end
   end
 end

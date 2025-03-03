@@ -45,26 +45,26 @@ defmodule Rujira.Chains.Eth do
 
   def handle_frame({:text, msg}, state) do
     case Jason.decode(msg) do
-      {:ok,
-       %{"params" => %{"result" => %{"transaction" => %{"input" => "0x" <> @transfer <> _} = tx}}}} ->
-        handle_tx("transfer", tx)
+      {:ok, %{"params" => %{"result" => %{"transaction" => tx}}}} ->
+        handle_tx(tx)
         {:ok, state}
 
-      {:ok,
-       %{
-         "params" => %{
-           "result" => %{"transaction" => %{"input" => "0x" <> @transfer_from <> _} = tx}
-         }
-       }} ->
-        handle_tx("transfer_from", tx)
-        {:ok, state}
-
-      _ ->
+      {:ok, _} ->
         {:ok, state}
     end
   end
 
-  defp handle_tx(ty, %{
+  defp handle_tx(%{"input" => "0x" <> @transfer <> _} = tx), do: handle_transfer("transfer", tx)
+
+  defp handle_tx(%{"input" => "0x" <> @transfer_from <> _} = tx),
+    do: handle_transfer("transfer_from", tx)
+
+  defp handle_tx(%{"from" => from, "to" => to}) do
+    Memoize.invalidate(Rujira.Chains.Evm, :native_balance, [@rpc, from])
+    Memoize.invalidate(Rujira.Chains.Evm, :native_balance, [@rpc, to])
+  end
+
+  defp handle_transfer(ty, %{
          "input" => "0x" <> input,
          "from" => sender,
          "to" => contract
@@ -78,6 +78,8 @@ defmodule Rujira.Chains.Eth do
     Logger.debug("#{__MODULE__} #{ty} #{contract}:#{sender}:#{recipient}")
     Memoize.invalidate(Rujira.Chains.Evm, :balance_of, [@rpc, contract, sender])
     Memoize.invalidate(Rujira.Chains.Evm, :balance_of, [@rpc, contract, recipient])
+    Memoize.invalidate(Rujira.Chains.Evm, :native_balance, [@rpc, sender])
+    Memoize.invalidate(Rujira.Chains.Evm, :native_balance, [@rpc, contract])
   end
 end
 
@@ -87,10 +89,10 @@ defimpl Rujira.Chains.Adapter, for: Rujira.Chains.Eth do
   def balances(a, address, assets) do
     with {_native_asset, other_assets} <- Enum.split_with(assets, &(&1 == "ETH.ETH")),
          {:ok, native_balance} <-
-           Rujira.Chains.Evm.native_balance(a.rpc, address, Assets.from_string("ETH.ETH")),
+           Rujira.Chains.Evm.native_balance(a.rpc, address),
          {:ok, assets_balance} <-
            Rujira.Chains.Evm.balances_of(a.rpc, address, other_assets) do
-      {:ok, native_balance |> Enum.concat(assets_balance)}
+      {:ok, [%{asset: Assets.from_string("ETH.ETH"), amount: native_balance} | assets_balance]}
     end
   end
 end
