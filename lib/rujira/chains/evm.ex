@@ -57,7 +57,7 @@ defmodule Rujira.Chains.Evm do
             handle_result(result)
             {:ok, state}
 
-          {:ok, _} ->
+          {:ok, x} ->
             {:ok, state}
         end
       end
@@ -96,10 +96,11 @@ defmodule Rujira.Chains.Evm do
       end
 
       defp handle_result(%{"address" => contract, "topics" => [_, sender, recipient | _]}) do
-        sender = "0x" <> String.slice(sender, -40, 40)
-        recipient = "0x" <> String.slice(recipient, -40, 40)
+        sender = Rujira.Chains.Evm.eip55("0x" <> String.slice(sender, -40, 40))
+        recipient = Rujira.Chains.Evm.eip55("0x" <> String.slice(recipient, -40, 40))
+        contract = Rujira.Chains.Evm.eip55(contract)
 
-        # Logger.debug("#{__MODULE__} #{contract}:#{sender}:#{recipient}")
+        Logger.debug("#{__MODULE__} #{contract}:#{sender}:#{recipient}")
         Memoize.invalidate(__MODULE__, :balance_of, [contract, sender])
         Memoize.invalidate(__MODULE__, :balance_of, [contract, recipient])
       end
