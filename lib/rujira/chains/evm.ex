@@ -150,7 +150,7 @@ defmodule Rujira.Chains.Evm do
     end
   end
 
-  defmemo eip55(address) when is_binary(address) do
+  def eip55(address) when is_binary(address) do
     # Remove the "0x" prefix if present and downcase the address.
     addr =
       address
