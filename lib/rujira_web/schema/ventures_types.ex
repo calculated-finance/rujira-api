@@ -53,7 +53,7 @@ defmodule RujiraWeb.Schema.VenturesTypes do
     value :completed, as: 6
   end
 
-  node object :venture do
+  object :venture do
     field :idx, non_null(:string)
     field :owner, non_null(:address)
     field :status, non_null(:venture_status)
@@ -201,12 +201,10 @@ defmodule RujiraWeb.Schema.VenturesTypes do
     field :contract_address, non_null(:address)
   end
 
-  # BowInfo struct
   object :bow_info do
     field :contract_address, non_null(:address)
   end
 
-  # StreamsInfo struct
   object :streams_info do
     field :contract_address, non_null(:address)
     field :recipient, non_null(:address)
