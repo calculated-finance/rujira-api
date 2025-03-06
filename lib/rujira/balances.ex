@@ -22,4 +22,16 @@ defmodule Rujira.Balances do
       module.balances(address, assets)
     end
   end
+
+  @spec utxos(atom(), String.t()) ::
+          {:ok, nil | list(map())} | {:error, any()}
+  def utxos(chain, address) do
+    with {:ok, module} <- Rujira.Chains.get_native_adapter(chain) do
+      if Kernel.function_exported?(module, :utxos, 1) do
+        module.utxos(address)
+      else
+        {:ok, nil}
+      end
+    end
+  end
 end
