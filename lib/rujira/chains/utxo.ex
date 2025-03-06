@@ -34,13 +34,7 @@ defmodule Rujira.Chains.Utxo do
         }
         """
 
-        body = %{
-          "query" => query,
-          "variables" => %{
-            "address" => address,
-            "page" => 0
-          }
-        }
+        body = %{"query" => query, "variables" => %{"address" => address, "page" => 0}}
 
         with {:ok,
               %{
@@ -78,13 +72,7 @@ defmodule Rujira.Chains.Utxo do
         }
         """
 
-        body = %{
-          "query" => query,
-          "variables" => %{
-            "address" => address,
-            "page" => 0
-          }
-        }
+        body = %{"query" => query, "variables" => %{"address" => address, "page" => 0}}
 
         with {:ok,
               %{
