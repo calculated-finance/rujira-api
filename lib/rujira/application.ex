@@ -17,6 +17,7 @@ defmodule Rujira.Application do
       # {Rujira.Worker, arg},
       # Start to serve requests, typically the last entry
       RujiraWeb.Endpoint,
+      RujiraWeb.Presence,
       {Absinthe.Subscription, RujiraWeb.Endpoint},
       {Finch, name: Rujira.Finch},
       Thorchain.Node,
