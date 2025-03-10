@@ -154,6 +154,7 @@ defmodule RujiraWeb.Resolvers.Thorchain do
          res
          |> Map.put(:id, hash)
          |> Map.put(:observed_tx, %{observed_tx | tx: cast_tx(tx)})
+         |> Map.put(:finalized_height, finalised_height)
          |> Map.put(
            :finalized_events,
            Enum.flat_map(

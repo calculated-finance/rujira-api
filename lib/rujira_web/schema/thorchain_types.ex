@@ -158,6 +158,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
 
   node object(:tx_in) do
     field :observed_tx, non_null(:observed_tx)
+    field :finalized_height, non_null(:integer)
     field :finalized_events, non_null(list_of(non_null(:block_event)))
   end
 
