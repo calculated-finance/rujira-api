@@ -2,6 +2,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
   use Absinthe.Schema.Notation
   alias Rujira.Assets
   alias RujiraWeb.Resolvers
+  use Absinthe.Relay.Schema.Notation, :modern
 
   object :thorchain do
     field :inbound_addresses, non_null(list_of(non_null(:inbound_address))) do
@@ -155,12 +156,9 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :tx_index, :bigint
   end
 
-  object :tx_in do
+  object(:tx_in) do
     field :observed_tx, non_null(:observed_tx)
-
-    field :finalized_block, non_null(:block) do
-      resolve(fn %{finalised_height: height}, _, _ -> Resolvers.Thorchain.block(height) end)
-    end
+    field :finalized_events, non_null(list_of(non_null(:block_event)))
   end
 
   object :observed_tx do

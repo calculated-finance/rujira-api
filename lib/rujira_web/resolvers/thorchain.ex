@@ -143,9 +143,23 @@ defmodule RujiraWeb.Resolvers.Thorchain do
 
   def tx_in(_, %{hash: hash}, _) do
     Helpers.async(fn ->
-      with {:ok, %QueryTxResponse{observed_tx: %{tx: tx} = observed_tx} = res} <-
-             Thorchain.Node.stub(&Q.tx/2, %QueryTxRequest{tx_id: hash}) do
-        {:ok, %{res | observed_tx: %{observed_tx | tx: cast_tx(tx)}}}
+      with {:ok,
+            %QueryTxResponse{
+              observed_tx: %{tx: tx} = observed_tx,
+              finalised_height: finalised_height
+            } = res} <-
+             Thorchain.Node.stub(&Q.tx/2, %QueryTxRequest{tx_id: hash}),
+           {:ok, block} <- block(finalised_height) do
+        {:ok,
+         res
+         |> Map.put(:observed_tx, %{observed_tx | tx: cast_tx(tx)})
+         |> Map.put(
+           :finalized_events,
+           Enum.flat_map(
+             block.txs,
+             &finalized_events(&1, hash)
+           )
+         )}
       end
     end)
   end
@@ -243,5 +257,11 @@ defmodule RujiraWeb.Resolvers.Thorchain do
       },
       amount: amount
     }
+  end
+
+  defp finalized_events(%{result: %{events: events}}, hash) do
+    Enum.filter(events, fn %{attributes: attributes} ->
+      Enum.any?(attributes, &(&1.value == hash))
+    end)
   end
 end
