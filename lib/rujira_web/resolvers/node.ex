@@ -1,5 +1,4 @@
 defmodule RujiraWeb.Resolvers.Node do
-  alias RujiraWeb.Resolvers
   alias Rujira.Contract
   alias Rujira.Assets
   alias Rujira.Accounts
@@ -13,9 +12,11 @@ defmodule RujiraWeb.Resolvers.Node do
   end
 
   def list(_, %{ids: ids}, _) do
+    IO.inspect(ids)
+
     Enum.reduce(ids, {:ok, []}, fn id, agg ->
       with {:ok, agg} <- agg,
-           {:ok, id} <- resolve_id(id) do
+           {:ok, id} <- resolve_id(id) |> IO.inspect(label: id) do
         {:ok, [id | agg]}
       end
     end)
@@ -72,7 +73,7 @@ defmodule RujiraWeb.Resolvers.Node do
         {:ok, %Staking.Pool{id: id, address: id}}
 
       {:ok, %{type: :tx_in, id: id}} ->
-        Resolvers.Thorchain.tx_in(%{}, %{hash: id}, %{})
+        Thorchain.tx_in(id)
 
       {:error, error} ->
         {:error, error}

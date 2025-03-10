@@ -1,14 +1,26 @@
 defmodule Thorchain do
   # alias Thorchain.Types.QueryNodesResponse
   # alias Thorchain.Types.QueryNodesRequest
+  alias Rujira.Assets.Asset
+  alias Thorchain.Common.Coin
+  alias Thorchain.Common.Tx
   alias Thorchain.Swaps
+  alias Thorchain.Types.BlockEvent
+  alias Thorchain.Types.BlockResponseHeader
+  alias Thorchain.Types.BlockTxResult
+  alias Thorchain.Types.Query.Stub, as: Q
   alias Thorchain.Types.QueryAsgardVaultsRequest
   alias Thorchain.Types.QueryAsgardVaultsResponse
+  alias Thorchain.Types.QueryBlockRequest
+  alias Thorchain.Types.QueryBlockResponse
+  alias Thorchain.Types.QueryBlockTx
   alias Thorchain.Types.QueryNetworkRequest
-  alias Thorchain.Types.QueryPoolsResponse
   alias Thorchain.Types.QueryPoolsRequest
-  alias Thorchain.Types.Query.Stub, as: Q
+  alias Thorchain.Types.QueryPoolsResponse
+  alias Thorchain.Types.QueryTxRequest
+  alias Thorchain.Types.QueryTxResponse
   use GenServer
+  use Memoize
 
   def start_link(_) do
     children = [__MODULE__.Listener, __MODULE__.Node, __MODULE__.Swaps]
@@ -115,5 +127,129 @@ defmodule Thorchain do
     else
       {:error, :no_affiliate}
     end
+  end
+
+  def tx_in(hash) do
+    with {:ok,
+          %QueryTxResponse{
+            observed_tx: %{tx: tx} = observed_tx,
+            finalised_height: finalised_height
+          } = res} <-
+           Thorchain.Node.stub(&Q.tx/2, %QueryTxRequest{tx_id: hash}),
+         {:ok, block} <- block(finalised_height) do
+      {:ok,
+       res
+       |> Map.put(:id, hash)
+       |> Map.put(:observed_tx, %{observed_tx | tx: cast_tx(tx)})
+       |> Map.put(:finalized_height, finalised_height)
+       |> Map.put(
+         :finalized_events,
+         Enum.flat_map(
+           block.txs,
+           &finalized_events(&1, hash)
+         )
+       )}
+    end
+  end
+
+  defmemo block(height) do
+    with {:ok, %QueryBlockResponse{} = block} <-
+           Thorchain.Node.stub(&Q.block/2, %QueryBlockRequest{height: to_string(height)}) do
+      {:ok,
+       %{
+         block
+         | header: cast_block_header(block.header),
+           begin_block_events: Enum.map(block.begin_block_events, &cast_block_event/1),
+           end_block_events: Enum.map(block.end_block_events, &cast_block_event/1),
+           txs: Enum.map(block.txs, &cast_block_tx/1)
+       }}
+    end
+  end
+
+  defp cast_block_header(%BlockResponseHeader{chain_id: chain_id, height: height, time: time}) do
+    {:ok, time, 0} = DateTime.from_iso8601(time)
+    %{chain_id: chain_id, height: height, time: time}
+  end
+
+  defp cast_block_event(%BlockEvent{
+         event_kv_pair: [
+           %{key: "type", value: type}
+           | attributes
+         ]
+       }) do
+    %{type: type, attributes: attributes}
+  end
+
+  defp cast_tx(%Tx{
+         id: id,
+         chain: chain,
+         from_address: from_address,
+         to_address: to_address,
+         coins: coins,
+         gas: gas,
+         memo: memo
+       }) do
+    %{
+      id: id,
+      chain: String.to_existing_atom(String.downcase(chain)),
+      from_address: from_address,
+      to_address: to_address,
+      coins: Enum.map(coins, &cast_coin/1),
+      gas: Enum.map(gas, &cast_coin/1),
+      memo: memo
+    }
+  end
+
+  defp cast_block_tx(%QueryBlockTx{
+         hash: hash,
+         tx: tx,
+         result: result
+       }) do
+    %{
+      hash: hash,
+      tx_data: tx,
+      result: cast_block_tx_result(result)
+    }
+  end
+
+  defp cast_block_tx_result(%BlockTxResult{
+         code: code,
+         data: data,
+         log: log,
+         info: info,
+         gas_wanted: gas_wanted,
+         gas_used: gas_used,
+         events: events,
+         codespace: codespace
+       }) do
+    %{
+      code: code,
+      data: data,
+      log: log,
+      info: info,
+      gas_wanted: String.to_integer(gas_wanted),
+      gas_used: String.to_integer(gas_used),
+      events: Enum.map(events, &cast_block_event/1),
+      codespace: codespace
+    }
+  end
+
+  defp cast_coin(%Coin{asset: asset, amount: amount}) do
+    %{
+      asset: %Asset{
+        id: "#{asset.chain}.#{asset.symbol}",
+        type: :layer_1,
+        chain: asset.chain,
+        symbol: asset.symbol,
+        ticker: asset.ticker
+      },
+      amount: amount
+    }
+  end
+
+  defp finalized_events(%{result: %{events: events}}, hash) do
+    Enum.filter(events, fn %{attributes: attributes} ->
+      Enum.any?(attributes, &(&1.value == hash))
+    end)
   end
 end
