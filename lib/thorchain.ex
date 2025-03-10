@@ -153,7 +153,7 @@ defmodule Thorchain do
        )}
     else
       {:error, %GRPC.RPCError{status: 2, message: ^not_found}} ->
-        {:ok, nil}
+        {:ok, %{id: hash, observed_tx: nil, finalized_events: nil, finalized_height: nil}}
 
       err ->
         err
