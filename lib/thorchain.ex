@@ -8,6 +8,17 @@ defmodule Thorchain do
   alias Thorchain.Types.QueryPoolsResponse
   alias Thorchain.Types.QueryPoolsRequest
   alias Thorchain.Types.Query.Stub, as: Q
+  use GenServer
+
+  def start_link(_) do
+    children = [__MODULE__.Listener, __MODULE__.Node, __MODULE__.Swaps]
+    Supervisor.start_link(children, strategy: :one_for_one)
+  end
+
+  @impl true
+  def init(state) do
+    {:ok, state}
+  end
 
   def network() do
     req = %QueryNetworkRequest{}
