@@ -27,7 +27,7 @@ defmodule RujiraWeb.Schema do
     Fetch multiple nodes by their global unique identifiers.
     Useful for batch fetching objects in Relay.
     """
-    field :nodes, non_null(list_of(non_null(:node))) do
+    field :nodes, non_null(list_of(:node)) do
       @desc """
       A list of global unique identifiers of the objects to fetch.
       Each ID must be Relay-compatible.
