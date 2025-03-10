@@ -12,13 +12,16 @@ defmodule RujiraWeb.Resolvers.Node do
   end
 
   def list(_, %{ids: ids}, _) do
-    IO.inspect(ids)
+    Enum.reduce(ids, {:ok, []}, fn
+      id, {:ok, agg} ->
+        case resolve_id(id) do
+          {:ok, nil} -> {:ok, agg}
+          {:ok, id} -> {:ok, [id | agg]}
+          err -> err
+        end
 
-    Enum.reduce(ids, {:ok, []}, fn id, agg ->
-      with {:ok, agg} <- agg,
-           {:ok, id} <- resolve_id(id) |> IO.inspect(label: id) do
-        {:ok, [id | agg]}
-      end
+      _, err ->
+        err
     end)
   end
 

@@ -130,6 +130,8 @@ defmodule Thorchain do
   end
 
   def tx_in(hash) do
+    not_found = "tx: #{hash} doesn't exist"
+
     with {:ok,
           %QueryTxResponse{
             observed_tx: %{tx: tx} = observed_tx,
@@ -149,6 +151,12 @@ defmodule Thorchain do
            &finalized_events(&1, hash)
          )
        )}
+    else
+      {:error, %GRPC.RPCError{status: 2, message: ^not_found}} ->
+        {:ok, nil}
+
+      err ->
+        err
     end
   end
 
