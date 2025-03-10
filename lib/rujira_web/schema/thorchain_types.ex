@@ -156,7 +156,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :tx_index, :bigint
   end
 
-  object(:tx_in) do
+  node object(:tx_in) do
     field :observed_tx, non_null(:observed_tx)
     field :finalized_events, non_null(list_of(non_null(:block_event)))
   end

@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Resolvers.Node do
+  alias RujiraWeb.Resolvers
   alias Rujira.Contract
   alias Rujira.Assets
   alias Rujira.Accounts
@@ -32,6 +33,7 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Fin.Order{}, _), do: :fin_order
   def type(%Staking.Pool{}, _), do: :staking_pool
   def type(%Contract{}, _), do: :contract
+  def type(%{observed_tx: _}, _), do: :tx_in
 
   defp resolve_id(id) do
     case Absinthe.Relay.Node.from_global_id(id, RujiraWeb.Schema) do
@@ -68,6 +70,9 @@ defmodule RujiraWeb.Resolvers.Node do
 
       {:ok, %{type: :staking_pool, id: id}} ->
         {:ok, %Staking.Pool{id: id, address: id}}
+
+      {:ok, %{type: :tx_in, id: id}} ->
+        Resolvers.Thorchain.tx_in(%{}, %{hash: id}, %{})
 
       {:error, error} ->
         {:error, error}

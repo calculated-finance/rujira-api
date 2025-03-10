@@ -152,6 +152,7 @@ defmodule RujiraWeb.Resolvers.Thorchain do
            {:ok, block} <- block(finalised_height) do
         {:ok,
          res
+         |> Map.put(:id, hash)
          |> Map.put(:observed_tx, %{observed_tx | tx: cast_tx(tx)})
          |> Map.put(
            :finalized_events,
