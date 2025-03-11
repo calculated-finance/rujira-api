@@ -23,7 +23,6 @@ defmodule Rujira.Fin.Candle do
 
   @impl true
   def handle_info(time, resolution) do
-    Process.sleep(5000)
     now = DateTime.utc_now()
 
     case DateTime.compare(time, now) do
