@@ -1,10 +1,10 @@
 defmodule Rujira.Fin.Candle do
   alias Rujira.Fin.TradingView
-  use Ecto.Schema
+  alias Rujira.Fin
   import Ecto.Changeset
-
-  use GenServer
   require Logger
+  use Ecto.Schema
+  use GenServer
 
   def start_link(resolution) do
     GenServer.start_link(__MODULE__, resolution)
@@ -31,7 +31,8 @@ defmodule Rujira.Fin.Candle do
         {:noreply, resolution}
 
       _ ->
-        insert_candles(time, resolution)
+        Logger.debug("#{__MODULE__} #{resolution} #{time}")
+        Fin.insert_candles(time, resolution)
         send(self(), TradingView.add(time, resolution))
         {:noreply, resolution}
     end
@@ -54,13 +55,12 @@ defmodule Rujira.Fin.Candle do
     timestamps(type: :utc_datetime_usec)
   end
 
+  def id(contract, resolution, bin), do: "#{contract}/#{resolution}/#{DateTime.to_iso8601(bin)}"
+
   @doc false
   def changeset(candle, attrs) do
     candle
     |> cast(attrs, [:id, :contract, :resolution, :bin, :high, :low, :open, :close, :volume])
     |> validate_required([:id, :contract, :resolution, :bin, :high, :low, :open, :close, :volume])
-  end
-
-  def insert_candles(time, resolution) do
   end
 end

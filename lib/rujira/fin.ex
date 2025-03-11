@@ -175,6 +175,40 @@ defmodule Rujira.Fin do
     ])
   end
 
+  def insert_candles(time, resolution) do
+    now = DateTime.utc_now()
+
+    new =
+      from(c in Candle,
+        where: c.resolution == ^resolution,
+        distinct: c.contract,
+        order_by: [desc: c.bin]
+      )
+      |> Repo.all()
+      |> Enum.map(
+        &%{
+          id: Candle.id(&1.contract, &1.resolution, time),
+          contract: &1.contract,
+          resolution: &1.resolution,
+          volume: 0,
+          high: &1.close,
+          low: &1.close,
+          open: &1.close,
+          close: &1.close,
+          bin: time,
+          inserted_at: now,
+          updated_at: now
+        }
+      )
+
+    Repo.insert_all(Candle, new,
+      # Conflict will be hit if race condition has triggered insert before this is reached
+      on_conflict: :nothing,
+      returning: true
+    )
+    |> broadcast_candles()
+  end
+
   def update_candles(trades) do
     now = DateTime.utc_now()
 
@@ -185,7 +219,7 @@ defmodule Rujira.Fin do
         |> TradingView.active()
         |> Enum.map(fn {r, b} ->
           %{
-            id: "#{v.contract}/#{r}/#{DateTime.to_iso8601(b)}",
+            id: Candle.id(v.contract, r, b),
             contract: v.contract,
             resolution: r,
             bin: b,
@@ -218,15 +252,17 @@ defmodule Rujira.Fin do
         ]
       )
 
-    {_count, candles} =
-      Repo.insert_all(
-        Candle,
-        entries,
-        on_conflict: on_conflict,
-        conflict_target: [:contract, :resolution, :bin],
-        returning: true
-      )
+    Repo.insert_all(
+      Candle,
+      entries,
+      on_conflict: on_conflict,
+      conflict_target: [:contract, :resolution, :bin],
+      returning: true
+    )
+    |> broadcast_candles()
+  end
 
+  defp broadcast_candles({_count, candles}) do
     for c <- candles do
       Logger.debug("#{__MODULE__} candle #{c.id}")
 
