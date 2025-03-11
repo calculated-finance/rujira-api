@@ -116,6 +116,16 @@ defmodule Rujira.Fin do
     |> Repo.all()
   end
 
+  def range_candles(contract, from, to, resolution) do
+    Candle
+    |> where(
+      [c],
+      c.contract == ^contract and c.bin >= ^from and c.bin <= ^to and c.resolution == ^resolution
+    )
+    |> order_by(asc: :bin)
+    |> Repo.all()
+  end
+
   def pair_from_id(id) do
     get_pair(id)
   end

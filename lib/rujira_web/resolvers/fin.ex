@@ -134,18 +134,43 @@ defmodule RujiraWeb.Resolvers.Fin do
     end)
   end
 
-  def candles(_, _, _) do
+  def candles(%{address: address}, %{after: from, resolution: resolution, before: to}, _) do
     Helpers.async(fn ->
       {:ok,
-       %{
-         page_info: %{
-           start_cursor: <<>>,
-           end_cursor: <<>>,
-           has_previous_page: false,
-           has_next_page: false
-         },
-         edges: []
-       }}
+       Fin.range_candles(address, from, to, resolution)
+       |> Enum.reverse()
+       |> insert_candle_nodes()}
     end)
   end
+
+  defp insert_candle_nodes(
+         candles,
+         agg \\ %{
+           page_info: %{
+             start_cursor: <<>>,
+             end_cursor: <<>>,
+             has_previous_page: false,
+             has_next_page: false
+           },
+           edges: []
+         }
+       )
+
+  defp insert_candle_nodes([c], %{page_info: page_info} = agg) do
+    insert_candle_nodes([], %{
+      agg
+      | edges: [%{cursor: c.bin, node: c} | agg.edges],
+        page_info: %{page_info | start_cursor: c.bin}
+    })
+  end
+
+  defp insert_candle_nodes([c | rest], %{page_info: page_info} = agg) do
+    insert_candle_nodes(rest, %{
+      agg
+      | edges: [%{cursor: c.bin, node: c} | agg.edges],
+        page_info: %{page_info | start_cursor: c.bin, end_cursor: c.bin}
+    })
+  end
+
+  defp insert_candle_nodes([], agg), do: agg
 end
