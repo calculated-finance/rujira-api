@@ -11,4 +11,8 @@ defmodule Rujira.Ventures do
   def keiko() do
     Contract.get({Keiko, @keiko_address})
   end
+
+  def sales() do
+    Contract.query_state_smart(@keiko_address, %{ventures: %{}})
+  end
 end

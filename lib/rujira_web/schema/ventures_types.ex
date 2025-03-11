@@ -5,10 +5,13 @@ defmodule RujiraWeb.Schema.VenturesTypes do
 
   object :ventures do
     field :config, :ventures_config
-    # connection field :sales, node_type: :ventures_sale do
-    #   resolve(&RujiraWeb.Resolvers.Ventures.sales/3)
-    # end
+
+    connection field :sales, node_type: :ventures_sale do
+      resolve(&RujiraWeb.Resolvers.Ventures.sales/3)
+    end
   end
+
+  connection(node_type: :ventures_sale)
 
   node object(:ventures_config) do
     field :address, :address
@@ -72,7 +75,29 @@ defmodule RujiraWeb.Schema.VenturesTypes do
     field :min_liquidity, non_null(:bigint)
   end
 
-  # connection(node_type: :ventures_sale)
+  union :ventures_sale do
+    types([:ventures_sale_pilot, :ventures_sale_bond])
+
+    resolve_type(fn
+      %{deposit: _, token: _, pilot: _}, _ -> :ventures_sale_pilot
+      %{}, _ -> :ventures_sale_bond
+    end)
+  end
+
+  object :ventures_sale_pilot do
+    field :address, non_null(:address)
+    field :deposit, :balance
+    # field :token, non_null(:token)
+    # field :tokenomics, non_null(:tokenomics)
+    field :fin, :address
+    field :bow, :address
+    field :streams, list_of(:address)
+    field :terms_conditions_accepted, non_null(:boolean)
+  end
+
+  object :ventures_sale_bond do
+    field :address, non_null(:address)
+  end
 
   # union :venture_configure do
   #   types([:pilot_config])
@@ -87,26 +112,6 @@ defmodule RujiraWeb.Schema.VenturesTypes do
   #   field :token, non_null(:token)
   #   field :tokenomics, non_null(:tokenomics)
   #   field :pilot, non_null(:pilot)
-  # end
-
-  # union :ventures do
-  #   types([:pilot_venture, :bonds_venture])
-
-  #   resolve_type(fn
-  #     %{deposit: _, token: _, pilot: _}, _ -> :pilot_venture
-  #     %{}, _ -> :bonds_venture
-  #   end)
-  # end
-
-  # object :pilot_venture do
-  #   field :deposit, :coin
-  #   field :terms_conditions_accepted, non_null(:boolean)
-  #   field :token, non_null(:token)
-  #   field :tokenomics, non_null(:tokenomics)
-  #   field :pilot, non_null(:pilot_info)
-  #   field :fin, :fin_info
-  #   field :bow, :bow_info
-  #   field :streams, list_of(:streams_info)
   # end
 
   # object :bonds_venture do
