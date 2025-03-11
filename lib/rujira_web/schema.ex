@@ -16,6 +16,7 @@ defmodule RujiraWeb.Schema do
   import_types(RujiraWeb.Schema.MergeTypes)
   import_types(RujiraWeb.Schema.FinTypes)
   import_types(RujiraWeb.Schema.StakingTypes)
+  import_types(RujiraWeb.Schema.VenturesTypes)
 
   query do
     field :node, :node do

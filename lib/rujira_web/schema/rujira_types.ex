@@ -16,6 +16,10 @@ defmodule RujiraWeb.Schema.RujiraTypes do
       resolve(&Resolvers.Staking.resolver/3)
     end
 
+    field :ventures, non_null(:ventures) do
+      resolve(&Resolvers.Ventures.resolver/3)
+    end
+
     field :bank, non_null(:bank) do
       resolve(&Resolvers.Bank.resolver/3)
     end
