@@ -14,7 +14,8 @@ defmodule Rujira.Fin do
   def start_link(_) do
     children = [
       __MODULE__.Listener,
-      __MODULE__.Indexer
+      __MODULE__.Indexer,
+      __MODULE__.TradingView
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one)

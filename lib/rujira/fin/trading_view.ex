@@ -1,5 +1,18 @@
 defmodule Rujira.Fin.TradingView do
+  alias Rujira.Fin.Candle
+  use GenServer
+
   @resolutions ["1", "3", "5", "15", "30", "60", "120", "180", "240", "1D", "1M", "12M"]
+
+  def start_link(_) do
+    children = Enum.map(@resolutions, &Supervisor.child_spec({Candle, &1}, id: &1))
+    Supervisor.start_link(children, strategy: :one_for_one)
+  end
+
+  @impl true
+  def init(state) do
+    {:ok, state}
+  end
 
   def active(now) do
     Enum.map(@resolutions, &{&1, truncate(now, &1)})
@@ -9,7 +22,7 @@ defmodule Rujira.Fin.TradingView do
     case Integer.parse(resolution) do
       {minutes, ""} -> DateTime.add(datetime, minutes, :minute)
       {days, "D"} -> DateTime.add(datetime, days, :day)
-      {months, "M"} -> Timex.shift(datetime, months: -months)
+      {months, "M"} -> Timex.shift(datetime, months: months)
     end
   end
 

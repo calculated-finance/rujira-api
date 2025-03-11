@@ -1,6 +1,42 @@
 defmodule Rujira.Fin.Candle do
+  alias Rujira.Fin.TradingView
   use Ecto.Schema
   import Ecto.Changeset
+
+  use GenServer
+  require Logger
+
+  def start_link(resolution) do
+    GenServer.start_link(__MODULE__, resolution)
+  end
+
+  @impl true
+  def init(resolution) do
+    next =
+      DateTime.utc_now()
+      |> TradingView.truncate(resolution)
+      |> TradingView.add(resolution)
+
+    send(self(), next)
+    {:ok, resolution}
+  end
+
+  @impl true
+  def handle_info(time, resolution) do
+    Process.sleep(5000)
+    now = DateTime.utc_now()
+
+    case DateTime.compare(time, now) do
+      :gt ->
+        send(self(), time)
+        {:noreply, resolution}
+
+      _ ->
+        insert_candles(time, resolution)
+        send(self(), TradingView.add(time, resolution))
+        {:noreply, resolution}
+    end
+  end
 
   @primary_key false
   schema "candles" do
@@ -24,5 +60,8 @@ defmodule Rujira.Fin.Candle do
     candle
     |> cast(attrs, [:id, :contract, :resolution, :bin, :high, :low, :open, :close, :volume])
     |> validate_required([:id, :contract, :resolution, :bin, :high, :low, :open, :close, :volume])
+  end
+
+  def insert_candles(time, resolution) do
   end
 end
