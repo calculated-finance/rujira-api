@@ -267,13 +267,17 @@ defmodule Rujira.Fin do
       Logger.debug("#{__MODULE__} candle #{c.id}")
 
       id =
+        Absinthe.Relay.Node.to_global_id(:fin_candle, c.id, RujiraWeb.Schema)
+
+      prefix =
         Absinthe.Relay.Node.to_global_id(
           :fin_candle,
-          c.id,
+          "#{c.contract}/#{c.resolution}",
           RujiraWeb.Schema
         )
 
       Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, edge: prefix)
     end
   end
 end

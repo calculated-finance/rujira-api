@@ -27,13 +27,18 @@ defmodule Rujira.Fin.Candle do
 
     case DateTime.compare(time, now) do
       :gt ->
-        send(self(), time)
+        now = DateTime.utc_now()
+        delay = max(0, DateTime.diff(time, now, :millisecond))
+        Process.send_after(self(), time, delay)
         {:noreply, resolution}
 
       _ ->
         Logger.debug("#{__MODULE__} #{resolution} #{time}")
         Fin.insert_candles(time, resolution)
-        send(self(), TradingView.add(time, resolution))
+
+        time = TradingView.add(time, resolution)
+        delay = max(0, DateTime.diff(time, now, :millisecond))
+        Process.send_after(self(), time, delay)
         {:noreply, resolution}
     end
   end

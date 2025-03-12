@@ -83,9 +83,9 @@ defmodule RujiraWeb.Schema do
 
     field :edge, :node_edge do
       @desc """
-      The ID of the Edge Node, omitting the ID element, eg
+      The Prefix of the Edge Node, eg
 
-      base64(FinTrade:{address})
+      base64(FinTrade:{address}/{resolution})
       """
       arg(:prefix, non_null(:string))
 
@@ -94,7 +94,9 @@ defmodule RujiraWeb.Schema do
       end)
 
       resolve(fn id, x, _ ->
-        RujiraWeb.Resolvers.Node.id(%{id: id}, x)
+        with {:ok, node} <- RujiraWeb.Resolvers.Node.id(id, x) do
+          {:ok, %{node: node}}
+        end
       end)
     end
   end
