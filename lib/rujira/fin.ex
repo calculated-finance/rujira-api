@@ -212,23 +212,22 @@ defmodule Rujira.Fin do
   def update_candles(trades) do
     now = DateTime.utc_now()
 
-    entries =
-      trades
-      |> Enum.flat_map(fn v ->
-        v.timestamp
+    for t <- trades do
+      entries =
+        t.timestamp
         |> TradingView.active()
         |> Enum.map(fn {r, b} ->
           %{
-            id: Candle.id(v.contract, r, b),
-            contract: v.contract,
+            id: Candle.id(t.contract, r, b),
+            contract: t.contract,
             resolution: r,
             bin: b,
-            high: v.rate,
-            low: v.rate,
-            open: v.rate,
-            close: v.rate,
+            high: t.rate,
+            low: t.rate,
+            open: t.rate,
+            close: t.rate,
             volume:
-              case v do
+              case t do
                 %{side: :base, offer: offer} -> offer
                 %{side: :quote, bid: bid} -> bid
               end,
@@ -236,30 +235,30 @@ defmodule Rujira.Fin do
             updated_at: now
           }
         end)
-      end)
 
-    on_conflict =
-      from(c in Candle,
-        update: [
-          set: [
-            high: fragment("GREATEST(EXCLUDED.high, ?)", c.high),
-            low: fragment("LEAST(EXCLUDED.low, ?)", c.low),
-            open: fragment("COALESCE(?, EXCLUDED.open)", c.open),
-            close: fragment("EXCLUDED.close"),
-            volume: fragment("EXCLUDED.volume + ?", c.volume),
-            updated_at: fragment("EXCLUDED.updated_at")
+      on_conflict =
+        from(c in Candle,
+          update: [
+            set: [
+              high: fragment("GREATEST(EXCLUDED.high, ?)", c.high),
+              low: fragment("LEAST(EXCLUDED.low, ?)", c.low),
+              open: fragment("COALESCE(?, EXCLUDED.open)", c.open),
+              close: fragment("EXCLUDED.close"),
+              volume: fragment("EXCLUDED.volume + ?", c.volume),
+              updated_at: fragment("EXCLUDED.updated_at")
+            ]
           ]
-        ]
-      )
+        )
 
-    Repo.insert_all(
-      Candle,
-      entries,
-      on_conflict: on_conflict,
-      conflict_target: [:contract, :resolution, :bin],
-      returning: true
-    )
-    |> broadcast_candles()
+      Candle
+      |> Repo.insert_all(
+        entries,
+        on_conflict: on_conflict,
+        conflict_target: [:contract, :resolution, :bin],
+        returning: true
+      )
+      |> broadcast_candles()
+    end
   end
 
   defp broadcast_candles({_count, candles}) do
