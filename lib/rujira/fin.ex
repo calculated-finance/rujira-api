@@ -177,8 +177,7 @@ defmodule Rujira.Fin do
 
   def insert_trades(trades) do
     with {count, items} when is_list(items) <-
-           Repo.insert_all(Trade, trades, on_conflict: :nothing, returning: true)
-           |> broadcast_trades do
+           Repo.insert_all(Trade, trades, on_conflict: :nothing, returning: true) do
       broadcast_trades({count, items})
       update_candles(items)
     end
