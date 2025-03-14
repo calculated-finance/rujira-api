@@ -52,7 +52,7 @@ defmodule RujiraWeb.Resolvers.Fin do
 
   defp resolve_trade(%Trade{} = t, asset_base, asset_quote) do
     {base_amount, quote_amount} =
-      if t.side == "base", do: {t.bid, t.offer}, else: {t.offer, t.bid}
+      if t.side == :base, do: {t.bid, t.offer}, else: {t.offer, t.bid}
 
     %{
       cursor: t.id,
@@ -66,7 +66,7 @@ defmodule RujiraWeb.Resolvers.Fin do
         quote_amount: quote_amount,
         base_amount: base_amount,
         price: t.rate,
-        type: if(t.side == "base", do: "buy", else: "sell"),
+        type: if(t.side == :base, do: "buy", else: "sell"),
         protocol: t.protocol,
         timestamp: t.timestamp,
         asset_base: asset_base,
