@@ -147,6 +147,16 @@ defmodule Rujira.Fin do
     Summary.from_id(id)
   end
 
+  def trade_from_id(id) do
+    {:ok, get_trade(id)}
+  end
+
+  def get_trade(id) do
+    Trade
+    |> where([c], c.id == ^id)
+    |> Repo.one()
+  end
+
   @spec all_trades(non_neg_integer(), :asc | :desc) :: [Trade.t()]
   def all_trades(limit \\ 100, sort \\ :desc) do
     Trade
