@@ -143,6 +143,10 @@ defmodule Rujira.Fin do
     Order.from_id(id)
   end
 
+  def summary_from_id(id) do
+    Summary.from_id(id)
+  end
+
   @spec all_trades(non_neg_integer(), :asc | :desc) :: [Trade.t()]
   def all_trades(limit \\ 100, sort \\ :desc) do
     Trade
@@ -161,8 +165,10 @@ defmodule Rujira.Fin do
   end
 
   def insert_trades(trades) do
-    with {_count, items} when is_list(items) <-
-           Repo.insert_all(Trade, trades, on_conflict: :nothing, returning: true) do
+    with {count, items} when is_list(items) <-
+           Repo.insert_all(Trade, trades, on_conflict: :nothing, returning: true)
+           |> broadcast_trades do
+      broadcast_trades({count, items})
       update_candles(items)
     end
   end
@@ -258,6 +264,20 @@ defmodule Rujira.Fin do
         returning: true
       )
       |> broadcast_candles()
+    end
+  end
+
+  defp broadcast_trades({_count, trades}) do
+    for t <- trades do
+      Logger.debug("#{__MODULE__} trade #{t.id}")
+
+      id =
+        Absinthe.Relay.Node.to_global_id(:fin_trade, t.id, RujiraWeb.Schema)
+
+      prefix =
+        Absinthe.Relay.Node.to_global_id(:fin_trade, t.contract, RujiraWeb.Schema)
+
+      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, edge: prefix)
     end
   end
 

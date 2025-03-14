@@ -40,12 +40,12 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :book, non_null(:fin_book), resolve: &RujiraWeb.Resolvers.Fin.book/3
     field :summary, :fin_pair_summary, resolve: &RujiraWeb.Resolvers.Fin.summary/3
 
-    connection field :candles, node_type: :fin_candle do
+    connection field :candles, node_type: :fin_candle, non_null: true do
       arg(:resolution, non_null(:string))
       resolve(&RujiraWeb.Resolvers.Fin.candles/3)
     end
 
-    connection field :trades, node_type: :fin_trade do
+    connection field :trades, node_type: :fin_trade, non_null: true do
       resolve(&RujiraWeb.Resolvers.Fin.trades/3)
     end
   end
@@ -151,7 +151,7 @@ defmodule RujiraWeb.Schema.FinTypes do
   end
 
   @desc "Summary of the last trading data for a specific pair, including high, low, change, and volume."
-  object :fin_pair_summary do
+  node object(:fin_pair_summary) do
     field :last, non_null(:bigint)
     field :last_usd, non_null(:bigint)
     field :high, non_null(:bigint)
