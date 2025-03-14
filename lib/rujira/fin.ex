@@ -7,6 +7,7 @@ defmodule Rujira.Fin do
   alias Rujira.Fin.Pair
   alias Rujira.Fin.Book
   alias Rujira.Fin.Order
+  alias Rujira.Fin.Summary
   import Ecto.Query
   alias Rujira.Repo
   require Logger
