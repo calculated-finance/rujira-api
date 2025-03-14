@@ -50,7 +50,7 @@ defmodule RujiraWeb.Resolvers.Fin do
     end
   end
 
-  defp resolve_trade(%Trade{} = t, asset_base, asset_quote) do
+  def resolve_trade(%Trade{} = t, asset_base, asset_quote) do
     {base_amount, quote_amount} =
       if t.side == :base, do: {t.bid, t.offer}, else: {t.offer, t.bid}
 
