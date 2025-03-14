@@ -21,11 +21,11 @@ defmodule Rujira.Application do
       {Absinthe.Subscription, RujiraWeb.Endpoint},
       {Finch, name: Rujira.Finch},
       Thorchain,
-      # Rujira.Balances,
-      # Rujira.Bank,
-      # Rujira.Chains,
-      Rujira.Fin
-      # Rujira.Invalidator
+      Rujira.Balances,
+      Rujira.Bank,
+      Rujira.Chains,
+      Rujira.Fin,
+      Rujira.Invalidator
     ]
 
     Thorchain.Node.Appsignal.attach()
