@@ -73,7 +73,7 @@ defmodule RujiraWeb.Resolvers.Node do
 
       {:ok, %{type: :fin_trade, id: id}} ->
         with {:ok, trade} <- Fin.trade_from_id(id) do
-          {:ok, Resolvers.Fin.resolve_trade(trade, nil, nil)}
+          {:ok, RujiraWeb.Resolvers.Fin.resolve_trade(trade, nil, nil)}
         end
 
       {:ok, %{type: :staking_pool, id: id}} ->
