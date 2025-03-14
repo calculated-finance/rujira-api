@@ -12,6 +12,6 @@ defmodule Rujira.Fin.Summary do
         }
 
   def from_id(id) do
-    %__MODULE__{}
+    %__MODULE__{id: id}
   end
 end
