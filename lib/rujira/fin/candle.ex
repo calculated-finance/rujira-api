@@ -6,6 +6,37 @@ defmodule Rujira.Fin.Candle do
   use Ecto.Schema
   use GenServer
 
+  @type t :: %__MODULE__{
+          id: String.t(),
+          contract: String.t(),
+          resolution: String.t(),
+          bin: DateTime.t(),
+          close: Decimal.t(),
+          high: Decimal.t(),
+          low: Decimal.t(),
+          open: Decimal.t(),
+          volume: non_neg_integer(),
+          inserted_at: DateTime.t(),
+          updated_at: DateTime.t()
+        }
+
+  @primary_key false
+  schema "candles" do
+    field :id, :string
+
+    field :contract, :string, primary_key: true
+    field :resolution, :string, primary_key: true
+    field :bin, :utc_datetime, primary_key: true
+
+    field :close, :decimal
+    field :high, :decimal
+    field :low, :decimal
+    field :open, :decimal
+    field :volume, :integer
+
+    timestamps(type: :utc_datetime_usec)
+  end
+
   def start_link(resolution) do
     GenServer.start_link(__MODULE__, resolution)
   end
@@ -41,23 +72,6 @@ defmodule Rujira.Fin.Candle do
         Process.send_after(self(), time, delay)
         {:noreply, resolution}
     end
-  end
-
-  @primary_key false
-  schema "candles" do
-    field :id, :string
-
-    field :contract, :string, primary_key: true
-    field :resolution, :string, primary_key: true
-    field :bin, :utc_datetime, primary_key: true
-
-    field :close, :decimal
-    field :high, :decimal
-    field :low, :decimal
-    field :open, :decimal
-    field :volume, :integer
-
-    timestamps(type: :utc_datetime_usec)
   end
 
   def id(contract, resolution, bin), do: "#{contract}/#{resolution}/#{DateTime.to_iso8601(bin)}"

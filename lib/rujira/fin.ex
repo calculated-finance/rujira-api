@@ -102,16 +102,22 @@ defmodule Rujira.Fin do
     {:ok, []}
   end
 
+  @spec candle_from_id(any()) :: {:error, :not_found} | {:ok, Candle.t()}
   def candle_from_id(id) do
-    {:ok, get_candle(id)}
+    case get_candle(id) do
+      nil -> {:error, :not_found}
+      candle -> {:ok, candle}
+    end
   end
 
+  @spec get_candle(String.t()) :: Candle.t() | nil
   def get_candle(id) do
     Candle
-    |> where([c], c.id == ^id)
+    |> where(id: ^id)
     |> Repo.one()
   end
 
+  @spec list_candles(list(String.t())) :: list(Candle.t())
   def list_candles(ids) do
     Candle
     |> where([c], c.id in ^ids)
@@ -121,9 +127,11 @@ defmodule Rujira.Fin do
   def range_candles(contract, from, to, resolution) do
     Candle
     |> where(
-      [c],
-      c.contract == ^contract and c.bin >= ^from and c.bin <= ^to and c.resolution == ^resolution
+      contract: ^contract,
+      resolution: ^resolution
     )
+    |> where([c], c.bin >= ^from)
+    |> where([c], c.bin <= ^to)
     |> order_by(asc: :bin)
     |> Repo.all()
   end
@@ -226,50 +234,16 @@ defmodule Rujira.Fin do
   end
 
   def update_candles(trades) do
-    now = DateTime.utc_now()
-
     for t <- trades do
       entries =
         t.timestamp
         |> TradingView.active()
-        |> Enum.map(fn {r, b} ->
-          %{
-            id: Candle.id(t.contract, r, b),
-            contract: t.contract,
-            resolution: r,
-            bin: b,
-            high: t.rate,
-            low: t.rate,
-            open: t.rate,
-            close: t.rate,
-            volume:
-              case t do
-                %{side: :base, offer: offer} -> offer
-                %{side: :quote, bid: bid} -> bid
-              end,
-            inserted_at: now,
-            updated_at: now
-          }
-        end)
-
-      on_conflict =
-        from(c in Candle,
-          update: [
-            set: [
-              high: fragment("GREATEST(EXCLUDED.high, ?)", c.high),
-              low: fragment("LEAST(EXCLUDED.low, ?)", c.low),
-              open: fragment("COALESCE(?, EXCLUDED.open)", c.open),
-              close: fragment("EXCLUDED.close"),
-              volume: fragment("EXCLUDED.volume + ?", c.volume),
-              updated_at: fragment("EXCLUDED.updated_at")
-            ]
-          ]
-        )
+        |> Enum.map(&to_candle(t, &1))
 
       Candle
       |> Repo.insert_all(
         entries,
-        on_conflict: on_conflict,
+        on_conflict: candle_conflict(),
         conflict_target: [:contract, :resolution, :bin],
         returning: true
       )
@@ -277,26 +251,61 @@ defmodule Rujira.Fin do
     end
   end
 
+  defp to_candle(trade, {r, b}) do
+    now = DateTime.utc_now()
+
+    %{
+      id: Candle.id(trade.contract, r, b),
+      contract: trade.contract,
+      resolution: r,
+      bin: b,
+      high: trade.rate,
+      low: trade.rate,
+      open: trade.rate,
+      close: trade.rate,
+      volume:
+        case trade do
+          %{side: :base, offer: offer} -> offer
+          %{side: :quote, bid: bid} -> bid
+        end,
+      inserted_at: now,
+      updated_at: now
+    }
+  end
+
+  defp candle_conflict() do
+    from(c in Candle,
+      update: [
+        set: [
+          high: fragment("GREATEST(EXCLUDED.high, ?)", c.high),
+          low: fragment("LEAST(EXCLUDED.low, ?)", c.low),
+          open: fragment("COALESCE(?, EXCLUDED.open)", c.open),
+          close: fragment("EXCLUDED.close"),
+          volume: fragment("EXCLUDED.volume + ?", c.volume),
+          updated_at: fragment("EXCLUDED.updated_at")
+        ]
+      ]
+    )
+  end
+
   defp broadcast_trades({_count, trades}) do
     for t <- trades do
-      Logger.debug("#{__MODULE__} trade #{t.id}")
+      Logger.debug("#{__MODULE__} broadcast trade #{t.id}")
 
-      id =
-        Absinthe.Relay.Node.to_global_id(:fin_trade, t.id, RujiraWeb.Schema)
-
-      prefix =
-        Absinthe.Relay.Node.to_global_id(:fin_trade, t.contract, RujiraWeb.Schema)
-
+      id = Absinthe.Relay.Node.to_global_id(:fin_trade, t.id, RujiraWeb.Schema)
+      prefix = Absinthe.Relay.Node.to_global_id(:fin_trade, t.contract, RujiraWeb.Schema)
       Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, edge: prefix)
+
+      id = Absinthe.Relay.Node.to_global_id(:fin_summary, t.contract, RujiraWeb.Schema)
+      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, id: id)
     end
   end
 
   defp broadcast_candles({_count, candles}) do
     for c <- candles do
-      Logger.debug("#{__MODULE__} candle #{c.id}")
+      Logger.debug("#{__MODULE__} broadcast candle #{c.id}")
 
-      id =
-        Absinthe.Relay.Node.to_global_id(:fin_candle, c.id, RujiraWeb.Schema)
+      id = Absinthe.Relay.Node.to_global_id(:fin_candle, c.id, RujiraWeb.Schema)
 
       prefix =
         Absinthe.Relay.Node.to_global_id(
