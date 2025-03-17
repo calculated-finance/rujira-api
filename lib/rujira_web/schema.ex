@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Schema do
+  alias Absinthe.Relay
   use Absinthe.Schema
   use Absinthe.Relay.Schema, :modern
   import_types(RujiraWeb.Schema.AccountTypes)
@@ -95,7 +96,7 @@ defmodule RujiraWeb.Schema do
 
       resolve(fn id, x, _ ->
         with {:ok, node} <- RujiraWeb.Resolvers.Node.id(id, x) do
-          {:ok, %{node: node}}
+          {:ok, %{cursor: Relay.Connection.offset_to_cursor(node.id), node: node}}
         end
       end)
     end

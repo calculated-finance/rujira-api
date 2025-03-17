@@ -161,25 +161,31 @@ defmodule Rujira.Fin do
   end
 
   def get_trade(id) do
-    Trade
+    Trade.query()
     |> where([c], c.id == ^id)
     |> Repo.one()
   end
 
   @spec all_trades(non_neg_integer(), :asc | :desc) :: [Trade.t()]
   def all_trades(limit \\ 100, sort \\ :desc) do
-    Trade
+    Trade.query()
     |> sort_trades(sort)
     |> limit(^limit)
     |> Repo.all()
   end
 
-  @spec list_trades(String.t(), non_neg_integer(), :asc | :desc) :: [Trade.t()]
-  def list_trades(contract, limit \\ 100, sort \\ :desc) do
-    Trade
+  @spec list_trades_query(String.t(), non_neg_integer(), :asc | :desc) :: Ecto.Query.t()
+  def list_trades_query(contract, limit \\ 100, sort \\ :desc) do
+    Trade.query()
     |> where(contract: ^contract)
     |> sort_trades(sort)
     |> limit(^limit)
+  end
+
+  @spec list_trades(String.t(), non_neg_integer(), :asc | :desc) :: [Trade.t()]
+  def list_trades(contract, limit \\ 100, sort \\ :desc) do
+    contract
+    |> list_trades_query(limit, sort)
     |> Repo.all()
   end
 
