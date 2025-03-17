@@ -314,8 +314,7 @@ defmodule Rujira.Fin do
           RujiraWeb.Schema
         )
 
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, edge: prefix)
+      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id, edge: prefix)
     end
   end
 end
