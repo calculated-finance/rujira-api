@@ -31,6 +31,9 @@ defmodule Thorchain.Swaps.Indexer do
       scan_events(height, index, time, events, price)
 
       {:noreply, state}
+    else
+      {:error, _} ->
+        {:noreply, state}
     end
   end
 

@@ -44,6 +44,9 @@ defmodule Rujira.Bank.Supply do
            end
          end
        )}
+    else
+      {:error, _} ->
+        {:ok, %{}}
     end
   end
 
