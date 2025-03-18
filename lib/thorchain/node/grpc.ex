@@ -45,6 +45,10 @@ defmodule Thorchain.Node.Grpc do
     {:stop, :normal, state}
   end
 
+  def handle_info({:gun_data, _pid, _ref, :fin, message}, state) do
+    {:stop, message, state}
+  end
+
   def handle_call({:request, stub_fn, req}, _, channel) do
     case stub_fn.(channel, req) do
       {:ok, res} -> {:reply, {:ok, res}, channel}
