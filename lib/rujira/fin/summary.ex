@@ -36,8 +36,8 @@ defmodule Rujira.Fin.Summary do
                   "CASE WHEN ? = ? THEN ? ELSE ? END",
                   t.side,
                   "quote",
-                  t.offer,
-                  t.bid
+                  t.bid,
+                  t.offer
                 )
               ),
               :p
