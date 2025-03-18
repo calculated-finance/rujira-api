@@ -1,7 +1,6 @@
 defmodule RujiraWeb.Resolvers.Fin do
   alias Rujira.Repo
   alias Absinthe.Relay
-  alias Rujira.Fin.Trades.Trade
   alias Rujira.Assets
   alias Rujira.Fin
   alias Absinthe.Resolution.Helpers
@@ -37,23 +36,19 @@ defmodule RujiraWeb.Resolvers.Fin do
     |> Relay.Connection.from_query(&Repo.all/1, args)
   end
 
-  def summary(%{token_base: base, token_quote: quot}, _, _) do
-    {:ok, base} = Assets.from_denom(base)
-    {:ok, quot} = Assets.from_denom(quot)
-    # TODO 1: Fetch from actual trading data
-    with {:ok, base_p} <- Rujira.Prices.get(String.upcase(base.symbol)),
-         {:ok, quot_p} <- Rujira.Prices.get(String.upcase(quot.symbol)) do
+  def summary(%{address: address, token_quote: token_quote}, _, _) do
+    with {:ok, summary} <- Rujira.Fin.get_summary(address),
+         {:ok, volume_asset} <- Assets.from_denom(token_quote),
+         {:ok, %{price: price}} <- Rujira.Prices.get(String.upcase(volume_asset.symbol)) do
       {:ok,
        %{
-         last: trunc(base_p.price * 10 ** 12 / quot_p.price),
-         last_usd: base_p.price,
-         high: trunc(base_p.price * 1.3),
-         low: trunc(base_p.price * 0.8),
-         change: trunc(base_p.change * 1_000_000_000_000),
-         volume: %{
-           asset: quot,
-           amount: 1_736_773_000_000
-         }
+         summary
+         | last_usd:
+             price |> Decimal.mult(summary.last) |> Decimal.div(Decimal.new(1_000_000_000_000)),
+           volume: %{
+             asset: volume_asset,
+             amount: summary.volume
+           }
        }}
     end
   end

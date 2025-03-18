@@ -1,4 +1,4 @@
-defmodule Rujira.Fin.Trades.Trade do
+defmodule Rujira.Fin.Trade do
   use Ecto.Schema
   import Ecto.Changeset
   import Ecto.Query

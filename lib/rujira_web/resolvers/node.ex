@@ -27,7 +27,7 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Merge.Pool{}, _), do: :merge_pool
   def type(%Fin.Pair{}, _), do: :fin_pair
   def type(%Fin.Book{}, _), do: :fin_book
-  def type(%Fin.Trades.Trade{}, _), do: :fin_trade
+  def type(%Fin.Trade{}, _), do: :fin_trade
   def type(%Fin.Candle{}, _), do: :fin_candle
   def type(%Fin.Order{}, _), do: :fin_order
   def type(%Fin.Summary{}, _), do: :fin_summary

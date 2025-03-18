@@ -1,7 +1,7 @@
 defmodule Rujira.Fin do
   use GenServer
   alias Rujira.Fin.TradingView
-  alias Rujira.Fin.Trades.Trade
+  alias Rujira.Fin.Trade
   alias Rujira.Contract
   alias Rujira.Fin.Candle
   alias Rujira.Fin.Pair
@@ -153,7 +153,21 @@ defmodule Rujira.Fin do
   end
 
   def summary_from_id(id) do
-    Summary.from_id(id)
+    {:ok, get_summary(id)}
+  end
+
+  def get_summary(contract) do
+    case Summary.query()
+         |> where([c], c.id == ^contract)
+         |> Repo.one() do
+      nil -> {:error, :not_found}
+      s -> {:ok, s}
+    end
+  end
+
+  def get_summaries() do
+    Summary.query()
+    |> Repo.all()
   end
 
   def trade_from_id(id) do
