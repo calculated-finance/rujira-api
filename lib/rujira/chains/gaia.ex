@@ -5,7 +5,7 @@ defmodule Rujira.Chains.Gaia do
   alias Cosmos.Bank.V1beta1.QueryAllBalancesResponse
   import Cosmos.Bank.V1beta1.Query.Stub
 
-  @rpc "cosmoshub.lavenderfive.com"
+  @rpc "gaia-grpc.bryanlabs.net"
 
   @symbol_traces %{
     "ATOM" => "uatom",
