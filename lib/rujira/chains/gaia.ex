@@ -7,6 +7,22 @@ defmodule Rujira.Chains.Gaia do
 
   @rpc "cosmoshub.lavenderfive.com"
 
+  @symbol_traces %{
+    "ATOM" => "uatom",
+    "AUTO" => "ibc/7D20C448700E7C56DC4577DA46666BA7993AEC6BFA223E67FA23CC4333B28745",
+    "BOON" => "ibc/08520C5EF68E2F04784EAC80F5B4A4342B5301701E2B74426AAECFB20E9139DB",
+    "FUZN" => "ibc/6BBBB4B63C51648E9B8567F34505A9D5D8BAAC4C31D768971998BE8C18431C26",
+    "KUJI" => "ibc/4CC44260793F84006656DD868E017578F827A492978161DA31D7572BCB3F4289",
+    "LVN" => "ibc/6C95083ADD352D5D47FB4BA427015796E5FEF17A829463AD05ECD392EB38D889",
+    "MNTA" => "ibc/CF52BFC8A11248F05151BFEC0FB033C3531E40C7BAFC72E277F49346EF76E981",
+    "NAMI" => "ibc/4622E82B845FFC6AA8B45C1EB2F507133A9E876A5FEA1BA64585D5F564405453",
+    "NSTK" => "ibc/0B99C4EFF1BD05E56DEDEE1D88286DB79680C893724E0E7573BC369D79B5DDF3",
+    "RKUJI" => "ibc/50A69DC508ACCADE2DAC4B8B09AA6D9C9062FCBFA72BB4C6334367DECD972B06",
+    "WINK" => "ibc/4363FD2EF60A7090E405B79A6C4337C5E9447062972028F5A99FB041B9571942"
+  }
+
+  @trace_symbols for {token, denom} <- @symbol_traces, into: %{}, do: {denom, token}
+
   def balances(address, _assets) do
     req = %QueryAllBalancesRequest{address: address}
 
@@ -44,103 +60,17 @@ defmodule Rujira.Chains.Gaia do
     )
   end
 
-  def to_denom("ATOM"), do: {:ok, "uatom"}
-
-  def to_denom("KUJI"),
-    do: {:ok, "ibc/4CC44260793F84006656DD868E017578F827A492978161DA31D7572BCB3F4289"}
-
-  def to_denom("RKUJI"),
-    do: {:ok, "ibc/50A69DC508ACCADE2DAC4B8B09AA6D9C9062FCBFA72BB4C6334367DECD972B06"}
-
-  def to_denom("FUZN"),
-    do: {:ok, "ibc/6BBBB4B63C51648E9B8567F34505A9D5D8BAAC4C31D768971998BE8C18431C26"}
-
-  def to_denom("WINK"),
-    do: {:ok, "ibc/4363FD2EF60A7090E405B79A6C4337C5E9447062972028F5A99FB041B9571942"}
-
-  def to_denom("NSTK"),
-    do: {:ok, "ibc/0B99C4EFF1BD05E56DEDEE1D88286DB79680C893724E0E7573BC369D79B5DDF3"}
-
-  def to_denom("LVN"),
-    do: {:ok, "ibc/6C95083ADD352D5D47FB4BA427015796E5FEF17A829463AD05ECD392EB38D889"}
-
-  def to_denom("NAMI"),
-    do: {:ok, "ibc/4622E82B845FFC6AA8B45C1EB2F507133A9E876A5FEA1BA64585D5F564405453"}
-
-  def to_denom("AUTO"),
-    do: {:ok, "ibc/7D20C448700E7C56DC4577DA46666BA7993AEC6BFA223E67FA23CC4333B28745"}
-
-  def to_denom("MNTA"),
-    do: {:ok, "ibc/CF52BFC8A11248F05151BFEC0FB033C3531E40C7BAFC72E277F49346EF76E981"}
-
-  def to_denom(_), do: {:error, :unknown_asset}
-
-  def map_coin(%{denom: "uatom", amount: amount}) do
-    %{asset: Assets.from_string("GAIA.ATOM"), amount: amount}
+  def to_denom(token) do
+    case Map.fetch(@symbol_traces, token) do
+      {:ok, denom} -> {:ok, denom}
+      :error -> {:error, :unknown_asset}
+    end
   end
 
-  def map_coin(%{
-        denom: "ibc/4CC44260793F84006656DD868E017578F827A492978161DA31D7572BCB3F4289",
-        amount: amount
-      }) do
-    %{asset: Assets.from_string("GAIA.KUJI"), amount: amount}
+  def map_coin(%{denom: denom, amount: amount}) do
+    case Map.fetch(@trace_symbols, denom) do
+      {:ok, token} -> %{asset: Assets.from_string("GAIA.#{token}"), amount: amount}
+      :error -> nil
+    end
   end
-
-  def map_coin(%{
-        denom: "ibc/50A69DC508ACCADE2DAC4B8B09AA6D9C9062FCBFA72BB4C6334367DECD972B06",
-        amount: amount
-      }) do
-    %{asset: Assets.from_string("GAIA.RKUJI"), amount: amount}
-  end
-
-  def map_coin(%{
-        denom: "ibc/6BBBB4B63C51648E9B8567F34505A9D5D8BAAC4C31D768971998BE8C18431C26",
-        amount: amount
-      }) do
-    %{asset: Assets.from_string("GAIA.FUZN"), amount: amount}
-  end
-
-  def map_coin(%{
-        denom: "ibc/4363FD2EF60A7090E405B79A6C4337C5E9447062972028F5A99FB041B9571942",
-        amount: amount
-      }) do
-    %{asset: Assets.from_string("GAIA.WINK"), amount: amount}
-  end
-
-  def map_coin(%{
-        denom: "ibc/0B99C4EFF1BD05E56DEDEE1D88286DB79680C893724E0E7573BC369D79B5DDF3",
-        amount: amount
-      }) do
-    %{asset: Assets.from_string("GAIA.NSTK"), amount: amount}
-  end
-
-  def map_coin(%{
-        denom: "ibc/6C95083ADD352D5D47FB4BA427015796E5FEF17A829463AD05ECD392EB38D889",
-        amount: amount
-      }) do
-    %{asset: Assets.from_string("GAIA.LVN"), amount: amount}
-  end
-
-  def map_coin(%{
-        denom: "ibc/4622E82B845FFC6AA8B45C1EB2F507133A9E876A5FEA1BA64585D5F564405453",
-        amount: amount
-      }) do
-    %{asset: Assets.from_string("GAIA.NAMI"), amount: amount}
-  end
-
-  def map_coin(%{
-        denom: "ibc/7D20C448700E7C56DC4577DA46666BA7993AEC6BFA223E67FA23CC4333B28745",
-        amount: amount
-      }) do
-    %{asset: Assets.from_string("GAIA.AUTO"), amount: amount}
-  end
-
-  def map_coin(%{
-        denom: "ibc/CF52BFC8A11248F05151BFEC0FB033C3531E40C7BAFC72E277F49346EF76E981",
-        amount: amount
-      }) do
-    %{asset: Assets.from_string("GAIA.MNTA"), amount: amount}
-  end
-
-  def map_coin(_), do: nil
 end
