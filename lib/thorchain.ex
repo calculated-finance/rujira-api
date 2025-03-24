@@ -130,7 +130,7 @@ defmodule Thorchain do
   end
 
   def tx_in(hash) do
-    not_found = "tx: #{hash} doesn't exist"
+    not_found = "tx: #{String.upcase(hash)} doesn't exist"
 
     with {:ok,
           %QueryTxResponse{
