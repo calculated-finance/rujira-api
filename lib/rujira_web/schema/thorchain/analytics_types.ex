@@ -5,19 +5,20 @@ defmodule RujiraWeb.Schema.Thorchain.AnalyticsTypes do
   alias RujiraWeb.Resolvers
 
   object :thorchain_analytics do
-    field :pools_overview, non_null(:pools_overview) do
-      resolve(fn _, _, _ -> {:ok, %{pools_overview: %{}}} end)
+    field :pools, non_null(:thorchain_analytics_pools) do
+      resolve(fn _, _, _ -> {:ok, %{pools: %{}}} end)
     end
-    field :pool, non_null(:pool_analytics) do
-      resolve(fn _, _, _ -> {:ok, %{pool_analytics: %{}}} end)
+
+    field :pool, non_null(:thorchain_analytics_pool) do
+      resolve(fn _, _, _ -> {:ok, %{pool: %{}}} end)
     end
   end
 
-  connection(node_type: :pool_snap)
-  connection(node_type: :pools_overview_snap)
+  connection(node_type: :thorchain_analytics_pool_snapshot)
+  connection(node_type: :thorchain_analytics_pools_snapshot)
 
-  object :pools_overview do
-    connection field :snapshots, node_type: :pools_overview_snap do
+  object :thorchain_analytics_pools do
+    connection field :snapshots, node_type: :thorchain_analytics_pools_snapshot do
       arg(:after, non_null(:timestamp))
       arg(:before, non_null(:timestamp))
       arg(:first, :integer, default_value: 100)
@@ -26,69 +27,77 @@ defmodule RujiraWeb.Schema.Thorchain.AnalyticsTypes do
       resolve(&Resolvers.Thorchain.Analytics.pools_snaps/3)
     end
 
-    field :pools, non_null(list_of(non_null(:pool_overview))) do
+    field :pools, non_null(list_of(non_null(:thorchain_analytics_pool_overview))) do
       resolve(&Resolvers.Thorchain.Analytics.pools_overview/3)
     end
   end
 
-  object :pools_overview_snap do
+  object :thorchain_analytics_pools_snapshot do
     field :resolution, non_null(:resolution)
     field :bin_open_time, non_null(:timestamp)
     field :tvl_end_of_bin, non_null(:bigint)
-    # join with pool_snap slect * from pool snap -> manipulate per asset
-    field :tvl_by_asset, non_null(list_of(non_null(:pool_distribution_by_asset)))
-    # join with pool_snap slect * from pool snap -> manipulate per chain
-    field :tvl_by_chain, non_null(list_of(non_null(:pool_distribution_by_chain)))
-    # unique addresses that have swapped at least once in this time interval
+    @desc "join with pool_snap slect * from pool snap -> manipulate per asset"
+    field :tvl_by_asset, non_null(list_of(non_null(:thorchain_analytics_pools_snapshot_asset)))
+    @desc "join with pool_snap slect * from pool snap -> manipulate per chain"
+    field :tvl_by_chain, non_null(list_of(non_null(:thorchain_analytics_pools_snapshot_chain)))
+    @desc "unique addresses that have swapped at least once in this time interval"
     field :unique_swap_users, non_null(:bigint)
-    # unique addresses that have deposited at least once in this time interval
+    @desc "unique addresses that have deposited at least once in this time interval"
     field :unique_deposit_users, non_null(:bigint)
-    # unique addresses that have withdrawn at least once in this time interval
+    @desc "unique addresses that have withdrawn at least once in this time interval"
     field :unique_withdraw_users, non_null(:bigint)
-    field :deposits_value, non_null(:bigint) # this is in dollar value (asset + rune) at the time of deposit
-    field :withdrawals_value, non_null(:bigint) # this is in dollar value (asset + rune) at the time of withdrawal
+    @desc "this is in dollar value (asset + rune) at the time of deposit"
+    field :deposits_value, non_null(:bigint)
+    @desc "this is in dollar value (asset + rune) at the time of withdrawal"
+    field :withdrawals_value, non_null(:bigint)
     field :swaps_num, non_null(:bigint)
-    field :swaps_num_ma, non_null(:bigint) # moving average on the number of swaps
+    @desc "moving average on the number of swaps"
+    field :swaps_num_moving_avg, non_null(:bigint)
     field :volume, non_null(:bigint)
-    field :volume_ma, non_null(:bigint) # moving average on the volume
+    @desc "moving average on the volume"
+    field :volume_moving_avg, non_null(:bigint)
     field :earnings, non_null(:bigint)
-    field :earnings_ma, non_null(:bigint) # moving average on the earnings
+    @desc "moving average on the earnings"
+    field :earnings_moving_avg, non_null(:bigint)
     field :liquidity_utilization, non_null(:bigint)
-    field :liquidity_utilization_ma, non_null(:bigint) # moving average on the liquidity utilization
+    @desc "moving average on the liquidity utilization"
+    field :liquidity_utilization_moving_avg, non_null(:bigint)
   end
 
-  object :pool_distribution_by_asset do
+  object :thorchain_analytics_pools_snapshot_asset do
     field :asset, non_null(:asset) do
       resolve(fn %{asset: asset}, _, _ ->
         {:ok, Assets.from_string(asset)}
       end)
     end
+
     field :tvl, non_null(:bigint)
     field :weight, non_null(:bigint)
   end
 
-  object :pool_distribution_by_chain do
+  object :thorchain_analytics_pools_snapshot_chain do
     field :chain, non_null(:chain)
     field :tvl, non_null(:bigint)
     field :weight, non_null(:bigint)
   end
 
-  object :pool_overview do
+  object :thorchain_analytics_pool_overview do
     field :asset, non_null(:asset) do
       resolve(fn %{asset: asset}, _, _ ->
         {:ok, Assets.from_string(asset)}
       end)
     end
+
     field :tvl, non_null(:bigint)
     field :volume_24h, non_null(:bigint)
     field :volume_30d, non_null(:bigint)
     field :daily_liquidity_utilization, non_null(:bigint)
-    field :daily_liquidity_utilization_ma30, non_null(:bigint)
+    field :daily_liquidity_utilization_moving_avg_30, non_null(:bigint)
     field :apr_30d, non_null(:bigint)
   end
 
-  object :pool_analytics do
-    field :aggregated, non_null(:pool_snap) do
+  object :thorchain_analytics_pool do
+    field :aggregated, non_null(:thorchain_analytics_pool_snapshot) do
       arg(:after, non_null(:timestamp))
       arg(:before, non_null(:timestamp))
       arg(:asset, non_null(:asset_string))
@@ -96,7 +105,7 @@ defmodule RujiraWeb.Schema.Thorchain.AnalyticsTypes do
       resolve(&Resolvers.Thorchain.Analytics.pool_aggregated_data/3)
     end
 
-    connection field :snapshots, node_type: :pool_snap do
+    connection field :snapshots, node_type: :thorchain_analytics_pool_snapshot do
       arg(:after, non_null(:timestamp))
       arg(:before, non_null(:timestamp))
       arg(:first, :integer, default_value: 100)
@@ -107,12 +116,13 @@ defmodule RujiraWeb.Schema.Thorchain.AnalyticsTypes do
     end
   end
 
-  object :pool_snap do
+  object :thorchain_analytics_pool_snapshot do
     field :asset, non_null(:asset) do
       resolve(fn %{asset: asset}, _, _ ->
         {:ok, Assets.from_string(asset)}
       end)
     end
+
     field :resolution, non_null(:resolution)
     field :bin_open_time, non_null(:timestamp)
     field :opening_balance_asset, non_null(:bigint)
@@ -141,11 +151,11 @@ defmodule RujiraWeb.Schema.Thorchain.AnalyticsTypes do
     field :earnings, non_null(:bigint)
     field :earnings_per_lp_unit, non_null(:bigint)
     field :apr, non_null(:bigint)
-    field :apr_ma, non_null(:bigint)
+    field :apr_moving_avg, non_null(:bigint)
     field :price_pl_approx, non_null(:bigint)
     field :volume, non_null(:bigint)
-    field :volume_ma, non_null(:bigint)
+    field :volume_moving_avg, non_null(:bigint)
     field :liquidity_utilization, non_null(:bigint)
-    field :liquidity_utilization_ma, non_null(:bigint)
+    field :liquidity_utilization_moving_avg, non_null(:bigint)
   end
 end
