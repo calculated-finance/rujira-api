@@ -110,7 +110,7 @@ defmodule Rujira.Chains.Evm do
         sender = Rujira.Chains.Evm.eip55("0x" <> String.slice(sender, -40, 40))
         recipient = Rujira.Chains.Evm.eip55("0x" <> String.slice(recipient, -40, 40))
         contract = Rujira.Chains.Evm.eip55(contract)
-        Logger.info("#{__MODULE__} #{contract}:#{sender}:#{recipient}")
+        Logger.debug("#{__MODULE__} #{contract}:#{sender}:#{recipient}")
 
         Memoize.invalidate(__MODULE__, :balance_of, [sender, contract])
         Memoize.invalidate(__MODULE__, :balance_of, [recipient, contract])
