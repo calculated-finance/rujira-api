@@ -4,7 +4,7 @@ defmodule RujiraWeb.Resolvers.Thorchain.Analytics do
 
   @mock_pools_snaps [
     %{
-      bin_open_time: DateTime.from_unix!(1_000_000),
+      bin: DateTime.from_unix!(1_000_000),
       resolution: "1D",
       deposits_value: 1_000_000,
       earnings: 1_000_000,
@@ -71,7 +71,7 @@ defmodule RujiraWeb.Resolvers.Thorchain.Analytics do
 
   def pool_snaps(_, %{after: _, before: _, first: f, resolution: _, asset: _, ma_period: _}, _) do
     Helpers.async(fn ->
-      Relay.Connection.from_list(mock_pool(), %{first: f})
+      Relay.Connection.from_list([mock_pool()], %{first: f})
     end)
   end
 
@@ -87,35 +87,43 @@ defmodule RujiraWeb.Resolvers.Thorchain.Analytics do
         apr: 12_345_678_901,
         apr_moving_avg: 11_234_567_890,
         asset: "BTC.BTC",
-        bin_open_time: date,
-        closing_balance_asset: 500_000_000_000,
-        closing_balance_rune: 1_000_000_000_000,
-        closing_lp_units: 10_000_000_000,
-        closing_price_asset: 20_000_000_000,
-        closing_price_rune: 5_000_000_000,
-        closing_value: 30_000_000_000,
-        deposits_asset_quantity: 2_500_000_000,
-        deposits_rune_quantity: 1_000_000_000,
-        deposits_value: 5_000_000_000_000,
+        bin: date,
+        close: %{
+          balance_asset: 500_000_000_000,
+          balance_rune: 1_000_000_000_000,
+          lp_units: 10_000_000_000,
+          price_asset: 20_000_000_000,
+          price_rune: 5_000_000_000,
+          value: 30_000_000_000
+        },
+        deposits: %{
+          asset_quantity: 2_500_000_000,
+          rune_quantity: 1_000_000_000,
+          value: 5_000_000_000_000
+        },
         earnings: 150_000_000_000,
         earnings_per_lp_unit: 5_000_000_000,
         impermanent_loss: 20_000_000_000,
         liquidity_utilization: 75_000_000_000,
         liquidity_utilization_moving_avg: 72_000_000_000,
-        opening_balance_asset: 600_000_000_000,
-        opening_balance_rune: 1_500_000_000_000,
-        opening_lp_units: 15_000_000_000,
-        opening_price_asset: 18_000_000_000,
-        opening_price_rune: 4_500_000_000,
-        opening_value: 28_500_000_000,
+        open: %{
+          balance_asset: 600_000_000_000,
+          balance_rune: 1_500_000_000_000,
+          lp_units: 15_000_000_000,
+          price_asset: 18_000_000_000,
+          price_rune: 4_500_000_000,
+          value: 28_500_000_000
+        },
         price_pl: 2_500_000_000,
         price_pl_approx: 2_000_000_000,
         resolution: "1D",
         volume: 1_000_000_000_000,
         volume_moving_avg: 950_000_000_000,
-        withdrawals_asset_quantity: 1_200_000_000,
-        withdrawals_rune_quantity: 500_000_000,
-        withdrawals_value: 3_000_000_000_000
+        withdrawals: %{
+          asset_quantity: 1_200_000_000,
+          rune_quantity: 500_000_000,
+          value: 3_000_000_000_000
+        }
       }
     end
   end

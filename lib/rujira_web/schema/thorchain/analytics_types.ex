@@ -34,7 +34,7 @@ defmodule RujiraWeb.Schema.Thorchain.AnalyticsTypes do
 
   object :thorchain_analytics_pools_snapshot do
     field :resolution, non_null(:resolution)
-    field :bin_open_time, non_null(:timestamp)
+    field :bin, non_null(:timestamp)
     field :tvl_end_of_bin, non_null(:bigint)
     @desc "join with pool_snap slect * from pool snap -> manipulate per asset"
     field :tvl_by_asset, non_null(list_of(non_null(:thorchain_analytics_pools_snapshot_asset)))
@@ -124,27 +124,12 @@ defmodule RujiraWeb.Schema.Thorchain.AnalyticsTypes do
     end
 
     field :resolution, non_null(:resolution)
-    field :bin_open_time, non_null(:timestamp)
-    field :opening_balance_asset, non_null(:bigint)
-    field :opening_balance_rune, non_null(:bigint)
-    field :opening_price_asset, non_null(:bigint)
-    field :opening_price_rune, non_null(:bigint)
-    field :opening_value, non_null(:bigint)
-    field :opening_lp_units, non_null(:bigint)
+    field :bin, non_null(:timestamp)
+    field :open, non_null(:thorchain_analytics_pool_assets)
+    field :close, non_null(:thorchain_analytics_pool_assets)
 
-    field :closing_balance_asset, non_null(:bigint)
-    field :closing_balance_rune, non_null(:bigint)
-    field :closing_price_asset, non_null(:bigint)
-    field :closing_price_rune, non_null(:bigint)
-    field :closing_value, non_null(:bigint)
-    field :closing_lp_units, non_null(:bigint)
-
-    field :deposits_value, non_null(:bigint)
-    field :deposits_asset_quantity, non_null(:bigint)
-    field :deposits_rune_quantity, non_null(:bigint)
-    field :withdrawals_value, non_null(:bigint)
-    field :withdrawals_asset_quantity, non_null(:bigint)
-    field :withdrawals_rune_quantity, non_null(:bigint)
+    field :deposits, non_null(:thorchain_analytics_pool_flow)
+    field :withdrawals, non_null(:thorchain_analytics_pool_flow)
 
     field :impermanent_loss, non_null(:bigint)
     field :price_pl, non_null(:bigint)
@@ -157,5 +142,20 @@ defmodule RujiraWeb.Schema.Thorchain.AnalyticsTypes do
     field :volume_moving_avg, non_null(:bigint)
     field :liquidity_utilization, non_null(:bigint)
     field :liquidity_utilization_moving_avg, non_null(:bigint)
+  end
+
+  object :thorchain_analytics_pool_assets do
+    field :balance_asset, non_null(:bigint)
+    field :balance_rune, non_null(:bigint)
+    field :price_asset, non_null(:bigint)
+    field :price_rune, non_null(:bigint)
+    field :value, non_null(:bigint)
+    field :lp_units, non_null(:bigint)
+  end
+
+  object :thorchain_analytics_pool_flow do
+    field :value, non_null(:bigint)
+    field :asset_quantity, non_null(:bigint)
+    field :rune_quantity, non_null(:bigint)
   end
 end
