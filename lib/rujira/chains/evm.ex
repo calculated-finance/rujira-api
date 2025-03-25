@@ -87,7 +87,11 @@ defmodule Rujira.Chains.Evm do
                assets
                |> Task.async_stream(fn a ->
                  [_, contract] = String.split(a.symbol, "-")
-                 {a, balance_of(address, Rujira.Chains.Evm.eip55(contract))}
+
+                 {a,
+                  address
+                  |> Rujira.Chains.Evm.eip55()
+                  |> balance_of(Rujira.Chains.Evm.eip55(contract))}
                end)
                |> Enum.reduce({:ok, []}, fn
                  {:ok, {asset, {:ok, balance}}}, {:ok, acc} ->
@@ -110,7 +114,7 @@ defmodule Rujira.Chains.Evm do
         sender = Rujira.Chains.Evm.eip55("0x" <> String.slice(sender, -40, 40))
         recipient = Rujira.Chains.Evm.eip55("0x" <> String.slice(recipient, -40, 40))
         contract = Rujira.Chains.Evm.eip55(contract)
-        Logger.debug("#{__MODULE__} #{contract}:#{sender}:#{recipient}")
+        # Logger.info("#{__MODULE__} #{contract}:#{sender}:#{recipient}")
 
         Memoize.invalidate(__MODULE__, :balance_of, [sender, contract])
         Memoize.invalidate(__MODULE__, :balance_of, [recipient, contract])
