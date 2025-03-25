@@ -23,7 +23,7 @@ defmodule RujiraWeb.Schema.Thorchain.AnalyticsTypes do
       arg(:before, non_null(:timestamp))
       arg(:first, :integer, default_value: 100)
       arg(:resolution, non_null(:resolution))
-      arg(:ma_period, non_null(:integer))
+      arg(:period, non_null(:integer))
       resolve(&Resolvers.Thorchain.Analytics.pools_snaps/3)
     end
 
@@ -96,7 +96,8 @@ defmodule RujiraWeb.Schema.Thorchain.AnalyticsTypes do
       arg(:after, non_null(:timestamp))
       arg(:before, non_null(:timestamp))
       arg(:asset, non_null(:asset_string))
-      arg(:ma_period, non_null(:integer))
+      @desc "Period used for Point moving averages"
+      arg(:period, non_null(:integer))
       resolve(&Resolvers.Thorchain.Analytics.pool_aggregated_data/3)
     end
 
@@ -106,7 +107,8 @@ defmodule RujiraWeb.Schema.Thorchain.AnalyticsTypes do
       arg(:first, :integer, default_value: 100)
       arg(:resolution, non_null(:resolution))
       arg(:asset, non_null(:asset_string))
-      arg(:ma_period, non_null(:integer))
+      @desc "Period used for Point moving averages"
+      arg(:period, non_null(:integer))
       resolve(&Resolvers.Thorchain.Analytics.pool_snaps/3)
     end
   end

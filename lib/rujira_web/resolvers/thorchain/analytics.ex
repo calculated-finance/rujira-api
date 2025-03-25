@@ -33,7 +33,7 @@ defmodule RujiraWeb.Resolvers.Thorchain.Analytics do
     }
   ]
 
-  def pools_snaps(_, %{after: _, before: _, first: f, resolution: _, ma_period: _}, _) do
+  def pools_snaps(_, %{after: _, before: _, first: f, resolution: _, period: _}, _) do
     Helpers.async(fn ->
       Relay.Connection.from_list(@mock_pools_snaps, %{first: f})
     end)
@@ -63,7 +63,7 @@ defmodule RujiraWeb.Resolvers.Thorchain.Analytics do
     end)
   end
 
-  def pool_snaps(_, %{after: _, before: _, first: f, resolution: _, asset: _, ma_period: _}, _) do
+  def pool_snaps(_, %{after: _, before: _, first: f, resolution: _, asset: _, period: _}, _) do
     Helpers.async(fn ->
       Relay.Connection.from_list([mock_pool()], %{first: f})
     end)
