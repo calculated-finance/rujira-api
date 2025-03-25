@@ -31,7 +31,7 @@ defmodule Rujira.Merge do
   Loads the current Status into the Pool
   """
 
-  @spec load_pool(Pool.t()) :: {:ok, Pool.t()} | {:error, GRPC.RPCError.t()}
+  @spec load_pool(Pool.t()) :: {:ok, Pool.t()} | {:error, GRPC.RPCError.t() | :parse_error}
   def load_pool(pool) do
     with {:ok, res} <- Rujira.Contract.query_state_smart(pool.address, %{status: %{}}),
          {:ok, status} <- Rujira.Merge.Pool.Status.from_query(res) do

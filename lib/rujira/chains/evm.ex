@@ -3,34 +3,27 @@ defmodule Rujira.Chains.Evm do
   use Memoize
 
   defmacro __using__(opts) do
+    chain = Keyword.fetch!(opts, :chain)
     asset = Keyword.fetch!(opts, :asset)
     rpc = Keyword.fetch!(opts, :rpc)
     ws = Keyword.fetch!(opts, :ws)
-    addresses = Keyword.get(opts, :addresses)
 
     quote do
       use Memoize
       use WebSockex
       require Logger
       alias Rujira.Assets
+      import Absinthe.Relay.Node
+      import Absinthe.Subscription
 
+      @chain unquote(chain)
       @asset unquote(asset)
       @rpc unquote(rpc)
       @ws unquote(ws)
-      @addresses unquote(addresses)
       @transfer "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
 
       def start_link(_) do
         Logger.info("#{__MODULE__} Starting node websocket: #{@ws}")
-
-        args =
-          case @addresses do
-            nil ->
-              %{"topics" => [@transfer]}
-
-            as ->
-              %{"address" => as, "topics" => [@transfer]}
-          end
 
         case WebSockex.start_link(@ws, __MODULE__, %{}) do
           {:ok, pid} ->
@@ -39,7 +32,7 @@ defmodule Rujira.Chains.Evm do
                 jsonrpc: "2.0",
                 method: "eth_subscribe",
                 id: 0,
-                params: ["logs", args]
+                params: ["logs", %{"topics" => [@transfer]}]
               })
 
             WebSockex.send_frame(pid, {:text, message})
@@ -57,12 +50,15 @@ defmodule Rujira.Chains.Evm do
         {:ok, state}
       end
 
-      def handle_disconnect(_, _) do
+      def handle_disconnect(x, _) do
+        IO.inspect(x)
         Logger.error("#{__MODULE__} Disconnected")
         raise "#{__MODULE__} Disconnected"
       end
 
       def handle_frame({:text, msg}, state) do
+        IO.inspect(msg)
+
         case Jason.decode(msg) do
           {:ok, %{"params" => %{"result" => result}}} ->
             handle_result(result)
@@ -114,10 +110,16 @@ defmodule Rujira.Chains.Evm do
         sender = Rujira.Chains.Evm.eip55("0x" <> String.slice(sender, -40, 40))
         recipient = Rujira.Chains.Evm.eip55("0x" <> String.slice(recipient, -40, 40))
         contract = Rujira.Chains.Evm.eip55(contract)
-        # Logger.info("#{__MODULE__} #{contract}:#{sender}:#{recipient}")
+        Logger.debug("#{__MODULE__} #{contract}:#{sender}:#{recipient}")
 
         Memoize.invalidate(__MODULE__, :balance_of, [sender, contract])
         Memoize.invalidate(__MODULE__, :balance_of, [recipient, contract])
+
+        id = to_global_id(:layer_1_account, "#{@chain}:#{sender}", RujiraWeb.Schema)
+        publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+
+        id = to_global_id(:layer_1_account, "#{@chain}:#{recipient}", RujiraWeb.Schema)
+        publish(RujiraWeb.Endpoint, %{id: id}, node: id)
       end
 
       def balances(address, assets) do
