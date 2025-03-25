@@ -6,6 +6,7 @@ defmodule Rujira.Chains.Evm do
     asset = Keyword.fetch!(opts, :asset)
     rpc = Keyword.fetch!(opts, :rpc)
     ws = Keyword.fetch!(opts, :ws)
+    addresses = Keyword.get(opts, :addresses)
 
     quote do
       use Memoize
@@ -16,10 +17,20 @@ defmodule Rujira.Chains.Evm do
       @asset unquote(asset)
       @rpc unquote(rpc)
       @ws unquote(ws)
+      @addresses unquote(addresses)
       @transfer "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
 
       def start_link(_) do
         Logger.info("#{__MODULE__} Starting node websocket: #{@ws}")
+
+        args =
+          case @addresses do
+            nil ->
+              %{"topics" => [@transfer]}
+
+            as ->
+              %{"address" => as, "topics" => [@transfer]}
+          end
 
         case WebSockex.start_link(@ws, __MODULE__, %{}) do
           {:ok, pid} ->
@@ -28,7 +39,7 @@ defmodule Rujira.Chains.Evm do
                 jsonrpc: "2.0",
                 method: "eth_subscribe",
                 id: 0,
-                params: ["logs", %{"topics" => [@transfer]}]
+                params: ["logs", args]
               })
 
             WebSockex.send_frame(pid, {:text, message})
@@ -99,7 +110,7 @@ defmodule Rujira.Chains.Evm do
         sender = Rujira.Chains.Evm.eip55("0x" <> String.slice(sender, -40, 40))
         recipient = Rujira.Chains.Evm.eip55("0x" <> String.slice(recipient, -40, 40))
         contract = Rujira.Chains.Evm.eip55(contract)
-        # Logger.info("#{__MODULE__} #{contract}:#{sender}:#{recipient}")
+        Logger.info("#{__MODULE__} #{contract}:#{sender}:#{recipient}")
 
         Memoize.invalidate(__MODULE__, :balance_of, [sender, contract])
         Memoize.invalidate(__MODULE__, :balance_of, [recipient, contract])
