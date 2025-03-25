@@ -24,7 +24,7 @@ defmodule RujiraWeb.Schema.RujiraTypes do
       resolve(&Resolvers.Bank.resolver/3)
     end
 
-    field :analytics, non_null(:rujira_analytics) do
+    field :analytics, non_null(:analytics) do
       resolve(fn _, _, _ -> {:ok, %{}} end)
     end
   end
