@@ -50,18 +50,14 @@ defmodule RujiraWeb.Schema.Thorchain.AnalyticsTypes do
     field :deposits_value, non_null(:bigint)
     @desc "this is in dollar value (asset + rune) at the time of withdrawal"
     field :withdrawals_value, non_null(:bigint)
-    field :swaps_num, non_null(:bigint)
-    @desc "moving average on the number of swaps"
-    field :swaps_num_moving_avg, non_null(:bigint)
-    field :volume, non_null(:bigint)
-    @desc "moving average on the volume"
-    field :volume_moving_avg, non_null(:bigint)
-    field :earnings, non_null(:bigint)
-    @desc "moving average on the earnings"
-    field :earnings_moving_avg, non_null(:bigint)
-    field :liquidity_utilization, non_null(:bigint)
-    @desc "moving average on the liquidity utilization"
-    field :liquidity_utilization_moving_avg, non_null(:bigint)
+    @desc "number of swaps"
+    field :swaps, non_null(:point)
+    @desc "volume"
+    field :volume, non_null(:point)
+    @desc "earnings"
+    field :earnings, non_null(:point)
+    @desc "liquidity utilization"
+    field :liquidity_utilization, non_null(:point)
   end
 
   object :thorchain_analytics_pools_snapshot_asset do
@@ -91,8 +87,7 @@ defmodule RujiraWeb.Schema.Thorchain.AnalyticsTypes do
     field :tvl, non_null(:bigint)
     field :volume_24h, non_null(:bigint)
     field :volume_30d, non_null(:bigint)
-    field :daily_liquidity_utilization, non_null(:bigint)
-    field :daily_liquidity_utilization_moving_avg_30, non_null(:bigint)
+    field :daily_liquidity_utilization, non_null(:point)
     field :apr_30d, non_null(:bigint)
   end
 
@@ -135,13 +130,10 @@ defmodule RujiraWeb.Schema.Thorchain.AnalyticsTypes do
     field :price_pl, non_null(:bigint)
     field :earnings, non_null(:bigint)
     field :earnings_per_lp_unit, non_null(:bigint)
-    field :apr, non_null(:bigint)
-    field :apr_moving_avg, non_null(:bigint)
+    field :apr, non_null(:point)
     field :price_pl_approx, non_null(:bigint)
-    field :volume, non_null(:bigint)
-    field :volume_moving_avg, non_null(:bigint)
-    field :liquidity_utilization, non_null(:bigint)
-    field :liquidity_utilization_moving_avg, non_null(:bigint)
+    field :volume, non_null(:point)
+    field :liquidity_utilization, non_null(:point)
   end
 
   object :thorchain_analytics_pool_assets do
@@ -157,5 +149,10 @@ defmodule RujiraWeb.Schema.Thorchain.AnalyticsTypes do
     field :value, non_null(:bigint)
     field :asset_quantity, non_null(:bigint)
     field :rune_quantity, non_null(:bigint)
+  end
+
+  object :point do
+    field :value, non_null(:bigint)
+    field :moving_avg, non_null(:bigint)
   end
 end

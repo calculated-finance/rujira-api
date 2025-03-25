@@ -7,12 +7,9 @@ defmodule RujiraWeb.Resolvers.Thorchain.Analytics do
       bin: DateTime.from_unix!(1_000_000),
       resolution: "1D",
       deposits_value: 1_000_000,
-      earnings: 1_000_000,
-      earnings_moving_avg: 1_000_000,
-      liquidity_utilization: 1_000_000,
-      liquidity_utilization_moving_avg: 1_000_000,
-      swaps_num: 1_000_000,
-      swaps_num_moving_avg: 1_000_000,
+      earnings: %{value: 1_000_000, moving_avg: 1_000_000},
+      liquidity_utilization: %{value: 1_000_000, moving_avg: 1_000_000},
+      swaps: %{value: 1_000_000, moving_avg: 1_000_000},
       tvl_by_asset: [
         %{
           asset: "BTC.BTC",
@@ -31,8 +28,7 @@ defmodule RujiraWeb.Resolvers.Thorchain.Analytics do
       unique_deposit_users: 1_000_000,
       unique_swap_users: 1_000_000,
       unique_withdraw_users: 1_000_000,
-      volume: 1_000_000,
-      volume_moving_avg: 1_000_000,
+      volume: %{value: 1_000_000, moving_avg: 1_000_000},
       withdrawals_value: 1_000_000
     }
   ]
@@ -52,8 +48,7 @@ defmodule RujiraWeb.Resolvers.Thorchain.Analytics do
            tvl: -100,
            volume_24h: 50,
            volume_7d: 25,
-           dlur: 10,
-           dlur_moving_avg: 9,
+           dlur: %{value: 10, moving_avg: 9},
            apr_30d: 1
          },
          %{
@@ -61,8 +56,7 @@ defmodule RujiraWeb.Resolvers.Thorchain.Analytics do
            tvl: -100,
            volume_24h: 50,
            volume_7d: 25,
-           dlur: 10,
-           dlur_moving_avg: 9,
+           dlur: %{value: 10, moving_avg: 9},
            apr_30d: 1
          }
        ]}
@@ -84,8 +78,7 @@ defmodule RujiraWeb.Resolvers.Thorchain.Analytics do
   def mock_pool() do
     with {:ok, date} <- DateTime.now("Etc/UTC") do
       %{
-        apr: 12_345_678_901,
-        apr_moving_avg: 11_234_567_890,
+        apr: %{value: 12_345_678_901, moving_avg: 11_234_567_890},
         asset: "BTC.BTC",
         bin: date,
         close: %{
@@ -104,8 +97,7 @@ defmodule RujiraWeb.Resolvers.Thorchain.Analytics do
         earnings: 150_000_000_000,
         earnings_per_lp_unit: 5_000_000_000,
         impermanent_loss: 20_000_000_000,
-        liquidity_utilization: 75_000_000_000,
-        liquidity_utilization_moving_avg: 72_000_000_000,
+        liquidity_utilization: %{value: 75_000_000_000, moving_avg: 72_000_000_000},
         open: %{
           balance_asset: 600_000_000_000,
           balance_rune: 1_500_000_000_000,
@@ -117,8 +109,7 @@ defmodule RujiraWeb.Resolvers.Thorchain.Analytics do
         price_pl: 2_500_000_000,
         price_pl_approx: 2_000_000_000,
         resolution: "1D",
-        volume: 1_000_000_000_000,
-        volume_moving_avg: 950_000_000_000,
+        volume: %{value: 1_000_000_000_000, moving_avg: 950_000_000_000},
         withdrawals: %{
           asset_quantity: 1_200_000_000,
           rune_quantity: 500_000_000,
