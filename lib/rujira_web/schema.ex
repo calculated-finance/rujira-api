@@ -52,6 +52,9 @@ defmodule RujiraWeb.Schema do
       resolve(fn _, _, _ -> {:ok, %{rujira: %{}}} end)
     end
 
+    import_fields(:rujira)
+    import_fields(:developer)
+
     @desc "Developer-related CosmWasm queries"
     field :developer, :developer do
       resolve(fn _, _, _ -> {:ok, %{developer: %{}}} end)
