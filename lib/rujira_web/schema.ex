@@ -18,6 +18,9 @@ defmodule RujiraWeb.Schema do
   import_types(RujiraWeb.Schema.FinTypes)
   import_types(RujiraWeb.Schema.StakingTypes)
   import_types(RujiraWeb.Schema.VenturesTypes)
+  import_types(RujiraWeb.Schema.Thorchain.AnalyticsTypes)
+  import_types(RujiraWeb.Schema.Scalars.Resolution)
+  import_types(RujiraWeb.Schema.Rujira.AnalyticsTypes)
 
   query do
     field :node, :node do

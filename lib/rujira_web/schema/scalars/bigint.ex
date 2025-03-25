@@ -1,7 +1,7 @@
 defmodule RujiraWeb.Schema.Scalars.BigInt do
   use Absinthe.Schema.Notation
 
-  scalar :bigint, description: "A large integer" do
+  scalar :bigint, description: "A large integer in ℤ" do
     parse(&parse_bigint/1)
     serialize(&serialize_bigint/1)
   end
