@@ -43,7 +43,7 @@ defmodule Rujira.Fin.Summary do
               :p
             )
         },
-        distinct: t.contract,
+        where: fragment("? > NOW() - '1 day'::interval", t.timestamp),
         windows: [p: [partition_by: t.contract]]
       )
 
@@ -51,7 +51,7 @@ defmodule Rujira.Fin.Summary do
       left_join: s in subquery(windows),
       on: c.contract == s.id,
       select: %__MODULE__{
-        id: s.id,
+        id: c.contract,
         last: fragment("COALESCE(?, ?)", s.last, c.last),
         high: fragment("COALESCE(?, ?)", s.high, c.last),
         low: fragment("COALESCE(?, ?)", s.low, c.last),
