@@ -43,6 +43,7 @@ defmodule Rujira.Fin.Summary do
               :p
             )
         },
+        distinct: t.contract,
         where: fragment("? > NOW() - '1 day'::interval", t.timestamp),
         windows: [p: [partition_by: t.contract]]
       )
