@@ -16,7 +16,11 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
       arg(:streaming_interval, :integer)
       arg(:streaming_quantity, :bigint)
       arg(:destination, :address)
+      @desc "Gives you a tolerance from the flat exchange rate of two assets"
       arg(:tolerance_bps, :integer)
+
+      @desc "Applies a tolerance to the expected amount out after liquidity fees, outbound fees, and affiliate fees are deducted"
+      arg(:liquidity_tolerance_bps, :integer)
       arg(:refund_address, :address)
       arg(:affiliate, list_of(:string))
       arg(:affiliate_bps, list_of(:integer))

@@ -14,6 +14,7 @@ defmodule Thorchain.Types.QueryQuoteSwapRequest do
   field :affiliate, 9, repeated: true, type: :string
   field :affiliate_bps, 10, repeated: true, type: :string, json_name: "affiliateBps"
   field :height, 11, type: :string
+  field :liquidity_tolerance_bps, 12, type: :string, json_name: "liquidityToleranceBps"
 end
 
 defmodule Thorchain.Types.QueryQuoteSwapResponse do
