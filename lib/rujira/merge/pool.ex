@@ -128,7 +128,7 @@ defmodule Rujira.Merge.Pool do
     cond do
       DateTime.compare(now, decay_starts_at) == :lt -> start_rate
       DateTime.compare(now, decay_ends_at) == :gt -> 0
-      true -> trunc(div(start_rate, @precision) * div(remaining_time * @precision, duration))
+      true -> trunc(start_rate * (remaining_time / duration))
     end
   end
 end

@@ -1,6 +1,5 @@
 defmodule Rujira.Assets do
   use Memoize
-  alias Rujira.Chains.Gaia
   alias Thorchain.Types.QueryPoolsRequest
   alias Thorchain.Types.Query.Stub, as: Q
   alias __MODULE__.Asset
