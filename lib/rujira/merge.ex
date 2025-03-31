@@ -36,8 +36,6 @@ defmodule Rujira.Merge do
     with {:ok, res} <- Rujira.Contract.query_state_smart(pool.address, %{status: %{}}),
          {:ok, status} <- Rujira.Merge.Pool.Status.from_query(res) do
       {:ok, Pool.set_rate(%{pool | status: status})}
-    else
-      err -> err
     end
   end
 
