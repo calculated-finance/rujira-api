@@ -58,6 +58,7 @@ defmodule RujiraWeb do
 
   def check_origin(%{scheme: "http", host: "localhost"}), do: true
   def check_origin(%{scheme: "https", host: "rujira.network"}), do: true
+  def check_origin(%{scheme: "https", host: "preview.rujira.network"}), do: true
   def check_origin(%{scheme: "https", host: "rujira-ui-main.vercel.app"}), do: true
   def check_origin(%{scheme: "https", host: "ai.autorujira.app"}), do: true
 
