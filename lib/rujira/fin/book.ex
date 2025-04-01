@@ -40,12 +40,14 @@ defmodule Rujira.Fin.Book do
     end
   end
 
-  defstruct [:id, :bids, :asks]
+  defstruct [:id, :bids, :asks, :center, :spread]
 
   @type t :: %__MODULE__{
           id: String.t(),
           bids: list(Price.t()),
-          asks: list(Price.t())
+          asks: list(Price.t()),
+          center: Decimal.t(),
+          spread: Decimal.t()
         }
 
   @spec from_query(String.t(), map()) :: :error | {:ok, __MODULE__.t()}
@@ -58,6 +60,19 @@ defmodule Rujira.Fin.Book do
        id: address,
        asks: Enum.map(asks, &Price.from_query(:ask, &1)),
        bids: Enum.map(bids, &Price.from_query(:bid, &1))
-     }}
+     }
+     |> populate()}
   end
+
+  defp populate(%__MODULE__{asks: [ask | _], bids: [bid | _]} = book) do
+    center = ask.price |> Decimal.add(bid.price) |> Decimal.div(Decimal.new(2))
+
+    %{
+      book
+      | center: center,
+        spread: ask.price |> Decimal.sub(bid.price) |> Decimal.div(center)
+    }
+  end
+
+  defp populate(book), do: book
 end

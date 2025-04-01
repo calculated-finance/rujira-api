@@ -24,5 +24,6 @@ defmodule RujiraWeb.Schema.Scalars.BigInt do
     |> Decimal.mult(1_000_000_000_000)
     |> Decimal.round()
     |> Decimal.to_integer()
+    |> Integer.to_string()
   end
 end
