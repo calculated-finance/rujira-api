@@ -1,19 +1,21 @@
 defmodule Rujira.Merge.Pool do
-  @precision 1_000_000_000_000
-
   defmodule Status do
     defstruct [
       :merged,
       :shares,
       :size,
-      :current_rate
+      :current_rate,
+      :share_value,
+      :share_value_growth
     ]
 
     @type t :: %__MODULE__{
             merged: integer(),
             shares: integer(),
             size: integer(),
-            current_rate: integer()
+            current_rate: integer(),
+            share_value: Decimal.t(),
+            share_value_growth: non_neg_integer()
           }
 
     @spec from_query(map()) :: {:ok, __MODULE__.t()} | {:error, :parse_error}
@@ -58,10 +60,10 @@ defmodule Rujira.Merge.Pool do
           merge_supply: integer(),
           ruji_denom: String.t(),
           ruji_allocation: integer(),
-          decay_starts_at: integer(),
-          decay_ends_at: integer(),
-          start_rate: integer(),
-          current_rate: integer(),
+          decay_starts_at: DateTime.t(),
+          decay_ends_at: DateTime.t(),
+          start_rate: Decimal.t(),
+          current_rate: Decimal.t(),
           status: :not_loaded | Status.t()
         }
 
@@ -80,7 +82,7 @@ defmodule Rujira.Merge.Pool do
          {decay_starts_at, ""} <- Integer.parse(decay_starts_at),
          {:ok, decay_ends_at} <- DateTime.from_unix(decay_ends_at, :nanosecond),
          {:ok, decay_starts_at} <- DateTime.from_unix(decay_starts_at, :nanosecond) do
-      start_rate = trunc(div(ruji_allocation * @precision, merge_supply))
+      start_rate = ruji_allocation |> Decimal.new() |> Decimal.div(Decimal.new(merge_supply))
 
       %__MODULE__{
         id: address,
@@ -101,13 +103,35 @@ defmodule Rujira.Merge.Pool do
     end
   end
 
-  def set_rate(%__MODULE__{status: %Status{} = status} = pool) do
+  def set_rate(
+        %__MODULE__{start_rate: start_rate, status: %Status{shares: shares, size: size} = status} =
+          pool
+      ) do
     current_rate = calculate_rate(pool)
+
+    share_value =
+      if shares == 0,
+        do: start_rate,
+        else:
+          size
+          |> Decimal.new()
+          |> Decimal.div(Decimal.new(shares))
+
+    share_value_growth =
+      Decimal.div(
+        Decimal.sub(share_value, start_rate),
+        start_rate
+      )
 
     %{
       pool
       | current_rate: current_rate,
-        status: %{status | current_rate: current_rate}
+        status: %{
+          status
+          | current_rate: current_rate,
+            share_value: share_value,
+            share_value_growth: share_value_growth
+        }
     }
   end
 
@@ -126,9 +150,17 @@ defmodule Rujira.Merge.Pool do
     duration = DateTime.diff(decay_ends_at, decay_starts_at, :second)
 
     cond do
-      DateTime.compare(now, decay_starts_at) == :lt -> start_rate
-      DateTime.compare(now, decay_ends_at) == :gt -> 0
-      true -> trunc(start_rate * (remaining_time / duration))
+      DateTime.compare(now, decay_starts_at) == :lt ->
+        start_rate
+
+      DateTime.compare(now, decay_ends_at) == :gt ->
+        0
+
+      true ->
+        remaining_time
+        |> Decimal.new()
+        |> Decimal.div(Decimal.new(duration))
+        |> Decimal.mult(start_rate)
     end
   end
 end

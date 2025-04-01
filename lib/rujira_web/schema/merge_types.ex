@@ -46,20 +46,15 @@ defmodule RujiraWeb.Schema.MergeTypes do
     field :size, non_null(:bigint)
     @desc "Current Rate with 12 Decimals place"
     field :current_rate, non_null(:bigint)
+    @desc "The amount of ruji allocated per share of the pool"
+    field :share_value, non_null(:bigint)
+    @desc "Basis points of the increase in share_value since the start of the merge"
+    field :share_value_growth, non_null(:bigint)
   end
 
   @desc "A merge_accounts represents aggregate data about account address related to the merge pools"
   object :merge_stats do
     field :accounts, list_of(non_null(:merge_account))
-    @desc "The total value of deposits at the time of deposit"
-    field :deposit_size, non_null(:balance) do
-      # TODO: Index deposits
-      resolve(fn %{total_size: deposit_size}, _, _ ->
-        # Simulate a smaller deposit for now
-        deposit_size = trunc(deposit_size * 0.8)
-        {:ok, %{amount: deposit_size, asset: @merge_denom}}
-      end)
-    end
 
     @desc "The total amount of merge token that all `shares` are worth"
     field :total_size, non_null(:balance) do
