@@ -48,8 +48,8 @@ defmodule RujiraWeb.Schema.MergeTypes do
     field :current_rate, non_null(:bigint)
     @desc "The amount of ruji allocated per share of the pool"
     field :share_value, non_null(:bigint)
-    @desc "Basis points of the increase in share_value since the start of the merge"
-    field :share_value_growth, non_null(:bigint)
+    @desc "Percentage increase in share_value since the start of the merge"
+    field :share_value_change, non_null(:bigint)
   end
 
   @desc "A merge_accounts represents aggregate data about account address related to the merge pools"

@@ -6,7 +6,7 @@ defmodule Rujira.Merge.Pool do
       :size,
       :current_rate,
       :share_value,
-      :share_value_growth
+      :share_value_change
     ]
 
     @type t :: %__MODULE__{
@@ -15,7 +15,7 @@ defmodule Rujira.Merge.Pool do
             size: integer(),
             current_rate: integer(),
             share_value: Decimal.t(),
-            share_value_growth: non_neg_integer()
+            share_value_change: non_neg_integer()
           }
 
     @spec from_query(map()) :: {:ok, __MODULE__.t()} | {:error, :parse_error}
@@ -117,7 +117,7 @@ defmodule Rujira.Merge.Pool do
           |> Decimal.new()
           |> Decimal.div(Decimal.new(shares))
 
-    share_value_growth =
+    share_value_change =
       Decimal.div(
         Decimal.sub(share_value, start_rate),
         start_rate
@@ -130,7 +130,7 @@ defmodule Rujira.Merge.Pool do
           status
           | current_rate: current_rate,
             share_value: share_value,
-            share_value_growth: share_value_growth
+            share_value_change: share_value_change
         }
     }
   end
