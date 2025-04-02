@@ -38,7 +38,7 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :fee_maker, non_null(:bigint)
     field :fee_address, non_null(:address)
     field :book, non_null(:fin_book), resolve: &RujiraWeb.Resolvers.Fin.book/3
-    field :summary, :fin_pair_summary, resolve: &RujiraWeb.Resolvers.Fin.summary/3
+    field :summary, :fin_summary, resolve: &RujiraWeb.Resolvers.Fin.summary/3
 
     connection field :candles, node_type: :fin_candle, non_null: true do
       arg(:resolution, non_null(:string))
@@ -154,6 +154,15 @@ defmodule RujiraWeb.Schema.FinTypes do
 
   @desc "Summary of the last trading data for a specific pair, including high, low, change, and volume."
   node object(:fin_pair_summary) do
+    field :last, non_null(:bigint)
+    field :last_usd, non_null(:bigint)
+    field :high, non_null(:bigint)
+    field :low, non_null(:bigint)
+    field :change, non_null(:bigint)
+    field :volume, non_null(:layer_1_balance)
+  end
+
+  object(:fin_summary) do
     field :last, non_null(:bigint)
     field :last_usd, non_null(:bigint)
     field :high, non_null(:bigint)

@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Resolvers.Fin do
+  alias Rujira.Fin.Summary
   alias Rujira.Repo
   alias Absinthe.Relay
   alias Rujira.Assets
@@ -37,7 +38,7 @@ defmodule RujiraWeb.Resolvers.Fin do
   end
 
   def summary(%{address: address, token_quote: token_quote}, _, _) do
-    with {:ok, summary} <- Rujira.Fin.get_summary(address),
+    with %Summary{} = summary <- Rujira.Fin.get_summary(address),
          {:ok, volume_asset} <- Assets.from_denom(token_quote),
          {:ok, %{price: price}} <- Rujira.Prices.get(String.upcase(volume_asset.symbol)) do
       {:ok,

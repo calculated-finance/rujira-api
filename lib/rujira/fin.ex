@@ -159,12 +159,9 @@ defmodule Rujira.Fin do
   end
 
   def get_summary(contract) do
-    case Summary.query()
-         |> where([c], c.id == ^contract)
-         |> Repo.one() do
-      nil -> {:error, :not_found}
-      s -> {:ok, s}
-    end
+    Summary.query()
+    |> where([c], c.id == ^contract)
+    |> Repo.one()
   end
 
   def get_summaries() do
@@ -318,8 +315,10 @@ defmodule Rujira.Fin do
       prefix = Absinthe.Relay.Node.to_global_id(:fin_trade, t.contract, RujiraWeb.Schema)
       Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, edge: prefix)
 
-      id = Absinthe.Relay.Node.to_global_id(:fin_summary, t.contract, RujiraWeb.Schema)
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, id: id)
+      id =
+        Absinthe.Relay.Node.to_global_id(:fin_pair, t.contract, RujiraWeb.Schema)
+
+      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
     end
   end
 
