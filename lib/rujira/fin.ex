@@ -13,10 +13,13 @@ defmodule Rujira.Fin do
   require Logger
 
   def start_link(_) do
-    children = [
-      __MODULE__.Listener,
-      __MODULE__.Indexer
-    ]
+    children =
+      Resolution.resolutions()
+      |> Enum.map(&Supervisor.child_spec({Candle, &1}, id: &1))
+      |> Enum.concat([
+        __MODULE__.Listener,
+        __MODULE__.Indexer
+      ])
 
     Supervisor.start_link(children, strategy: :one_for_one)
   end
