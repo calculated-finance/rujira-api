@@ -21,48 +21,47 @@ defmodule Rujira.Fin.Summary do
         order_by: [desc: :height, desc: :tx_idx, desc: :idx]
       )
 
-    windows =
+    aggregates =
       from(t in Trade,
+        where: fragment("? > NOW() - INTERVAL '1 day'", t.timestamp),
+        group_by: t.contract,
         select: %{
           id: t.contract,
-          first: over(first_value(t.rate), :p),
-          last: over(last_value(t.rate), :p),
-          high: over(max(t.rate), :p),
-          low: over(min(t.rate), :p),
+          open:
+            fragment(
+              "(SELECT rate FROM trades WHERE contract = ? AND timestamp > NOW() - INTERVAL '1 day' ORDER BY height ASC, tx_idx ASC, idx ASC LIMIT 1)",
+              t.contract
+            ),
+          close:
+            fragment(
+              "(SELECT rate FROM trades WHERE contract = ? AND timestamp > NOW() - INTERVAL '1 day' ORDER BY height DESC, tx_idx DESC, idx DESC LIMIT 1)",
+              t.contract
+            ),
+          high: max(t.rate),
+          low: min(t.rate),
           volume:
-            over(
-              sum(
-                fragment(
-                  "CASE WHEN ? = ? THEN ? ELSE ? END",
-                  t.side,
-                  "quote",
-                  t.bid,
-                  t.offer
-                )
-              ),
-              :p
+            sum(
+              fragment(
+                "CASE WHEN ? = 'quote' THEN ? ELSE ? END",
+                t.side,
+                t.bid,
+                t.offer
+              )
             )
-        },
-        distinct: t.contract,
-        where: fragment("? > NOW() - '1 day'::interval", t.timestamp),
-        windows: [
-          p: [
-            partition_by: t.contract,
-            order_by: [desc: :height, desc: :tx_idx, desc: :idx]
-          ]
-        ]
+        }
       )
 
     from(c in subquery(contracts),
-      left_join: s in subquery(windows),
-      on: c.contract == s.id,
+      left_join: a in subquery(aggregates),
+      on: c.contract == a.id,
       select: %__MODULE__{
         id: c.contract,
-        last: fragment("COALESCE(?, ?)", s.last, c.last),
-        high: fragment("COALESCE(?, ?)", s.high, c.last),
-        low: fragment("COALESCE(?, ?)", s.low, c.last),
-        change: fragment("COALESCE((? - ?) / ?, 0)", s.last, s.first, s.first),
-        volume: fragment("COALESCE(?, ?)::bigint", s.volume, 0)
+        last: fragment("COALESCE(?, ?)", a.close, c.last),
+        high: fragment("COALESCE(?, ?)", a.high, c.last),
+        low: fragment("COALESCE(?, ?)", a.low, c.last),
+        # % change = (close - open) / open
+        change: fragment("COALESCE((? - ?) / NULLIF(?, 0), 0)", a.close, a.open, a.open),
+        volume: fragment("COALESCE(?, 0)::bigint", a.volume)
       }
     )
     |> subquery()
