@@ -8,6 +8,8 @@ defmodule RujiraWeb.Router do
   scope "/api" do
     pipe_through :api
 
+    get "/schema/:schema", RujiraWeb.SchemaController, :show
+
     forward "/graphiql", Absinthe.Plug.GraphiQL,
       schema: RujiraWeb.Schema,
       socket: RujiraWeb.UserSocket
