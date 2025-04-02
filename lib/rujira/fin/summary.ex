@@ -18,7 +18,7 @@ defmodule Rujira.Fin.Summary do
       from(t in Trade,
         distinct: t.contract,
         select: %{contract: t.contract, last: t.rate},
-        order_by: {:desc, :timestamp}
+        order_by: [desc: :height, desc: :tx_idx, desc: :idx]
       )
 
     windows =
@@ -45,7 +45,12 @@ defmodule Rujira.Fin.Summary do
         },
         distinct: t.contract,
         where: fragment("? > NOW() - '1 day'::interval", t.timestamp),
-        windows: [p: [partition_by: t.contract]]
+        windows: [
+          p: [
+            partition_by: t.contract,
+            order_by: [desc: :height, desc: :tx_idx, desc: :idx]
+          ]
+        ]
       )
 
     from(c in subquery(contracts),
