@@ -143,4 +143,7 @@ if config_env() == :prod do
     websocket: websocket,
     size: size,
     grpcs: String.split(grpcs, ",")
+
+  network = System.get_env("NETWORK", "devnet")
+  import_config "runtime.#{network}.exs"
 end
