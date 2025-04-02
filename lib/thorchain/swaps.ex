@@ -68,4 +68,12 @@ defmodule Thorchain.Swaps do
   defp resolution(now, :weekly), do: {:ok, DateTime.add(now, -7 * 24 * 60 * 60, :second)}
   defp resolution(now, :monthly), do: {:ok, DateTime.add(now, -30 * 24 * 60 * 60, :second)}
   defp resolution(_, _), do: {:error, :invalid}
+
+  def sort(query, dir) do
+    order_by(query, [x], [
+      {^dir, x.height},
+      {^dir, x.tx_idx},
+      {^dir, x.idx}
+    ])
+  end
 end

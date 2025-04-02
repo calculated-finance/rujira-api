@@ -1,4 +1,4 @@
-defmodule RujiraWeb.Schema.Rujira.AnalyticsTypes do
+defmodule RujiraWeb.Schema.AnalyticsTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
   alias Rujira.Assets
@@ -14,9 +14,8 @@ defmodule RujiraWeb.Schema.Rujira.AnalyticsTypes do
 
   object :analytics_swap do
     connection field :snapshots, node_type: :analytics_swap_snapshot do
-      arg(:after, non_null(:timestamp))
-      arg(:before, non_null(:timestamp))
-      arg(:first, :integer, default_value: 100)
+      arg(:from, non_null(:timestamp))
+      arg(:to, non_null(:timestamp))
       arg(:resolution, non_null(:resolution))
       arg(:period, non_null(:integer))
       resolve(&Resolvers.Analytics.swap_snapshots/3)
@@ -26,8 +25,8 @@ defmodule RujiraWeb.Schema.Rujira.AnalyticsTypes do
   object :analytics_swap_snapshot do
     field :resolution, non_null(:resolution)
     field :bin, non_null(:timestamp)
-    field :swap_volume_by_asset, non_null(list_of(non_null(:analytics_swap_snapshot_asset)))
-    field :swap_volume_by_chain, non_null(list_of(non_null(:analytics_swap_snapshot_chain)))
+    field :swap_volume_by_asset, list_of(non_null(:analytics_swap_snapshot_asset))
+    field :swap_volume_by_chain, list_of(non_null(:analytics_swap_snapshot_chain))
     field :unique_swap_users, non_null(:bigint)
     @desc "moving average on the number of swaps"
     field :swaps, non_null(:point)

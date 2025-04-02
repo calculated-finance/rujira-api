@@ -1,21 +1,15 @@
 defmodule RujiraWeb.Resolvers.Analytics do
   alias Absinthe.Resolution.Helpers
   alias Absinthe.Relay
+  alias Rujira.Repo
 
-  @swap_snapshots [
-    %{
-      bin: DateTime.from_unix!(1_000_000),
-      resolution: "1D",
-      swaps: %{value: 1_000_000, moving_avg: 1_000_000},
-      volume: %{value: 1_000_000, moving_avg: 1_000_000},
-      liquidity_fee_paid_to_tc: %{value: 1_000_000, moving_avg: 1_000_000},
-      affiliate_fee: %{value: 1_000_000, moving_avg: 1_000_000}
-    }
-  ]
-
-  def swap_snapshots(_, %{after: _, before: _, first: f, resolution: _, period: _}, _) do
-    Helpers.async(fn ->
-      Relay.Connection.from_list(@swap_snapshots, %{first: f})
-    end)
+  def swap_snapshots(_, %{from: f, to: t, resolution: r, period: p} = args, _) do
+    with from <- Rujira.Resolution.truncate(f, r),
+         to <- Rujira.Resolution.truncate(t, r) do
+      Helpers.async(fn ->
+        Rujira.Analytics.SwapQueries.snapshots(from, to, r, p)
+        |> Relay.Connection.from_query(&Repo.all/1, args)
+      end)
+    end
   end
 end

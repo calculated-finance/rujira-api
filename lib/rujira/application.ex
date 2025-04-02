@@ -24,6 +24,7 @@ defmodule Rujira.Application do
       Rujira.Balances,
       Rujira.Bank,
       Rujira.Chains,
+      Rujira.Resolution,
       Rujira.Fin,
       Rujira.Invalidator
     ]

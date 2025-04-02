@@ -9,7 +9,7 @@ defmodule RujiraWeb.Schema do
   import_types(RujiraWeb.Schema.DeveloperTypes)
   import_types(RujiraWeb.Schema.FinTypes)
   import_types(RujiraWeb.Schema.MergeTypes)
-  import_types(RujiraWeb.Schema.Rujira.AnalyticsTypes)
+  import_types(RujiraWeb.Schema.AnalyticsTypes)
   import_types(RujiraWeb.Schema.RujiraTypes)
   import_types(RujiraWeb.Schema.Scalars.Address)
   import_types(RujiraWeb.Schema.Scalars.Asset)

@@ -1,6 +1,6 @@
 defmodule Rujira.Fin do
   use GenServer
-  alias Rujira.Fin.TradingView
+  alias Rujira.Resolution
   alias Rujira.Fin.Trade
   alias Rujira.Contract
   alias Rujira.Fin.Candle
@@ -15,8 +15,7 @@ defmodule Rujira.Fin do
   def start_link(_) do
     children = [
       __MODULE__.Listener,
-      __MODULE__.Indexer,
-      __MODULE__.TradingView
+      __MODULE__.Indexer
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one)
@@ -257,7 +256,7 @@ defmodule Rujira.Fin do
     for t <- trades do
       entries =
         t.timestamp
-        |> TradingView.active()
+        |> Resolution.active()
         |> Enum.map(&to_candle(t, &1))
 
       Candle
