@@ -1,5 +1,5 @@
 defmodule Rujira.Fin.Candle do
-  alias Rujira.Fin.TradingView
+  alias Rujira.Resolution
   alias Rujira.Fin
   import Ecto.Changeset
   require Logger
@@ -45,8 +45,8 @@ defmodule Rujira.Fin.Candle do
   def init(resolution) do
     next =
       DateTime.utc_now()
-      |> TradingView.truncate(resolution)
-      |> TradingView.add(resolution)
+      |> Resolution.truncate(resolution)
+      |> Resolution.add(resolution)
 
     send(self(), next)
     {:ok, resolution}
@@ -67,7 +67,7 @@ defmodule Rujira.Fin.Candle do
         Logger.debug("#{__MODULE__} #{resolution} #{time}")
         Fin.insert_candles(time, resolution)
 
-        time = TradingView.add(time, resolution)
+        time = Resolution.add(time, resolution)
         delay = max(0, DateTime.diff(time, now, :millisecond))
         Process.send_after(self(), time, delay)
         {:noreply, resolution}
