@@ -169,20 +169,18 @@ defmodule Rujira.Analytics.SwapQueries do
     |> join(:right, [s], b in "bins", on: s.timestamp >= b.min and s.timestamp < b.max)
     |> select([s, b], %{
       bin: b.min,
-      data: %{
-        asset: s.pool,
-        weight:
-          over(
-            sum(fragment("CASE WHEN pool = ? THEN ? ELSE 0 END", s.pool, s.volume_usd)),
-            :bins
-          ) /
-            over(sum(s.volume_usd), :bins),
-        value:
-          over(
-            sum(fragment("CASE WHEN pool = ? THEN ? ELSE 0 END", s.pool, s.volume_usd)),
-            :bins
-          )
-      }
+      asset: s.pool,
+      weight:
+        over(
+          sum(fragment("CASE WHEN pool = ? THEN ? ELSE 0 END", s.pool, s.volume_usd)),
+          :bins
+        ) /
+          over(sum(s.volume_usd), :bins),
+      value:
+        over(
+          sum(fragment("CASE WHEN pool = ? THEN ? ELSE 0 END", s.pool, s.volume_usd)),
+          :bins
+        )
     })
     |> windows([s, b],
       bins: [
@@ -192,10 +190,16 @@ defmodule Rujira.Analytics.SwapQueries do
       ]
     )
     |> subquery()
-    |> group_by([s], [s.bin, s.data])
+    |> group_by([s], [s.bin, s.asset, s.weight, s.value])
     |> select([s], %{
       bin: s.bin,
-      data: fragment("array_agg(?)", s.data)
+      data:
+        fragment(
+          "jsonb_agg(jsonb_build_object('asset', ?, 'weight', ?, 'value', ?))",
+          s.asset,
+          s.weight,
+          s.value
+        )
     })
   end
 
@@ -213,20 +217,18 @@ defmodule Rujira.Analytics.SwapQueries do
     |> join(:right, [s], b in "bins", on: s.timestamp >= b.min and s.timestamp < b.max)
     |> select([s, b], %{
       bin: b.min,
-      data: %{
-        chain: s.chain,
-        weight:
-          over(
-            sum(fragment("CASE WHEN chain = ? THEN ? ELSE 0 END", s.chain, s.volume_usd)),
-            :bins
-          ) /
-            over(sum(s.volume_usd), :bins),
-        value:
-          over(
-            sum(fragment("CASE WHEN chain = ? THEN ? ELSE 0 END", s.chain, s.volume_usd)),
-            :bins
-          )
-      }
+      chain: s.chain,
+      weight:
+        over(
+          sum(fragment("CASE WHEN chain = ? THEN ? ELSE 0 END", s.chain, s.volume_usd)),
+          :bins
+        ) /
+          over(sum(s.volume_usd), :bins),
+      value:
+        over(
+          sum(fragment("CASE WHEN chain = ? THEN ? ELSE 0 END", s.chain, s.volume_usd)),
+          :bins
+        )
     })
     |> windows([s, b],
       bins: [
@@ -236,10 +238,16 @@ defmodule Rujira.Analytics.SwapQueries do
       ]
     )
     |> subquery()
-    |> group_by([s], [s.bin, s.data])
+    |> group_by([s], [s.bin, s.chain, s.weight, s.value])
     |> select([s], %{
       bin: s.bin,
-      data: fragment("array_agg(?)", s.data)
+      data:
+        fragment(
+          "jsonb_agg(jsonb_build_object('chain', ?, 'weight', ?, 'value', ?))",
+          s.chain,
+          s.weight,
+          s.value
+        )
     })
   end
 
