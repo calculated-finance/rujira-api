@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Schema.VenturesTypes do
+  alias Rujira.Ventures.Pilot
   alias Rujira.Assets
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
@@ -79,19 +80,16 @@ defmodule RujiraWeb.Schema.VenturesTypes do
     types([:ventures_sale_pilot, :ventures_sale_bond])
 
     resolve_type(fn
-      %{deposit: _, token: _, pilot: _}, _ -> :ventures_sale_pilot
+      %Pilot{}, _ -> :ventures_sale_pilot
       %{}, _ -> :ventures_sale_bond
     end)
   end
 
   object :ventures_sale_pilot do
-    field :address, non_null(:address)
-    field :deposit, :balance
-    # field :token, non_null(:token)
-    # field :tokenomics, non_null(:tokenomics)
+    field :owner, non_null(:address)
+    field :status, non_null(:ventures_sale_status)
     field :fin, :address
     field :bow, :address
-    field :streams, list_of(:address)
     field :terms_conditions_accepted, non_null(:boolean)
   end
 
@@ -121,14 +119,14 @@ defmodule RujiraWeb.Schema.VenturesTypes do
   #   value(:pilot, as: 1)
   # end
 
-  # enum :venture_status do
-  #   value(:configured, as: 1)
-  #   value(:scheduled, as: 2)
-  #   value(:in_progress, as: 3)
-  #   value(:executed, as: 4)
-  #   value(:retracted, as: 5)
-  #   value(:completed, as: 6)
-  # end
+  enum :ventures_sale_status do
+    value(:configured)
+    value(:scheduled)
+    value(:in_progress)
+    value(:executed)
+    value(:retracted)
+    value(:completed)
+  end
 
   # object :venture do
   #   field :idx, non_null(:string)

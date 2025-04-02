@@ -1,4 +1,5 @@
 defmodule Rujira.Ventures do
+  alias Rujira.Ventures.Pilot
   alias Rujira.Ventures.Keiko
   alias Rujira.Contract
 
@@ -13,6 +14,16 @@ defmodule Rujira.Ventures do
   end
 
   def sales() do
-    Contract.query_state_smart(@keiko_address, %{ventures: %{}})
+    with {:ok, ventures} <- Contract.query_state_smart(@keiko_address, %{ventures: %{}}) do
+      Rujira.Enum.reduce_while_ok(ventures, [], &sale_from_query/1)
+    end
   end
+
+  defp sale_from_query(%{
+         "venture_type" => "pilot",
+         "owner" => owner,
+         "status" => status,
+         "venture" => %{"pilot" => pilot}
+       }),
+       do: Pilot.from_query(owner, status, pilot)
 end
