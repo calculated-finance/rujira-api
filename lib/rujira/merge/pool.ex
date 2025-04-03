@@ -111,17 +111,16 @@ defmodule Rujira.Merge.Pool do
 
     share_value =
       if shares == 0,
-        do: start_rate,
+        do: Decimal.new(1),
         else:
           size
           |> Decimal.new()
           |> Decimal.div(Decimal.new(shares))
 
     share_value_change =
-      Decimal.div(
-        Decimal.sub(share_value, start_rate),
-        start_rate
-      )
+      if share_value == 0,
+        do: Decimal.new(0),
+        else: Decimal.sub(share_value, Decimal.new(1))
 
     %{
       pool
