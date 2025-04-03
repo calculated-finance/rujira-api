@@ -17,8 +17,18 @@ defmodule Rujira.Merge do
 
   @spec list_pools(list(integer())) ::
           {:ok, list(Pool.t())} | {:error, GRPC.RPCError.t()}
-  def list_pools(code_ids \\ @code_ids) when is_list(code_ids),
-    do: Contract.list(Pool, code_ids)
+  def list_pools(code_ids \\ @code_ids) when is_list(code_ids) do
+    with {:ok, pools} <- Contract.list(Pool, code_ids) do
+      {:ok,
+       ["thor.kuji", "thor.rkuji", "thor.fuzn", "thor.nstk", "thor.wink", "thor.lvn"]
+       |> Enum.reduce([], fn denom, acc ->
+         case Enum.find(pools, fn x -> x.merge_denom == denom end) do
+           nil -> acc
+           pool -> [pool | acc]
+         end
+       end)}
+    end
+  end
 
   @doc """
   Fetches the Merge Pool contract and its current config from the chain
