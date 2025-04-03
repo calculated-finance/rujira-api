@@ -104,7 +104,7 @@ defmodule Rujira.Merge.Pool do
   end
 
   def set_rate(
-        %__MODULE__{start_rate: start_rate, status: %Status{shares: shares, size: size} = status} =
+        %__MODULE__{status: %Status{shares: shares, size: size} = status} =
           pool
       ) do
     current_rate = calculate_rate(pool)
