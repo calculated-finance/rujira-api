@@ -78,7 +78,12 @@ defmodule RujiraWeb.Schema do
       arg(:id, non_null(:id))
 
       config(fn %{id: id}, _ ->
-        {:ok, topic: id}
+        {
+          :ok,
+          # Use the node ID as the topic to allow absinthe to de-deduplicate updates for a given node
+          # https://hexdocs.pm/absinthe/subscriptions.html#de-duplicating-updates
+          topic: id, context_id: id
+        }
       end)
 
       resolve(&RujiraWeb.Resolvers.Node.id/2)
