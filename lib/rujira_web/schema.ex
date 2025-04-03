@@ -102,7 +102,7 @@ defmodule RujiraWeb.Schema do
       arg(:prefix, non_null(:string))
 
       config(fn %{prefix: prefix}, _ ->
-        {:ok, topic: prefix}
+        {:ok, topic: prefix, context_id: prefix}
       end)
 
       resolve(fn id, x, _ ->
