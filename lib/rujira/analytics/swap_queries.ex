@@ -1,28 +1,26 @@
 defmodule Rujira.Analytics.SwapQueries do
   @moduledoc """
-  This module defines queries for aggregating swap data with various metrics.
+  Provides queries for aggregating swap data into time bins with various computed metrics.
 
-  It creates several Common Table Expressions (CTEs) to compute:
-    - Unique swap users per bin.
-    - Volume breakdown by asset.
-    - Volume breakdown by chain.
-    - Total volume per bin.
+  This module constructs several Common Table Expressions (CTEs) to derive:
+    - The number of unique swap users per time bin.
+    - The breakdown of swap volume by asset, including computed weighted volume.
+    - The breakdown of swap volume by chain, including computed weighted volume.
+    - The total swap volume per time bin.
 
-  The main `snapshots/4` query uses these CTEs and aggregates the swap data,
-  computing sums, ratios, and moving averages across bins.
+  The main `snapshots/4` function builds on these CTEs to aggregate data for each bin,
+  calculating sums, ratios, and moving averages to facilitate time-series analysis.
   """
 
   import Ecto.Query
   alias Thorchain.Swaps.Swap
-  alias Thorchain.Swaps
   alias Rujira.Resolution
 
   # Returns a base query filtering swaps by a given time range and affiliate.
-
-  # It applies the following filters:
-  #   - Timestamp is between `from` and `to`.
-  #   - Affiliate is not nil and equals the given `affiliate`.
-  # Then, it sorts the results in descending order.
+  #
+  # Filters applied:
+  #   - The swap's timestamp is between `from` and `to`.
+  #   - The swap has a non-nil affiliate that exactly matches the given `affiliate`.
   defp base_query(from, to, affiliate) do
     Swap
     |> where(
@@ -30,48 +28,39 @@ defmodule Rujira.Analytics.SwapQueries do
       s.timestamp >= ^from and s.timestamp <= ^to and
         not is_nil(s.affiliate) and s.affiliate == ^affiliate
     )
-    |> Swaps.sort(:desc)
   end
 
   @doc """
   Aggregates swap data and computes various metrics for snapshots.
 
-  It:
-    - Adjusts the start time using `Resolution.shift_from_back/3`.
-    - Attaches several CTEs for unique users, volume by asset, volume by chain, and total volume.
-    - Joins the CTEs with the main aggregated query using the bin identifier.
-    - Computes aggregated metrics (swaps count, fees, volume, etc.) per bin.
-    - Applies window functions to compute moving averages over a defined period.
+  The function performs the following steps:
+    - Adjusts the starting timestamp using `Resolution.shift_from_back/3`.
+    - Uses a base query (with a fixed affiliate "rj") to select swaps within the adjusted range.
+    - Joins the swaps with pre-defined time bins and attaches several CTEs:
+        • Unique swap users per bin.
+        • Volume breakdown by asset.
+        • Volume breakdown by chain.
+        • Total volume per bin.
+    - Aggregates various metrics (such as swap counts, fees, and volumes) per bin.
+    - Applies window functions to compute moving averages over the specified period.
 
-  The final result contains one row per bin with aggregated data and moving averages.
+  The final result returns one row per bin containing aggregated data along with moving averages.
   """
   def snapshots(from, to, resolution, period) do
     with shifted_from <- Resolution.shift_from_back(from, period, resolution) do
-      unique_users = unique_users_cte(shifted_from, to, "rj")
-      volume_by_asset = volume_by_asset_cte(shifted_from, to, "rj")
-      volume_by_chain = volume_by_chain_cte(shifted_from, to, "rj")
-      total_volume = total_volume_cte(from, to)
-
-      # Build the main aggregated query:
-      # 1. Start with the base query filtered by time and affiliate.
-      # 2. Convert to a subquery and apply resolution range adjustments.
-      # 3. Join the "bins" table (right join) to partition the data into bins.
-      # 4. Attach the additional CTEs via with_cte/3.
-      # 5. Left join each CTE on the common bin (b.min) value.
-      # 6. Select aggregated metrics for swaps, fees, volume, and data from the CTEs.
       base_query(shifted_from, to, "rj")
       |> subquery()
-      |> Resolution.with_range(shifted_from, to, resolution)
       |> join(:right, [s], b in "bins", on: s.timestamp >= b.min and s.timestamp < b.max)
-      |> with_cte("unique_users", as: ^unique_users)
-      |> with_cte("volume_by_asset", as: ^volume_by_asset)
-      |> with_cte("volume_by_chain", as: ^volume_by_chain)
-      |> with_cte("total_volume", as: ^total_volume)
-      |> join(:left, [s, b], u in "unique_users", on: u.bin == b.min)
-      |> join(:left, [s, b, u], a in "volume_by_asset", on: a.bin == b.min)
-      |> join(:left, [s, b, u, a], c in "volume_by_chain", on: c.bin == b.min)
-      |> join(:left, [s, b, u, a, c], v in "total_volume", on: v.bin == b.min)
-      |> select([s, b, u, a, c, v], %{
+      |> Resolution.with_range(shifted_from, to, resolution)
+      |> volume_by_asset_cte(shifted_from, to, "rj")
+      |> volume_by_chain_cte(shifted_from, to, "rj")
+      |> unique_users_cte(shifted_from, to, "rj")
+      |> total_volume_cte(shifted_from, to)
+      |> join(:left, [s, b], a in "volume_by_asset", on: a.bin == b.min)
+      |> join(:left, [s, b, a], c in "volume_by_chain", on: c.bin == b.min)
+      |> join(:left, [s, b, a, c], u in "unique_users", on: u.bin == b.min)
+      |> join(:left, [s, b, a, c, u], v in "total_volume", on: v.bin == b.min)
+      |> select([s, b, a, c, u, v], %{
         bin: b.min,
         resolution: ^resolution,
         swaps: fragment("COALESCE(?, 0)", over(count(s.idx), :bins)),
@@ -79,19 +68,13 @@ defmodule Rujira.Analytics.SwapQueries do
         liquidity_fee_paid_to_tc:
           fragment("COALESCE(?, 0)", over(sum(s.liquidity_fee_in_usd), :bins)),
         liquidity_fee_paid_to_tc_share_over_total:
-          fragment(
-            "COALESCE(?, 0)",
-            over(sum(s.liquidity_fee_in_usd), :bins) / v.volume
-          ),
+          fragment("COALESCE(?, 0)", over(sum(s.liquidity_fee_in_usd), :bins) / v.volume),
         volume: fragment("COALESCE(?, 0)", over(sum(s.volume_usd), :bins)),
         volume_share_over_total:
-          fragment(
-            "COALESCE(?, 0)",
-            over(sum(s.volume_usd), :bins) / v.volume
-          ),
-        unique_swap_users: fragment("COALESCE(?, 0)", u.unique_swap_users),
+          fragment("COALESCE(?, 0)", over(sum(s.volume_usd), :bins) / v.volume),
         swap_volume_by_asset: fragment("COALESCE(?, '[]')", a.data),
-        swap_volume_by_chain: fragment("COALESCE(?, '[]')", c.data)
+        swap_volume_by_chain: fragment("COALESCE(?, '[]')", c.data),
+        unique_swap_users: fragment("COALESCE(?, 0)", u.unique_swap_users)
       })
       |> windows([s, b],
         bins: [
@@ -100,6 +83,22 @@ defmodule Rujira.Analytics.SwapQueries do
           frame: fragment("RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING")
         ]
       )
+      |> subquery()
+      |> group_by([:bin, :swap_volume_by_asset, :swap_volume_by_chain])
+      |> select([q], %{
+        bin: q.bin,
+        resolution: ^resolution,
+        swaps: max(q.swaps),
+        affiliate_fee: max(q.affiliate_fee),
+        liquidity_fee_paid_to_tc: max(q.liquidity_fee_paid_to_tc),
+        liquidity_fee_paid_to_tc_share_over_total:
+          max(q.liquidity_fee_paid_to_tc_share_over_total),
+        volume: max(q.volume),
+        volume_share_over_total: max(q.volume_share_over_total),
+        swap_volume_by_asset: q.swap_volume_by_asset,
+        swap_volume_by_chain: q.swap_volume_by_chain,
+        unique_swap_users: max(q.unique_swap_users)
+      })
       |> subquery()
       |> where([s], s.bin >= ^from and s.bin <= ^to)
       |> select([s], %{
@@ -134,146 +133,149 @@ defmodule Rujira.Analytics.SwapQueries do
           frame: fragment("ROWS BETWEEN ? PRECEDING AND CURRENT ROW", ^period)
         ]
       )
+      |> order_by(asc: :bin)
     end
   end
 
-  # Builds a CTE query to calculate unique swap users per bin.
+  # Constructs a CTE that calculates the number of unique swap users per time bin.
+  #
+  # Steps:
+  #   - Uses the base query filtered by time range and affiliate.
+  #   - Joins with the "bins" table to assign swaps to their respective bins.
+  #   - Groups the data by the minimum timestamp of each bin.
+  #   - Selects each bin along with the count of distinct swap initiators (using `s.from`).
+  defp unique_users_cte(q, from, to, affiliate) do
+    query =
+      base_query(from, to, affiliate)
+      |> subquery()
+      |> join(:inner, [s], b in "bins", on: s.timestamp >= b.min and s.timestamp < b.max)
+      |> group_by([s, b], b.min)
+      |> select([s, b], %{
+        bin: b.min,
+        unique_swap_users: count(fragment("DISTINCT ?", s.from))
+      })
 
-  # It:
-  #   - Starts with the base query for the specified affiliate.
-  #   - Joins the "bins" table.
-  #   - Groups the data by the bin minimum value.
-  #   - Selects the bin and counts distinct swap users.
-  defp unique_users_cte(from, to, affiliate) do
-    base_query(from, to, affiliate)
-    |> subquery()
-    |> join(:inner, [s], b in "bins", on: s.timestamp >= b.min and s.timestamp < b.max)
-    |> group_by([s, b], b.min)
-    |> select([s, b], %{
-      bin: b.min,
-      unique_swap_users: count(fragment("DISTINCT ?", s.from))
-    })
+    with_cte(q, "unique_users", as: ^query)
   end
 
-  # Builds a CTE query to aggregate swap volume by asset per bin.
+  # Constructs a CTE that aggregates swap volume by asset for each time bin.
+  #
+  # Process:
+  #   - Starts with the base query filtered by time and affiliate.
+  #   - Joins with the "bins" table using a right join to include all bins.
+  #   - Groups results by bin and asset (identified by `s.pool`), summing volume in USD.
+  #   - Computes the total volume per bin and then, for each asset,
+  #     calculates a weighted volume (as a ratio scaled to a large constant) and rounds it.
+  #   - Aggregates the per-asset data into a JSONB array for each bin.
+  defp volume_by_asset_cte(q, from, to, affiliate) do
+    asset_volume_query =
+      base_query(from, to, affiliate)
+      |> subquery()
+      |> join(:right, [s], b in "bins", on: s.timestamp >= b.min and s.timestamp < b.max)
+      |> group_by([s, b], [b.min, s.pool])
+      |> select([s, b], %{
+        bin: b.min,
+        asset: s.pool,
+        volume: sum(s.volume_usd)
+      })
 
-  # It:
-  #   - Uses the base query for the specified affiliate.
-  #   - Joins the "bins" table with a right join.
-  #   - Selects each bin and computes the aggregated volume for each asset.
-  #   - Applies window functions to compute weighted sums.
-  #   - Groups and aggregates the results into JSONB format.
-  defp volume_by_asset_cte(from, to, affiliate) do
-    base_query(from, to, affiliate)
-    |> subquery()
-    |> join(:right, [s], b in "bins", on: s.timestamp >= b.min and s.timestamp < b.max)
-    |> select([s, b], %{
-      bin: b.min,
-      asset: s.pool,
-      weight:
-        over(
-          sum(fragment("CASE WHEN pool = ? THEN ? ELSE 0 END", s.pool, s.volume_usd)),
-          :bins
-        ) /
-          over(sum(s.volume_usd), :bins),
-      value:
-        over(
-          sum(fragment("CASE WHEN pool = ? THEN ? ELSE 0 END", s.pool, s.volume_usd)),
-          :bins
-        )
-    })
-    |> windows([s, b],
-      bins: [
-        partition_by: b.min,
-        order_by: s.timestamp,
-        frame: fragment("RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING")
-      ]
-    )
-    |> subquery()
-    |> group_by([s], [s.bin, s.asset, s.weight, s.value])
-    |> select([s], %{
-      bin: s.bin,
-      data:
-        fragment(
-          "jsonb_agg(jsonb_build_object('asset', ?, 'weight', ?, 'value', ?))",
-          s.asset,
-          s.weight,
-          s.value
-        )
-    })
+    # Compute the total volume for each bin.
+    total_volume_query =
+      asset_volume_query
+      |> subquery()
+      |> group_by([av], av.bin)
+      |> select([av], %{
+        bin: av.bin,
+        total_volume: sum(av.volume)
+      })
+
+    final_query =
+      asset_volume_query
+      |> subquery()
+      |> join(:right, [av], tv in subquery(total_volume_query), on: av.bin == tv.bin)
+      |> group_by([av, tv], av.bin)
+      |> select([av, tv], %{
+        bin: av.bin,
+        data:
+          fragment(
+            "COALESCE(jsonb_agg(DISTINCT jsonb_build_object('asset', ?, 'weight', round(?::numeric), 'volume', ?)) FILTER (WHERE ? IS NOT NULL), '[]'::jsonb)",
+            av.asset,
+            av.volume / tv.total_volume * 1_000_000_000_000,
+            av.volume,
+            av.asset
+          )
+      })
+
+    with_cte(q, "volume_by_asset", as: ^final_query)
   end
 
-  # Builds a CTE query to aggregate swap volume by chain per bin.
+  # Constructs a CTE that aggregates swap volume by chain for each time bin.
+  #
+  # Process:
+  #   - Starts with the base query filtered by time and affiliate.
+  #   - Uses a right join with the "bins" table to cover all bins.
+  #   - Groups results by bin and chain, summing the USD volume.
+  #   - Computes the total volume per bin and then, for each chain,
+  #     calculates a weighted volume (as a ratio scaled to a large constant) and rounds it.
+  #   - Aggregates the per-chain data into a JSONB array for each bin.
+  defp volume_by_chain_cte(q, from, to, affiliate) do
+    chain_volume_query =
+      base_query(from, to, affiliate)
+      |> subquery()
+      |> join(:right, [s], b in "bins", on: s.timestamp >= b.min and s.timestamp < b.max)
+      |> group_by([s, b], [b.min, s.chain])
+      |> select([s, b], %{
+        bin: b.min,
+        chain: s.chain,
+        volume: sum(s.volume_usd)
+      })
 
-  # It:
-  #   - Uses the base query for the specified affiliate.
-  #   - Joins the "bins" table with a right join.
-  #   - Selects each bin and computes the aggregated volume for each chain.
-  #   - Applies window functions to compute weighted sums.
-  #   - Groups and aggregates the results into JSONB format.
-  defp volume_by_chain_cte(from, to, affiliate) do
-    base_query(from, to, affiliate)
-    |> subquery()
-    |> join(:right, [s], b in "bins", on: s.timestamp >= b.min and s.timestamp < b.max)
-    |> select([s, b], %{
-      bin: b.min,
-      chain: s.chain,
-      weight:
-        over(
-          sum(fragment("CASE WHEN chain = ? THEN ? ELSE 0 END", s.chain, s.volume_usd)),
-          :bins
-        ) /
-          over(sum(s.volume_usd), :bins),
-      value:
-        over(
-          sum(fragment("CASE WHEN chain = ? THEN ? ELSE 0 END", s.chain, s.volume_usd)),
-          :bins
-        )
-    })
-    |> windows([s, b],
-      bins: [
-        partition_by: b.min,
-        order_by: s.timestamp,
-        frame: fragment("RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING")
-      ]
-    )
-    |> subquery()
-    |> group_by([s], [s.bin, s.chain, s.weight, s.value])
-    |> select([s], %{
-      bin: s.bin,
-      data:
-        fragment(
-          "jsonb_agg(jsonb_build_object('chain', ?, 'weight', ?, 'value', ?))",
-          s.chain,
-          s.weight,
-          s.value
-        )
-    })
+    total_volume_query =
+      chain_volume_query
+      |> subquery()
+      |> group_by([av], av.bin)
+      |> select([av], %{
+        bin: av.bin,
+        total_volume: sum(av.volume)
+      })
+
+    final_query =
+      chain_volume_query
+      |> subquery()
+      |> join(:right, [av], tv in subquery(total_volume_query), on: av.bin == tv.bin)
+      |> group_by([av, tv], av.bin)
+      |> select([av, tv], %{
+        bin: av.bin,
+        data:
+          fragment(
+            "COALESCE(jsonb_agg(DISTINCT jsonb_build_object('chain', ?, 'weight', round(?::numeric), 'volume', ?)) FILTER (WHERE ? IS NOT NULL), '[]'::jsonb)",
+            av.chain,
+            av.volume / tv.total_volume * 1_000_000_000_000,
+            av.volume,
+            av.chain
+          )
+      })
+
+    with_cte(q, "volume_by_chain", as: ^final_query)
   end
 
-  # Builds a CTE query to compute the total swap volume per bin.
+  # Constructs a CTE that computes the total swap volume per time bin.
+  #
+  # Process:
+  #   - Filters swaps based on the provided time range.
+  #   - Uses a right join with the "bins" table to ensure all bins are represented.
+  #   - Groups data by bin and sums the USD volume for all swaps in that bin.
+  defp total_volume_cte(q, from, to) do
+    query =
+      Swap
+      |> where([s], s.timestamp >= ^from and s.timestamp <= ^to)
+      |> join(:right, [s], b in "bins", on: s.timestamp >= b.min and s.timestamp < b.max)
+      |> group_by([s, b], b.min)
+      |> select([s, b], %{
+        bin: b.min,
+        volume: fragment("COALESCE(?, 0)", sum(s.volume_usd))
+      })
 
-  # It:
-  #   - Filters swaps by timestamp.
-  #   - Uses a right join with the "bins" table.
-  #   - Sums the volume per bin.
-  #   - Applies a window function to aggregate the sum.
-  defp total_volume_cte(from, to) do
-    Swap
-    |> where([s], s.timestamp >= ^from and s.timestamp <= ^to)
-    |> Swaps.sort(:desc)
-    |> subquery()
-    |> join(:right, [s], b in "bins", on: s.timestamp >= b.min and s.timestamp < b.max)
-    |> select([s, b], %{
-      bin: b.min,
-      volume: fragment("COALESCE(?, 0)", over(sum(s.volume_usd), :bins))
-    })
-    |> windows([s, b],
-      bins: [
-        partition_by: b.min,
-        order_by: s.timestamp,
-        frame: fragment("RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING")
-      ]
-    )
+    with_cte(q, "total_volume", as: ^query)
   end
 end

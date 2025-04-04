@@ -43,18 +43,41 @@ defmodule RujiraWeb.Schema.AnalyticsTypes do
 
   object :analytics_swap_snapshot_asset do
     field :asset, non_null(:asset) do
-      resolve(fn %{asset: asset}, _, _ ->
+      resolve(fn %{"asset" => asset}, _, _ ->
         {:ok, Assets.from_string(asset)}
       end)
     end
 
-    field :volume, non_null(:bigint)
-    field :weight, non_null(:bigint)
+    field :volume, non_null(:bigint) do
+      resolve(fn %{"volume" => volume}, _, _ ->
+        {:ok, volume}
+      end)
+    end
+
+    field :weight, non_null(:bigint) do
+      resolve(fn %{"weight" => weight}, _, _ ->
+        {:ok, weight}
+      end)
+    end
   end
 
   object :analytics_swap_snapshot_chain do
-    field :chain, non_null(:chain)
-    field :volume, non_null(:bigint)
-    field :weight, non_null(:bigint)
+    field :chain, non_null(:chain) do
+      resolve(fn %{"chain" => chain}, _, _ ->
+        {:ok, String.to_existing_atom(String.downcase(chain))}
+      end)
+    end
+
+    field :volume, non_null(:bigint) do
+      resolve(fn %{"volume" => volume}, _, _ ->
+        {:ok, volume}
+      end)
+    end
+
+    field :weight, non_null(:bigint) do
+      resolve(fn %{"weight" => weight}, _, _ ->
+        {:ok, weight}
+      end)
+    end
   end
 end
