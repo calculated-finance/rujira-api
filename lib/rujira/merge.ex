@@ -7,9 +7,19 @@ defmodule Rujira.Merge do
   alias Rujira.Contract
   alias Rujira.Merge.Pool
   alias Rujira.Merge.Account
+  use GenServer
 
   @code_ids Application.compile_env(:rujira, __MODULE__, code_ids: [78])
             |> Keyword.get(:code_ids)
+
+  def start_link(_) do
+    Supervisor.start_link([__MODULE__.Listener], strategy: :one_for_one)
+  end
+
+  @impl true
+  def init(state) do
+    {:ok, state}
+  end
 
   @doc """
   Fetches all Merge Pools
