@@ -9,7 +9,7 @@ defmodule RujiraWeb.Resolvers.Ventures do
   end
 
   def sales(_, _, _) do
-    with {:ok, sales} <- Ventures.sales() |> IO.inspect() do
+    with {:ok, sales} <- Ventures.sales() do
       Relay.Connection.from_list(sales, %{first: 100})
     end
   end

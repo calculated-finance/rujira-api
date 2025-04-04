@@ -57,4 +57,27 @@ defmodule Rujira.Merge.Account do
       _ -> :error
     end
   end
+
+  # Mocking the SharePool::ownership query from the contract
+  def ownership(%{"size" => size, "shares" => shares}, amount) do
+    with {size, ""} <- Decimal.parse(size),
+         {shares, ""} <- Decimal.parse(shares),
+         {amount, ""} <- Decimal.parse(amount) do
+      rate =
+        if shares == 0 do
+          "0"
+        else
+          size
+          |> Decimal.mult(amount)
+          |> Decimal.div(shares)
+          |> Decimal.round(0, :floor)
+          |> Decimal.to_integer()
+          |> Integer.to_string()
+        end
+
+      rate
+    else
+      _ -> "0"
+    end
+  end
 end

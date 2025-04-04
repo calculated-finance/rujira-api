@@ -2,6 +2,7 @@ defmodule Rujira.Contract do
   @moduledoc """
   Convenience methods for querying CosmWasm smart contracts
   """
+  alias Cosmwasm.Wasm.V1.QueryRawContractStateRequest
   alias Cosmwasm.Wasm.V1.ContractInfo
   alias Cosmwasm.Wasm.V1.CodeInfoResponse
   alias Cosmwasm.Wasm.V1.QueryCodesRequest
@@ -161,6 +162,21 @@ defmodule Rujira.Contract do
         end
       end
     )
+  end
+
+  @spec query_state_raw(String.t(), binary()) ::
+          {:ok, term()} | {:error, GRPC.RPCError.t()}
+  def query_state_raw(address, query) do
+    case Thorchain.Node.stub(
+           &Stub.raw_contract_state/2,
+           %QueryRawContractStateRequest{
+             address: address,
+             query_data: query
+           }
+         ) do
+      {:ok, %{data: ""}} -> {:error, :not_found}
+      {:ok, %{data: data}} -> Jason.decode(data)
+    end
   end
 
   @spec query_state_smart(String.t(), map()) ::
