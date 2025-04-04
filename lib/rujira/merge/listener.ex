@@ -43,7 +43,7 @@ defmodule Rujira.Merge.Listener do
   defp scan_events(attributes, collection \\ [])
 
   defp scan_events(
-         [%{"type" => "wasm-rujira-merge/" <> _}, %{"account" => account} = event | rest],
+         [%{"type" => "wasm-rujira-merge/" <> _, "account" => account} = event | rest],
          collection
        ) do
     address = Map.get(event, "_contract_address")
