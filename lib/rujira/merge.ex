@@ -114,6 +114,7 @@ defmodule Rujira.Merge do
              {:ok, {:ok, pool}}, {:ok, acc} -> {:ok, [pool | acc]}
              {:ok, {:error, error}}, _ -> {:error, error}
              {:error, err}, _ -> {:error, err}
+             _, {:error, err} -> {:error, err}
            end) do
       {:ok, accounts}
     end
