@@ -65,7 +65,7 @@ defmodule RujiraWeb.Schema.MergeTypes do
   end
 
   @desc "A merge_account represents data about account address related to the merge pool"
-  object :merge_account do
+  node object(:merge_account) do
     field :pool, non_null(:merge_pool)
     @desc "The amount of merge token that has been deposited by the account"
     field :merged, non_null(:balance) do

@@ -30,10 +30,12 @@ defmodule Rujira.Merge.Listener do
       |> scan_events()
       |> Enum.uniq()
 
-    for a <- addresses do
+    for {a, account} <- addresses do
       Logger.debug("#{__MODULE__} change #{a}")
 
       id = Absinthe.Relay.Node.to_global_id(:merge_pool, a, RujiraWeb.Schema)
+      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+      id = Absinthe.Relay.Node.to_global_id(:merge_account, "#{a}/#{account}", RujiraWeb.Schema)
       Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
     end
   end
@@ -41,11 +43,11 @@ defmodule Rujira.Merge.Listener do
   defp scan_events(attributes, collection \\ [])
 
   defp scan_events(
-         [%{"type" => "wasm-rujira-merge/" <> _} = event | rest],
+         [%{"type" => "wasm-rujira-merge/" <> _}, %{"account" => account} = event | rest],
          collection
        ) do
     address = Map.get(event, "_contract_address")
-    scan_events(rest, [address | collection])
+    scan_events(rest, [{address, account} | collection])
   end
 
   defp scan_events([_ | rest], collection), do: scan_events(rest, collection)

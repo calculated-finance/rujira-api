@@ -24,6 +24,7 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Accounts.Layer1{}, _), do: :layer_1_account
   def type(%Assets.Asset{}, _), do: :asset
   def type(%Bank.Supply{}, _), do: :bank_supply
+  def type(%Merge.Account{}, _), do: :merge_account
   def type(%Merge.Pool{}, _), do: :merge_pool
   def type(%Fin.Pair{}, _), do: :fin_pair
   def type(%Fin.Book{}, _), do: :fin_book
@@ -51,6 +52,9 @@ defmodule RujiraWeb.Resolvers.Node do
 
       {:ok, %{type: :bank_supply, id: id}} ->
         Bank.supply(id)
+
+      {:ok, %{type: :merge_account, id: id}} ->
+        Merge.account_from_id(id)
 
       {:ok, %{type: :merge_pool, id: id}} ->
         Merge.pool_from_id(id)

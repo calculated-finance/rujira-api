@@ -96,6 +96,15 @@ defmodule Rujira.Merge do
     end
   end
 
+  def account_from_id(id) do
+    [pool, account] = String.split(id, "/")
+
+    with {:ok, pool} <- get_pool(pool),
+         {:ok, account} <- load_account(pool, account) do
+      {:ok, account}
+    end
+  end
+
   @spec load_accounts(String.t()) :: {:ok, list(Account.t())} | {:error, GRPC.RPCError.t()}
   def load_accounts(account) do
     with {:ok, pools} <- Rujira.Merge.list_pools(),
