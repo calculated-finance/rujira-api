@@ -53,7 +53,7 @@ defmodule RujiraWeb.Resolvers.Node do
         Bank.supply(id)
 
       {:ok, %{type: :merge_pool, id: id}} ->
-        {:ok, %Merge.Pool{id: id, address: id}}
+        Merge.pool_from_id(id)
 
       {:ok, %{type: :fin_pair, id: id}} ->
         Fin.pair_from_id(id)

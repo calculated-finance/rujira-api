@@ -47,6 +47,13 @@ defmodule Rujira.Merge do
   @spec get_pool(String.t()) :: {:ok, Pool.t()} | {:error, :not_found}
   def get_pool(address), do: Contract.get({Pool, address})
 
+  def pool_from_id(id) do
+    with {:ok, pool} <- get_pool(id),
+         {:ok, pool} <- load_pool(pool) do
+      {:ok, pool}
+    end
+  end
+
   @doc """
   Loads the current Status into the Pool
   """
