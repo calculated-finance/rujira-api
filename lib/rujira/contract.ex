@@ -165,7 +165,7 @@ defmodule Rujira.Contract do
   end
 
   @spec query_state_raw(String.t(), binary()) ::
-          {:ok, term()} | {:error, GRPC.RPCError.t()}
+          {:ok, term()} | {:error, :not_found} | {:error, GRPC.RPCError.t()}
   def query_state_raw(address, query) do
     case Thorchain.Node.stub(
            &Stub.raw_contract_state/2,

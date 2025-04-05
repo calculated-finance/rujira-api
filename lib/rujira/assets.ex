@@ -45,8 +45,6 @@ defmodule Rujira.Assets do
   end
 
   def symbol("x/" <> id), do: String.upcase(id)
-  def symbol("GAIA.RKUJI"), do: "rKUJI"
-  def symbol("KUJI.RKUJI"), do: "rKUJI"
 
   def symbol(str) do
     [_, v] = String.split(str, [".", "-"], parts: 2)

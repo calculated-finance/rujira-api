@@ -12,16 +12,18 @@ defmodule RujiraWeb.Resolvers.Token do
   For Layer 1 assets, this will return a value if the Layer 1 chain is Cosmos SDK
   For Secured assets, this will return the THORChain x/bank denom string for the secured asset
   """
-  def denom(%{asset: %Asset{type: :secured, id: id}}, _, _),
+  def native(%{asset: %Asset{type: :secured, id: id}}, _, _),
     do: {:ok, %{denom: String.downcase(id)}}
 
-  def denom(%{asset: %Asset{chain: "THOR"} = a}, _, _) do
+  def native(%{asset: %Asset{chain: "THOR"} = a}, _, _) do
     with {:ok, denom} <- Assets.to_native(a) do
       {:ok, %{denom: denom}}
     end
   end
 
-  def denom(%{asset: %Asset{chain: "KUJI", symbol: symbol}}, _, _) do
+  def native(%{asset: %Asset{chain: "KUJI", symbol: symbol}}, _, _) do
+    IO.inspect(symbol)
+
     with {:ok, denom} <- Rujira.Chains.Kuji.to_denom(symbol) do
       {:ok, %{denom: denom}}
     else
@@ -29,7 +31,7 @@ defmodule RujiraWeb.Resolvers.Token do
     end
   end
 
-  def denom(%{asset: %Asset{id: "GAIA." <> id}}, _, _) do
+  def native(%{asset: %Asset{id: "GAIA." <> id}}, _, _) do
     with {:ok, denom} <- Rujira.Chains.Gaia.to_denom(id) do
       {:ok, %{denom: denom}}
     else
@@ -37,7 +39,7 @@ defmodule RujiraWeb.Resolvers.Token do
     end
   end
 
-  def denom(_, _, _) do
+  def native(_, _, _) do
     {:ok, nil}
   end
 

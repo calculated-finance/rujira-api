@@ -47,7 +47,7 @@ defmodule RujiraWeb.Schema.TokenTypes do
     @desc "The THORChain secured asset string (eg BTC-BTC, GAIA-ATOM)"
     field :secured, :asset, resolve: &RujiraWeb.Resolvers.Token.secured/3
     @desc "The Cosmos SDK x/bank token denom string (eg btc-btc, rune, uatom)"
-    field :native, :denom, resolve: &RujiraWeb.Resolvers.Token.denom/3
+    field :native, :denom, resolve: &RujiraWeb.Resolvers.Token.native/3
   end
 
   enum :asset_type do
