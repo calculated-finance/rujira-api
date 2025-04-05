@@ -130,8 +130,6 @@ defmodule Thorchain do
   end
 
   def tx_in(hash) do
-    not_found = "tx: #{String.upcase(hash)} doesn't exist"
-
     with {:ok,
           %QueryTxResponse{
             observed_tx: %{tx: tx} = observed_tx,
@@ -152,11 +150,8 @@ defmodule Thorchain do
          )
        )}
     else
-      {:error, %GRPC.RPCError{status: 2, message: ^not_found}} ->
+      {:error, _} ->
         {:ok, %{id: hash, observed_tx: nil, finalized_events: nil, finalized_height: nil}}
-
-      err ->
-        err
     end
   end
 
