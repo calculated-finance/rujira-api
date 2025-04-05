@@ -8,11 +8,8 @@ defmodule Rujira.Chains.Kuji do
   @rpc "kujira-grpc.bryanlabs.net"
 
   def balances(address, _assets) do
-    req = %QueryAllBalancesRequest{address: address, pagination: %PageRequest{limit: 100}}
-
     with {:ok, conn} <- connection(),
-         {:ok, %QueryAllBalancesResponse{balances: balances}} <-
-           all_balances(conn, req) do
+         {:ok, balances} <- balances_page(conn, address) do
       balances =
         Enum.reduce(balances, [], fn e, agg ->
           case Rujira.Chains.Kuji.map_coin(e) do
@@ -22,6 +19,21 @@ defmodule Rujira.Chains.Kuji do
         end)
 
       {:ok, balances}
+    end
+  end
+
+  def balances_page(conn, address, pagination \\ %PageRequest{limit: 100})
+
+  def balances_page(conn, address, %PageRequest{} = pagination) do
+    req = %QueryAllBalancesRequest{address: address, pagination: pagination}
+
+    with {:ok, %QueryAllBalancesResponse{balances: balances, pagination: %{next_key: next_key}}}
+         when next_key != "" <-
+           all_balances(conn, req),
+         {:ok, next} <- balances_page(conn, address, %PageRequest{key: next_key, limit: 100}) do
+      {:ok, balances ++ next}
+    else
+      {:ok, %QueryAllBalancesResponse{balances: balances}} -> {:ok, balances}
     end
   end
 
