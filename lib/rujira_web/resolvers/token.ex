@@ -22,8 +22,6 @@ defmodule RujiraWeb.Resolvers.Token do
   end
 
   def native(%{asset: %Asset{chain: "KUJI", symbol: symbol}}, _, _) do
-    IO.inspect(symbol)
-
     with {:ok, denom} <- Rujira.Chains.Kuji.to_denom(symbol) do
       {:ok, %{denom: denom}}
     else
