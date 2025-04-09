@@ -39,7 +39,7 @@ defmodule RujiraWeb.Schema.StakingTypes do
     @desc "The contract, payload and limit used to convert the collected revenue to the bonded token"
     field :revenue_converter, non_null(:revenue_converter_type) do
       resolve(fn %{revenue_converter: [address, execute_msg, limit]}, _, _ ->
-        {:ok, %{address: address, execute_msg: Base.encode64(execute_msg), limit: limit}}
+        {:ok, %{address: address, execute_msg: Base.decode64!(execute_msg), limit: limit}}
       end)
     end
 
