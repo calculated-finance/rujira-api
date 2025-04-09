@@ -3,11 +3,13 @@ defmodule Rujira.Staking do
   Rujira Staking.
   """
 
+  alias Rujira.Staking.Pool.Status
   alias Rujira.Staking.Account
   alias Rujira.Staking.Pool
   alias Rujira.Staking.Account
+  alias Rujira.Contract
 
-  @code_ids Application.compile_env(:rujira, __MODULE__, code_ids: [1])
+  @code_ids Application.compile_env(:rujira, __MODULE__, code_ids: [100])
             |> Keyword.get(:code_ids)
 
   @doc """
@@ -32,27 +34,7 @@ defmodule Rujira.Staking do
 
   @spec list_pools(list(integer())) ::
           {:ok, list(Pool.t())} | {:error, GRPC.RPCError.t()}
-  def list_pools(code_ids \\ @code_ids) when is_list(code_ids) do
-    {:ok,
-     [
-       %Pool{
-         address: "sthor1",
-         bond_denom: "THOR-RUJI",
-         revenue_denom: "eth-usdc-0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-         revenue_converter: {"contract1", <<1, 2, 3>>, 1000},
-         status: :not_loaded,
-         id: "sthor1"
-       },
-       %Pool{
-         address: "sthor2",
-         bond_denom: "THOR-RUJI",
-         revenue_denom: "eth-usdc-0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-         revenue_converter: {"contract2", <<4, 5, 6>>, 2000},
-         status: :not_loaded,
-         id: "sthor2"
-       }
-     ]}
-  end
+  def list_pools(code_ids \\ @code_ids) when is_list(code_ids), do: Contract.list(Pool, code_ids)
 
   # def list_pools(code_ids \\ @code_ids) when is_list(code_ids),
   #   do: Contract.list(Pool, code_ids)
@@ -63,17 +45,10 @@ defmodule Rujira.Staking do
   @spec load_pool(Pool.t()) :: {:ok, Pool.t()} | {:error, GRPC.RPCError.t()}
 
   def load_pool(pool) do
-    {:ok,
-     %{
-       pool
-       | status: %Pool.Status{
-           account_bond: 1000,
-           account_revenue: 2000,
-           liquid_bond_shares: 3000,
-           liquid_bond_size: 4000,
-           pending_revenue: 5000
-         }
-     }}
+    with {:ok, status} <- Contract.query_state_smart(pool.address, %{status: %{}}),
+         {:ok, status} <- Status.from_query(status) do
+      {:ok, %{pool | status: status}}
+    end
   end
 
   # def load_pool(pool) do
