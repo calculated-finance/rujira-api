@@ -3,6 +3,23 @@ defmodule RujiraWeb.Schema.StakingTypes do
   use Absinthe.Relay.Schema.Notation, :modern
   alias Rujira.Assets
 
+  object :staking do
+    @desc "Staking Pool for single-sided RUJI staking"
+    field :single, :staking_pool do
+      resolve(&RujiraWeb.Resolvers.Staking.single/3)
+    end
+
+    @desc "Staking Pool for dual RUJI-RUNE LP staking"
+    field :dual, :staking_pool do
+      resolve(&RujiraWeb.Resolvers.Staking.dual/3)
+    end
+
+    @desc "Revenue converter that collects revenue from all apps and delivers it to the staking pools"
+    field :revenue, :revenue_converter do
+      resolve(&RujiraWeb.Resolvers.Staking.revenue/3)
+    end
+  end
+
   @desc "A staking_pool represents the configuration about a rujira-staking contract"
   node object(:staking_pool) do
     field :address, non_null(:string)
@@ -19,6 +36,7 @@ defmodule RujiraWeb.Schema.StakingTypes do
       end)
     end
 
+    @desc "The contract, payload and limit used to convert the collected revenue to the bonded token"
     field :revenue_converter, non_null(:revenue_converter_type) do
       resolve(fn %{revenue_converter: [address, execute_msg, limit]}, _, _ ->
         {:ok, %{address: address, execute_msg: Base.encode64(execute_msg), limit: limit}}
@@ -33,6 +51,12 @@ defmodule RujiraWeb.Schema.StakingTypes do
       arg(:resolution, non_null(:integer))
       resolve(&RujiraWeb.Resolvers.Staking.summary/3)
     end
+  end
+
+  object :revenue_converter do
+    field :balances, non_null(list_of(non_null(:balance)))
+    field :target_assets, non_null(list_of(non_null(:asset)))
+    field :target_addresses, non_null(list_of(non_null(:address)))
   end
 
   @desc "A staking_status represents current status about the rujira-staking contract"

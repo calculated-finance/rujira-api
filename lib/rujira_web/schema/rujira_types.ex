@@ -12,7 +12,7 @@ defmodule RujiraWeb.Schema.RujiraTypes do
       resolve(&Resolvers.Fin.resolver/3)
     end
 
-    field :staking, non_null(list_of(non_null(:staking_pool))) do
+    field :staking, non_null(:staking) do
       resolve(&Resolvers.Staking.resolver/3)
     end
 
