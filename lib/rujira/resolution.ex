@@ -54,26 +54,32 @@ defmodule Rujira.Resolution do
   def truncate(%DateTime{} = datetime, "12M"),
     do: datetime |> truncate("1M") |> Map.put(:month, 1)
 
-  def shift_from_back(from, period, resolution) do
-    case Integer.parse(resolution) do
-      {res, ""} ->
-        from |> DateTime.add(-period * res, :minute)
+  def shift_from_back(from, period, "1D"), do: DateTime.add(from, -period, :day)
 
-      _ ->
-        case resolution do
-          "1D" -> DateTime.add(from, -period * 1440, :minute)
-          "1M" -> DateTime.add(from, -period * 43200, :minute)
-          "12M" -> DateTime.add(from, -period * 518_400, :minute)
-          _ -> from
-        end
-    end
+  def shift_from_back(from, period, "1M") do
+    m_shift = rem(period, 12)
+    y_shift = div(period, 12)
+
+    {year, month} =
+      if from.month < m_shift do
+        {from.year - y_shift - 1, 12 + from.month - m_shift}
+      else
+        {from.year - y_shift, from.month - m_shift}
+      end
+
+    %{from | year: year, month: month}
   end
+
+  def shift_from_back(from, period, "12M"), do: from |> Map.update!(:year, &(&1 - period))
+
+  def shift_from_back(from, period, resolution),
+    do: DateTime.add(from, -period * resolution, :minute)
 
   def with_range(q, from, to, "1") do
     with_cte(q, "bins",
       as:
         fragment(
-          "SELECT bin + '1 minute'::interval * -1 min, bin max from generate_series(?::timestamptz, ?::timestamptz, '1 minute') bin",
+          "SELECT bin + '1 minute'::interval * -1 min, bin max from generate_series(?::timestamp, ?::timestamp, '1 minute') bin",
           ^from,
           ^to
         )
@@ -84,7 +90,7 @@ defmodule Rujira.Resolution do
     with_cte(q, "bins",
       as:
         fragment(
-          "SELECT bin min, bin + '3 minute' max from generate_series(?::timestamptz, ?::timestamptz, '3 minute') bin",
+          "SELECT bin min, bin + '3 minute' max from generate_series(?::timestamp, ?::timestamp, '3 minute') bin",
           ^from,
           ^to
         )
@@ -95,7 +101,7 @@ defmodule Rujira.Resolution do
     with_cte(q, "bins",
       as:
         fragment(
-          "SELECT bin min, bin + '5 minute' max from generate_series(?::timestamptz, ?::timestamptz, '5 minute') bin",
+          "SELECT bin min, bin + '5 minute' max from generate_series(?::timestamp, ?::timestamp, '5 minute') bin",
           ^from,
           ^to
         )
@@ -106,7 +112,7 @@ defmodule Rujira.Resolution do
     with_cte(q, "bins",
       as:
         fragment(
-          "SELECT bin min, bin + '15 minute' max from generate_series(?::timestamptz, ?::timestamptz, '15 minute') bin",
+          "SELECT bin min, bin + '15 minute' max from generate_series(?::timestamp, ?::timestamp, '15 minute') bin",
           ^from,
           ^to
         )
@@ -117,7 +123,7 @@ defmodule Rujira.Resolution do
     with_cte(q, "bins",
       as:
         fragment(
-          "SELECT bin min, bin + '30 minute' max from generate_series(?::timestamptz, ?::timestamptz, '30 minute') bin",
+          "SELECT bin min, bin + '30 minute' max from generate_series(?::timestamp, ?::timestamp, '30 minute') bin",
           ^from,
           ^to
         )
@@ -128,7 +134,7 @@ defmodule Rujira.Resolution do
     with_cte(q, "bins",
       as:
         fragment(
-          "SELECT bin min, bin + '60 minute' max from generate_series(?::timestamptz, ?::timestamptz, '60 minute') bin",
+          "SELECT bin min, bin + '60 minute' max from generate_series(?::timestamp, ?::timestamp, '60 minute') bin",
           ^from,
           ^to
         )
@@ -139,7 +145,7 @@ defmodule Rujira.Resolution do
     with_cte(q, "bins",
       as:
         fragment(
-          "SELECT bin min, bin + '120 minute' max from generate_series(?::timestamptz, ?::timestamptz, '120 minute') bin",
+          "SELECT bin min, bin + '120 minute' max from generate_series(?::timestamp, ?::timestamp, '120 minute') bin",
           ^from,
           ^to
         )
@@ -150,7 +156,7 @@ defmodule Rujira.Resolution do
     with_cte(q, "bins",
       as:
         fragment(
-          "SELECT bin min, bin + '180 minute' max from generate_series(?::timestamptz, ?::timestamptz, '180 minute') bin",
+          "SELECT bin min, bin + '180 minute' max from generate_series(?::timestamp, ?::timestamp, '180 minute') bin",
           ^from,
           ^to
         )
@@ -161,7 +167,7 @@ defmodule Rujira.Resolution do
     with_cte(q, "bins",
       as:
         fragment(
-          "SELECT bin min, bin + '240 minute' max from generate_series(?::timestamptz, ?::timestamptz, '240 minute') bin",
+          "SELECT bin min, bin + '240 minute' max from generate_series(?::timestamp, ?::timestamp, '240 minute') bin",
           ^from,
           ^to
         )
@@ -172,7 +178,7 @@ defmodule Rujira.Resolution do
     with_cte(q, "bins",
       as:
         fragment(
-          "SELECT bin min, bin + '1 day' max from generate_series(?::timestamptz, ?::timestamptz, '1 day') bin",
+          "SELECT bin min, bin + '1 day' max from generate_series(?::timestamp, ?::timestamp, '1 day') bin",
           ^from,
           ^to
         )
@@ -183,7 +189,7 @@ defmodule Rujira.Resolution do
     with_cte(q, "bins",
       as:
         fragment(
-          "SELECT bin min, bin + '1 month' max from generate_series(?::timestamptz, ?::timestamptz, '1 month') bin",
+          "SELECT bin min, bin + '1 month' max from generate_series(?::timestamp, ?::timestamp, '1 month') bin",
           ^from,
           ^to
         )
@@ -194,7 +200,7 @@ defmodule Rujira.Resolution do
     with_cte(q, "bins",
       as:
         fragment(
-          "SELECT bin min, bin + '1 year' max from generate_series(?::timestamptz, ?::timestamptz, '1 year') bin",
+          "SELECT bin min, bin + '1 year' max from generate_series(?::timestamp, ?::timestamp, '1 year') bin",
           ^from,
           ^to
         )

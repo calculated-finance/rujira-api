@@ -51,7 +51,7 @@ defmodule Rujira.Analytics.SwapQueries do
       base_query(shifted_from, to, "rj")
       |> subquery()
       |> join(:right, [s], b in "bins", on: s.timestamp >= b.min and s.timestamp < b.max)
-      |> Resolution.with_range(shifted_from, to, resolution)
+      |> Resolution.with_range(shifted_from, Resolution.truncate(to, resolution), resolution)
       |> volume_by_asset_cte(shifted_from, to, "rj")
       |> volume_by_chain_cte(shifted_from, to, "rj")
       |> unique_users_cte(shifted_from, to, "rj")
@@ -64,12 +64,13 @@ defmodule Rujira.Analytics.SwapQueries do
         bin: b.min,
         resolution: ^resolution,
         swaps: fragment("COALESCE(?, 0)", over(count(s.idx), :bins)),
-        affiliate_fee: fragment("COALESCE(?, 0)", over(sum(s.affiliate_fee_in_usd), :bins)),
+        affiliate_fee:
+          fragment("COALESCE(CAST(? AS bigint), 0)", over(sum(s.affiliate_fee_in_usd), :bins)),
         liquidity_fee_paid_to_tc:
-          fragment("COALESCE(?, 0)", over(sum(s.liquidity_fee_in_usd), :bins)),
+          fragment("COALESCE(CAST(? AS bigint), 0)", over(sum(s.liquidity_fee_in_usd), :bins)),
         liquidity_fee_paid_to_tc_share_over_total:
           fragment("COALESCE(?, 0)", over(sum(s.liquidity_fee_in_usd), :bins) / v.volume),
-        volume: fragment("COALESCE(?, 0)", over(sum(s.volume_usd), :bins)),
+        volume: fragment("COALESCE(CAST(? AS bigint), 0)", over(sum(s.volume_usd), :bins)),
         volume_share_over_total:
           fragment("COALESCE(?, 0)", over(sum(s.volume_usd), :bins) / v.volume),
         swap_volume_by_asset: fragment("COALESCE(?, '[]')", a.data),
@@ -100,27 +101,21 @@ defmodule Rujira.Analytics.SwapQueries do
         unique_swap_users: max(q.unique_swap_users)
       })
       |> subquery()
-      |> where([s], s.bin >= ^from and s.bin <= ^to)
       |> select([s], %{
         bin: s.bin,
         resolution: s.resolution,
-        swaps: %{
-          value: s.swaps,
-          moving_avg: fragment("COALESCE(?, 0)", over(avg(s.swaps), :ma))
-        },
-        affiliate_fee: %{
-          value: s.affiliate_fee,
-          moving_avg: fragment("COALESCE(?, 0)", over(avg(s.affiliate_fee), :ma))
-        },
-        liquidity_fee_paid_to_tc: %{
-          value: s.liquidity_fee_paid_to_tc,
-          moving_avg: fragment("COALESCE(?, 0)", over(avg(s.liquidity_fee_paid_to_tc), :ma))
-        },
+        swaps_value: s.swaps,
+        swaps_moving_avg: fragment("COALESCE(CAST(? AS bigint), 0)", over(avg(s.swaps), :ma)),
+        affiliate_fee_value: s.affiliate_fee,
+        affiliate_fee_moving_avg:
+          fragment("COALESCE(CAST(? AS bigint), 0)", over(avg(s.affiliate_fee), :ma)),
+        liquidity_fee_paid_to_tc_value: s.liquidity_fee_paid_to_tc,
+        liquidity_fee_paid_to_tc_moving_avg:
+          fragment("COALESCE(CAST(? AS bigint), 0)", over(avg(s.liquidity_fee_paid_to_tc), :ma)),
         liquidity_fee_paid_to_tc_share_over_total: s.liquidity_fee_paid_to_tc_share_over_total,
-        volume: %{
-          value: s.volume,
-          moving_avg: fragment("COALESCE(?, 0)", over(avg(s.volume), :ma))
-        },
+        volume_value: s.volume,
+        volume_moving_avg:
+          fragment("COALESCE(CAST(? AS bigint), 0)", over(avg(coalesce(s.volume, 0)), :ma)),
         volume_share_over_total: s.volume_share_over_total,
         unique_swap_users: s.unique_swap_users,
         swap_volume_by_asset: s.swap_volume_by_asset,
@@ -128,11 +123,37 @@ defmodule Rujira.Analytics.SwapQueries do
       })
       |> windows([s],
         ma: [
-          partition_by: s.bin,
           order_by: s.bin,
           frame: fragment("ROWS BETWEEN ? PRECEDING AND CURRENT ROW", ^period)
         ]
       )
+      |> subquery()
+      |> where([s], s.bin >= ^from and s.bin <= ^to)
+      |> select([s], %{
+        bin: s.bin,
+        resolution: s.resolution,
+        swaps: %{
+          value: s.swaps_value,
+          moving_avg: s.swaps_moving_avg
+        },
+        affiliate_fee: %{
+          value: s.affiliate_fee_value,
+          moving_avg: s.affiliate_fee_moving_avg
+        },
+        liquidity_fee_paid_to_tc: %{
+          value: s.liquidity_fee_paid_to_tc_value,
+          moving_avg: s.liquidity_fee_paid_to_tc_moving_avg
+        },
+        liquidity_fee_paid_to_tc_share_over_total: s.liquidity_fee_paid_to_tc_share_over_total,
+        volume: %{
+          value: s.volume_value,
+          moving_avg: s.volume_moving_avg
+        },
+        volume_share_over_total: s.volume_share_over_total,
+        unique_swap_users: s.unique_swap_users,
+        swap_volume_by_asset: s.swap_volume_by_asset,
+        swap_volume_by_chain: s.swap_volume_by_chain
+      })
       |> order_by(asc: :bin)
     end
   end
@@ -148,7 +169,7 @@ defmodule Rujira.Analytics.SwapQueries do
     query =
       base_query(from, to, affiliate)
       |> subquery()
-      |> join(:inner, [s], b in "bins", on: s.timestamp >= b.min and s.timestamp < b.max)
+      |> join(:right, [s], b in "bins", on: s.timestamp >= b.min and s.timestamp < b.max)
       |> group_by([s, b], b.min)
       |> select([s, b], %{
         bin: b.min,
