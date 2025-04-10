@@ -105,6 +105,13 @@ defmodule RujiraWeb.Schema.StakingTypes do
 
   object :revenue_converter_type do
     field :address, non_null(:address)
+
+    field :contract, non_null(:contract_info) do
+      resolve(fn %{address: address}, _, _ ->
+        Rujira.Contract.info(address)
+      end)
+    end
+
     field :execute_msg, non_null(:string)
     field :limit, non_null(:bigint)
   end

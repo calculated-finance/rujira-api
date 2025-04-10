@@ -4,6 +4,8 @@ defmodule Rujira.Assets do
   alias Thorchain.Types.Query.Stub, as: Q
   alias __MODULE__.Asset
 
+  @delimiters [".", "-", "/", "~"]
+
   defmemo assets() do
     with {:ok, %{pools: pools}} <- Thorchain.Node.stub(&Q.pools/2, %QueryPoolsRequest{}) do
       Enum.map(pools, &from_string(&1.asset))
@@ -40,21 +42,21 @@ defmodule Rujira.Assets do
   def chain("x/" <> _), do: "THOR"
 
   def chain(str) do
-    [c | _] = String.split(str, [".", "-"])
+    [c | _] = String.split(str, @delimiters)
     c
   end
 
   def symbol("x/" <> id), do: String.upcase(id)
 
   def symbol(str) do
-    [_, v] = String.split(str, [".", "-"], parts: 2)
+    [_, v] = String.split(str, @delimiters, parts: 2)
     v
   end
 
   def ticker("x/" <> id), do: String.upcase(id)
 
   def ticker(str) do
-    [_, v] = String.split(str, [".", "-"], parts: 2)
+    [_, v] = String.split(str, @delimiters, parts: 2)
     [sym | _] = String.split(v, "-")
     sym
   end
@@ -78,6 +80,8 @@ defmodule Rujira.Assets do
   def type(str) do
     cond do
       String.match?(str, ~r/^[A-Z]+\./) -> :layer_1
+      String.match?(str, ~r/^[A-Z]+\//) -> :synth
+      String.match?(str, ~r/^[A-Z]+~/) -> :trade
       String.match?(str, ~r/^[A-Z]+-/) -> :secured
       true -> :native
     end
@@ -96,13 +100,13 @@ defmodule Rujira.Assets do
   def to_layer1(%Asset{chain: "THOR"}), do: nil
 
   def to_layer1(%Asset{id: id} = a) do
-    %{a | type: :layer_1, id: String.replace(id, ~r/[\.\-]/, ".")}
+    %{a | type: :layer_1, id: String.replace(id, ~r/[\.\-\/]/, ".")}
   end
 
   def to_secured(%Asset{chain: "THOR"}), do: nil
 
   def to_secured(%Asset{id: id} = a) do
-    %{a | type: :secured, id: String.replace(id, ~r/[\.\-]/, "-")}
+    %{a | type: :secured, id: String.replace(id, ~r/[\.\-\/]/, "-")}
   end
 
   @doc """
@@ -133,14 +137,14 @@ defmodule Rujira.Assets do
   end
 
   def from_denom(denom) do
-    case denom |> String.upcase() |> String.split("-", parts: 2) do
+    case denom |> String.upcase() |> String.split(@delimiters, parts: 2) do
       [chain, symbol] ->
         [ticker | _] = String.split(symbol, "-")
 
         {:ok,
          %Asset{
-           id: "#{chain}-#{symbol}",
-           type: :secured,
+           id: String.upcase(denom),
+           type: type(String.upcase(denom)),
            chain: chain,
            symbol: symbol,
            ticker: ticker

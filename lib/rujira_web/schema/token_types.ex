@@ -54,6 +54,7 @@ defmodule RujiraWeb.Schema.TokenTypes do
     value(:layer_1)
     value(:secured)
     value(:native)
+    value(:synth)
   end
 
   defp map(%{price: price, change: change}), do: %{current: price, change_day: change}
