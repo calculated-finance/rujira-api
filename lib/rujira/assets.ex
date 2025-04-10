@@ -145,7 +145,7 @@ defmodule Rujira.Assets do
          %Asset{
            id: String.upcase(denom),
            type: type(String.upcase(denom)),
-           chain: chain,
+           chain: if(chain == "BNB", do: "BSC", else: chain),
            symbol: symbol,
            ticker: ticker
          }}
