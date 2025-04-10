@@ -13,6 +13,7 @@ defmodule Rujira.Analytics.SwapQueries do
   """
 
   import Ecto.Query
+  alias Rujira.Analytics.Common
   alias Thorchain.Swaps.Swap
   alias Rujira.Resolution
 
@@ -47,11 +48,11 @@ defmodule Rujira.Analytics.SwapQueries do
   The final result returns one row per bin containing aggregated data along with moving averages.
   """
   def snapshots(from, to, resolution, period) do
-    with shifted_from <- Resolution.shift_from_back(from, period, resolution) do
+    with shifted_from <- Common.shift_from_back(from, period, resolution) do
       base_query(shifted_from, to, "rj")
       |> subquery()
       |> join(:right, [s], b in "bins", on: s.timestamp >= b.min and s.timestamp < b.max)
-      |> Resolution.with_range(shifted_from, Resolution.truncate(to, resolution), resolution)
+      |> Common.with_range(shifted_from, Resolution.truncate(to, resolution), resolution)
       |> volume_by_asset_cte(shifted_from, to, "rj")
       |> volume_by_chain_cte(shifted_from, to, "rj")
       |> unique_users_cte(shifted_from, to, "rj")
