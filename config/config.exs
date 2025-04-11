@@ -33,6 +33,7 @@ config :phoenix, :json_library, Jason
 config :cors_plug,
   origin: [
     "http://localhost:5173",
+    "http://localhost:8081",
     ~r/https:\/\/rujira-ui-main\.vercel\.app/,
     ~r/https:\/\/rujira-ui-main-git-[a-z]+-rujira\.vercel\.app/,
     "https://rujira.network"
