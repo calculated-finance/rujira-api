@@ -229,4 +229,8 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :events, non_null(list_of(non_null(:block_event)))
     field :codespace, :string
   end
+
+  object :thorchain_tcy do
+    field :claimable, non_null(:bigint)
+  end
 end

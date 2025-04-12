@@ -9,6 +9,10 @@ defmodule RujiraWeb.Schema.BalanceTypes do
     field :utxos, list_of(non_null(:utxo)) do
       resolve(&RujiraWeb.Resolvers.Balance.utxos/3)
     end
+
+    field :tcy, :thorchain_tcy do
+      resolve(&RujiraWeb.Resolvers.Thorchain.tcy/3)
+    end
   end
 
   @desc "Relacement for layer_1_balance"
@@ -16,6 +20,10 @@ defmodule RujiraWeb.Schema.BalanceTypes do
     field :asset, non_null(:asset)
     field :amount, non_null(:bigint)
     field :utxos, list_of(non_null(:utxo))
+
+    field :tcy, :thorchain_tcy do
+      resolve(&RujiraWeb.Resolvers.Thorchain.tcy/3)
+    end
   end
 
   object :utxo do

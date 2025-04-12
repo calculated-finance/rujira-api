@@ -136,4 +136,12 @@ defmodule RujiraWeb.Resolvers.Thorchain do
       Thorchain.tx_in(hash)
     end)
   end
+
+  def tcy(%{address: address, asset: %{id: asset}}, _, _) do
+    with {:ok, claimable} <- Thorchain.Tcy.claim(asset, address) do
+      {:ok, %{claimable: claimable}}
+    else
+      _ -> {:ok, nil}
+    end
+  end
 end
