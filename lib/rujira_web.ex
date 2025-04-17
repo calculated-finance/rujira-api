@@ -56,6 +56,7 @@ defmodule RujiraWeb do
     end
   end
 
+  def check_origin(%{scheme: "exp"}), do: true
   def check_origin(%{scheme: "http", host: "localhost"}), do: true
   def check_origin(%{scheme: "https", host: "rujira.network"}), do: true
   def check_origin(%{scheme: "https", host: "preview.rujira.network"}), do: true
