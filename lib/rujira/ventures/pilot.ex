@@ -289,7 +289,7 @@ defmodule Rujira.Ventures.Pilot do
       {:ok,
        %__MODULE__{
          owner: owner,
-         status: status,
+         status: String.to_existing_atom(status),
          fin: fin,
          bow: bow,
          streams: streams,
