@@ -63,7 +63,9 @@ defmodule RujiraWeb do
   def check_origin(%{scheme: "https", host: "rujira-ui-main.vercel.app"}), do: true
   def check_origin(%{scheme: "https", host: "ai.autorujira.app"}), do: true
 
-  def check_origin(%{scheme: "https", host: host}) do
+  def check_origin(%{scheme: "https", host: host} = x) do
+    IO.inspect(x)
+
     Enum.any?(
       [
         ~r/^.*\.levana\-perps\-webapp\.pages\.dev/,
