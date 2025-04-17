@@ -64,13 +64,13 @@ defmodule RujiraWeb do
   def check_origin(%{scheme: "https", host: "ai.autorujira.app"}), do: true
 
   def check_origin(%{scheme: "https", host: host} = x) do
-    IO.inspect(x)
-
     Enum.any?(
       [
         ~r/^.*\.levana\-perps\-webapp\.pages\.dev/,
         ~r/^.*\.rujiperps.com/,
-        ~r/^rujira-ui-main-git-[a-z]+-rujira\.vercel\.app/
+        ~r/^rujira-ui-main-git-[a-z]+-rujira\.vercel\.app/,
+        ~r/^preview-api\.rujira\.network/,
+        ~r/^api\.rujira\.network/
       ],
       &Regex.match?(&1, host)
     )
