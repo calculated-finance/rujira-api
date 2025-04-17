@@ -53,13 +53,9 @@ defmodule Rujira.Staking do
   def load_account(nil, _), do: {:ok, nil}
 
   def load_account(pool, account) do
-    {:ok,
-     %Account{
-       pool: pool,
-       account: account,
-       bonded: 10000,
-       pending_revenue: 20000
-     }}
+    with {:ok, res} <- Contract.query_state_smart(pool.address, %{account: %{addr: account}}) do
+      Account.from_query(pool, res)
+    end
   end
 
   def get_summary(_address, _resolution) do
