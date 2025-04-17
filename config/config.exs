@@ -36,7 +36,8 @@ config :cors_plug,
     "http://localhost:8081",
     ~r/https:\/\/rujira-ui-main\.vercel\.app/,
     ~r/https:\/\/rujira-ui-main-git-[a-z]+-rujira\.vercel\.app/,
-    "https://rujira.network"
+    "https://rujira.network",
+    ~r/^exp:\/\/.*/
   ],
   max_age: 86400,
   methods: ["GET", "POST"]
