@@ -56,26 +56,6 @@ defmodule RujiraWeb do
     end
   end
 
-  def check_origin(%{scheme: "exp"}), do: true
-  def check_origin(%{scheme: "http", host: "localhost"}), do: true
-  def check_origin(%{scheme: "https", host: "rujira.network"}), do: true
-  def check_origin(%{scheme: "https", host: "preview.rujira.network"}), do: true
-  def check_origin(%{scheme: "https", host: "rujira-ui-main.vercel.app"}), do: true
-  def check_origin(%{scheme: "https", host: "ai.autorujira.app"}), do: true
-
-  def check_origin(%{scheme: "https", host: host} = x) do
-    Enum.any?(
-      [
-        ~r/^.*\.levana\-perps\-webapp\.pages\.dev/,
-        ~r/^.*\.rujiperps.com/,
-        ~r/^rujira-ui-main-git-[a-z]+-rujira\.vercel\.app/,
-        ~r/^preview-api\.rujira\.network/,
-        ~r/^api\.rujira\.network/
-      ],
-      &Regex.match?(&1, host)
-    )
-  end
-
   @doc """
   When used, dispatch to the appropriate controller/live_view/etc.
   """

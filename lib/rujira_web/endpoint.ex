@@ -17,7 +17,7 @@ defmodule RujiraWeb.Endpoint do
     longpoll: [connect_info: [session: @session_options]]
 
   socket "/socket", RujiraWeb.Socket,
-    websocket: [check_origin: {RujiraWeb, :check_origin, []}],
+    websocket: [check_origin: false],
     longpoll: false
 
   # Serve at "/" the static files from "priv/static" directory.
