@@ -73,6 +73,11 @@ defmodule RujiraWeb.Schema.StakingTypes do
     field :pending_revenue, non_null(:bigint)
   end
 
+  object :staking_accounts do
+    field :single, :staking_account
+    field :dual, :staking_account
+  end
+
   @desc "A staking_account represents data about account address related to the staking pool"
   object :staking_account do
     field :pool, non_null(:staking_pool)
@@ -81,7 +86,9 @@ defmodule RujiraWeb.Schema.StakingTypes do
     @desc "The balance of bonded token that has been deposited by the account"
     field :bonded, non_null(:balance) do
       resolve(fn %{bonded: bonded, pool: %{bond_denom: bond_denom}}, _, _ ->
-        {:ok, %{amount: bonded, denom: bond_denom}}
+        with {:ok, asset} <- Assets.from_denom(bond_denom) do
+          {:ok, %{amount: bonded, asset: asset}}
+        end
       end)
     end
 

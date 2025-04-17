@@ -46,8 +46,16 @@ defmodule RujiraWeb.Resolvers.Staking do
     {:ok, %{single: nil, dual: nil, revenue: nil}}
   end
 
-  def account(%{address: address}, _, _) do
-    {:ok, nil}
+  def accounts(%{address: address}, _, _) do
+    Helpers.async(fn ->
+      with {:ok, single} <- Rujira.Staking.get_pool(Rujira.Staking.single()),
+           {:ok, dual} <- Rujira.Staking.get_pool(Rujira.Staking.dual()),
+           {:ok, single} <- Rujira.Staking.load_account(single, address),
+           {:ok, dual} <- Rujira.Staking.load_account(dual, address) do
+        IO.inspect(single)
+        {:ok, %{single: single, dual: dual}}
+      end
+    end)
   end
 
   def summary(%{address: address}, %{resolution: resolution}, _) do

@@ -48,8 +48,10 @@ defmodule Rujira.Staking do
   @doc """
   Loads an Account Pool by account address
   """
-  @spec load_account(Pool.t(), String.t()) ::
+  @spec load_account(Pool.t() | nil, String.t()) ::
           {:ok, Account.t()} | {:error, GRPC.RPCError.t()}
+  def load_account(nil, _), do: {:ok, nil}
+
   def load_account(pool, account) do
     {:ok,
      %Account{
