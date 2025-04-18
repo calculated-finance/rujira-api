@@ -1,5 +1,4 @@
 defmodule RujiraWeb.Resolvers.Thorchain do
-  alias Thorchain.Types.QueryInboundAddressResponse
   alias Rujira.Assets
   alias Absinthe.Resolution.Helpers
   alias Thorchain.Types.QueryInboundAddressesResponse
