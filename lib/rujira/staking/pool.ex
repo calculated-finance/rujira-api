@@ -19,10 +19,10 @@ defmodule Rujira.Staking.Pool do
     @spec from_query(map()) :: {:ok, __MODULE__.t()} | {:error, :parse_error}
     def from_query(%{
           "account_bond" => account_bond,
-          "account_revenue" => account_revenue,
+          "assigned_revenue" => account_revenue,
           "liquid_bond_shares" => liquid_bond_shares,
           "liquid_bond_size" => liquid_bond_size,
-          "pending_revenue" => pending_revenue
+          "undistributed_revenue" => pending_revenue
         }) do
       with {account_bond, ""} <- Integer.parse(account_bond),
            {account_revenue, ""} <- Integer.parse(account_revenue),
