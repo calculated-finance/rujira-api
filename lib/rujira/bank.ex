@@ -1,9 +1,10 @@
 defmodule Rujira.Bank do
   use Supervisor
+  alias __MODULE__.Transfer
   alias __MODULE__.Supply
 
   def start_link(_) do
-    children = [Supply]
+    children = [Supply, Transfer]
     Supervisor.start_link(children, strategy: :one_for_one)
   end
 
