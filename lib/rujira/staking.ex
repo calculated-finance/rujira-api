@@ -65,7 +65,7 @@ defmodule Rujira.Staking do
     expires_in: 60 * 60 * 1000 do
     Rujira.Repo.one(
       from(t in Transfer,
-        select: sum(t.amount),
+        select: fragment("SUM(?)::bigint", t.amount),
         where:
           t.denom == ^denom and t.recipient == ^address and
             t.timestamp > ^DateTime.add(DateTime.utc_now(), -days, :day)
