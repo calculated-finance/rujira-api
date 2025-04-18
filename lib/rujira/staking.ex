@@ -3,11 +3,14 @@ defmodule Rujira.Staking do
   Rujira Staking.
   """
 
+  alias Rujira.Bank.Transfer
   alias Rujira.Staking.Pool.Status
   alias Rujira.Staking.Account
   alias Rujira.Staking.Pool
   alias Rujira.Staking.Account
   alias Rujira.Contract
+  import Ecto.Query
+  use Memoize
 
   @single :rujira
           |> Application.compile_env(__MODULE__,
@@ -58,22 +61,15 @@ defmodule Rujira.Staking do
     end
   end
 
-  def get_summary(_address, _resolution) do
-    # TODO indexing revenue earned and calculate apr to retreive these info
-    {:ok,
-     %{
-       apr: [
-         10000,
-         10000,
-         10000,
-         10000,
-         10000,
-         10000,
-         10000,
-         10000,
-         10000
-       ],
-       revenue_earned: 10_000_000
-     }}
+  defmemo get_revenue(%Pool{address: address, revenue_denom: denom}, days),
+    expires_in: 60 * 60 * 1000 do
+    Rujira.Repo.one(
+      from(t in Transfer,
+        select: sum(t.amount),
+        where:
+          t.denom == ^denom and t.recipient == ^address and
+            t.timestamp > ^DateTime.add(DateTime.utc_now(), -days, :day)
+      )
+    ) || 0
   end
 end

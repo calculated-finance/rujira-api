@@ -48,8 +48,7 @@ defmodule RujiraWeb.Schema.StakingTypes do
       resolve(&RujiraWeb.Resolvers.Staking.status/3)
     end
 
-    field :summary, non_null(list_of(non_null(:summary))) do
-      arg(:resolution, non_null(:integer))
+    field :summary, non_null(:staking_summary) do
       resolve(&RujiraWeb.Resolvers.Staking.summary/3)
     end
   end
@@ -111,11 +110,15 @@ defmodule RujiraWeb.Schema.StakingTypes do
   end
 
   @desc "A summary represents apr and revenue earned calculated on a defined resolution"
-  object :summary do
+  object :staking_summary do
     @desc "list of 10 apr points equally distributed based on the defined resolution. 12 decimals."
     field :apr, non_null(list_of(non_null(:bigint)))
-    @desc "The total amount of [revenue_denom] earned by the stakers in a defined resolution"
-    field :revenue_earned, non_null(:bigint)
+    @desc "The total amount of [revenue_denom] sent to contract in the last 24 hours"
+    field :revenue1, non_null(:bigint)
+    @desc "The total amount of [revenue_denom] sent to contract in the last 7 days"
+    field :revenue7, non_null(:bigint)
+    @desc "The total amount of [revenue_denom] sent to contract in the last 30 days"
+    field :revenue30, non_null(:bigint)
   end
 
   object :revenue_converter_type do

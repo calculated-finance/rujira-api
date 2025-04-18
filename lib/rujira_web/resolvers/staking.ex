@@ -57,11 +57,25 @@ defmodule RujiraWeb.Resolvers.Staking do
     end)
   end
 
-  def summary(%{address: address}, %{resolution: resolution}, _) do
+  def summary(pool, _, _) do
     Helpers.async(fn ->
-      with {:ok, summary} <- Rujira.Staking.get_summary(address, resolution) do
-        {:ok, summary}
-      end
+      {:ok,
+       %{
+         apr: [
+           10000,
+           10000,
+           10000,
+           10000,
+           10000,
+           10000,
+           10000,
+           10000,
+           10000
+         ],
+         revenue1: Rujira.Staking.get_revenue(pool, 1),
+         revenue7: Rujira.Staking.get_revenue(pool, 7),
+         revenue30: Rujira.Staking.get_revenue(pool, 30)
+       }}
     end)
   end
 end
