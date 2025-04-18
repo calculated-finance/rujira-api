@@ -1,8 +1,21 @@
 defmodule Rujira.Chains.Thor do
+  alias Cosmos.Bank.V1beta1.QueryBalanceResponse
+  alias Cosmos.Bank.V1beta1.QueryBalanceRequest
   alias Cosmos.Bank.V1beta1.QueryAllBalancesRequest
   alias Cosmos.Bank.V1beta1.QueryAllBalancesResponse
   import Cosmos.Bank.V1beta1.Query.Stub
   alias Rujira.Assets
+
+  def balance_of(address, denom) do
+    req = %QueryBalanceRequest{address: address, denom: denom}
+
+    with {:ok, %QueryBalanceResponse{balance: %{amount: balance}}} <-
+           Thorchain.Node.stub(&balance/2, req) do
+      with {:ok, asset} <- Assets.from_denom(denom) do
+        {:ok, %{asset: asset, amount: balance}}
+      end
+    end
+  end
 
   def balances(address, _assets) do
     req = %QueryAllBalancesRequest{address: address}

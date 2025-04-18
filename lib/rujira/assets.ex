@@ -125,6 +125,17 @@ defmodule Rujira.Assets do
      %Asset{id: "THOR.#{symbol}", type: :native, chain: "THOR", symbol: symbol, ticker: symbol}}
   end
 
+  def from_denom("x/staking-x/" <> id = denom) do
+    {:ok,
+     %Asset{
+       id: denom,
+       type: :native,
+       chain: "THOR",
+       symbol: "s" <> String.upcase(id),
+       ticker: "s" <> String.upcase(id)
+     }}
+  end
+
   def from_denom("x/" <> id = denom) do
     {:ok,
      %Asset{

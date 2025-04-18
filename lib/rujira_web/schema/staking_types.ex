@@ -1,6 +1,7 @@
 defmodule RujiraWeb.Schema.StakingTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
+  alias Rujira.Chains.Thor
   alias Rujira.Assets
 
   object :staking do
@@ -89,6 +90,13 @@ defmodule RujiraWeb.Schema.StakingTypes do
         with {:ok, asset} <- Assets.from_denom(bond_denom) do
           {:ok, %{amount: bonded, asset: asset}}
         end
+      end)
+    end
+
+    @desc "The balance of liquid staked token that is held by the account"
+    field :liquid, non_null(:balance) do
+      resolve(fn %{account: address, pool: %{bond_denom: bond_denom}} = x, _, _ ->
+        Thor.balance_of(address, "x/staking-#{bond_denom}")
       end)
     end
 

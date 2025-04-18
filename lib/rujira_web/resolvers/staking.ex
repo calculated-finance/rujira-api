@@ -52,7 +52,6 @@ defmodule RujiraWeb.Resolvers.Staking do
            {:ok, dual} <- Rujira.Staking.get_pool(Rujira.Staking.dual()),
            {:ok, single} <- Rujira.Staking.load_account(single, address),
            {:ok, dual} <- Rujira.Staking.load_account(dual, address) do
-        IO.inspect(single)
         {:ok, %{single: single, dual: dual}}
       end
     end)
