@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Resolvers.Node do
+  alias RujiraWeb.Resolvers
   alias Rujira.Contract
   alias Rujira.Assets
   alias Rujira.Accounts
@@ -33,6 +34,7 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Fin.Order{}, _), do: :fin_order
   def type(%Staking.Pool{}, _), do: :staking_pool
   def type(%Contract{}, _), do: :contract
+  def type(%Thorchain.Types.QueryInboundAddressResponse{}, _), do: :inbound_address
   def type(%{observed_tx: _}, _), do: :tx_in
 
   defp resolve_id(id) do
@@ -52,6 +54,9 @@ defmodule RujiraWeb.Resolvers.Node do
 
       {:ok, %{type: :bank_supply, id: id}} ->
         Bank.supply(id)
+
+      {:ok, %{type: :inbound_address, id: id}} ->
+        Resolvers.Thorchain.inbound_address(id)
 
       {:ok, %{type: :merge_account, id: id}} ->
         Merge.account_from_id(id)

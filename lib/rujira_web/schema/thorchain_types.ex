@@ -125,7 +125,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     value(:suspended, as: "Suspended")
   end
 
-  object :inbound_address do
+  node object(:inbound_address) do
     field :chain, non_null(:chain)
     field :pub_key, :string
     field :address, non_null(:address)

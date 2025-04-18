@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Resolvers.Thorchain do
+  alias Thorchain.Types.QueryInboundAddressResponse
   alias Rujira.Assets
   alias Absinthe.Resolution.Helpers
   alias Thorchain.Types.QueryInboundAddressesResponse
@@ -83,11 +84,24 @@ defmodule RujiraWeb.Resolvers.Thorchain do
 
   def inbound_addresses(_, _, _) do
     Helpers.async(fn ->
-      with {:ok, %QueryInboundAddressesResponse{inbound_addresses: inbound_addresses}} <-
-             Thorchain.Node.stub(&Q.inbound_addresses/2, %QueryInboundAddressesRequest{}) do
-        {:ok, Enum.map(inbound_addresses, &cast_response/1)}
-      end
+      inbound_addresses()
     end)
+  end
+
+  def inbound_addresses() do
+    with {:ok, %QueryInboundAddressesResponse{inbound_addresses: inbound_addresses}} <-
+           Thorchain.Node.stub(&Q.inbound_addresses/2, %QueryInboundAddressesRequest{}) do
+      {:ok, Enum.map(inbound_addresses, &cast_response/1)}
+    end
+  end
+
+  def inbound_address(id) do
+    with {:ok, adds} <- inbound_addresses() |> IO.inspect() do
+      case Enum.find(adds, &(&1.id == id)) do
+        nil -> {:error, :not_found}
+        add -> {:ok, add}
+      end
+    end
   end
 
   defp cast_response(x) do
@@ -105,6 +119,7 @@ defmodule RujiraWeb.Resolvers.Thorchain do
       "" -> nil
       x -> x
     end)
+    |> Map.put(:id, x.chain)
   end
 
   def summary(_, _, _) do
