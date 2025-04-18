@@ -1,4 +1,6 @@
 defmodule Rujira.Prices do
+  def get("LQDY"), do: get("MNTA")
+
   def get("RUJI") do
     with {:ok, kuji} <- get("KUJI") do
       {:ok, %{price: trunc(kuji.price / 0.37), change: kuji.change}}
@@ -38,7 +40,8 @@ defmodule Rujira.Prices do
     %{price: trunc(price * 10 ** 12), change: change}
   end
 
-  def normalize(price, decimal \\ 8) when is_number(price) and is_integer(decimal) and decimal >= 0 do
+  def normalize(price, decimal \\ 8)
+      when is_number(price) and is_integer(decimal) and decimal >= 0 do
     trunc(price * 10 ** (12 - decimal))
   end
 end
