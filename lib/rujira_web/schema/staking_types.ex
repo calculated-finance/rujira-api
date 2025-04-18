@@ -95,7 +95,7 @@ defmodule RujiraWeb.Schema.StakingTypes do
 
     @desc "The balance of liquid staked token that is held by the account"
     field :liquid, non_null(:balance) do
-      resolve(fn %{account: address, pool: %{bond_denom: bond_denom}} = x, _, _ ->
+      resolve(fn %{account: address, pool: %{bond_denom: bond_denom}}, _, _ ->
         Thor.balance_of(address, "x/staking-#{bond_denom}")
       end)
     end
