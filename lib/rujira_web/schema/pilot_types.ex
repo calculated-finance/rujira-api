@@ -20,9 +20,9 @@ defmodule RujiraWeb.Schema.PilotTypes do
   end
 
   enum :pilot_status do
-    value :active
-    value :retracted
-    value :executed
+    value(:active)
+    value(:retracted)
+    value(:executed)
   end
 
   object :config do
@@ -42,7 +42,10 @@ defmodule RujiraWeb.Schema.PilotTypes do
   object :order do
     field :owner, non_null(:address)
     field :updated_at, non_null(:timestamp)
-    field :offer, non_null(:string), description: "Original offer amount, as it was at `updated_at` time"
+
+    field :offer, non_null(:string),
+      description: "Original offer amount, as it was at `updated_at` time"
+
     field :bid, non_null(:bid)
   end
 
@@ -135,11 +138,11 @@ defmodule RujiraWeb.Schema.PilotTypes do
   end
 
   union :sudo_msg do
-    types [:update_config, :retract]
+    types([:update_config, :retract])
 
-    resolve_type fn
+    resolve_type(fn
       %{fee_taker: _, fee_maker: _, fee_address: _}, _ -> :update_config
       %{}, _ -> :retract
-    end
+    end)
   end
 end
