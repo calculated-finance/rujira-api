@@ -269,59 +269,85 @@ defmodule Cosmos.Staking.V1beta1.Query.Service do
 
   use GRPC.Service, name: "cosmos.staking.v1beta1.Query", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :Validators,
-      Cosmos.Staking.V1beta1.QueryValidatorsRequest,
-      Cosmos.Staking.V1beta1.QueryValidatorsResponse
+  rpc(
+    :Validators,
+    Cosmos.Staking.V1beta1.QueryValidatorsRequest,
+    Cosmos.Staking.V1beta1.QueryValidatorsResponse
+  )
 
-  rpc :Validator,
-      Cosmos.Staking.V1beta1.QueryValidatorRequest,
-      Cosmos.Staking.V1beta1.QueryValidatorResponse
+  rpc(
+    :Validator,
+    Cosmos.Staking.V1beta1.QueryValidatorRequest,
+    Cosmos.Staking.V1beta1.QueryValidatorResponse
+  )
 
-  rpc :ValidatorDelegations,
-      Cosmos.Staking.V1beta1.QueryValidatorDelegationsRequest,
-      Cosmos.Staking.V1beta1.QueryValidatorDelegationsResponse
+  rpc(
+    :ValidatorDelegations,
+    Cosmos.Staking.V1beta1.QueryValidatorDelegationsRequest,
+    Cosmos.Staking.V1beta1.QueryValidatorDelegationsResponse
+  )
 
-  rpc :ValidatorUnbondingDelegations,
-      Cosmos.Staking.V1beta1.QueryValidatorUnbondingDelegationsRequest,
-      Cosmos.Staking.V1beta1.QueryValidatorUnbondingDelegationsResponse
+  rpc(
+    :ValidatorUnbondingDelegations,
+    Cosmos.Staking.V1beta1.QueryValidatorUnbondingDelegationsRequest,
+    Cosmos.Staking.V1beta1.QueryValidatorUnbondingDelegationsResponse
+  )
 
-  rpc :Delegation,
-      Cosmos.Staking.V1beta1.QueryDelegationRequest,
-      Cosmos.Staking.V1beta1.QueryDelegationResponse
+  rpc(
+    :Delegation,
+    Cosmos.Staking.V1beta1.QueryDelegationRequest,
+    Cosmos.Staking.V1beta1.QueryDelegationResponse
+  )
 
-  rpc :UnbondingDelegation,
-      Cosmos.Staking.V1beta1.QueryUnbondingDelegationRequest,
-      Cosmos.Staking.V1beta1.QueryUnbondingDelegationResponse
+  rpc(
+    :UnbondingDelegation,
+    Cosmos.Staking.V1beta1.QueryUnbondingDelegationRequest,
+    Cosmos.Staking.V1beta1.QueryUnbondingDelegationResponse
+  )
 
-  rpc :DelegatorDelegations,
-      Cosmos.Staking.V1beta1.QueryDelegatorDelegationsRequest,
-      Cosmos.Staking.V1beta1.QueryDelegatorDelegationsResponse
+  rpc(
+    :DelegatorDelegations,
+    Cosmos.Staking.V1beta1.QueryDelegatorDelegationsRequest,
+    Cosmos.Staking.V1beta1.QueryDelegatorDelegationsResponse
+  )
 
-  rpc :DelegatorUnbondingDelegations,
-      Cosmos.Staking.V1beta1.QueryDelegatorUnbondingDelegationsRequest,
-      Cosmos.Staking.V1beta1.QueryDelegatorUnbondingDelegationsResponse
+  rpc(
+    :DelegatorUnbondingDelegations,
+    Cosmos.Staking.V1beta1.QueryDelegatorUnbondingDelegationsRequest,
+    Cosmos.Staking.V1beta1.QueryDelegatorUnbondingDelegationsResponse
+  )
 
-  rpc :Redelegations,
-      Cosmos.Staking.V1beta1.QueryRedelegationsRequest,
-      Cosmos.Staking.V1beta1.QueryRedelegationsResponse
+  rpc(
+    :Redelegations,
+    Cosmos.Staking.V1beta1.QueryRedelegationsRequest,
+    Cosmos.Staking.V1beta1.QueryRedelegationsResponse
+  )
 
-  rpc :DelegatorValidators,
-      Cosmos.Staking.V1beta1.QueryDelegatorValidatorsRequest,
-      Cosmos.Staking.V1beta1.QueryDelegatorValidatorsResponse
+  rpc(
+    :DelegatorValidators,
+    Cosmos.Staking.V1beta1.QueryDelegatorValidatorsRequest,
+    Cosmos.Staking.V1beta1.QueryDelegatorValidatorsResponse
+  )
 
-  rpc :DelegatorValidator,
-      Cosmos.Staking.V1beta1.QueryDelegatorValidatorRequest,
-      Cosmos.Staking.V1beta1.QueryDelegatorValidatorResponse
+  rpc(
+    :DelegatorValidator,
+    Cosmos.Staking.V1beta1.QueryDelegatorValidatorRequest,
+    Cosmos.Staking.V1beta1.QueryDelegatorValidatorResponse
+  )
 
-  rpc :HistoricalInfo,
-      Cosmos.Staking.V1beta1.QueryHistoricalInfoRequest,
-      Cosmos.Staking.V1beta1.QueryHistoricalInfoResponse
+  rpc(
+    :HistoricalInfo,
+    Cosmos.Staking.V1beta1.QueryHistoricalInfoRequest,
+    Cosmos.Staking.V1beta1.QueryHistoricalInfoResponse
+  )
 
-  rpc :Pool, Cosmos.Staking.V1beta1.QueryPoolRequest, Cosmos.Staking.V1beta1.QueryPoolResponse
+  rpc(:Pool, Cosmos.Staking.V1beta1.QueryPoolRequest, Cosmos.Staking.V1beta1.QueryPoolResponse)
 
-  rpc :Params,
-      Cosmos.Staking.V1beta1.QueryParamsRequest,
-      Cosmos.Staking.V1beta1.QueryParamsResponse
+  rpc(
+    :Params,
+    Cosmos.Staking.V1beta1.QueryParamsRequest,
+    Cosmos.Staking.V1beta1.QueryParamsResponse
+  )
 end
 
 defmodule Cosmos.Staking.V1beta1.Query.Stub do

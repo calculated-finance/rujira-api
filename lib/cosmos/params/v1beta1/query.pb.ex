@@ -43,11 +43,17 @@ defmodule Cosmos.Params.V1beta1.Query.Service do
 
   use GRPC.Service, name: "cosmos.params.v1beta1.Query", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :Params, Cosmos.Params.V1beta1.QueryParamsRequest, Cosmos.Params.V1beta1.QueryParamsResponse
+  rpc(
+    :Params,
+    Cosmos.Params.V1beta1.QueryParamsRequest,
+    Cosmos.Params.V1beta1.QueryParamsResponse
+  )
 
-  rpc :Subspaces,
-      Cosmos.Params.V1beta1.QuerySubspacesRequest,
-      Cosmos.Params.V1beta1.QuerySubspacesResponse
+  rpc(
+    :Subspaces,
+    Cosmos.Params.V1beta1.QuerySubspacesRequest,
+    Cosmos.Params.V1beta1.QuerySubspacesResponse
+  )
 end
 
 defmodule Cosmos.Params.V1beta1.Query.Stub do

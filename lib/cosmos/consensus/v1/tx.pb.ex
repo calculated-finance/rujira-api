@@ -21,9 +21,11 @@ defmodule Cosmos.Consensus.V1.Msg.Service do
 
   use GRPC.Service, name: "cosmos.consensus.v1.Msg", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :UpdateParams,
-      Cosmos.Consensus.V1.MsgUpdateParams,
-      Cosmos.Consensus.V1.MsgUpdateParamsResponse
+  rpc(
+    :UpdateParams,
+    Cosmos.Consensus.V1.MsgUpdateParams,
+    Cosmos.Consensus.V1.MsgUpdateParamsResponse
+  )
 end
 
 defmodule Cosmos.Consensus.V1.Msg.Stub do

@@ -245,53 +245,75 @@ defmodule Cosmos.Bank.V1beta1.Query.Service do
 
   use GRPC.Service, name: "cosmos.bank.v1beta1.Query", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :Balance, Cosmos.Bank.V1beta1.QueryBalanceRequest, Cosmos.Bank.V1beta1.QueryBalanceResponse
+  rpc(:Balance, Cosmos.Bank.V1beta1.QueryBalanceRequest, Cosmos.Bank.V1beta1.QueryBalanceResponse)
 
-  rpc :AllBalances,
-      Cosmos.Bank.V1beta1.QueryAllBalancesRequest,
-      Cosmos.Bank.V1beta1.QueryAllBalancesResponse
+  rpc(
+    :AllBalances,
+    Cosmos.Bank.V1beta1.QueryAllBalancesRequest,
+    Cosmos.Bank.V1beta1.QueryAllBalancesResponse
+  )
 
-  rpc :SpendableBalances,
-      Cosmos.Bank.V1beta1.QuerySpendableBalancesRequest,
-      Cosmos.Bank.V1beta1.QuerySpendableBalancesResponse
+  rpc(
+    :SpendableBalances,
+    Cosmos.Bank.V1beta1.QuerySpendableBalancesRequest,
+    Cosmos.Bank.V1beta1.QuerySpendableBalancesResponse
+  )
 
-  rpc :SpendableBalanceByDenom,
-      Cosmos.Bank.V1beta1.QuerySpendableBalanceByDenomRequest,
-      Cosmos.Bank.V1beta1.QuerySpendableBalanceByDenomResponse
+  rpc(
+    :SpendableBalanceByDenom,
+    Cosmos.Bank.V1beta1.QuerySpendableBalanceByDenomRequest,
+    Cosmos.Bank.V1beta1.QuerySpendableBalanceByDenomResponse
+  )
 
-  rpc :TotalSupply,
-      Cosmos.Bank.V1beta1.QueryTotalSupplyRequest,
-      Cosmos.Bank.V1beta1.QueryTotalSupplyResponse
+  rpc(
+    :TotalSupply,
+    Cosmos.Bank.V1beta1.QueryTotalSupplyRequest,
+    Cosmos.Bank.V1beta1.QueryTotalSupplyResponse
+  )
 
-  rpc :SupplyOf,
-      Cosmos.Bank.V1beta1.QuerySupplyOfRequest,
-      Cosmos.Bank.V1beta1.QuerySupplyOfResponse
+  rpc(
+    :SupplyOf,
+    Cosmos.Bank.V1beta1.QuerySupplyOfRequest,
+    Cosmos.Bank.V1beta1.QuerySupplyOfResponse
+  )
 
-  rpc :Params, Cosmos.Bank.V1beta1.QueryParamsRequest, Cosmos.Bank.V1beta1.QueryParamsResponse
+  rpc(:Params, Cosmos.Bank.V1beta1.QueryParamsRequest, Cosmos.Bank.V1beta1.QueryParamsResponse)
 
-  rpc :DenomMetadata,
-      Cosmos.Bank.V1beta1.QueryDenomMetadataRequest,
-      Cosmos.Bank.V1beta1.QueryDenomMetadataResponse
+  rpc(
+    :DenomMetadata,
+    Cosmos.Bank.V1beta1.QueryDenomMetadataRequest,
+    Cosmos.Bank.V1beta1.QueryDenomMetadataResponse
+  )
 
-  rpc :DenomMetadataByQueryString,
-      Cosmos.Bank.V1beta1.QueryDenomMetadataByQueryStringRequest,
-      Cosmos.Bank.V1beta1.QueryDenomMetadataByQueryStringResponse
+  rpc(
+    :DenomMetadataByQueryString,
+    Cosmos.Bank.V1beta1.QueryDenomMetadataByQueryStringRequest,
+    Cosmos.Bank.V1beta1.QueryDenomMetadataByQueryStringResponse
+  )
 
-  rpc :DenomsMetadata,
-      Cosmos.Bank.V1beta1.QueryDenomsMetadataRequest,
-      Cosmos.Bank.V1beta1.QueryDenomsMetadataResponse
+  rpc(
+    :DenomsMetadata,
+    Cosmos.Bank.V1beta1.QueryDenomsMetadataRequest,
+    Cosmos.Bank.V1beta1.QueryDenomsMetadataResponse
+  )
 
-  rpc :DenomOwners,
-      Cosmos.Bank.V1beta1.QueryDenomOwnersRequest,
-      Cosmos.Bank.V1beta1.QueryDenomOwnersResponse
+  rpc(
+    :DenomOwners,
+    Cosmos.Bank.V1beta1.QueryDenomOwnersRequest,
+    Cosmos.Bank.V1beta1.QueryDenomOwnersResponse
+  )
 
-  rpc :DenomOwnersByQuery,
-      Cosmos.Bank.V1beta1.QueryDenomOwnersByQueryRequest,
-      Cosmos.Bank.V1beta1.QueryDenomOwnersByQueryResponse
+  rpc(
+    :DenomOwnersByQuery,
+    Cosmos.Bank.V1beta1.QueryDenomOwnersByQueryRequest,
+    Cosmos.Bank.V1beta1.QueryDenomOwnersByQueryResponse
+  )
 
-  rpc :SendEnabled,
-      Cosmos.Bank.V1beta1.QuerySendEnabledRequest,
-      Cosmos.Bank.V1beta1.QuerySendEnabledResponse
+  rpc(
+    :SendEnabled,
+    Cosmos.Bank.V1beta1.QuerySendEnabledRequest,
+    Cosmos.Bank.V1beta1.QuerySendEnabledResponse
+  )
 end
 
 defmodule Cosmos.Bank.V1beta1.Query.Stub do

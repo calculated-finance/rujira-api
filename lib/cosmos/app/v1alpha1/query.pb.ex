@@ -17,7 +17,7 @@ defmodule Cosmos.App.V1alpha1.Query.Service do
 
   use GRPC.Service, name: "cosmos.app.v1alpha1.Query", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :Config, Cosmos.App.V1alpha1.QueryConfigRequest, Cosmos.App.V1alpha1.QueryConfigResponse
+  rpc(:Config, Cosmos.App.V1alpha1.QueryConfigRequest, Cosmos.App.V1alpha1.QueryConfigResponse)
 end
 
 defmodule Cosmos.App.V1alpha1.Query.Stub do

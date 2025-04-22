@@ -142,31 +142,43 @@ defmodule Cosmos.Staking.V1beta1.Msg.Service do
 
   use GRPC.Service, name: "cosmos.staking.v1beta1.Msg", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :CreateValidator,
-      Cosmos.Staking.V1beta1.MsgCreateValidator,
-      Cosmos.Staking.V1beta1.MsgCreateValidatorResponse
+  rpc(
+    :CreateValidator,
+    Cosmos.Staking.V1beta1.MsgCreateValidator,
+    Cosmos.Staking.V1beta1.MsgCreateValidatorResponse
+  )
 
-  rpc :EditValidator,
-      Cosmos.Staking.V1beta1.MsgEditValidator,
-      Cosmos.Staking.V1beta1.MsgEditValidatorResponse
+  rpc(
+    :EditValidator,
+    Cosmos.Staking.V1beta1.MsgEditValidator,
+    Cosmos.Staking.V1beta1.MsgEditValidatorResponse
+  )
 
-  rpc :Delegate, Cosmos.Staking.V1beta1.MsgDelegate, Cosmos.Staking.V1beta1.MsgDelegateResponse
+  rpc(:Delegate, Cosmos.Staking.V1beta1.MsgDelegate, Cosmos.Staking.V1beta1.MsgDelegateResponse)
 
-  rpc :BeginRedelegate,
-      Cosmos.Staking.V1beta1.MsgBeginRedelegate,
-      Cosmos.Staking.V1beta1.MsgBeginRedelegateResponse
+  rpc(
+    :BeginRedelegate,
+    Cosmos.Staking.V1beta1.MsgBeginRedelegate,
+    Cosmos.Staking.V1beta1.MsgBeginRedelegateResponse
+  )
 
-  rpc :Undelegate,
-      Cosmos.Staking.V1beta1.MsgUndelegate,
-      Cosmos.Staking.V1beta1.MsgUndelegateResponse
+  rpc(
+    :Undelegate,
+    Cosmos.Staking.V1beta1.MsgUndelegate,
+    Cosmos.Staking.V1beta1.MsgUndelegateResponse
+  )
 
-  rpc :CancelUnbondingDelegation,
-      Cosmos.Staking.V1beta1.MsgCancelUnbondingDelegation,
-      Cosmos.Staking.V1beta1.MsgCancelUnbondingDelegationResponse
+  rpc(
+    :CancelUnbondingDelegation,
+    Cosmos.Staking.V1beta1.MsgCancelUnbondingDelegation,
+    Cosmos.Staking.V1beta1.MsgCancelUnbondingDelegationResponse
+  )
 
-  rpc :UpdateParams,
-      Cosmos.Staking.V1beta1.MsgUpdateParams,
-      Cosmos.Staking.V1beta1.MsgUpdateParamsResponse
+  rpc(
+    :UpdateParams,
+    Cosmos.Staking.V1beta1.MsgUpdateParams,
+    Cosmos.Staking.V1beta1.MsgUpdateParamsResponse
+  )
 end
 
 defmodule Cosmos.Staking.V1beta1.Msg.Stub do

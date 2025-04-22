@@ -122,19 +122,19 @@ defmodule Cosmos.Nft.V1beta1.Query.Service do
 
   use GRPC.Service, name: "cosmos.nft.v1beta1.Query", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :Balance, Cosmos.Nft.V1beta1.QueryBalanceRequest, Cosmos.Nft.V1beta1.QueryBalanceResponse
+  rpc(:Balance, Cosmos.Nft.V1beta1.QueryBalanceRequest, Cosmos.Nft.V1beta1.QueryBalanceResponse)
 
-  rpc :Owner, Cosmos.Nft.V1beta1.QueryOwnerRequest, Cosmos.Nft.V1beta1.QueryOwnerResponse
+  rpc(:Owner, Cosmos.Nft.V1beta1.QueryOwnerRequest, Cosmos.Nft.V1beta1.QueryOwnerResponse)
 
-  rpc :Supply, Cosmos.Nft.V1beta1.QuerySupplyRequest, Cosmos.Nft.V1beta1.QuerySupplyResponse
+  rpc(:Supply, Cosmos.Nft.V1beta1.QuerySupplyRequest, Cosmos.Nft.V1beta1.QuerySupplyResponse)
 
-  rpc :NFTs, Cosmos.Nft.V1beta1.QueryNFTsRequest, Cosmos.Nft.V1beta1.QueryNFTsResponse
+  rpc(:NFTs, Cosmos.Nft.V1beta1.QueryNFTsRequest, Cosmos.Nft.V1beta1.QueryNFTsResponse)
 
-  rpc :NFT, Cosmos.Nft.V1beta1.QueryNFTRequest, Cosmos.Nft.V1beta1.QueryNFTResponse
+  rpc(:NFT, Cosmos.Nft.V1beta1.QueryNFTRequest, Cosmos.Nft.V1beta1.QueryNFTResponse)
 
-  rpc :Class, Cosmos.Nft.V1beta1.QueryClassRequest, Cosmos.Nft.V1beta1.QueryClassResponse
+  rpc(:Class, Cosmos.Nft.V1beta1.QueryClassRequest, Cosmos.Nft.V1beta1.QueryClassResponse)
 
-  rpc :Classes, Cosmos.Nft.V1beta1.QueryClassesRequest, Cosmos.Nft.V1beta1.QueryClassesResponse
+  rpc(:Classes, Cosmos.Nft.V1beta1.QueryClassesRequest, Cosmos.Nft.V1beta1.QueryClassesResponse)
 end
 
 defmodule Cosmos.Nft.V1beta1.Query.Stub do

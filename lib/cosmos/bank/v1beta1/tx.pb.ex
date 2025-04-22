@@ -70,17 +70,21 @@ defmodule Cosmos.Bank.V1beta1.Msg.Service do
 
   use GRPC.Service, name: "cosmos.bank.v1beta1.Msg", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :Send, Cosmos.Bank.V1beta1.MsgSend, Cosmos.Bank.V1beta1.MsgSendResponse
+  rpc(:Send, Cosmos.Bank.V1beta1.MsgSend, Cosmos.Bank.V1beta1.MsgSendResponse)
 
-  rpc :MultiSend, Cosmos.Bank.V1beta1.MsgMultiSend, Cosmos.Bank.V1beta1.MsgMultiSendResponse
+  rpc(:MultiSend, Cosmos.Bank.V1beta1.MsgMultiSend, Cosmos.Bank.V1beta1.MsgMultiSendResponse)
 
-  rpc :UpdateParams,
-      Cosmos.Bank.V1beta1.MsgUpdateParams,
-      Cosmos.Bank.V1beta1.MsgUpdateParamsResponse
+  rpc(
+    :UpdateParams,
+    Cosmos.Bank.V1beta1.MsgUpdateParams,
+    Cosmos.Bank.V1beta1.MsgUpdateParamsResponse
+  )
 
-  rpc :SetSendEnabled,
-      Cosmos.Bank.V1beta1.MsgSetSendEnabled,
-      Cosmos.Bank.V1beta1.MsgSetSendEnabledResponse
+  rpc(
+    :SetSendEnabled,
+    Cosmos.Bank.V1beta1.MsgSetSendEnabled,
+    Cosmos.Bank.V1beta1.MsgSetSendEnabledResponse
+  )
 end
 
 defmodule Cosmos.Bank.V1beta1.Msg.Stub do

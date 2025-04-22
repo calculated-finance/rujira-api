@@ -34,4 +34,3 @@ config :rujira, Thorchain.Node,
 config :appsignal, :config,
   active: true,
   env: :test
-

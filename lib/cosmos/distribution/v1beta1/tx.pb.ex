@@ -113,33 +113,47 @@ defmodule Cosmos.Distribution.V1beta1.Msg.Service do
 
   use GRPC.Service, name: "cosmos.distribution.v1beta1.Msg", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :SetWithdrawAddress,
-      Cosmos.Distribution.V1beta1.MsgSetWithdrawAddress,
-      Cosmos.Distribution.V1beta1.MsgSetWithdrawAddressResponse
+  rpc(
+    :SetWithdrawAddress,
+    Cosmos.Distribution.V1beta1.MsgSetWithdrawAddress,
+    Cosmos.Distribution.V1beta1.MsgSetWithdrawAddressResponse
+  )
 
-  rpc :WithdrawDelegatorReward,
-      Cosmos.Distribution.V1beta1.MsgWithdrawDelegatorReward,
-      Cosmos.Distribution.V1beta1.MsgWithdrawDelegatorRewardResponse
+  rpc(
+    :WithdrawDelegatorReward,
+    Cosmos.Distribution.V1beta1.MsgWithdrawDelegatorReward,
+    Cosmos.Distribution.V1beta1.MsgWithdrawDelegatorRewardResponse
+  )
 
-  rpc :WithdrawValidatorCommission,
-      Cosmos.Distribution.V1beta1.MsgWithdrawValidatorCommission,
-      Cosmos.Distribution.V1beta1.MsgWithdrawValidatorCommissionResponse
+  rpc(
+    :WithdrawValidatorCommission,
+    Cosmos.Distribution.V1beta1.MsgWithdrawValidatorCommission,
+    Cosmos.Distribution.V1beta1.MsgWithdrawValidatorCommissionResponse
+  )
 
-  rpc :FundCommunityPool,
-      Cosmos.Distribution.V1beta1.MsgFundCommunityPool,
-      Cosmos.Distribution.V1beta1.MsgFundCommunityPoolResponse
+  rpc(
+    :FundCommunityPool,
+    Cosmos.Distribution.V1beta1.MsgFundCommunityPool,
+    Cosmos.Distribution.V1beta1.MsgFundCommunityPoolResponse
+  )
 
-  rpc :UpdateParams,
-      Cosmos.Distribution.V1beta1.MsgUpdateParams,
-      Cosmos.Distribution.V1beta1.MsgUpdateParamsResponse
+  rpc(
+    :UpdateParams,
+    Cosmos.Distribution.V1beta1.MsgUpdateParams,
+    Cosmos.Distribution.V1beta1.MsgUpdateParamsResponse
+  )
 
-  rpc :CommunityPoolSpend,
-      Cosmos.Distribution.V1beta1.MsgCommunityPoolSpend,
-      Cosmos.Distribution.V1beta1.MsgCommunityPoolSpendResponse
+  rpc(
+    :CommunityPoolSpend,
+    Cosmos.Distribution.V1beta1.MsgCommunityPoolSpend,
+    Cosmos.Distribution.V1beta1.MsgCommunityPoolSpendResponse
+  )
 
-  rpc :DepositValidatorRewardsPool,
-      Cosmos.Distribution.V1beta1.MsgDepositValidatorRewardsPool,
-      Cosmos.Distribution.V1beta1.MsgDepositValidatorRewardsPoolResponse
+  rpc(
+    :DepositValidatorRewardsPool,
+    Cosmos.Distribution.V1beta1.MsgDepositValidatorRewardsPool,
+    Cosmos.Distribution.V1beta1.MsgDepositValidatorRewardsPoolResponse
+  )
 end
 
 defmodule Cosmos.Distribution.V1beta1.Msg.Stub do

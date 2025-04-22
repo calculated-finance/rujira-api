@@ -20,9 +20,11 @@ defmodule Cosmos.Evidence.V1beta1.Msg.Service do
 
   use GRPC.Service, name: "cosmos.evidence.v1beta1.Msg", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :SubmitEvidence,
-      Cosmos.Evidence.V1beta1.MsgSubmitEvidence,
-      Cosmos.Evidence.V1beta1.MsgSubmitEvidenceResponse
+  rpc(
+    :SubmitEvidence,
+    Cosmos.Evidence.V1beta1.MsgSubmitEvidence,
+    Cosmos.Evidence.V1beta1.MsgSubmitEvidenceResponse
+  )
 end
 
 defmodule Cosmos.Evidence.V1beta1.Msg.Stub do

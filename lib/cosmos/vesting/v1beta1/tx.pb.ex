@@ -59,17 +59,23 @@ defmodule Cosmos.Vesting.V1beta1.Msg.Service do
 
   use GRPC.Service, name: "cosmos.vesting.v1beta1.Msg", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :CreateVestingAccount,
-      Cosmos.Vesting.V1beta1.MsgCreateVestingAccount,
-      Cosmos.Vesting.V1beta1.MsgCreateVestingAccountResponse
+  rpc(
+    :CreateVestingAccount,
+    Cosmos.Vesting.V1beta1.MsgCreateVestingAccount,
+    Cosmos.Vesting.V1beta1.MsgCreateVestingAccountResponse
+  )
 
-  rpc :CreatePermanentLockedAccount,
-      Cosmos.Vesting.V1beta1.MsgCreatePermanentLockedAccount,
-      Cosmos.Vesting.V1beta1.MsgCreatePermanentLockedAccountResponse
+  rpc(
+    :CreatePermanentLockedAccount,
+    Cosmos.Vesting.V1beta1.MsgCreatePermanentLockedAccount,
+    Cosmos.Vesting.V1beta1.MsgCreatePermanentLockedAccountResponse
+  )
 
-  rpc :CreatePeriodicVestingAccount,
-      Cosmos.Vesting.V1beta1.MsgCreatePeriodicVestingAccount,
-      Cosmos.Vesting.V1beta1.MsgCreatePeriodicVestingAccountResponse
+  rpc(
+    :CreatePeriodicVestingAccount,
+    Cosmos.Vesting.V1beta1.MsgCreatePeriodicVestingAccount,
+    Cosmos.Vesting.V1beta1.MsgCreatePeriodicVestingAccountResponse
+  )
 end
 
 defmodule Cosmos.Vesting.V1beta1.Msg.Stub do

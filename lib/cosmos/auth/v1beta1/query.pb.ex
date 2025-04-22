@@ -159,41 +159,57 @@ defmodule Cosmos.Auth.V1beta1.Query.Service do
 
   use GRPC.Service, name: "cosmos.auth.v1beta1.Query", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :Accounts,
-      Cosmos.Auth.V1beta1.QueryAccountsRequest,
-      Cosmos.Auth.V1beta1.QueryAccountsResponse
+  rpc(
+    :Accounts,
+    Cosmos.Auth.V1beta1.QueryAccountsRequest,
+    Cosmos.Auth.V1beta1.QueryAccountsResponse
+  )
 
-  rpc :Account, Cosmos.Auth.V1beta1.QueryAccountRequest, Cosmos.Auth.V1beta1.QueryAccountResponse
+  rpc(:Account, Cosmos.Auth.V1beta1.QueryAccountRequest, Cosmos.Auth.V1beta1.QueryAccountResponse)
 
-  rpc :AccountAddressByID,
-      Cosmos.Auth.V1beta1.QueryAccountAddressByIDRequest,
-      Cosmos.Auth.V1beta1.QueryAccountAddressByIDResponse
+  rpc(
+    :AccountAddressByID,
+    Cosmos.Auth.V1beta1.QueryAccountAddressByIDRequest,
+    Cosmos.Auth.V1beta1.QueryAccountAddressByIDResponse
+  )
 
-  rpc :Params, Cosmos.Auth.V1beta1.QueryParamsRequest, Cosmos.Auth.V1beta1.QueryParamsResponse
+  rpc(:Params, Cosmos.Auth.V1beta1.QueryParamsRequest, Cosmos.Auth.V1beta1.QueryParamsResponse)
 
-  rpc :ModuleAccounts,
-      Cosmos.Auth.V1beta1.QueryModuleAccountsRequest,
-      Cosmos.Auth.V1beta1.QueryModuleAccountsResponse
+  rpc(
+    :ModuleAccounts,
+    Cosmos.Auth.V1beta1.QueryModuleAccountsRequest,
+    Cosmos.Auth.V1beta1.QueryModuleAccountsResponse
+  )
 
-  rpc :ModuleAccountByName,
-      Cosmos.Auth.V1beta1.QueryModuleAccountByNameRequest,
-      Cosmos.Auth.V1beta1.QueryModuleAccountByNameResponse
+  rpc(
+    :ModuleAccountByName,
+    Cosmos.Auth.V1beta1.QueryModuleAccountByNameRequest,
+    Cosmos.Auth.V1beta1.QueryModuleAccountByNameResponse
+  )
 
-  rpc :Bech32Prefix,
-      Cosmos.Auth.V1beta1.Bech32PrefixRequest,
-      Cosmos.Auth.V1beta1.Bech32PrefixResponse
+  rpc(
+    :Bech32Prefix,
+    Cosmos.Auth.V1beta1.Bech32PrefixRequest,
+    Cosmos.Auth.V1beta1.Bech32PrefixResponse
+  )
 
-  rpc :AddressBytesToString,
-      Cosmos.Auth.V1beta1.AddressBytesToStringRequest,
-      Cosmos.Auth.V1beta1.AddressBytesToStringResponse
+  rpc(
+    :AddressBytesToString,
+    Cosmos.Auth.V1beta1.AddressBytesToStringRequest,
+    Cosmos.Auth.V1beta1.AddressBytesToStringResponse
+  )
 
-  rpc :AddressStringToBytes,
-      Cosmos.Auth.V1beta1.AddressStringToBytesRequest,
-      Cosmos.Auth.V1beta1.AddressStringToBytesResponse
+  rpc(
+    :AddressStringToBytes,
+    Cosmos.Auth.V1beta1.AddressStringToBytesRequest,
+    Cosmos.Auth.V1beta1.AddressStringToBytesResponse
+  )
 
-  rpc :AccountInfo,
-      Cosmos.Auth.V1beta1.QueryAccountInfoRequest,
-      Cosmos.Auth.V1beta1.QueryAccountInfoResponse
+  rpc(
+    :AccountInfo,
+    Cosmos.Auth.V1beta1.QueryAccountInfoRequest,
+    Cosmos.Auth.V1beta1.QueryAccountInfoResponse
+  )
 end
 
 defmodule Cosmos.Auth.V1beta1.Query.Stub do

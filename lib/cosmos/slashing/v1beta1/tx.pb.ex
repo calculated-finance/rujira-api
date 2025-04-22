@@ -32,11 +32,13 @@ defmodule Cosmos.Slashing.V1beta1.Msg.Service do
 
   use GRPC.Service, name: "cosmos.slashing.v1beta1.Msg", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :Unjail, Cosmos.Slashing.V1beta1.MsgUnjail, Cosmos.Slashing.V1beta1.MsgUnjailResponse
+  rpc(:Unjail, Cosmos.Slashing.V1beta1.MsgUnjail, Cosmos.Slashing.V1beta1.MsgUnjailResponse)
 
-  rpc :UpdateParams,
-      Cosmos.Slashing.V1beta1.MsgUpdateParams,
-      Cosmos.Slashing.V1beta1.MsgUpdateParamsResponse
+  rpc(
+    :UpdateParams,
+    Cosmos.Slashing.V1beta1.MsgUpdateParams,
+    Cosmos.Slashing.V1beta1.MsgUpdateParamsResponse
+  )
 end
 
 defmodule Cosmos.Slashing.V1beta1.Msg.Stub do

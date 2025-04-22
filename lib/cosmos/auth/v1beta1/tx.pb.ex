@@ -18,9 +18,11 @@ defmodule Cosmos.Auth.V1beta1.Msg.Service do
 
   use GRPC.Service, name: "cosmos.auth.v1beta1.Msg", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :UpdateParams,
-      Cosmos.Auth.V1beta1.MsgUpdateParams,
-      Cosmos.Auth.V1beta1.MsgUpdateParamsResponse
+  rpc(
+    :UpdateParams,
+    Cosmos.Auth.V1beta1.MsgUpdateParams,
+    Cosmos.Auth.V1beta1.MsgUpdateParamsResponse
+  )
 end
 
 defmodule Cosmos.Auth.V1beta1.Msg.Stub do

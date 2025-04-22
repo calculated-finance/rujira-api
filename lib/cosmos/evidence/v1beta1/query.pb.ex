@@ -37,13 +37,17 @@ defmodule Cosmos.Evidence.V1beta1.Query.Service do
 
   use GRPC.Service, name: "cosmos.evidence.v1beta1.Query", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :Evidence,
-      Cosmos.Evidence.V1beta1.QueryEvidenceRequest,
-      Cosmos.Evidence.V1beta1.QueryEvidenceResponse
+  rpc(
+    :Evidence,
+    Cosmos.Evidence.V1beta1.QueryEvidenceRequest,
+    Cosmos.Evidence.V1beta1.QueryEvidenceResponse
+  )
 
-  rpc :AllEvidence,
-      Cosmos.Evidence.V1beta1.QueryAllEvidenceRequest,
-      Cosmos.Evidence.V1beta1.QueryAllEvidenceResponse
+  rpc(
+    :AllEvidence,
+    Cosmos.Evidence.V1beta1.QueryAllEvidenceRequest,
+    Cosmos.Evidence.V1beta1.QueryAllEvidenceResponse
+  )
 end
 
 defmodule Cosmos.Evidence.V1beta1.Query.Stub do

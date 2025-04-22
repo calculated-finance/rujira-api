@@ -38,13 +38,17 @@ defmodule Cosmos.Base.Reflection.V1beta1.ReflectionService.Service do
     name: "cosmos.base.reflection.v1beta1.ReflectionService",
     protoc_gen_elixir_version: "0.13.0"
 
-  rpc :ListAllInterfaces,
-      Cosmos.Base.Reflection.V1beta1.ListAllInterfacesRequest,
-      Cosmos.Base.Reflection.V1beta1.ListAllInterfacesResponse
+  rpc(
+    :ListAllInterfaces,
+    Cosmos.Base.Reflection.V1beta1.ListAllInterfacesRequest,
+    Cosmos.Base.Reflection.V1beta1.ListAllInterfacesResponse
+  )
 
-  rpc :ListImplementations,
-      Cosmos.Base.Reflection.V1beta1.ListImplementationsRequest,
-      Cosmos.Base.Reflection.V1beta1.ListImplementationsResponse
+  rpc(
+    :ListImplementations,
+    Cosmos.Base.Reflection.V1beta1.ListImplementationsRequest,
+    Cosmos.Base.Reflection.V1beta1.ListImplementationsResponse
+  )
 end
 
 defmodule Cosmos.Base.Reflection.V1beta1.ReflectionService.Stub do

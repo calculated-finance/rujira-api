@@ -48,17 +48,23 @@ defmodule Cosmos.Feegrant.V1beta1.Msg.Service do
 
   use GRPC.Service, name: "cosmos.feegrant.v1beta1.Msg", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :GrantAllowance,
-      Cosmos.Feegrant.V1beta1.MsgGrantAllowance,
-      Cosmos.Feegrant.V1beta1.MsgGrantAllowanceResponse
+  rpc(
+    :GrantAllowance,
+    Cosmos.Feegrant.V1beta1.MsgGrantAllowance,
+    Cosmos.Feegrant.V1beta1.MsgGrantAllowanceResponse
+  )
 
-  rpc :RevokeAllowance,
-      Cosmos.Feegrant.V1beta1.MsgRevokeAllowance,
-      Cosmos.Feegrant.V1beta1.MsgRevokeAllowanceResponse
+  rpc(
+    :RevokeAllowance,
+    Cosmos.Feegrant.V1beta1.MsgRevokeAllowance,
+    Cosmos.Feegrant.V1beta1.MsgRevokeAllowanceResponse
+  )
 
-  rpc :PruneAllowances,
-      Cosmos.Feegrant.V1beta1.MsgPruneAllowances,
-      Cosmos.Feegrant.V1beta1.MsgPruneAllowancesResponse
+  rpc(
+    :PruneAllowances,
+    Cosmos.Feegrant.V1beta1.MsgPruneAllowances,
+    Cosmos.Feegrant.V1beta1.MsgPruneAllowancesResponse
+  )
 end
 
 defmodule Cosmos.Feegrant.V1beta1.Msg.Stub do

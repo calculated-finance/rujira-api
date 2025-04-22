@@ -174,25 +174,27 @@ defmodule Cosmos.Gov.V1.Query.Service do
 
   use GRPC.Service, name: "cosmos.gov.v1.Query", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :Constitution,
-      Cosmos.Gov.V1.QueryConstitutionRequest,
-      Cosmos.Gov.V1.QueryConstitutionResponse
+  rpc(
+    :Constitution,
+    Cosmos.Gov.V1.QueryConstitutionRequest,
+    Cosmos.Gov.V1.QueryConstitutionResponse
+  )
 
-  rpc :Proposal, Cosmos.Gov.V1.QueryProposalRequest, Cosmos.Gov.V1.QueryProposalResponse
+  rpc(:Proposal, Cosmos.Gov.V1.QueryProposalRequest, Cosmos.Gov.V1.QueryProposalResponse)
 
-  rpc :Proposals, Cosmos.Gov.V1.QueryProposalsRequest, Cosmos.Gov.V1.QueryProposalsResponse
+  rpc(:Proposals, Cosmos.Gov.V1.QueryProposalsRequest, Cosmos.Gov.V1.QueryProposalsResponse)
 
-  rpc :Vote, Cosmos.Gov.V1.QueryVoteRequest, Cosmos.Gov.V1.QueryVoteResponse
+  rpc(:Vote, Cosmos.Gov.V1.QueryVoteRequest, Cosmos.Gov.V1.QueryVoteResponse)
 
-  rpc :Votes, Cosmos.Gov.V1.QueryVotesRequest, Cosmos.Gov.V1.QueryVotesResponse
+  rpc(:Votes, Cosmos.Gov.V1.QueryVotesRequest, Cosmos.Gov.V1.QueryVotesResponse)
 
-  rpc :Params, Cosmos.Gov.V1.QueryParamsRequest, Cosmos.Gov.V1.QueryParamsResponse
+  rpc(:Params, Cosmos.Gov.V1.QueryParamsRequest, Cosmos.Gov.V1.QueryParamsResponse)
 
-  rpc :Deposit, Cosmos.Gov.V1.QueryDepositRequest, Cosmos.Gov.V1.QueryDepositResponse
+  rpc(:Deposit, Cosmos.Gov.V1.QueryDepositRequest, Cosmos.Gov.V1.QueryDepositResponse)
 
-  rpc :Deposits, Cosmos.Gov.V1.QueryDepositsRequest, Cosmos.Gov.V1.QueryDepositsResponse
+  rpc(:Deposits, Cosmos.Gov.V1.QueryDepositsRequest, Cosmos.Gov.V1.QueryDepositsResponse)
 
-  rpc :TallyResult, Cosmos.Gov.V1.QueryTallyResultRequest, Cosmos.Gov.V1.QueryTallyResultResponse
+  rpc(:TallyResult, Cosmos.Gov.V1.QueryTallyResultRequest, Cosmos.Gov.V1.QueryTallyResultResponse)
 end
 
 defmodule Cosmos.Gov.V1.Query.Stub do

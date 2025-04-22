@@ -185,45 +185,65 @@ defmodule Cosmos.Distribution.V1beta1.Query.Service do
 
   use GRPC.Service, name: "cosmos.distribution.v1beta1.Query", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :Params,
-      Cosmos.Distribution.V1beta1.QueryParamsRequest,
-      Cosmos.Distribution.V1beta1.QueryParamsResponse
+  rpc(
+    :Params,
+    Cosmos.Distribution.V1beta1.QueryParamsRequest,
+    Cosmos.Distribution.V1beta1.QueryParamsResponse
+  )
 
-  rpc :ValidatorDistributionInfo,
-      Cosmos.Distribution.V1beta1.QueryValidatorDistributionInfoRequest,
-      Cosmos.Distribution.V1beta1.QueryValidatorDistributionInfoResponse
+  rpc(
+    :ValidatorDistributionInfo,
+    Cosmos.Distribution.V1beta1.QueryValidatorDistributionInfoRequest,
+    Cosmos.Distribution.V1beta1.QueryValidatorDistributionInfoResponse
+  )
 
-  rpc :ValidatorOutstandingRewards,
-      Cosmos.Distribution.V1beta1.QueryValidatorOutstandingRewardsRequest,
-      Cosmos.Distribution.V1beta1.QueryValidatorOutstandingRewardsResponse
+  rpc(
+    :ValidatorOutstandingRewards,
+    Cosmos.Distribution.V1beta1.QueryValidatorOutstandingRewardsRequest,
+    Cosmos.Distribution.V1beta1.QueryValidatorOutstandingRewardsResponse
+  )
 
-  rpc :ValidatorCommission,
-      Cosmos.Distribution.V1beta1.QueryValidatorCommissionRequest,
-      Cosmos.Distribution.V1beta1.QueryValidatorCommissionResponse
+  rpc(
+    :ValidatorCommission,
+    Cosmos.Distribution.V1beta1.QueryValidatorCommissionRequest,
+    Cosmos.Distribution.V1beta1.QueryValidatorCommissionResponse
+  )
 
-  rpc :ValidatorSlashes,
-      Cosmos.Distribution.V1beta1.QueryValidatorSlashesRequest,
-      Cosmos.Distribution.V1beta1.QueryValidatorSlashesResponse
+  rpc(
+    :ValidatorSlashes,
+    Cosmos.Distribution.V1beta1.QueryValidatorSlashesRequest,
+    Cosmos.Distribution.V1beta1.QueryValidatorSlashesResponse
+  )
 
-  rpc :DelegationRewards,
-      Cosmos.Distribution.V1beta1.QueryDelegationRewardsRequest,
-      Cosmos.Distribution.V1beta1.QueryDelegationRewardsResponse
+  rpc(
+    :DelegationRewards,
+    Cosmos.Distribution.V1beta1.QueryDelegationRewardsRequest,
+    Cosmos.Distribution.V1beta1.QueryDelegationRewardsResponse
+  )
 
-  rpc :DelegationTotalRewards,
-      Cosmos.Distribution.V1beta1.QueryDelegationTotalRewardsRequest,
-      Cosmos.Distribution.V1beta1.QueryDelegationTotalRewardsResponse
+  rpc(
+    :DelegationTotalRewards,
+    Cosmos.Distribution.V1beta1.QueryDelegationTotalRewardsRequest,
+    Cosmos.Distribution.V1beta1.QueryDelegationTotalRewardsResponse
+  )
 
-  rpc :DelegatorValidators,
-      Cosmos.Distribution.V1beta1.QueryDelegatorValidatorsRequest,
-      Cosmos.Distribution.V1beta1.QueryDelegatorValidatorsResponse
+  rpc(
+    :DelegatorValidators,
+    Cosmos.Distribution.V1beta1.QueryDelegatorValidatorsRequest,
+    Cosmos.Distribution.V1beta1.QueryDelegatorValidatorsResponse
+  )
 
-  rpc :DelegatorWithdrawAddress,
-      Cosmos.Distribution.V1beta1.QueryDelegatorWithdrawAddressRequest,
-      Cosmos.Distribution.V1beta1.QueryDelegatorWithdrawAddressResponse
+  rpc(
+    :DelegatorWithdrawAddress,
+    Cosmos.Distribution.V1beta1.QueryDelegatorWithdrawAddressRequest,
+    Cosmos.Distribution.V1beta1.QueryDelegatorWithdrawAddressResponse
+  )
 
-  rpc :CommunityPool,
-      Cosmos.Distribution.V1beta1.QueryCommunityPoolRequest,
-      Cosmos.Distribution.V1beta1.QueryCommunityPoolResponse
+  rpc(
+    :CommunityPool,
+    Cosmos.Distribution.V1beta1.QueryCommunityPoolRequest,
+    Cosmos.Distribution.V1beta1.QueryCommunityPoolResponse
+  )
 end
 
 defmodule Cosmos.Distribution.V1beta1.Query.Stub do

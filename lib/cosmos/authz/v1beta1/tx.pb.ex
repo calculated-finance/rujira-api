@@ -52,11 +52,11 @@ defmodule Cosmos.Authz.V1beta1.Msg.Service do
 
   use GRPC.Service, name: "cosmos.authz.v1beta1.Msg", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :Grant, Cosmos.Authz.V1beta1.MsgGrant, Cosmos.Authz.V1beta1.MsgGrantResponse
+  rpc(:Grant, Cosmos.Authz.V1beta1.MsgGrant, Cosmos.Authz.V1beta1.MsgGrantResponse)
 
-  rpc :Exec, Cosmos.Authz.V1beta1.MsgExec, Cosmos.Authz.V1beta1.MsgExecResponse
+  rpc(:Exec, Cosmos.Authz.V1beta1.MsgExec, Cosmos.Authz.V1beta1.MsgExecResponse)
 
-  rpc :Revoke, Cosmos.Authz.V1beta1.MsgRevoke, Cosmos.Authz.V1beta1.MsgRevokeResponse
+  rpc(:Revoke, Cosmos.Authz.V1beta1.MsgRevoke, Cosmos.Authz.V1beta1.MsgRevokeResponse)
 end
 
 defmodule Cosmos.Authz.V1beta1.Msg.Stub do

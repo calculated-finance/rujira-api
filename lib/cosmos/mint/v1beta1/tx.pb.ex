@@ -18,9 +18,11 @@ defmodule Cosmos.Mint.V1beta1.Msg.Service do
 
   use GRPC.Service, name: "cosmos.mint.v1beta1.Msg", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :UpdateParams,
-      Cosmos.Mint.V1beta1.MsgUpdateParams,
-      Cosmos.Mint.V1beta1.MsgUpdateParamsResponse
+  rpc(
+    :UpdateParams,
+    Cosmos.Mint.V1beta1.MsgUpdateParams,
+    Cosmos.Mint.V1beta1.MsgUpdateParamsResponse
+  )
 end
 
 defmodule Cosmos.Mint.V1beta1.Msg.Stub do

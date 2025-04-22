@@ -135,21 +135,23 @@ defmodule Cosmos.Gov.V1.Msg.Service do
 
   use GRPC.Service, name: "cosmos.gov.v1.Msg", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :SubmitProposal, Cosmos.Gov.V1.MsgSubmitProposal, Cosmos.Gov.V1.MsgSubmitProposalResponse
+  rpc(:SubmitProposal, Cosmos.Gov.V1.MsgSubmitProposal, Cosmos.Gov.V1.MsgSubmitProposalResponse)
 
-  rpc :ExecLegacyContent,
-      Cosmos.Gov.V1.MsgExecLegacyContent,
-      Cosmos.Gov.V1.MsgExecLegacyContentResponse
+  rpc(
+    :ExecLegacyContent,
+    Cosmos.Gov.V1.MsgExecLegacyContent,
+    Cosmos.Gov.V1.MsgExecLegacyContentResponse
+  )
 
-  rpc :Vote, Cosmos.Gov.V1.MsgVote, Cosmos.Gov.V1.MsgVoteResponse
+  rpc(:Vote, Cosmos.Gov.V1.MsgVote, Cosmos.Gov.V1.MsgVoteResponse)
 
-  rpc :VoteWeighted, Cosmos.Gov.V1.MsgVoteWeighted, Cosmos.Gov.V1.MsgVoteWeightedResponse
+  rpc(:VoteWeighted, Cosmos.Gov.V1.MsgVoteWeighted, Cosmos.Gov.V1.MsgVoteWeightedResponse)
 
-  rpc :Deposit, Cosmos.Gov.V1.MsgDeposit, Cosmos.Gov.V1.MsgDepositResponse
+  rpc(:Deposit, Cosmos.Gov.V1.MsgDeposit, Cosmos.Gov.V1.MsgDepositResponse)
 
-  rpc :UpdateParams, Cosmos.Gov.V1.MsgUpdateParams, Cosmos.Gov.V1.MsgUpdateParamsResponse
+  rpc(:UpdateParams, Cosmos.Gov.V1.MsgUpdateParams, Cosmos.Gov.V1.MsgUpdateParamsResponse)
 
-  rpc :CancelProposal, Cosmos.Gov.V1.MsgCancelProposal, Cosmos.Gov.V1.MsgCancelProposalResponse
+  rpc(:CancelProposal, Cosmos.Gov.V1.MsgCancelProposal, Cosmos.Gov.V1.MsgCancelProposalResponse)
 end
 
 defmodule Cosmos.Gov.V1.Msg.Stub do

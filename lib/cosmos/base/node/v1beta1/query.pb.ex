@@ -38,9 +38,9 @@ defmodule Cosmos.Base.Node.V1beta1.Service.Service do
 
   use GRPC.Service, name: "cosmos.base.node.v1beta1.Service", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :Config, Cosmos.Base.Node.V1beta1.ConfigRequest, Cosmos.Base.Node.V1beta1.ConfigResponse
+  rpc(:Config, Cosmos.Base.Node.V1beta1.ConfigRequest, Cosmos.Base.Node.V1beta1.ConfigResponse)
 
-  rpc :Status, Cosmos.Base.Node.V1beta1.StatusRequest, Cosmos.Base.Node.V1beta1.StatusResponse
+  rpc(:Status, Cosmos.Base.Node.V1beta1.StatusRequest, Cosmos.Base.Node.V1beta1.StatusResponse)
 end
 
 defmodule Cosmos.Base.Node.V1beta1.Service.Stub do

@@ -57,17 +57,23 @@ defmodule Cosmos.Slashing.V1beta1.Query.Service do
 
   use GRPC.Service, name: "cosmos.slashing.v1beta1.Query", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :Params,
-      Cosmos.Slashing.V1beta1.QueryParamsRequest,
-      Cosmos.Slashing.V1beta1.QueryParamsResponse
+  rpc(
+    :Params,
+    Cosmos.Slashing.V1beta1.QueryParamsRequest,
+    Cosmos.Slashing.V1beta1.QueryParamsResponse
+  )
 
-  rpc :SigningInfo,
-      Cosmos.Slashing.V1beta1.QuerySigningInfoRequest,
-      Cosmos.Slashing.V1beta1.QuerySigningInfoResponse
+  rpc(
+    :SigningInfo,
+    Cosmos.Slashing.V1beta1.QuerySigningInfoRequest,
+    Cosmos.Slashing.V1beta1.QuerySigningInfoResponse
+  )
 
-  rpc :SigningInfos,
-      Cosmos.Slashing.V1beta1.QuerySigningInfosRequest,
-      Cosmos.Slashing.V1beta1.QuerySigningInfosResponse
+  rpc(
+    :SigningInfos,
+    Cosmos.Slashing.V1beta1.QuerySigningInfosRequest,
+    Cosmos.Slashing.V1beta1.QuerySigningInfosResponse
+  )
 end
 
 defmodule Cosmos.Slashing.V1beta1.Query.Stub do

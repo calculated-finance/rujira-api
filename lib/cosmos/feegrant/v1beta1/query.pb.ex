@@ -56,17 +56,23 @@ defmodule Cosmos.Feegrant.V1beta1.Query.Service do
 
   use GRPC.Service, name: "cosmos.feegrant.v1beta1.Query", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :Allowance,
-      Cosmos.Feegrant.V1beta1.QueryAllowanceRequest,
-      Cosmos.Feegrant.V1beta1.QueryAllowanceResponse
+  rpc(
+    :Allowance,
+    Cosmos.Feegrant.V1beta1.QueryAllowanceRequest,
+    Cosmos.Feegrant.V1beta1.QueryAllowanceResponse
+  )
 
-  rpc :Allowances,
-      Cosmos.Feegrant.V1beta1.QueryAllowancesRequest,
-      Cosmos.Feegrant.V1beta1.QueryAllowancesResponse
+  rpc(
+    :Allowances,
+    Cosmos.Feegrant.V1beta1.QueryAllowancesRequest,
+    Cosmos.Feegrant.V1beta1.QueryAllowancesResponse
+  )
 
-  rpc :AllowancesByGranter,
-      Cosmos.Feegrant.V1beta1.QueryAllowancesByGranterRequest,
-      Cosmos.Feegrant.V1beta1.QueryAllowancesByGranterResponse
+  rpc(
+    :AllowancesByGranter,
+    Cosmos.Feegrant.V1beta1.QueryAllowancesByGranterRequest,
+    Cosmos.Feegrant.V1beta1.QueryAllowancesByGranterResponse
+  )
 end
 
 defmodule Cosmos.Feegrant.V1beta1.Query.Stub do

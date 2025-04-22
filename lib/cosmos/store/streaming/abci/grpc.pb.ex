@@ -40,13 +40,17 @@ defmodule Cosmos.Store.Streaming.Abci.ABCIListenerService.Service do
     name: "cosmos.store.streaming.abci.ABCIListenerService",
     protoc_gen_elixir_version: "0.13.0"
 
-  rpc :ListenFinalizeBlock,
-      Cosmos.Store.Streaming.Abci.ListenFinalizeBlockRequest,
-      Cosmos.Store.Streaming.Abci.ListenFinalizeBlockResponse
+  rpc(
+    :ListenFinalizeBlock,
+    Cosmos.Store.Streaming.Abci.ListenFinalizeBlockRequest,
+    Cosmos.Store.Streaming.Abci.ListenFinalizeBlockResponse
+  )
 
-  rpc :ListenCommit,
-      Cosmos.Store.Streaming.Abci.ListenCommitRequest,
-      Cosmos.Store.Streaming.Abci.ListenCommitResponse
+  rpc(
+    :ListenCommit,
+    Cosmos.Store.Streaming.Abci.ListenCommitRequest,
+    Cosmos.Store.Streaming.Abci.ListenCommitResponse
+  )
 end
 
 defmodule Cosmos.Store.Streaming.Abci.ABCIListenerService.Stub do

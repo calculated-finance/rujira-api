@@ -194,33 +194,47 @@ defmodule Cosmos.Base.Tendermint.V1beta1.Service.Service do
     name: "cosmos.base.tendermint.v1beta1.Service",
     protoc_gen_elixir_version: "0.13.0"
 
-  rpc :GetNodeInfo,
-      Cosmos.Base.Tendermint.V1beta1.GetNodeInfoRequest,
-      Cosmos.Base.Tendermint.V1beta1.GetNodeInfoResponse
+  rpc(
+    :GetNodeInfo,
+    Cosmos.Base.Tendermint.V1beta1.GetNodeInfoRequest,
+    Cosmos.Base.Tendermint.V1beta1.GetNodeInfoResponse
+  )
 
-  rpc :GetSyncing,
-      Cosmos.Base.Tendermint.V1beta1.GetSyncingRequest,
-      Cosmos.Base.Tendermint.V1beta1.GetSyncingResponse
+  rpc(
+    :GetSyncing,
+    Cosmos.Base.Tendermint.V1beta1.GetSyncingRequest,
+    Cosmos.Base.Tendermint.V1beta1.GetSyncingResponse
+  )
 
-  rpc :GetLatestBlock,
-      Cosmos.Base.Tendermint.V1beta1.GetLatestBlockRequest,
-      Cosmos.Base.Tendermint.V1beta1.GetLatestBlockResponse
+  rpc(
+    :GetLatestBlock,
+    Cosmos.Base.Tendermint.V1beta1.GetLatestBlockRequest,
+    Cosmos.Base.Tendermint.V1beta1.GetLatestBlockResponse
+  )
 
-  rpc :GetBlockByHeight,
-      Cosmos.Base.Tendermint.V1beta1.GetBlockByHeightRequest,
-      Cosmos.Base.Tendermint.V1beta1.GetBlockByHeightResponse
+  rpc(
+    :GetBlockByHeight,
+    Cosmos.Base.Tendermint.V1beta1.GetBlockByHeightRequest,
+    Cosmos.Base.Tendermint.V1beta1.GetBlockByHeightResponse
+  )
 
-  rpc :GetLatestValidatorSet,
-      Cosmos.Base.Tendermint.V1beta1.GetLatestValidatorSetRequest,
-      Cosmos.Base.Tendermint.V1beta1.GetLatestValidatorSetResponse
+  rpc(
+    :GetLatestValidatorSet,
+    Cosmos.Base.Tendermint.V1beta1.GetLatestValidatorSetRequest,
+    Cosmos.Base.Tendermint.V1beta1.GetLatestValidatorSetResponse
+  )
 
-  rpc :GetValidatorSetByHeight,
-      Cosmos.Base.Tendermint.V1beta1.GetValidatorSetByHeightRequest,
-      Cosmos.Base.Tendermint.V1beta1.GetValidatorSetByHeightResponse
+  rpc(
+    :GetValidatorSetByHeight,
+    Cosmos.Base.Tendermint.V1beta1.GetValidatorSetByHeightRequest,
+    Cosmos.Base.Tendermint.V1beta1.GetValidatorSetByHeightResponse
+  )
 
-  rpc :ABCIQuery,
-      Cosmos.Base.Tendermint.V1beta1.ABCIQueryRequest,
-      Cosmos.Base.Tendermint.V1beta1.ABCIQueryResponse
+  rpc(
+    :ABCIQuery,
+    Cosmos.Base.Tendermint.V1beta1.ABCIQueryRequest,
+    Cosmos.Base.Tendermint.V1beta1.ABCIQueryResponse
+  )
 end
 
 defmodule Cosmos.Base.Tendermint.V1beta1.Service.Stub do

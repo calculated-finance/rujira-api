@@ -247,47 +247,65 @@ defmodule Cosmwasm.Wasm.V1.Query.Service do
 
   use GRPC.Service, name: "cosmwasm.wasm.v1.Query", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :ContractInfo,
-      Cosmwasm.Wasm.V1.QueryContractInfoRequest,
-      Cosmwasm.Wasm.V1.QueryContractInfoResponse
+  rpc(
+    :ContractInfo,
+    Cosmwasm.Wasm.V1.QueryContractInfoRequest,
+    Cosmwasm.Wasm.V1.QueryContractInfoResponse
+  )
 
-  rpc :ContractHistory,
-      Cosmwasm.Wasm.V1.QueryContractHistoryRequest,
-      Cosmwasm.Wasm.V1.QueryContractHistoryResponse
+  rpc(
+    :ContractHistory,
+    Cosmwasm.Wasm.V1.QueryContractHistoryRequest,
+    Cosmwasm.Wasm.V1.QueryContractHistoryResponse
+  )
 
-  rpc :ContractsByCode,
-      Cosmwasm.Wasm.V1.QueryContractsByCodeRequest,
-      Cosmwasm.Wasm.V1.QueryContractsByCodeResponse
+  rpc(
+    :ContractsByCode,
+    Cosmwasm.Wasm.V1.QueryContractsByCodeRequest,
+    Cosmwasm.Wasm.V1.QueryContractsByCodeResponse
+  )
 
-  rpc :AllContractState,
-      Cosmwasm.Wasm.V1.QueryAllContractStateRequest,
-      Cosmwasm.Wasm.V1.QueryAllContractStateResponse
+  rpc(
+    :AllContractState,
+    Cosmwasm.Wasm.V1.QueryAllContractStateRequest,
+    Cosmwasm.Wasm.V1.QueryAllContractStateResponse
+  )
 
-  rpc :RawContractState,
-      Cosmwasm.Wasm.V1.QueryRawContractStateRequest,
-      Cosmwasm.Wasm.V1.QueryRawContractStateResponse
+  rpc(
+    :RawContractState,
+    Cosmwasm.Wasm.V1.QueryRawContractStateRequest,
+    Cosmwasm.Wasm.V1.QueryRawContractStateResponse
+  )
 
-  rpc :SmartContractState,
-      Cosmwasm.Wasm.V1.QuerySmartContractStateRequest,
-      Cosmwasm.Wasm.V1.QuerySmartContractStateResponse
+  rpc(
+    :SmartContractState,
+    Cosmwasm.Wasm.V1.QuerySmartContractStateRequest,
+    Cosmwasm.Wasm.V1.QuerySmartContractStateResponse
+  )
 
-  rpc :Code, Cosmwasm.Wasm.V1.QueryCodeRequest, Cosmwasm.Wasm.V1.QueryCodeResponse
+  rpc(:Code, Cosmwasm.Wasm.V1.QueryCodeRequest, Cosmwasm.Wasm.V1.QueryCodeResponse)
 
-  rpc :Codes, Cosmwasm.Wasm.V1.QueryCodesRequest, Cosmwasm.Wasm.V1.QueryCodesResponse
+  rpc(:Codes, Cosmwasm.Wasm.V1.QueryCodesRequest, Cosmwasm.Wasm.V1.QueryCodesResponse)
 
-  rpc :PinnedCodes,
-      Cosmwasm.Wasm.V1.QueryPinnedCodesRequest,
-      Cosmwasm.Wasm.V1.QueryPinnedCodesResponse
+  rpc(
+    :PinnedCodes,
+    Cosmwasm.Wasm.V1.QueryPinnedCodesRequest,
+    Cosmwasm.Wasm.V1.QueryPinnedCodesResponse
+  )
 
-  rpc :Params, Cosmwasm.Wasm.V1.QueryParamsRequest, Cosmwasm.Wasm.V1.QueryParamsResponse
+  rpc(:Params, Cosmwasm.Wasm.V1.QueryParamsRequest, Cosmwasm.Wasm.V1.QueryParamsResponse)
 
-  rpc :ContractsByCreator,
-      Cosmwasm.Wasm.V1.QueryContractsByCreatorRequest,
-      Cosmwasm.Wasm.V1.QueryContractsByCreatorResponse
+  rpc(
+    :ContractsByCreator,
+    Cosmwasm.Wasm.V1.QueryContractsByCreatorRequest,
+    Cosmwasm.Wasm.V1.QueryContractsByCreatorResponse
+  )
 
-  rpc :BuildAddress,
-      Cosmwasm.Wasm.V1.QueryBuildAddressRequest,
-      Cosmwasm.Wasm.V1.QueryBuildAddressResponse
+  rpc(
+    :BuildAddress,
+    Cosmwasm.Wasm.V1.QueryBuildAddressRequest,
+    Cosmwasm.Wasm.V1.QueryBuildAddressResponse
+  )
 end
 
 defmodule Cosmwasm.Wasm.V1.Query.Stub do

@@ -32,13 +32,17 @@ defmodule Cosmos.Upgrade.V1beta1.Msg.Service do
 
   use GRPC.Service, name: "cosmos.upgrade.v1beta1.Msg", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :SoftwareUpgrade,
-      Cosmos.Upgrade.V1beta1.MsgSoftwareUpgrade,
-      Cosmos.Upgrade.V1beta1.MsgSoftwareUpgradeResponse
+  rpc(
+    :SoftwareUpgrade,
+    Cosmos.Upgrade.V1beta1.MsgSoftwareUpgrade,
+    Cosmos.Upgrade.V1beta1.MsgSoftwareUpgradeResponse
+  )
 
-  rpc :CancelUpgrade,
-      Cosmos.Upgrade.V1beta1.MsgCancelUpgrade,
-      Cosmos.Upgrade.V1beta1.MsgCancelUpgradeResponse
+  rpc(
+    :CancelUpgrade,
+    Cosmos.Upgrade.V1beta1.MsgCancelUpgrade,
+    Cosmos.Upgrade.V1beta1.MsgCancelUpgradeResponse
+  )
 end
 
 defmodule Cosmos.Upgrade.V1beta1.Msg.Stub do

@@ -20,7 +20,7 @@ defmodule Cosmos.Nft.V1beta1.Msg.Service do
 
   use GRPC.Service, name: "cosmos.nft.v1beta1.Msg", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :Send, Cosmos.Nft.V1beta1.MsgSend, Cosmos.Nft.V1beta1.MsgSendResponse
+  rpc(:Send, Cosmos.Nft.V1beta1.MsgSend, Cosmos.Nft.V1beta1.MsgSendResponse)
 end
 
 defmodule Cosmos.Nft.V1beta1.Msg.Stub do

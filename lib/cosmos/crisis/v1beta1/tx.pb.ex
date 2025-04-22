@@ -38,13 +38,17 @@ defmodule Cosmos.Crisis.V1beta1.Msg.Service do
 
   use GRPC.Service, name: "cosmos.crisis.v1beta1.Msg", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :VerifyInvariant,
-      Cosmos.Crisis.V1beta1.MsgVerifyInvariant,
-      Cosmos.Crisis.V1beta1.MsgVerifyInvariantResponse
+  rpc(
+    :VerifyInvariant,
+    Cosmos.Crisis.V1beta1.MsgVerifyInvariant,
+    Cosmos.Crisis.V1beta1.MsgVerifyInvariantResponse
+  )
 
-  rpc :UpdateParams,
-      Cosmos.Crisis.V1beta1.MsgUpdateParams,
-      Cosmos.Crisis.V1beta1.MsgUpdateParamsResponse
+  rpc(
+    :UpdateParams,
+    Cosmos.Crisis.V1beta1.MsgUpdateParams,
+    Cosmos.Crisis.V1beta1.MsgUpdateParamsResponse
+  )
 end
 
 defmodule Cosmos.Crisis.V1beta1.Msg.Stub do

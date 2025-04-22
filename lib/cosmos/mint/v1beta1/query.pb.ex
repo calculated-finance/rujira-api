@@ -45,15 +45,19 @@ defmodule Cosmos.Mint.V1beta1.Query.Service do
 
   use GRPC.Service, name: "cosmos.mint.v1beta1.Query", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :Params, Cosmos.Mint.V1beta1.QueryParamsRequest, Cosmos.Mint.V1beta1.QueryParamsResponse
+  rpc(:Params, Cosmos.Mint.V1beta1.QueryParamsRequest, Cosmos.Mint.V1beta1.QueryParamsResponse)
 
-  rpc :Inflation,
-      Cosmos.Mint.V1beta1.QueryInflationRequest,
-      Cosmos.Mint.V1beta1.QueryInflationResponse
+  rpc(
+    :Inflation,
+    Cosmos.Mint.V1beta1.QueryInflationRequest,
+    Cosmos.Mint.V1beta1.QueryInflationResponse
+  )
 
-  rpc :AnnualProvisions,
-      Cosmos.Mint.V1beta1.QueryAnnualProvisionsRequest,
-      Cosmos.Mint.V1beta1.QueryAnnualProvisionsResponse
+  rpc(
+    :AnnualProvisions,
+    Cosmos.Mint.V1beta1.QueryAnnualProvisionsRequest,
+    Cosmos.Mint.V1beta1.QueryAnnualProvisionsResponse
+  )
 end
 
 defmodule Cosmos.Mint.V1beta1.Query.Stub do

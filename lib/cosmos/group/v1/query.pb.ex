@@ -253,55 +253,77 @@ defmodule Cosmos.Group.V1.Query.Service do
 
   use GRPC.Service, name: "cosmos.group.v1.Query", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :GroupInfo, Cosmos.Group.V1.QueryGroupInfoRequest, Cosmos.Group.V1.QueryGroupInfoResponse
+  rpc(:GroupInfo, Cosmos.Group.V1.QueryGroupInfoRequest, Cosmos.Group.V1.QueryGroupInfoResponse)
 
-  rpc :GroupPolicyInfo,
-      Cosmos.Group.V1.QueryGroupPolicyInfoRequest,
-      Cosmos.Group.V1.QueryGroupPolicyInfoResponse
+  rpc(
+    :GroupPolicyInfo,
+    Cosmos.Group.V1.QueryGroupPolicyInfoRequest,
+    Cosmos.Group.V1.QueryGroupPolicyInfoResponse
+  )
 
-  rpc :GroupMembers,
-      Cosmos.Group.V1.QueryGroupMembersRequest,
-      Cosmos.Group.V1.QueryGroupMembersResponse
+  rpc(
+    :GroupMembers,
+    Cosmos.Group.V1.QueryGroupMembersRequest,
+    Cosmos.Group.V1.QueryGroupMembersResponse
+  )
 
-  rpc :GroupsByAdmin,
-      Cosmos.Group.V1.QueryGroupsByAdminRequest,
-      Cosmos.Group.V1.QueryGroupsByAdminResponse
+  rpc(
+    :GroupsByAdmin,
+    Cosmos.Group.V1.QueryGroupsByAdminRequest,
+    Cosmos.Group.V1.QueryGroupsByAdminResponse
+  )
 
-  rpc :GroupPoliciesByGroup,
-      Cosmos.Group.V1.QueryGroupPoliciesByGroupRequest,
-      Cosmos.Group.V1.QueryGroupPoliciesByGroupResponse
+  rpc(
+    :GroupPoliciesByGroup,
+    Cosmos.Group.V1.QueryGroupPoliciesByGroupRequest,
+    Cosmos.Group.V1.QueryGroupPoliciesByGroupResponse
+  )
 
-  rpc :GroupPoliciesByAdmin,
-      Cosmos.Group.V1.QueryGroupPoliciesByAdminRequest,
-      Cosmos.Group.V1.QueryGroupPoliciesByAdminResponse
+  rpc(
+    :GroupPoliciesByAdmin,
+    Cosmos.Group.V1.QueryGroupPoliciesByAdminRequest,
+    Cosmos.Group.V1.QueryGroupPoliciesByAdminResponse
+  )
 
-  rpc :Proposal, Cosmos.Group.V1.QueryProposalRequest, Cosmos.Group.V1.QueryProposalResponse
+  rpc(:Proposal, Cosmos.Group.V1.QueryProposalRequest, Cosmos.Group.V1.QueryProposalResponse)
 
-  rpc :ProposalsByGroupPolicy,
-      Cosmos.Group.V1.QueryProposalsByGroupPolicyRequest,
-      Cosmos.Group.V1.QueryProposalsByGroupPolicyResponse
+  rpc(
+    :ProposalsByGroupPolicy,
+    Cosmos.Group.V1.QueryProposalsByGroupPolicyRequest,
+    Cosmos.Group.V1.QueryProposalsByGroupPolicyResponse
+  )
 
-  rpc :VoteByProposalVoter,
-      Cosmos.Group.V1.QueryVoteByProposalVoterRequest,
-      Cosmos.Group.V1.QueryVoteByProposalVoterResponse
+  rpc(
+    :VoteByProposalVoter,
+    Cosmos.Group.V1.QueryVoteByProposalVoterRequest,
+    Cosmos.Group.V1.QueryVoteByProposalVoterResponse
+  )
 
-  rpc :VotesByProposal,
-      Cosmos.Group.V1.QueryVotesByProposalRequest,
-      Cosmos.Group.V1.QueryVotesByProposalResponse
+  rpc(
+    :VotesByProposal,
+    Cosmos.Group.V1.QueryVotesByProposalRequest,
+    Cosmos.Group.V1.QueryVotesByProposalResponse
+  )
 
-  rpc :VotesByVoter,
-      Cosmos.Group.V1.QueryVotesByVoterRequest,
-      Cosmos.Group.V1.QueryVotesByVoterResponse
+  rpc(
+    :VotesByVoter,
+    Cosmos.Group.V1.QueryVotesByVoterRequest,
+    Cosmos.Group.V1.QueryVotesByVoterResponse
+  )
 
-  rpc :GroupsByMember,
-      Cosmos.Group.V1.QueryGroupsByMemberRequest,
-      Cosmos.Group.V1.QueryGroupsByMemberResponse
+  rpc(
+    :GroupsByMember,
+    Cosmos.Group.V1.QueryGroupsByMemberRequest,
+    Cosmos.Group.V1.QueryGroupsByMemberResponse
+  )
 
-  rpc :TallyResult,
-      Cosmos.Group.V1.QueryTallyResultRequest,
-      Cosmos.Group.V1.QueryTallyResultResponse
+  rpc(
+    :TallyResult,
+    Cosmos.Group.V1.QueryTallyResultRequest,
+    Cosmos.Group.V1.QueryTallyResultResponse
+  )
 
-  rpc :Groups, Cosmos.Group.V1.QueryGroupsRequest, Cosmos.Group.V1.QueryGroupsResponse
+  rpc(:Groups, Cosmos.Group.V1.QueryGroupsRequest, Cosmos.Group.V1.QueryGroupsResponse)
 end
 
 defmodule Cosmos.Group.V1.Query.Stub do

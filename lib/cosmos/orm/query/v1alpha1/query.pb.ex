@@ -78,9 +78,9 @@ defmodule Cosmos.Orm.Query.V1alpha1.Query.Service do
 
   use GRPC.Service, name: "cosmos.orm.query.v1alpha1.Query", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :Get, Cosmos.Orm.Query.V1alpha1.GetRequest, Cosmos.Orm.Query.V1alpha1.GetResponse
+  rpc(:Get, Cosmos.Orm.Query.V1alpha1.GetRequest, Cosmos.Orm.Query.V1alpha1.GetResponse)
 
-  rpc :List, Cosmos.Orm.Query.V1alpha1.ListRequest, Cosmos.Orm.Query.V1alpha1.ListResponse
+  rpc(:List, Cosmos.Orm.Query.V1alpha1.ListRequest, Cosmos.Orm.Query.V1alpha1.ListResponse)
 end
 
 defmodule Cosmos.Orm.Query.V1alpha1.Query.Stub do

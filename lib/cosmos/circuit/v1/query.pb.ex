@@ -50,13 +50,15 @@ defmodule Cosmos.Circuit.V1.Query.Service do
 
   use GRPC.Service, name: "cosmos.circuit.v1.Query", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :Account, Cosmos.Circuit.V1.QueryAccountRequest, Cosmos.Circuit.V1.AccountResponse
+  rpc(:Account, Cosmos.Circuit.V1.QueryAccountRequest, Cosmos.Circuit.V1.AccountResponse)
 
-  rpc :Accounts, Cosmos.Circuit.V1.QueryAccountsRequest, Cosmos.Circuit.V1.AccountsResponse
+  rpc(:Accounts, Cosmos.Circuit.V1.QueryAccountsRequest, Cosmos.Circuit.V1.AccountsResponse)
 
-  rpc :DisabledList,
-      Cosmos.Circuit.V1.QueryDisabledListRequest,
-      Cosmos.Circuit.V1.DisabledListResponse
+  rpc(
+    :DisabledList,
+    Cosmos.Circuit.V1.QueryDisabledListRequest,
+    Cosmos.Circuit.V1.DisabledListResponse
+  )
 end
 
 defmodule Cosmos.Circuit.V1.Query.Stub do

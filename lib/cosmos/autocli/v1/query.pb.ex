@@ -30,7 +30,7 @@ defmodule Cosmos.Autocli.V1.Query.Service do
 
   use GRPC.Service, name: "cosmos.autocli.v1.Query", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :AppOptions, Cosmos.Autocli.V1.AppOptionsRequest, Cosmos.Autocli.V1.AppOptionsResponse
+  rpc(:AppOptions, Cosmos.Autocli.V1.AppOptionsRequest, Cosmos.Autocli.V1.AppOptionsResponse)
 end
 
 defmodule Cosmos.Autocli.V1.Query.Stub do

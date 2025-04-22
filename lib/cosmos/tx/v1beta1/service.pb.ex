@@ -189,29 +189,35 @@ defmodule Cosmos.Tx.V1beta1.Service.Service do
 
   use GRPC.Service, name: "cosmos.tx.v1beta1.Service", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :Simulate, Cosmos.Tx.V1beta1.SimulateRequest, Cosmos.Tx.V1beta1.SimulateResponse
+  rpc(:Simulate, Cosmos.Tx.V1beta1.SimulateRequest, Cosmos.Tx.V1beta1.SimulateResponse)
 
-  rpc :GetTx, Cosmos.Tx.V1beta1.GetTxRequest, Cosmos.Tx.V1beta1.GetTxResponse
+  rpc(:GetTx, Cosmos.Tx.V1beta1.GetTxRequest, Cosmos.Tx.V1beta1.GetTxResponse)
 
-  rpc :BroadcastTx, Cosmos.Tx.V1beta1.BroadcastTxRequest, Cosmos.Tx.V1beta1.BroadcastTxResponse
+  rpc(:BroadcastTx, Cosmos.Tx.V1beta1.BroadcastTxRequest, Cosmos.Tx.V1beta1.BroadcastTxResponse)
 
-  rpc :GetTxsEvent, Cosmos.Tx.V1beta1.GetTxsEventRequest, Cosmos.Tx.V1beta1.GetTxsEventResponse
+  rpc(:GetTxsEvent, Cosmos.Tx.V1beta1.GetTxsEventRequest, Cosmos.Tx.V1beta1.GetTxsEventResponse)
 
-  rpc :GetBlockWithTxs,
-      Cosmos.Tx.V1beta1.GetBlockWithTxsRequest,
-      Cosmos.Tx.V1beta1.GetBlockWithTxsResponse
+  rpc(
+    :GetBlockWithTxs,
+    Cosmos.Tx.V1beta1.GetBlockWithTxsRequest,
+    Cosmos.Tx.V1beta1.GetBlockWithTxsResponse
+  )
 
-  rpc :TxDecode, Cosmos.Tx.V1beta1.TxDecodeRequest, Cosmos.Tx.V1beta1.TxDecodeResponse
+  rpc(:TxDecode, Cosmos.Tx.V1beta1.TxDecodeRequest, Cosmos.Tx.V1beta1.TxDecodeResponse)
 
-  rpc :TxEncode, Cosmos.Tx.V1beta1.TxEncodeRequest, Cosmos.Tx.V1beta1.TxEncodeResponse
+  rpc(:TxEncode, Cosmos.Tx.V1beta1.TxEncodeRequest, Cosmos.Tx.V1beta1.TxEncodeResponse)
 
-  rpc :TxEncodeAmino,
-      Cosmos.Tx.V1beta1.TxEncodeAminoRequest,
-      Cosmos.Tx.V1beta1.TxEncodeAminoResponse
+  rpc(
+    :TxEncodeAmino,
+    Cosmos.Tx.V1beta1.TxEncodeAminoRequest,
+    Cosmos.Tx.V1beta1.TxEncodeAminoResponse
+  )
 
-  rpc :TxDecodeAmino,
-      Cosmos.Tx.V1beta1.TxDecodeAminoRequest,
-      Cosmos.Tx.V1beta1.TxDecodeAminoResponse
+  rpc(
+    :TxDecodeAmino,
+    Cosmos.Tx.V1beta1.TxDecodeAminoRequest,
+    Cosmos.Tx.V1beta1.TxDecodeAminoResponse
+  )
 end
 
 defmodule Cosmos.Tx.V1beta1.Service.Stub do

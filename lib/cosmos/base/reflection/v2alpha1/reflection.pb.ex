@@ -241,29 +241,41 @@ defmodule Cosmos.Base.Reflection.V2alpha1.ReflectionService.Service do
     name: "cosmos.base.reflection.v2alpha1.ReflectionService",
     protoc_gen_elixir_version: "0.13.0"
 
-  rpc :GetAuthnDescriptor,
-      Cosmos.Base.Reflection.V2alpha1.GetAuthnDescriptorRequest,
-      Cosmos.Base.Reflection.V2alpha1.GetAuthnDescriptorResponse
+  rpc(
+    :GetAuthnDescriptor,
+    Cosmos.Base.Reflection.V2alpha1.GetAuthnDescriptorRequest,
+    Cosmos.Base.Reflection.V2alpha1.GetAuthnDescriptorResponse
+  )
 
-  rpc :GetChainDescriptor,
-      Cosmos.Base.Reflection.V2alpha1.GetChainDescriptorRequest,
-      Cosmos.Base.Reflection.V2alpha1.GetChainDescriptorResponse
+  rpc(
+    :GetChainDescriptor,
+    Cosmos.Base.Reflection.V2alpha1.GetChainDescriptorRequest,
+    Cosmos.Base.Reflection.V2alpha1.GetChainDescriptorResponse
+  )
 
-  rpc :GetCodecDescriptor,
-      Cosmos.Base.Reflection.V2alpha1.GetCodecDescriptorRequest,
-      Cosmos.Base.Reflection.V2alpha1.GetCodecDescriptorResponse
+  rpc(
+    :GetCodecDescriptor,
+    Cosmos.Base.Reflection.V2alpha1.GetCodecDescriptorRequest,
+    Cosmos.Base.Reflection.V2alpha1.GetCodecDescriptorResponse
+  )
 
-  rpc :GetConfigurationDescriptor,
-      Cosmos.Base.Reflection.V2alpha1.GetConfigurationDescriptorRequest,
-      Cosmos.Base.Reflection.V2alpha1.GetConfigurationDescriptorResponse
+  rpc(
+    :GetConfigurationDescriptor,
+    Cosmos.Base.Reflection.V2alpha1.GetConfigurationDescriptorRequest,
+    Cosmos.Base.Reflection.V2alpha1.GetConfigurationDescriptorResponse
+  )
 
-  rpc :GetQueryServicesDescriptor,
-      Cosmos.Base.Reflection.V2alpha1.GetQueryServicesDescriptorRequest,
-      Cosmos.Base.Reflection.V2alpha1.GetQueryServicesDescriptorResponse
+  rpc(
+    :GetQueryServicesDescriptor,
+    Cosmos.Base.Reflection.V2alpha1.GetQueryServicesDescriptorRequest,
+    Cosmos.Base.Reflection.V2alpha1.GetQueryServicesDescriptorResponse
+  )
 
-  rpc :GetTxDescriptor,
-      Cosmos.Base.Reflection.V2alpha1.GetTxDescriptorRequest,
-      Cosmos.Base.Reflection.V2alpha1.GetTxDescriptorResponse
+  rpc(
+    :GetTxDescriptor,
+    Cosmos.Base.Reflection.V2alpha1.GetTxDescriptorRequest,
+    Cosmos.Base.Reflection.V2alpha1.GetTxDescriptorResponse
+  )
 end
 
 defmodule Cosmos.Base.Reflection.V2alpha1.ReflectionService.Stub do

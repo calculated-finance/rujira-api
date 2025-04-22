@@ -55,17 +55,23 @@ defmodule Cosmos.Circuit.V1.Msg.Service do
 
   use GRPC.Service, name: "cosmos.circuit.v1.Msg", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :AuthorizeCircuitBreaker,
-      Cosmos.Circuit.V1.MsgAuthorizeCircuitBreaker,
-      Cosmos.Circuit.V1.MsgAuthorizeCircuitBreakerResponse
+  rpc(
+    :AuthorizeCircuitBreaker,
+    Cosmos.Circuit.V1.MsgAuthorizeCircuitBreaker,
+    Cosmos.Circuit.V1.MsgAuthorizeCircuitBreakerResponse
+  )
 
-  rpc :TripCircuitBreaker,
-      Cosmos.Circuit.V1.MsgTripCircuitBreaker,
-      Cosmos.Circuit.V1.MsgTripCircuitBreakerResponse
+  rpc(
+    :TripCircuitBreaker,
+    Cosmos.Circuit.V1.MsgTripCircuitBreaker,
+    Cosmos.Circuit.V1.MsgTripCircuitBreakerResponse
+  )
 
-  rpc :ResetCircuitBreaker,
-      Cosmos.Circuit.V1.MsgResetCircuitBreaker,
-      Cosmos.Circuit.V1.MsgResetCircuitBreakerResponse
+  rpc(
+    :ResetCircuitBreaker,
+    Cosmos.Circuit.V1.MsgResetCircuitBreaker,
+    Cosmos.Circuit.V1.MsgResetCircuitBreakerResponse
+  )
 end
 
 defmodule Cosmos.Circuit.V1.Msg.Stub do

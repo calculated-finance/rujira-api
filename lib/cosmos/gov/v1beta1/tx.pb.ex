@@ -79,17 +79,21 @@ defmodule Cosmos.Gov.V1beta1.Msg.Service do
 
   use GRPC.Service, name: "cosmos.gov.v1beta1.Msg", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :SubmitProposal,
-      Cosmos.Gov.V1beta1.MsgSubmitProposal,
-      Cosmos.Gov.V1beta1.MsgSubmitProposalResponse
+  rpc(
+    :SubmitProposal,
+    Cosmos.Gov.V1beta1.MsgSubmitProposal,
+    Cosmos.Gov.V1beta1.MsgSubmitProposalResponse
+  )
 
-  rpc :Vote, Cosmos.Gov.V1beta1.MsgVote, Cosmos.Gov.V1beta1.MsgVoteResponse
+  rpc(:Vote, Cosmos.Gov.V1beta1.MsgVote, Cosmos.Gov.V1beta1.MsgVoteResponse)
 
-  rpc :VoteWeighted,
-      Cosmos.Gov.V1beta1.MsgVoteWeighted,
-      Cosmos.Gov.V1beta1.MsgVoteWeightedResponse
+  rpc(
+    :VoteWeighted,
+    Cosmos.Gov.V1beta1.MsgVoteWeighted,
+    Cosmos.Gov.V1beta1.MsgVoteWeightedResponse
+  )
 
-  rpc :Deposit, Cosmos.Gov.V1beta1.MsgDeposit, Cosmos.Gov.V1beta1.MsgDepositResponse
+  rpc(:Deposit, Cosmos.Gov.V1beta1.MsgDeposit, Cosmos.Gov.V1beta1.MsgDepositResponse)
 end
 
 defmodule Cosmos.Gov.V1beta1.Msg.Stub do

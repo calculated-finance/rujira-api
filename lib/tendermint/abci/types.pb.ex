@@ -684,47 +684,57 @@ defmodule Tendermint.Abci.ABCI.Service do
 
   use GRPC.Service, name: "tendermint.abci.ABCI", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :Echo, Tendermint.Abci.RequestEcho, Tendermint.Abci.ResponseEcho
+  rpc(:Echo, Tendermint.Abci.RequestEcho, Tendermint.Abci.ResponseEcho)
 
-  rpc :Flush, Tendermint.Abci.RequestFlush, Tendermint.Abci.ResponseFlush
+  rpc(:Flush, Tendermint.Abci.RequestFlush, Tendermint.Abci.ResponseFlush)
 
-  rpc :Info, Tendermint.Abci.RequestInfo, Tendermint.Abci.ResponseInfo
+  rpc(:Info, Tendermint.Abci.RequestInfo, Tendermint.Abci.ResponseInfo)
 
-  rpc :CheckTx, Tendermint.Abci.RequestCheckTx, Tendermint.Abci.ResponseCheckTx
+  rpc(:CheckTx, Tendermint.Abci.RequestCheckTx, Tendermint.Abci.ResponseCheckTx)
 
-  rpc :Query, Tendermint.Abci.RequestQuery, Tendermint.Abci.ResponseQuery
+  rpc(:Query, Tendermint.Abci.RequestQuery, Tendermint.Abci.ResponseQuery)
 
-  rpc :Commit, Tendermint.Abci.RequestCommit, Tendermint.Abci.ResponseCommit
+  rpc(:Commit, Tendermint.Abci.RequestCommit, Tendermint.Abci.ResponseCommit)
 
-  rpc :InitChain, Tendermint.Abci.RequestInitChain, Tendermint.Abci.ResponseInitChain
+  rpc(:InitChain, Tendermint.Abci.RequestInitChain, Tendermint.Abci.ResponseInitChain)
 
-  rpc :ListSnapshots, Tendermint.Abci.RequestListSnapshots, Tendermint.Abci.ResponseListSnapshots
+  rpc(:ListSnapshots, Tendermint.Abci.RequestListSnapshots, Tendermint.Abci.ResponseListSnapshots)
 
-  rpc :OfferSnapshot, Tendermint.Abci.RequestOfferSnapshot, Tendermint.Abci.ResponseOfferSnapshot
+  rpc(:OfferSnapshot, Tendermint.Abci.RequestOfferSnapshot, Tendermint.Abci.ResponseOfferSnapshot)
 
-  rpc :LoadSnapshotChunk,
-      Tendermint.Abci.RequestLoadSnapshotChunk,
-      Tendermint.Abci.ResponseLoadSnapshotChunk
+  rpc(
+    :LoadSnapshotChunk,
+    Tendermint.Abci.RequestLoadSnapshotChunk,
+    Tendermint.Abci.ResponseLoadSnapshotChunk
+  )
 
-  rpc :ApplySnapshotChunk,
-      Tendermint.Abci.RequestApplySnapshotChunk,
-      Tendermint.Abci.ResponseApplySnapshotChunk
+  rpc(
+    :ApplySnapshotChunk,
+    Tendermint.Abci.RequestApplySnapshotChunk,
+    Tendermint.Abci.ResponseApplySnapshotChunk
+  )
 
-  rpc :PrepareProposal,
-      Tendermint.Abci.RequestPrepareProposal,
-      Tendermint.Abci.ResponsePrepareProposal
+  rpc(
+    :PrepareProposal,
+    Tendermint.Abci.RequestPrepareProposal,
+    Tendermint.Abci.ResponsePrepareProposal
+  )
 
-  rpc :ProcessProposal,
-      Tendermint.Abci.RequestProcessProposal,
-      Tendermint.Abci.ResponseProcessProposal
+  rpc(
+    :ProcessProposal,
+    Tendermint.Abci.RequestProcessProposal,
+    Tendermint.Abci.ResponseProcessProposal
+  )
 
-  rpc :ExtendVote, Tendermint.Abci.RequestExtendVote, Tendermint.Abci.ResponseExtendVote
+  rpc(:ExtendVote, Tendermint.Abci.RequestExtendVote, Tendermint.Abci.ResponseExtendVote)
 
-  rpc :VerifyVoteExtension,
-      Tendermint.Abci.RequestVerifyVoteExtension,
-      Tendermint.Abci.ResponseVerifyVoteExtension
+  rpc(
+    :VerifyVoteExtension,
+    Tendermint.Abci.RequestVerifyVoteExtension,
+    Tendermint.Abci.ResponseVerifyVoteExtension
+  )
 
-  rpc :FinalizeBlock, Tendermint.Abci.RequestFinalizeBlock, Tendermint.Abci.ResponseFinalizeBlock
+  rpc(:FinalizeBlock, Tendermint.Abci.RequestFinalizeBlock, Tendermint.Abci.ResponseFinalizeBlock)
 end
 
 defmodule Tendermint.Abci.ABCI.Stub do

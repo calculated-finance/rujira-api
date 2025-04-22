@@ -82,25 +82,35 @@ defmodule Cosmos.Upgrade.V1beta1.Query.Service do
 
   use GRPC.Service, name: "cosmos.upgrade.v1beta1.Query", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :CurrentPlan,
-      Cosmos.Upgrade.V1beta1.QueryCurrentPlanRequest,
-      Cosmos.Upgrade.V1beta1.QueryCurrentPlanResponse
+  rpc(
+    :CurrentPlan,
+    Cosmos.Upgrade.V1beta1.QueryCurrentPlanRequest,
+    Cosmos.Upgrade.V1beta1.QueryCurrentPlanResponse
+  )
 
-  rpc :AppliedPlan,
-      Cosmos.Upgrade.V1beta1.QueryAppliedPlanRequest,
-      Cosmos.Upgrade.V1beta1.QueryAppliedPlanResponse
+  rpc(
+    :AppliedPlan,
+    Cosmos.Upgrade.V1beta1.QueryAppliedPlanRequest,
+    Cosmos.Upgrade.V1beta1.QueryAppliedPlanResponse
+  )
 
-  rpc :UpgradedConsensusState,
-      Cosmos.Upgrade.V1beta1.QueryUpgradedConsensusStateRequest,
-      Cosmos.Upgrade.V1beta1.QueryUpgradedConsensusStateResponse
+  rpc(
+    :UpgradedConsensusState,
+    Cosmos.Upgrade.V1beta1.QueryUpgradedConsensusStateRequest,
+    Cosmos.Upgrade.V1beta1.QueryUpgradedConsensusStateResponse
+  )
 
-  rpc :ModuleVersions,
-      Cosmos.Upgrade.V1beta1.QueryModuleVersionsRequest,
-      Cosmos.Upgrade.V1beta1.QueryModuleVersionsResponse
+  rpc(
+    :ModuleVersions,
+    Cosmos.Upgrade.V1beta1.QueryModuleVersionsRequest,
+    Cosmos.Upgrade.V1beta1.QueryModuleVersionsResponse
+  )
 
-  rpc :Authority,
-      Cosmos.Upgrade.V1beta1.QueryAuthorityRequest,
-      Cosmos.Upgrade.V1beta1.QueryAuthorityResponse
+  rpc(
+    :Authority,
+    Cosmos.Upgrade.V1beta1.QueryAuthorityRequest,
+    Cosmos.Upgrade.V1beta1.QueryAuthorityResponse
+  )
 end
 
 defmodule Cosmos.Upgrade.V1beta1.Query.Stub do

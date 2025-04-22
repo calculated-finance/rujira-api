@@ -59,15 +59,19 @@ defmodule Cosmos.Authz.V1beta1.Query.Service do
 
   use GRPC.Service, name: "cosmos.authz.v1beta1.Query", protoc_gen_elixir_version: "0.13.0"
 
-  rpc :Grants, Cosmos.Authz.V1beta1.QueryGrantsRequest, Cosmos.Authz.V1beta1.QueryGrantsResponse
+  rpc(:Grants, Cosmos.Authz.V1beta1.QueryGrantsRequest, Cosmos.Authz.V1beta1.QueryGrantsResponse)
 
-  rpc :GranterGrants,
-      Cosmos.Authz.V1beta1.QueryGranterGrantsRequest,
-      Cosmos.Authz.V1beta1.QueryGranterGrantsResponse
+  rpc(
+    :GranterGrants,
+    Cosmos.Authz.V1beta1.QueryGranterGrantsRequest,
+    Cosmos.Authz.V1beta1.QueryGranterGrantsResponse
+  )
 
-  rpc :GranteeGrants,
-      Cosmos.Authz.V1beta1.QueryGranteeGrantsRequest,
-      Cosmos.Authz.V1beta1.QueryGranteeGrantsResponse
+  rpc(
+    :GranteeGrants,
+    Cosmos.Authz.V1beta1.QueryGranteeGrantsRequest,
+    Cosmos.Authz.V1beta1.QueryGranteeGrantsResponse
+  )
 end
 
 defmodule Cosmos.Authz.V1beta1.Query.Stub do
