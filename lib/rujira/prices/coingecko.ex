@@ -22,6 +22,7 @@ defmodule Rujira.Prices.Coingecko do
   def id("USDP"), do: {:ok, "paxos-standard"}
   def id("USDT"), do: {:ok, "tether"}
   def id("WBTC"), do: {:ok, "wrapped-bitcoin"}
+  def id("WINK"), do: {:ok, "winkhub"}
   def id("XDEFI"), do: {:ok, "xdefi"}
   def id("XRUNE"), do: {:ok, "thorstarter"}
   def id("YFI"), do: {:ok, "yearn-finance"}
