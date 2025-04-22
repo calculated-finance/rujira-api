@@ -175,6 +175,7 @@ defmodule Rujira.Ventures.Pilot do
         defstruct [:type, :address, :amount]
 
         @type t :: %__MODULE__{
+                # | :stream,
                 type: :send | :set,
                 address: String.t() | nil,
                 amount: non_neg_integer()
@@ -205,20 +206,20 @@ defmodule Rujira.Ventures.Pilot do
       defstruct [:type, :label, :recipients]
 
       @type t :: %__MODULE__{
-              type: :standard,
+              type: :standard | :sale | :liquidity,
               label: String.t(),
               recipients: list()
             }
 
       def from_query(%{
-            "category_type" => type,
+            "category_type" => category_type,
             "label" => label,
             "recipients" => recipients
           }) do
         with {:ok, recipients} <- Rujira.Enum.reduce_while_ok(recipients, &Recipient.from_query/1) do
           {:ok,
            %__MODULE__{
-             type: String.to_existing_atom(type),
+             type: String.to_existing_atom(category_type),
              label: label,
              recipients: recipients
            }}
@@ -244,6 +245,7 @@ defmodule Rujira.Ventures.Pilot do
 
   defstruct [
     :owner,
+    :idx,
     :status,
     :fin,
     :bow,
@@ -256,13 +258,8 @@ defmodule Rujira.Ventures.Pilot do
 
   @type t :: %__MODULE__{
           owner: String.t(),
-          status:
-            :configured
-            | :scheduled
-            | :in_progress
-            | :executed
-            | :retracted
-            | :completed,
+          idx: String.t(),
+          status: :configured | :scheduled | :in_progress | :executed | :retracted | :completed,
           fin: String.t(),
           bow: String.t(),
           sale: Sale.t(),
@@ -272,7 +269,7 @@ defmodule Rujira.Ventures.Pilot do
           terms_conditions_accepted: boolean()
         }
 
-  def from_query(owner, status, %{
+  def from_query(owner, idx, status_input, %{
         "bow" => bow,
         "fin" => fin,
         "pilot" => pilot,
@@ -281,15 +278,17 @@ defmodule Rujira.Ventures.Pilot do
         "token" => token,
         "tokenomics" => tokenomics
       }) do
-    with {:ok, bow} <- Bow.from_config(bow),
+    with {:ok, status} <- safe_string_to_atom(status_input),
+         {:ok, bow} <- Bow.from_config(bow),
          {:ok, fin} <- Fin.from_config(fin),
          {:ok, sale} <- Sale.from_query(pilot),
          {:ok, token} <- Token.from_query(token),
          {:ok, tokenomics} <- Tokenomics.from_query(tokenomics) do
       {:ok,
        %__MODULE__{
+         idx: idx,
          owner: owner,
-         status: String.to_existing_atom(status),
+         status: status,
          fin: fin,
          bow: bow,
          streams: streams,
@@ -302,4 +301,15 @@ defmodule Rujira.Ventures.Pilot do
       _ -> {:error, :invalid_data}
     end
   end
+
+  defp safe_string_to_atom(str) when is_binary(str) do
+    try do
+      {:ok, String.to_existing_atom(str)}
+    rescue
+      ArgumentError -> {:error, :invalid_status_atom}
+    end
+  end
+
+  defp safe_string_to_atom(atom) when is_atom(atom), do: {:ok, atom}
+  defp safe_string_to_atom(_), do: {:error, :invalid_status_type}
 end
