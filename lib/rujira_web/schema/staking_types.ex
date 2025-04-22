@@ -101,11 +101,7 @@ defmodule RujiraWeb.Schema.StakingTypes do
 
     @desc "The balance of pending revenue earned and still not claimed by this account"
     field :pending_revenue, non_null(:balance) do
-      resolve(fn %{pending_revenue: pending_revenue, pool: %{revenue_denom: revenue_denom}},
-                 _,
-                 _ ->
-        {:ok, %{amount: pending_revenue, denom: revenue_denom}}
-      end)
+      resolve(&RujiraWeb.Resolvers.Staking.pending_revenue/3)
     end
   end
 
