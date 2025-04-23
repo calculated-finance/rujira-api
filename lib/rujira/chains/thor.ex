@@ -22,7 +22,11 @@ defmodule Rujira.Chains.Thor do
 
     with {:ok, %QueryAllBalancesResponse{balances: balances}} <-
            Thorchain.Node.stub(&all_balances/2, req) do
-      Enum.reduce(balances, {:ok, []}, fn el, acc ->
+      balances
+      # Remove LSD, Lending shares, LP shares etc from regular balances,
+      # surface them in the account/pooled account/staked lists
+      |> Enum.filter(&is_balance/1)
+      |> Enum.reduce({:ok, []}, fn el, acc ->
         with {:ok, acc} <- acc,
              {:ok, asset} <- Assets.from_denom(el.denom) do
           {:ok, [%{asset: asset, amount: el.amount} | acc]}
@@ -30,4 +34,8 @@ defmodule Rujira.Chains.Thor do
       end)
     end
   end
+
+  defp is_balance(%{denom: "x/staking" <> _}), do: false
+  defp is_balance(%{denom: "x/bow" <> _}), do: false
+  defp is_balance(_), do: true
 end
