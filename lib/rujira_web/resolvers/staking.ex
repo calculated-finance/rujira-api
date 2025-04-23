@@ -124,7 +124,7 @@ defmodule RujiraWeb.Resolvers.Staking do
 
   defp sum_revenue(list, limit) do
     Enum.reduce(list, 0, fn %{timestamp: ts, amount: v}, acc ->
-      if DateTime.diff(DateTime.from_naive!(ts, "Etc/UTC"), DateTime.utc_now(), :day) < limit do
+      if DateTime.diff(DateTime.utc_now(), DateTime.from_naive!(ts, "Etc/UTC"), :day) < limit do
         acc + v
       else
         acc
