@@ -63,13 +63,17 @@ defmodule Rujira.Staking do
 
   defmemo get_revenue(%Pool{address: address, revenue_denom: denom}, days),
     expires_in: 60 * 60 * 1000 do
-    Rujira.Repo.one(
+    Rujira.Repo.all(
       from(t in Transfer,
-        select: fragment("SUM(?)::bigint", t.amount),
+        select: %{
+          timestamp: fragment("date_trunc('day', ?)", t.timestamp),
+          amount: fragment("SUM(?)::bigint", t.amount)
+        },
+        group_by: fragment("date_trunc('day', ?)", t.timestamp),
         where:
           t.denom == ^denom and t.recipient == ^address and
             t.timestamp > ^DateTime.add(DateTime.utc_now(), -days, :day)
       )
-    ) || 0
+    )
   end
 end

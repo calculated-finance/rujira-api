@@ -71,6 +71,10 @@ defmodule RujiraWeb.Schema.StakingTypes do
     field :liquid_bond_size, non_null(:bigint)
     @desc "The amount of [revenue_denom] pending distribution"
     field :pending_revenue, non_null(:bigint)
+
+    field :apr, non_null(:bigint) do
+      resolve(&RujiraWeb.Resolvers.Staking.apr/3)
+    end
   end
 
   object :staking_accounts do
@@ -107,14 +111,21 @@ defmodule RujiraWeb.Schema.StakingTypes do
 
   @desc "A summary represents apr and revenue earned calculated on a defined resolution"
   object :staking_summary do
-    @desc "list of 10 apr points equally distributed based on the defined resolution. 12 decimals."
-    field :apr, non_null(list_of(non_null(:bigint)))
+    @desc "Annualized APR based on 30 day revenue over current value staked"
+    field :apr, non_null(:bigint)
+    @desc "Trailing 30 days of collected revenue"
+    field :revenue, non_null(list_of(non_null(:staking_revenue_point)))
     @desc "The total amount of [revenue_denom] sent to contract in the last 24 hours"
     field :revenue1, non_null(:bigint)
     @desc "The total amount of [revenue_denom] sent to contract in the last 7 days"
     field :revenue7, non_null(:bigint)
     @desc "The total amount of [revenue_denom] sent to contract in the last 30 days"
     field :revenue30, non_null(:bigint)
+  end
+
+  object :staking_revenue_point do
+    field :amount, non_null(:bigint)
+    field :timestamp, non_null(:timestamp)
   end
 
   object :revenue_converter_type do
