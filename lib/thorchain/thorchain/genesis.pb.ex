@@ -1,3 +1,5 @@
+alias Thorchain.Types
+
 defmodule Thorchain.Thorchain.LastChainHeight do
   @moduledoc false
 

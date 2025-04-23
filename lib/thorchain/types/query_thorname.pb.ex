@@ -7,6 +7,15 @@ defmodule Thorchain.Types.QueryThornameRequest do
   field :height, 2, type: :string
 end
 
+defmodule Thorchain.Types.ThornameAlias do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
+
+  field :chain, 1, type: :string
+  field :address, 2, type: :string
+end
+
 defmodule Thorchain.Types.QueryThornameResponse do
   @moduledoc false
 
@@ -18,13 +27,4 @@ defmodule Thorchain.Types.QueryThornameResponse do
   field :preferred_asset, 4, type: :string, json_name: "preferredAsset", deprecated: false
   field :affiliate_collector_rune, 5, type: :string, json_name: "affiliateCollectorRune"
   field :aliases, 6, repeated: true, type: Thorchain.Types.ThornameAlias, deprecated: false
-end
-
-defmodule Thorchain.Types.ThornameAlias do
-  @moduledoc false
-
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
-
-  field :chain, 1, type: :string
-  field :address, 2, type: :string
 end

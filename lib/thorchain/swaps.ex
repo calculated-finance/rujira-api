@@ -30,7 +30,7 @@ defmodule Thorchain.Swaps do
     |> Repo.aggregate(:count)
   end
 
-  @spec total_volume(:all | :daily | :weekly | :monthly) :: integer() | nil
+  @spec total_volume(:all | :daily | :weekly | :monthly) :: integer()
   def total_volume(resolution \\ :all) do
     query =
       case resolution do

@@ -10,7 +10,7 @@ defmodule Rujira.Revenue.Converter do
           target_addresses: %{String.t() => non_neg_integer()}
         }
 
-  @spec from_config(String.t(), map()) :: :error | {:ok, __MODULE__.t()}
+  @spec from_config(String.t(), map()) :: {:ok, __MODULE__.t()}
   def from_config(address, %{
         "target_tokens" => target_tokens,
         "target_addresses" => target_addresses

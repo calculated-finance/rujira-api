@@ -44,9 +44,18 @@ defmodule Rujira.Merge do
   Fetches the Merge Pool contract and its current config from the chain
   """
 
-  @spec get_pool(String.t()) :: {:ok, Pool.t()} | {:error, :not_found}
+  @spec get_pool(String.t()) ::
+          {:ok, Pool.t()}
+          | {:error, :not_found}
+          | {:error, GRPC.RPCError.t()}
+          | {:error, :parse_error}
   def get_pool(address), do: Contract.get({Pool, address})
 
+  @spec pool_from_id(String.t()) ::
+          {:ok, Pool.t()}
+          | {:error, :not_found}
+          | {:error, GRPC.RPCError.t()}
+          | {:error, :parse_error}
   def pool_from_id(id) do
     with {:ok, pool} <- get_pool(id),
          {:ok, pool} <- load_pool(pool) do
@@ -58,7 +67,8 @@ defmodule Rujira.Merge do
   Loads the current Status into the Pool
   """
 
-  @spec load_pool(Pool.t()) :: {:ok, Pool.t()} | {:error, GRPC.RPCError.t() | :parse_error}
+  @spec load_pool(Pool.t()) ::
+          {:ok, Pool.t()} | {:error, GRPC.RPCError.t()} | {:error, :parse_error}
   def load_pool(pool) do
     with {:ok, res} <- Rujira.Contract.query_state_smart(pool.address, %{status: %{}}),
          {:ok, status} <- Rujira.Merge.Pool.Status.from_query(res) do

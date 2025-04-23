@@ -50,7 +50,7 @@ defmodule Rujira.Fin.Book do
           spread: Decimal.t()
         }
 
-  @spec from_query(String.t(), map()) :: :error | {:ok, __MODULE__.t()}
+  @spec from_query(String.t(), map()) :: {:ok, __MODULE__.t()}
   def from_query(address, %{
         "base" => asks,
         "quote" => bids
