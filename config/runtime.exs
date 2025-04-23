@@ -113,7 +113,6 @@ if config_env() == :prod do
       otp_app: :appsignal_phoenix_example,
       name: "rujira",
       push_api_key: appsignal_key,
-      env: Mix.env(),
       active: true
   end
 
