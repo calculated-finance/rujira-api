@@ -2,6 +2,7 @@ defmodule Rujira.Staking.Account do
   alias Rujira.Staking.Pool
 
   defstruct [
+    :id,
     :pool,
     :account,
     :bonded,
@@ -9,6 +10,7 @@ defmodule Rujira.Staking.Account do
   ]
 
   @type t :: %__MODULE__{
+          id: String.t(),
           pool: Pool.t(),
           account: String.t(),
           bonded: integer(),
@@ -28,6 +30,7 @@ defmodule Rujira.Staking.Account do
          {pending_revenue, ""} <- Integer.parse(pending_revenue) do
       {:ok,
        %__MODULE__{
+         id: "#{pool.id}/#{address}",
          pool: pool,
          account: address,
          bonded: bonded,

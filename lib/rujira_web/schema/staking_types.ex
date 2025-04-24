@@ -79,7 +79,7 @@ defmodule RujiraWeb.Schema.StakingTypes do
   end
 
   @desc "A staking_account represents data about account address related to the staking pool"
-  object :staking_account do
+  node object(:staking_account) do
     field :pool, non_null(:staking_pool)
     field :account, non_null(:address)
 

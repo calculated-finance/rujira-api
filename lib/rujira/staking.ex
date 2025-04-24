@@ -58,6 +58,15 @@ defmodule Rujira.Staking do
     end
   end
 
+  def account_from_id(id) do
+    [pool, account] = String.split(id, "/")
+
+    with {:ok, pool} <- get_pool(pool),
+         {:ok, account} <- load_account(pool, account) do
+      {:ok, account}
+    end
+  end
+
   def status_from_id(id) do
     with {:ok, status} <- Contract.query_state_smart(id, %{status: %{}}) do
       Status.from_query(id, status)

@@ -32,6 +32,7 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Fin.Trade{}, _), do: :fin_trade
   def type(%Fin.Candle{}, _), do: :fin_candle
   def type(%Fin.Order{}, _), do: :fin_order
+  def type(%Staking.Account{}, _), do: :staking_account
   def type(%Staking.Pool{}, _), do: :staking_pool
   def type(%Staking.Pool.Status{}, _), do: :staking_status
   def type(%Staking.Pool.Summary{}, _), do: :staking_summary
@@ -83,6 +84,9 @@ defmodule RujiraWeb.Resolvers.Node do
 
       {:ok, %{type: :staking_pool, id: id}} ->
         {:ok, %Staking.Pool{id: id, address: id}}
+
+      {:ok, %{type: :staking_account, id: id}} ->
+        Staking.account_from_id(id)
 
       {:ok, %{type: :staking_status, id: id}} ->
         Staking.status_from_id(id)
