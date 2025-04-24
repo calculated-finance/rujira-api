@@ -95,7 +95,7 @@ defmodule RujiraWeb.Resolvers.Thorchain do
   end
 
   def inbound_address(id) do
-    with {:ok, adds} <- inbound_addresses() |> IO.inspect() do
+    with {:ok, adds} <- inbound_addresses() do
       case Enum.find(adds, &(&1.id == id)) do
         nil -> {:error, :not_found}
         add -> {:ok, add}

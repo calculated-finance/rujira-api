@@ -28,7 +28,7 @@ defmodule Rujira.Staking.Listener do
         end
       end)
 
-    executions = events |> scan_executions() |> Enum.uniq() |> IO.inspect()
+    executions = events |> scan_executions() |> Enum.uniq()
     transfers = events |> scan_transfers() |> Enum.uniq()
 
     for {a, o} <- executions do

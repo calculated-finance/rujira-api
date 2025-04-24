@@ -42,11 +42,6 @@ defmodule RujiraWeb.Resolvers.Staking do
     end)
   end
 
-  def apr(x, _, _) do
-    IO.inspect(x)
-    {:ok, Decimal.new(0)}
-  end
-
   def resolver(_, _, _) do
     {:ok, %{single: nil, dual: nil, revenue: nil}}
   end
