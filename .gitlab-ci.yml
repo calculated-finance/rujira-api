@@ -1,0 +1,20 @@
+stages:
+  - check
+
+variables:
+  MIX_ENV: test
+
+before_script:
+  - mix local.hex --force
+  - mix local.rebar --force
+  - mix deps.get
+
+check_warnings:
+  stage: check
+  image: hexpm/elixir:1.17.3-erlang-27.1.2-alpine
+  script:
+    - MIX_ENV=test mix compile --warnings-as-errors
+  only:
+    - merge_requests
+    - main
+    - dev
