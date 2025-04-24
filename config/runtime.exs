@@ -105,17 +105,10 @@ if config_env() == :prod do
 
   config :rujira, Rujira.Prices.Coingecko, cg_key: coingecko_key
 
-  appsignal_key =
-    System.get_env("APPSIGNAL_API_KEY")
-
-  if !is_nil(appsignal_key) do
-    config :appsignal, :config,
-      otp_app: :rujira,
-      name: "rujira",
-      push_api_key: appsignal_key,
-      active: true,
-      env: System.get_env("APPSIGNAL_APP_ENV")
-  end
+  config :appsignal, :config,
+    otp_app: :rujira,
+    name: "rujira",
+    active: true
 
   api =
     System.get_env("NODE_API") ||
