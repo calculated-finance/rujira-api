@@ -43,8 +43,14 @@ defmodule Rujira.Staking do
 
   def load_pool(pool) do
     with {:ok, status} <- Contract.query_state_smart(pool.address, %{status: %{}}),
-         {:ok, status} <- Status.from_query(status) do
+         {:ok, status} <- Status.from_query(pool.address, status) do
       {:ok, %{pool | status: status}}
+    end
+  end
+
+  def status_from_id(id) do
+    with {:ok, status} <- Contract.query_state_smart(id, %{status: %{}}) do
+      Status.from_query(id, status)
     end
   end
 

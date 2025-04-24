@@ -33,6 +33,7 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Fin.Candle{}, _), do: :fin_candle
   def type(%Fin.Order{}, _), do: :fin_order
   def type(%Staking.Pool{}, _), do: :staking_pool
+  def type(%Staking.Pool.Status{}, _), do: :staking_status
   def type(%Contract{}, _), do: :contract
   def type(%Thorchain.Types.QueryInboundAddressResponse{}, _), do: :inbound_address
   def type(%{observed_tx: _}, _), do: :tx_in
@@ -81,6 +82,9 @@ defmodule RujiraWeb.Resolvers.Node do
 
       {:ok, %{type: :staking_pool, id: id}} ->
         {:ok, %Staking.Pool{id: id, address: id}}
+
+      {:ok, %{type: :staking_status, id: id}} ->
+        Staking.status_from_id(id)
 
       {:ok, %{type: :tx_in, id: id}} ->
         Thorchain.tx_in(id)

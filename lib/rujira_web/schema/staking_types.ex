@@ -60,7 +60,7 @@ defmodule RujiraWeb.Schema.StakingTypes do
   end
 
   @desc "A staking_status represents current status about the rujira-staking contract"
-  object :staking_status do
+  node object(:staking_status) do
     @desc "The amount of [bond_denom] bonded in Accounts"
     field :account_bond, non_null(:bigint)
     @desc "The total amount of [revenue_denom] available for Account staking to claim"
@@ -71,10 +71,6 @@ defmodule RujiraWeb.Schema.StakingTypes do
     field :liquid_bond_size, non_null(:bigint)
     @desc "The amount of [revenue_denom] pending distribution"
     field :pending_revenue, non_null(:bigint)
-
-    field :apr, non_null(:bigint) do
-      resolve(&RujiraWeb.Resolvers.Staking.apr/3)
-    end
   end
 
   object :staking_accounts do

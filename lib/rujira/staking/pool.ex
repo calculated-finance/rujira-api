@@ -1,6 +1,7 @@
 defmodule Rujira.Staking.Pool do
   defmodule Status do
     defstruct [
+      :id,
       :account_bond,
       :account_revenue,
       :liquid_bond_shares,
@@ -9,6 +10,7 @@ defmodule Rujira.Staking.Pool do
     ]
 
     @type t :: %__MODULE__{
+            id: String.t(),
             account_bond: integer(),
             account_revenue: integer(),
             liquid_bond_shares: integer(),
@@ -16,8 +18,8 @@ defmodule Rujira.Staking.Pool do
             pending_revenue: integer()
           }
 
-    @spec from_query(map()) :: {:ok, __MODULE__.t()} | {:error, :parse_error}
-    def from_query(%{
+    @spec from_query(String.t(), map()) :: {:ok, __MODULE__.t()} | {:error, :parse_error}
+    def from_query(address, %{
           "account_bond" => account_bond,
           "assigned_revenue" => account_revenue,
           "liquid_bond_shares" => liquid_bond_shares,
@@ -31,6 +33,7 @@ defmodule Rujira.Staking.Pool do
            {pending_revenue, ""} <- Integer.parse(pending_revenue) do
         {:ok,
          %__MODULE__{
+           id: address,
            account_bond: account_bond,
            account_revenue: account_revenue,
            liquid_bond_shares: liquid_bond_shares,
