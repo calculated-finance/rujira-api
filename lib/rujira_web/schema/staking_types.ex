@@ -129,7 +129,7 @@ defmodule RujiraWeb.Schema.StakingTypes do
 
     field :contract, non_null(:contract_info) do
       resolve(fn %{address: address}, _, _ ->
-        Rujira.Contract.info(address)
+        Rujira.Contracts.info(address)
       end)
     end
 

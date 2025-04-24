@@ -11,7 +11,7 @@ before_script:
 
 check_warnings:
   stage: check
-  image: hexpm/elixir:1.17.3-erlang-27.1.2-alpine
+  image: elixir:1.17.3
   script:
     - MIX_ENV=test mix compile --warnings-as-errors
   only:

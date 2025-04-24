@@ -1,4 +1,4 @@
-defmodule Rujira.Contract do
+defmodule Rujira.Contracts do
   @moduledoc """
   Convenience methods for querying CosmWasm smart contracts
   """
@@ -13,6 +13,9 @@ defmodule Rujira.Contract do
   alias Cosmwasm.Wasm.V1.QuerySmartContractStateRequest
   alias Cosmwasm.Wasm.V1.QueryContractsByCodeRequest
   alias Cosmwasm.Wasm.V1.Model
+  alias Rujira.Contracts.Contract
+  alias Rujira.Repo
+  import Ecto.Query
   use Memoize
 
   defstruct [:id, :address, :info]
@@ -279,5 +282,35 @@ defmodule Rujira.Contract do
     Enum.reduce(models, init, fn %Model{} = model, agg ->
       Map.put(agg, model.key, Jason.decode!(model.value))
     end)
+  end
+
+
+  @spec insert(%Contract{}) :: {:ok, %Contract{}} | {:error, Ecto.Changeset.t()}
+  def insert(%Contract{} = contract), do: Repo.insert(contract)
+
+  def insert_all(contracts), do: Repo.insert_all(Contract, contracts, on_conflict: :nothing, returning: true)
+
+  @spec by_module(module()) :: list(%Contract{})
+  def by_module(module) do
+    Contract
+    |> where([c], c.module == ^module)
+    |> Repo.all()
+  end
+
+  @spec by_id(String.t()) :: %Contract{} | nil
+  def by_id(id) do
+    Contract
+    |> where([c], c.id == ^id)
+    |> Repo.one()
+  end
+
+  @spec list() :: list(%Contract{})
+  def list() do
+    Contract
+    |> Repo.all()
+  end
+
+  def insert_info_all(contract_infos) do
+    Repo.insert_all("contract_infos", contract_infos, on_conflict: :nothing, returning: true)
   end
 end
