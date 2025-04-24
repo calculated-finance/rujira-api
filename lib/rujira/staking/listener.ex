@@ -47,6 +47,8 @@ defmodule Rujira.Staking.Listener do
       # We can indiscriminately publish all transfer events over the :staking_summary
       # subscription.
       # Most will be ignored unless the specific subscription is requested
+
+      # TODO: Broadcast the same for transfers of `x/staking-` prefixed tokens
       id = Absinthe.Relay.Node.to_global_id(:staking_summary, a, RujiraWeb.Schema)
       Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
     end
