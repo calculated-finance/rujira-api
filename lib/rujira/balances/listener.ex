@@ -19,7 +19,12 @@ defmodule Rujira.Balances.Listener do
       ) do
     addresses =
       txs
-      |> Enum.flat_map(& &1["result"]["events"])
+      |> Enum.flat_map(fn x ->
+        case x["result"]["events"] do
+          nil -> []
+          xs when is_list(xs) -> xs
+        end
+      end)
       |> Enum.concat(begin_block_events)
       |> Enum.concat(end_block_events)
       |> scan_attributes()
