@@ -3,11 +3,14 @@ defmodule Rujira.Staking do
   Rujira Staking.
   """
 
+  alias Rujira.Staking.Listener
   alias Rujira.Staking.Pool.Status
   alias Rujira.Staking.Account
   alias Rujira.Staking.Pool
   alias Rujira.Staking.Account
   alias Rujira.Contract
+
+  use Supervisor
 
   @single :rujira
           |> Application.compile_env(__MODULE__,
@@ -18,6 +21,16 @@ defmodule Rujira.Staking do
   @dual :rujira
         |> Application.compile_env(__MODULE__, dual: nil)
         |> Keyword.get(:dual)
+
+  def start_link(_) do
+    children = [Listener]
+    Supervisor.start_link(children, strategy: :one_for_one)
+  end
+
+  @impl true
+  def init(state) do
+    {:ok, state}
+  end
 
   def single(), do: @single
   def dual(), do: @dual
