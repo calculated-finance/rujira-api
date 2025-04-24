@@ -3,14 +3,11 @@ defmodule Rujira.Staking do
   Rujira Staking.
   """
 
-  alias Rujira.Bank.Transfer
   alias Rujira.Staking.Pool.Status
   alias Rujira.Staking.Account
   alias Rujira.Staking.Pool
   alias Rujira.Staking.Account
   alias Rujira.Contract
-  import Ecto.Query
-  use Memoize
 
   @single :rujira
           |> Application.compile_env(__MODULE__,
@@ -54,6 +51,12 @@ defmodule Rujira.Staking do
     end
   end
 
+  def summary_from_id(id) do
+    with {:ok, pool} <- get_pool(id) do
+      Pool.summary(pool)
+    end
+  end
+
   @doc """
   Loads an Account Pool by account address
   """
@@ -65,21 +68,5 @@ defmodule Rujira.Staking do
     with {:ok, res} <- Contract.query_state_smart(pool.address, %{account: %{addr: account}}) do
       Account.from_query(pool, res)
     end
-  end
-
-  defmemo get_revenue(%Pool{address: address, revenue_denom: denom}, days),
-    expires_in: 60 * 60 * 1000 do
-    Rujira.Repo.all(
-      from(t in Transfer,
-        select: %{
-          timestamp: fragment("date_trunc('day', ?)", t.timestamp),
-          amount: fragment("SUM(?)::bigint", t.amount)
-        },
-        group_by: fragment("date_trunc('day', ?)", t.timestamp),
-        where:
-          t.denom == ^denom and t.recipient == ^address and
-            t.timestamp > ^DateTime.add(DateTime.utc_now(), -days, :day)
-      )
-    )
   end
 end

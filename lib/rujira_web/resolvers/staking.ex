@@ -92,43 +92,7 @@ defmodule RujiraWeb.Resolvers.Staking do
 
   def summary(pool, _, _) do
     Helpers.async(fn ->
-      with {:ok, %{status: %{account_bond: account_bond, liquid_bond_size: liquid_bond_size}}} <-
-             Rujira.Staking.load_pool(pool),
-           {:ok, %{price: price}} <- Rujira.Prices.get("RUJI") do
-        revenue = Rujira.Staking.get_revenue(pool, 30)
-        revenue30 = sum_revenue(revenue, 30)
-
-        value =
-          (account_bond + liquid_bond_size * price)
-          |> Decimal.new()
-          |> Decimal.div(Decimal.new(1_000_000_000_000))
-
-        apr =
-          revenue30
-          |> Decimal.new()
-          |> Decimal.div(Decimal.new(30))
-          |> Decimal.mult(Decimal.new(365))
-          |> Decimal.div(value)
-
-        {:ok,
-         %{
-           apr: apr,
-           revenue: revenue,
-           revenue1: sum_revenue(revenue, 1),
-           revenue7: sum_revenue(revenue, 7),
-           revenue30: revenue30
-         }}
-      end
-    end)
-  end
-
-  defp sum_revenue(list, limit) do
-    Enum.reduce(list, 0, fn %{timestamp: ts, amount: v}, acc ->
-      if DateTime.diff(DateTime.utc_now(), DateTime.from_naive!(ts, "Etc/UTC"), :day) < limit do
-        acc + v
-      else
-        acc
-      end
+      Rujira.Staking.Pool.summary(pool)
     end)
   end
 end

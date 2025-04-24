@@ -1,4 +1,27 @@
 defmodule Rujira.Staking.Pool do
+  use Memoize
+  import Ecto.Query
+
+  defmodule Summary do
+    defstruct [
+      :id,
+      :apr,
+      :revenue,
+      :revenue1,
+      :revenue7,
+      :revenue30
+    ]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            apr: Decimal.t(),
+            revenue: list(map()),
+            revenue1: integer(),
+            revenue7: integer(),
+            revenue30: integer()
+          }
+  end
+
   defmodule Status do
     defstruct [
       :id,
@@ -81,5 +104,62 @@ defmodule Rujira.Staking.Pool do
        revenue_converter: revenue_converter,
        status: :not_loaded
      }}
+  end
+
+  def summary(%__MODULE__{} = pool) do
+    with {:ok, %{status: %{account_bond: account_bond, liquid_bond_size: liquid_bond_size}}} <-
+           Rujira.Staking.load_pool(pool),
+         {:ok, %{price: price}} <- Rujira.Prices.get("RUJI") do
+      revenue = get_revenue(pool, 30)
+      revenue30 = sum_revenue(revenue, 30)
+
+      value =
+        (account_bond + liquid_bond_size * price)
+        |> Decimal.new()
+        |> Decimal.div(Decimal.new(1_000_000_000_000))
+
+      apr =
+        revenue30
+        |> Decimal.new()
+        |> Decimal.div(Decimal.new(30))
+        |> Decimal.mult(Decimal.new(365))
+        |> Decimal.div(value)
+
+      {:ok,
+       %__MODULE__.Summary{
+         id: pool.address,
+         apr: apr,
+         revenue: revenue,
+         revenue1: sum_revenue(revenue, 1),
+         revenue7: sum_revenue(revenue, 7),
+         revenue30: revenue30
+       }}
+    end
+  end
+
+  defmemo get_revenue(%__MODULE__{address: address, revenue_denom: denom}, days),
+    expires_in: 60 * 60 * 1000 do
+    Rujira.Repo.all(
+      from(t in Rujira.Bank.Transfer,
+        select: %{
+          timestamp: fragment("date_trunc('day', ?)", t.timestamp),
+          amount: fragment("SUM(?)::bigint", t.amount)
+        },
+        group_by: fragment("date_trunc('day', ?)", t.timestamp),
+        where:
+          t.denom == ^denom and t.recipient == ^address and
+            t.timestamp > ^DateTime.add(DateTime.utc_now(), -days, :day)
+      )
+    )
+  end
+
+  defp sum_revenue(list, limit) do
+    Enum.reduce(list, 0, fn %{timestamp: ts, amount: v}, acc ->
+      if DateTime.diff(DateTime.utc_now(), DateTime.from_naive!(ts, "Etc/UTC"), :day) < limit do
+        acc + v
+      else
+        acc
+      end
+    end)
   end
 end
