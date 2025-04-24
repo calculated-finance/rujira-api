@@ -110,10 +110,11 @@ if config_env() == :prod do
 
   if !is_nil(appsignal_key) do
     config :appsignal, :config,
-      otp_app: :appsignal_phoenix_example,
+      otp_app: :rujira,
       name: "rujira",
       push_api_key: appsignal_key,
-      active: true
+      active: true,
+      env: System.get_env("APPSIGNAL_APP_ENV")
   end
 
   api =
