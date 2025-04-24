@@ -1,6 +1,6 @@
 defmodule RujiraWeb.Resolvers.Node do
   alias RujiraWeb.Resolvers
-  alias Rujira.Contract
+  alias Rujira.Contracts
   alias Rujira.Assets
   alias Rujira.Accounts
   alias Rujira.Bank
@@ -36,7 +36,7 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Staking.Pool{}, _), do: :staking_pool
   def type(%Staking.Pool.Status{}, _), do: :staking_status
   def type(%Staking.Pool.Summary{}, _), do: :staking_summary
-  def type(%Contract{}, _), do: :contract
+  def type(%Contracts{}, _), do: :contract
   def type(%Thorchain.Types.QueryInboundAddressResponse{}, _), do: :inbound_address
   def type(%{observed_tx: _}, _), do: :tx_in
 
@@ -53,7 +53,7 @@ defmodule RujiraWeb.Resolvers.Node do
         {:ok, Assets.from_string(id)}
 
       {:ok, %{type: :contract, id: id}} ->
-        Contract.from_id(id)
+        Contracts.from_id(id)
 
       {:ok, %{type: :bank_supply, id: id}} ->
         Bank.supply(id)

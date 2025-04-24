@@ -2,7 +2,7 @@ defmodule Rujira.Fin do
   use GenServer
   alias Rujira.Resolution
   alias Rujira.Fin.Trade
-  alias Rujira.Contract
+  alias Rujira.Contracts
   alias Rujira.Fin.Candle
   alias Rujira.Fin.Pair
   alias Rujira.Fin.Book
@@ -42,7 +42,7 @@ defmodule Rujira.Fin do
 
   @spec get_pair(String.t()) :: {:ok, Pair.t()} | {:error, GRPC.RPCError.t()}
   def get_pair(address) do
-    Contract.get({Pair, address})
+    Contracts.get({Pair, address})
   end
 
   @doc """
@@ -51,7 +51,7 @@ defmodule Rujira.Fin do
   @spec list_pairs(list(integer())) ::
           {:ok, list(Pair.t())} | {:error, GRPC.RPCError.t()}
   def list_pairs(code_ids \\ @pair_code_ids) when is_list(code_ids),
-    do: Contract.list(Pair, code_ids)
+    do: Contracts.list(Pair, code_ids)
 
   @doc """
   Loads the current Book into the Pair
@@ -60,7 +60,7 @@ defmodule Rujira.Fin do
           {:ok, Pair.t()} | {:error, GRPC.RPCError.t()}
   def load_pair(pair, limit \\ 100) do
     with {:ok, res} <-
-           Contract.query_state_smart(pair.address, %{book: %{limit: limit}}),
+           Contracts.query_state_smart(pair.address, %{book: %{limit: limit}}),
          {:ok, book} <- Book.from_query(pair.address, res) do
       {:ok, %{pair | book: book}}
     else
@@ -76,7 +76,7 @@ defmodule Rujira.Fin do
           {:ok, list(Order.t())} | {:error, GRPC.RPCError.t()}
   def list_orders(pair, address, offset \\ 0, limit \\ 30) do
     with {:ok, %{"orders" => orders}} <-
-           Contract.query_state_smart(pair.address, %{
+           Contracts.query_state_smart(pair.address, %{
              orders: %{owner: address, offset: offset, limit: limit}
            }) do
       {:ok, Enum.map(orders, &Order.from_query(pair, &1))}
@@ -144,7 +144,7 @@ defmodule Rujira.Fin do
 
   def book_from_id(id) do
     with {:ok, res} <-
-           Contract.query_state_smart(id, %{book: %{}}),
+           Contracts.query_state_smart(id, %{book: %{}}),
          {:ok, book} <- Book.from_query(id, res) do
       {:ok, book}
     end

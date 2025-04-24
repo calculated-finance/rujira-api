@@ -4,7 +4,7 @@ defmodule Rujira.Merge do
   """
 
   alias Rujira.Merge.Account
-  alias Rujira.Contract
+  alias Rujira.Contracts
   alias Rujira.Merge.Pool
   alias Rujira.Merge.Account
   use GenServer
@@ -28,7 +28,7 @@ defmodule Rujira.Merge do
   @spec list_pools(list(integer())) ::
           {:ok, list(Pool.t())} | {:error, GRPC.RPCError.t()}
   def list_pools(code_ids \\ @code_ids) when is_list(code_ids) do
-    with {:ok, pools} <- Contract.list(Pool, code_ids) do
+    with {:ok, pools} <- Contracts.list(Pool, code_ids) do
       {:ok,
        ["thor.kuji", "thor.rkuji", "thor.fuzn", "thor.nstk", "thor.wink", "thor.lvn"]
        |> Enum.reduce([], fn denom, acc ->
@@ -49,7 +49,7 @@ defmodule Rujira.Merge do
           | {:error, :not_found}
           | {:error, GRPC.RPCError.t()}
           | {:error, :parse_error}
-  def get_pool(address), do: Contract.get({Pool, address})
+  def get_pool(address), do: Contracts.get({Pool, address})
 
   @spec pool_from_id(String.t()) ::
           {:ok, Pool.t()}
@@ -70,7 +70,7 @@ defmodule Rujira.Merge do
   @spec load_pool(Pool.t()) ::
           {:ok, Pool.t()} | {:error, GRPC.RPCError.t()} | {:error, :parse_error}
   def load_pool(pool) do
-    with {:ok, res} <- Rujira.Contract.query_state_smart(pool.address, %{status: %{}}),
+    with {:ok, res} <- Contracts.query_state_smart(pool.address, %{status: %{}}),
          {:ok, status} <- Rujira.Merge.Pool.Status.from_query(res) do
       {:ok, Pool.set_rate(%{pool | status: status})}
     end
@@ -105,8 +105,8 @@ defmodule Rujira.Merge do
 
     # SharePool has an overflow in its `ownership` query. Do the raw queries and calculate it here
     with {:ok, share_pool} <-
-           Rujira.Contract.query_state_raw(pool.address, "pool") do
-      case Rujira.Contract.query_state_raw(
+           Contracts.query_state_raw(pool.address, "pool") do
+      case Contracts.query_state_raw(
              pool.address,
              separator <> prefix_len <> prefix <> account
            ) do

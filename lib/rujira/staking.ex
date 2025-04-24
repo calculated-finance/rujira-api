@@ -8,7 +8,7 @@ defmodule Rujira.Staking do
   alias Rujira.Staking.Account
   alias Rujira.Staking.Pool
   alias Rujira.Staking.Account
-  alias Rujira.Contract
+  alias Rujira.Contracts
 
   use Supervisor
 
@@ -41,7 +41,7 @@ defmodule Rujira.Staking do
 
   @spec get_pool(String.t() | nil) :: {:ok, Pool.t()} | {:error, :not_found}
   def get_pool(nil), do: {:ok, nil}
-  def get_pool(address), do: Contract.get({Pool, address})
+  def get_pool(address), do: Contracts.get({Pool, address})
 
   # def list_pools(code_ids \\ @code_ids) when is_list(code_ids),
   #   do: Contract.list(Pool, code_ids)
@@ -52,7 +52,7 @@ defmodule Rujira.Staking do
   @spec load_pool(Pool.t()) :: {:ok, Pool.t()} | {:error, GRPC.RPCError.t()}
 
   def load_pool(pool) do
-    with {:ok, status} <- Contract.query_state_smart(pool.address, %{status: %{}}),
+    with {:ok, status} <- Contracts.query_state_smart(pool.address, %{status: %{}}),
          {:ok, status} <- Status.from_query(pool.address, status) do
       {:ok, %{pool | status: status}}
     end
@@ -68,7 +68,7 @@ defmodule Rujira.Staking do
   end
 
   def status_from_id(id) do
-    with {:ok, status} <- Contract.query_state_smart(id, %{status: %{}}) do
+    with {:ok, status} <- Contracts.query_state_smart(id, %{status: %{}}) do
       Status.from_query(id, status)
     end
   end
@@ -87,7 +87,7 @@ defmodule Rujira.Staking do
   def load_account(nil, _), do: {:ok, nil}
 
   def load_account(pool, account) do
-    with {:ok, res} <- Contract.query_state_smart(pool.address, %{account: %{addr: account}}) do
+    with {:ok, res} <- Contracts.query_state_smart(pool.address, %{account: %{addr: account}}) do
       Account.from_query(pool, res)
     end
   end
