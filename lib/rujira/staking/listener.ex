@@ -28,16 +28,16 @@ defmodule Rujira.Staking.Listener do
         end
       end)
 
-    executions = events |> scan_executions() |> Enum.uniq()
+    executions = events |> scan_executions() |> Enum.uniq() |> IO.inspect()
     transfers = events |> scan_transfers() |> Enum.uniq()
 
-    for a <- executions do
+    for {a, o} <- executions do
       Logger.debug("#{__MODULE__} execution #{a}")
 
-      id =
-        Absinthe.Relay.Node.to_global_id(:staking_status, a, RujiraWeb.Schema)
-        |> IO.inspect()
+      id = Absinthe.Relay.Node.to_global_id(:staking_status, a, RujiraWeb.Schema)
+      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
 
+      id = Absinthe.Relay.Node.to_global_id(:staking_account, "#{a}/#{o}", RujiraWeb.Schema)
       Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
     end
 
@@ -59,7 +59,9 @@ defmodule Rujira.Staking.Listener do
          collection
        ) do
     address = Map.get(event, "_contract_address")
-    scan_executions(rest, [address | collection])
+    owner = Map.get(event, "owner")
+
+    scan_executions(rest, [{address, owner} | collection])
   end
 
   defp scan_executions([_ | rest], collection), do: scan_executions(rest, collection)

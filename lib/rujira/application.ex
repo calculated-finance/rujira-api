@@ -26,7 +26,8 @@ defmodule Rujira.Application do
       Rujira.Chains,
       Rujira.Fin,
       Rujira.Invalidator,
-      Rujira.Merge
+      Rujira.Merge,
+      Rujira.Staking
     ]
 
     Thorchain.Node.Appsignal.attach()
