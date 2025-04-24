@@ -109,9 +109,8 @@ if config_env() == :prod do
     otp_app: :rujira,
     name: "rujira",
     active: true,
-    push_api_key:
-      System.fetch_env!("APPSIGNAL_PUSH_API_KEY") |> IO.inspect(label: :APPSIGNAL_PUSH_API_KEY),
-    env: System.fetch_env!("APPSIGNAL_APP_ENV") |> IO.inspect(label: :APPSIGNAL_APP_ENV)
+    push_api_key: System.fetch_env!("APPSIGNAL_PUSH_API_KEY"),
+    env: System.fetch_env!("APPSIGNAL_APP_ENV")
 
   api =
     System.get_env("NODE_API") ||
