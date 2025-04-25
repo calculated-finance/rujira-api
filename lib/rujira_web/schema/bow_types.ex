@@ -29,7 +29,7 @@ defmodule RujiraWeb.Schema.BowTypes do
     types([:bow_state_xyk])
 
     resolve_type(fn
-      %Xyk.Config{}, _ -> :bow_state_xyk
+      %Xyk.State{}, _ -> :bow_state_xyk
     end)
   end
 
