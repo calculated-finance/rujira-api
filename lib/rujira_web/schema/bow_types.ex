@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Schema.BowTypes do
+  alias Rujira.Assets
   alias Rujira.Bow.Xyk
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
@@ -18,8 +19,18 @@ defmodule RujiraWeb.Schema.BowTypes do
   end
 
   object :bow_config_xyk do
-    field :x, non_null(:string)
-    field :y, non_null(:string)
+    field :x, non_null(:asset) do
+      resolve(fn %{x: x}, _, _ ->
+        Assets.from_denom(x)
+      end)
+    end
+
+    field :y, non_null(:asset) do
+      resolve(fn %{y: y}, _, _ ->
+        Assets.from_denom(y)
+      end)
+    end
+
     field :step, non_null(:bigint)
     field :min_quote, non_null(:bigint)
     field :fee, non_null(:bigint)
@@ -37,6 +48,6 @@ defmodule RujiraWeb.Schema.BowTypes do
     field :x, non_null(:bigint)
     field :y, non_null(:bigint)
     field :k, non_null(:bigint)
-    field :shares, non_null(:bigint)
+    field :shares, non_null(:balance)
   end
 end
