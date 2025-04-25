@@ -2,20 +2,20 @@ defmodule Rujira.Contracts.Contract do
   import Ecto.Changeset
   use Ecto.Schema
 
-  @modules :rujira
-           |> Application.compile_env(__MODULE__, modules: [Rujira.Fin])
-           |> Keyword.get(:modules)
-
-  @primary_key false
+  @primary_key {:address, :binary_id, autogenerate: false}
   schema "contracts" do
-    field :id, :string, primary_key: true
-    field :module, Ecto.Enum, values: @modules
+    field :module, Ecto.Enum,
+      values: [
+        Rujira.Bow.Xyk,
+        Rujira.Fin.Pair,
+        Rujira.Merge.Pool,
+        Rujira.Staking.Pool
+      ]
   end
 
   def changeset(contract, attrs) do
     contract
-    |> cast(attrs, [:id, :module])
-    |> validate_required([:id, :module])
-    |> unique_constraint([:id])
+    |> cast(attrs, [:module])
+    |> validate_required([:module])
   end
 end

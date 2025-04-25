@@ -284,11 +284,11 @@ defmodule Rujira.Contracts do
     end)
   end
 
-
   @spec insert(%Contract{}) :: {:ok, %Contract{}} | {:error, Ecto.Changeset.t()}
   def insert(%Contract{} = contract), do: Repo.insert(contract)
 
-  def insert_all(contracts), do: Repo.insert_all(Contract, contracts, on_conflict: :nothing, returning: true)
+  def insert_all(contracts),
+    do: Repo.insert_all(Contract, contracts, on_conflict: :nothing, returning: true)
 
   @spec by_module(module()) :: list(%Contract{})
   def by_module(module) do

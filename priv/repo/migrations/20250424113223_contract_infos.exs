@@ -2,8 +2,8 @@ defmodule Rujira.Repo.Migrations.ContractInfos do
   use Ecto.Migration
 
   def change do
-    create table(:contract_infos) do
-      add :id, :string, primary_key: true
+    create table(:contract_infos, primary_key: false) do
+      add :address, :string, primary_key: true
       add :code_id, :bigint
       add :creator, :string
       add :admin, :string
@@ -17,6 +17,6 @@ defmodule Rujira.Repo.Migrations.ContractInfos do
 
     create index(:contract_infos, [:code_id])
     create index(:contract_infos, [:admin])
-    create unique_index(:contract_infos, [:id])
+    create index(:contract_infos, [:label])
   end
 end

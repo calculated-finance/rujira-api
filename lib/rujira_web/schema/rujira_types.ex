@@ -4,6 +4,10 @@ defmodule RujiraWeb.Schema.RujiraTypes do
 
   @desc "A rujira represents data about rujira products"
   object :rujira do
+    field :bow, non_null(list_of(non_null(:bow_pool))) do
+      resolve(&Resolvers.Bow.resolver/3)
+    end
+
     field :merge, non_null(list_of(non_null(:merge_pool))) do
       resolve(&Resolvers.Merge.resolver/3)
     end
