@@ -65,8 +65,12 @@ defmodule Rujira.Prices.Coingecko do
            }) do
       {:ok,
        res
-       |> Enum.map(fn {k, %{"usd" => price, "usd_24h_change" => change}} ->
-         {k, %{price: price, change: change}}
+       |> Enum.map(fn
+         {k, %{"usd" => price, "usd_24h_change" => change}} ->
+           {k, %{price: price, change: change}}
+
+         {k, %{}} ->
+           {k, %{price: nil, change: nil}}
        end)
        |> Map.new()}
     else

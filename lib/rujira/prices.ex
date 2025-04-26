@@ -36,6 +36,10 @@ defmodule Rujira.Prices do
     end
   end
 
+  def normalize(%{price: nil, change: nil}) do
+    %{price: nil, change: nil}
+  end
+
   def normalize(%{price: price, change: change}) do
     %{price: trunc(price * 10 ** 12), change: change}
   end
