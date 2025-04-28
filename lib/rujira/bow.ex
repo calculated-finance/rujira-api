@@ -7,7 +7,7 @@ defmodule Rujira.Bow do
   alias Rujira.Bow.Xyk
   # use GenServer
 
-  @code_ids Application.compile_env(:rujira, __MODULE__, code_ids: [109])
+  @code_ids Application.compile_env(:rujira, __MODULE__, code_ids: [110])
             |> Keyword.get(:code_ids)
 
   # def start_link(_) do
