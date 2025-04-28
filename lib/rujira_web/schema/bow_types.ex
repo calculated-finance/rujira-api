@@ -50,4 +50,20 @@ defmodule RujiraWeb.Schema.BowTypes do
     field :k, non_null(:bigint)
     field :shares, non_null(:balance)
   end
+
+  node object(:bow_account) do
+    field :account, non_null(:address)
+    field :pool, non_null(:bow_pool)
+    field :shares, non_null(:bigint)
+
+    field :value, non_null(list_of(non_null(:balance))) do
+      resolve(fn %{value: value}, _, _ ->
+        Rujira.Enum.reduce_while_ok(value, [], fn %{amount: amount, denom: denom} = x ->
+          with {:ok, asset} <- Assets.from_denom(denom) do
+            {:ok, %{amount: amount, asset: asset}}
+          end
+        end)
+      end)
+    end
+  end
 end

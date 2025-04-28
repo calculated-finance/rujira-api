@@ -27,6 +27,10 @@ defmodule RujiraWeb.Schema.AccountTypes do
       resolve(&Resolvers.Merge.account/3)
     end
 
+    field :bow, non_null(list_of(non_null(:bow_account))) do
+      resolve(&Resolvers.Bow.accounts/3)
+    end
+
     field :fin, :fin_account do
       resolve(&Resolvers.Fin.account/3)
     end

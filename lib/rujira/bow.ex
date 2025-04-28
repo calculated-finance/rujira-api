@@ -3,6 +3,8 @@ defmodule Rujira.Bow do
   Rujira Bow - AMM pools.
   """
 
+  alias Rujira.Bow.Account
+  alias Rujira.Chains.Thor
   alias Rujira.Contracts
   alias Rujira.Bow.Xyk
   # use GenServer
@@ -52,5 +54,53 @@ defmodule Rujira.Bow do
 
   def pool_from_id(id) do
     load_pool(id)
+  end
+
+  @doc """
+  Loads an Account Pool by account address
+  """
+  @spec load_account(Xyk.t() | nil, String.t()) ::
+          {:ok, Account.t()} | {:error, GRPC.RPCError.t()}
+  def load_account(nil, _), do: {:ok, nil}
+
+  def load_account(pool, account) do
+    with {:ok, %{amount: shares}} <- Thor.balance_of(account, share_denom(pool)) do
+      {:ok,
+       %Account{
+         id: "#{pool.id}/#{account}",
+         account: account,
+         shares: shares,
+         value: share_value(shares, pool)
+       }}
+    end
+  end
+
+  def account_from_id(id) do
+    [pool, account] = String.split(id, "/")
+
+    with {:ok, pool} <- load_pool(%{address: pool}) do
+      load_account(pool, account)
+    end
+  end
+
+  def share_denom(%Xyk{config: %{x: x, y: y}}), do: "x/bow-xyk-#{x}-#{y}"
+
+  def share_value(_, %Xyk{state: %{shares: 0}}), do: []
+
+  def share_value(shares, %Xyk{config: config, state: %{x: x, y: y, shares: supply}}) do
+    ratio = Decimal.div(Decimal.new(shares), Decimal.new(supply))
+
+    [
+      %{
+        amount:
+          x |> Decimal.new() |> Decimal.mult(ratio) |> Decimal.round() |> Decimal.to_integer(),
+        denom: config.x
+      },
+      %{
+        amount:
+          y |> Decimal.new() |> Decimal.mult(ratio) |> Decimal.round() |> Decimal.to_integer(),
+        denom: config.y
+      }
+    ]
   end
 end
