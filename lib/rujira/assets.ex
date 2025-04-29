@@ -137,6 +137,21 @@ defmodule Rujira.Assets do
      }}
   end
 
+  def from_denom("x/bow-xyk-" <> id = denom) do
+    with [x, y] <- String.split(id, "-"),
+         {:ok, x} <- from_denom(x),
+         {:ok, y} <- from_denom(y) do
+      {:ok,
+       %Asset{
+         id: denom,
+         type: :native,
+         chain: "THOR",
+         symbol: "#{x.symbol}/#{y.symbol} LP",
+         ticker: "#{x.ticker}/#{y.ticker} LP"
+       }}
+    end
+  end
+
   def from_denom("x/" <> id = denom) do
     {:ok,
      %Asset{

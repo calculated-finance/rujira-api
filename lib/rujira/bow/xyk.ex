@@ -1,6 +1,6 @@
 defmodule Rujira.Bow.Xyk do
   defmodule Config do
-    defstruct [:x, :y, :step, :min_quote, :fee]
+    defstruct [:x, :y, :step, :min_quote, :share_denom, :fee]
 
     @type t :: %__MODULE__{
             # Denom string of the x asset
@@ -9,6 +9,7 @@ defmodule Rujira.Bow.Xyk do
             y: String.t(),
             # Step
             step: Decimal,
+            share_denom: String.t(),
             # The minimum number that X and Y must meet in order to quote a price
             min_quote: non_neg_integer(),
             # The fee that's charged on each quote and required to be paid
@@ -25,6 +26,7 @@ defmodule Rujira.Bow.Xyk do
            x: x,
            y: y,
            step: step,
+           share_denom: "x/bow-xyk-#{x}-#{y}",
            min_quote: min_quote,
            fee: fee
          }}
