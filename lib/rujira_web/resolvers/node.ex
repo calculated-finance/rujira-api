@@ -27,6 +27,7 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Assets.Asset{}, _), do: :asset
   def type(%Bank.Supply{}, _), do: :bank_supply
   def type(%Bow.Account{}, _), do: :bow_account
+  def type(%Contracts.Contract{}, _), do: :contract
   def type(%Merge.Account{}, _), do: :merge_account
   def type(%Merge.Pool{}, _), do: :merge_pool
   def type(%Fin.Pair{}, _), do: :fin_pair
@@ -38,7 +39,6 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Staking.Pool{}, _), do: :staking_pool
   def type(%Staking.Pool.Status{}, _), do: :staking_status
   def type(%Staking.Pool.Summary{}, _), do: :staking_summary
-  def type(%Contracts{}, _), do: :contract
   def type(%Thorchain.Types.QueryInboundAddressResponse{}, _), do: :inbound_address
   def type(%{observed_tx: _}, _), do: :tx_in
 
