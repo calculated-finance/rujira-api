@@ -58,6 +58,10 @@ defmodule Rujira.Staking do
     end
   end
 
+  def pool_from_id(id) do
+    {:ok, %Pool{id: id, address: id}}
+  end
+
   def account_from_id(id) do
     [pool, account] = String.split(id, "/")
 

@@ -34,6 +34,10 @@ defmodule Rujira.Assets do
     }
   end
 
+  def from_id(id) do
+    {:ok, from_string(id)}
+  end
+
   def to_string(%Asset{id: id}), do: id
 
   @moduledoc """

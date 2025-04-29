@@ -45,14 +45,13 @@ defmodule RujiraWeb.Resolvers.Node do
   defp resolve_id(id) do
     case Absinthe.Relay.Node.from_global_id(id, RujiraWeb.Schema) do
       {:ok, %{type: :account, id: id}} ->
-        {:ok, %Accounts.Account{id: id, chain: :thor, address: id}}
+        Accounts.from_id(id)
 
       {:ok, %{type: :layer_1_account, id: id}} ->
-        [chain, address] = String.split(id, ":")
-        {:ok, %Accounts.Layer1{id: id, chain: String.to_existing_atom(chain), address: address}}
+        Accounts.layer_1_from_id(id)
 
       {:ok, %{type: :asset, id: id}} ->
-        {:ok, Assets.from_string(id)}
+        Assets.from_id(id)
 
       {:ok, %{type: :contract, id: id}} ->
         Contracts.from_id(id)
@@ -88,7 +87,7 @@ defmodule RujiraWeb.Resolvers.Node do
         Fin.trade_from_id(id)
 
       {:ok, %{type: :staking_pool, id: id}} ->
-        {:ok, %Staking.Pool{id: id, address: id}}
+        Staking.pool_from_id(id)
 
       {:ok, %{type: :staking_account, id: id}} ->
         Staking.account_from_id(id)
