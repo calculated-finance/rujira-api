@@ -106,7 +106,11 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :txhash, non_null(:string)
     field :quote_amount, non_null(:bigint)
     field :base_amount, non_null(:bigint)
-    field :price, non_null(:bigint)
+
+    field :price, non_null(:bigint) do
+      resolve(fn %{rate: rate}, _, _ -> {:ok, rate} end)
+    end
+
     field :type, non_null(:string)
     field :protocol, non_null(:string)
     field :timestamp, non_null(:timestamp)

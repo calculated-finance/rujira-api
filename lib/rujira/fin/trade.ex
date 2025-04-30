@@ -21,7 +21,9 @@ defmodule Rujira.Fin.Trade do
           timestamp: DateTime.t(),
           quote_amount: non_neg_integer(),
           base_amount: non_neg_integer(),
-          price: Decimal.t(),
+          # The price submitted by the rujira_rs::Swappable struct.
+          # eg prefixes mm:, fixed:, oracle:
+          price: String.t(),
           type: :buy | :sell
         }
 
@@ -38,11 +40,11 @@ defmodule Rujira.Fin.Trade do
     field :side, Ecto.Enum, values: [:base, :quote]
     field :protocol, Ecto.Enum, values: [:fin]
     field :timestamp, :utc_datetime_usec
+    field :price, :string
 
     # Derived
     field :quote_amount, :integer, virtual: true
     field :base_amount, :integer, virtual: true
-    field :price, :decimal, virtual: true
     field :type, Ecto.Enum, values: [:buy, :sell], virtual: true
   end
 

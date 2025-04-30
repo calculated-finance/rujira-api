@@ -55,7 +55,7 @@ defmodule Rujira.Fin.Indexer do
              "bid" => bid,
              "msg_index" => msg_index,
              "offer" => offer,
-             "price" => _,
+             "price" => price,
              "rate" => rate,
              "side" => side,
              "type" => "wasm-rujira-fin/trade"
@@ -66,14 +66,14 @@ defmodule Rujira.Fin.Indexer do
        ) do
     scan_attributes(
       rest,
-      insert_trade(collection, contract_address, rate, offer, bid, msg_index, side)
+      insert_trade(collection, contract_address, rate, price, offer, bid, msg_index, side)
     )
   end
 
   defp scan_attributes([_ | rest], collection), do: scan_attributes(rest, collection)
   defp scan_attributes([], collection), do: collection
 
-  defp insert_trade(collection, contract_address, rate, offer, bid, msg_index, side) do
+  defp insert_trade(collection, contract_address, rate, price, offer, bid, msg_index, side) do
     with {offer, _} <- Integer.parse(offer),
          {bid, _} <- Integer.parse(bid),
          {tx_idx, _} <- Integer.parse(msg_index),
@@ -84,6 +84,7 @@ defmodule Rujira.Fin.Indexer do
           offer: offer,
           bid: bid,
           rate: rate,
+          price: price,
           side: String.to_existing_atom(side),
           tx_idx: tx_idx
         }
