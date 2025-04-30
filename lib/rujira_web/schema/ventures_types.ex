@@ -122,9 +122,9 @@ defmodule RujiraWeb.Schema.VenturesTypes do
     field :terms_conditions_accepted, non_null(:boolean)
     field :token, non_null(:ventures_token)
     field :tokenomics, non_null(:ventures_tokenomics)
-    field :pilot, :address
-    field :fin, :address
-    field :bow, :address
+    field :sale, non_null(:ventures_pilot)
+    # field :fin, :address
+    # field :bow, :address
     field :owner, non_null(:address)
     field :status, non_null(:ventures_sale_status)
   end
@@ -375,25 +375,27 @@ defmodule RujiraWeb.Schema.VenturesTypes do
   #   field :amount, list_of(:balance) # coin
   # end
 
-  # object :pool_response do
-  #   field :premium, non_null(:integer)
-  #   field :epoch, non_null(:integer)
-  #   field :price, non_null(:decimal)
-  #   field :total, non_null(:string)
-  # end
+  object :ventures_pool_response do
+    field :premium, non_null(:integer)
+    field :epoch, non_null(:integer)
+    field :price, non_null(:integer)
+    field :total, non_null(:bigint)
+  end
 
-  # object :pools_response do
-  #   field :pools, list_of(:pool_response)
-  # end
+  object :ventures_pools_response do
+    field :pools, list_of(:ventures_pool_response)
+  end
 
-  # object :pilot_info do
-  #   field :pilot, non_null(:pilot)
-  #   field :deposit, :coin
+  # object :ventures_pilot_info do
+  #   field :pilot, non_null(:ventures_pilot)
+  #   field :deposit, :asset
   #   field :contract_address, :address
-  #   field :raise_amount, :string
-  #   field :fee_amount, :string
-  #   field :bid_pools_snapshot, :pools_response
+  #   field :raise_amount, :bigint
+  #   field :fee_amount, :bigint
+  #   field :bid_pools_snapshot, :ventures_pools_response
   # end
+
+
 
   # object :fin_info do
   #   field :contract_address, non_null(:address)
@@ -407,4 +409,24 @@ defmodule RujiraWeb.Schema.VenturesTypes do
   #   field :contract_address, non_null(:address)
   #   field :recipient, non_null(:address)
   # end
+
+  object :ventures_pilot do
+    field :beneficiary, non_null(:address)
+    field :bid_denom, non_null(:string)
+    field :bid_pools_snapshot, :ventures_pools_response
+    field :bid_threshold, non_null(:bigint)
+    field :closes, non_null(:string)
+    field :contract_address, :address
+    field :deposit, :bigint
+    field :description, non_null(:string)
+    field :fee_amount, :bigint
+    field :max_premium, non_null(:integer)
+    field :opens, non_null(:string)
+    field :price, :string
+    field :raise_amount, :bigint
+    field :title, non_null(:string)
+    field :url, non_null(:string)
+    field :waiting_period, non_null(:integer)
+  end
+
 end
