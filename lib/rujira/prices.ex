@@ -1,4 +1,5 @@
 defmodule Rujira.Prices do
+  def get("AUTO"), do: {:ok, %{price: nil, change: nil}}
   def get("LQDY"), do: get("MNTA")
 
   def get("RUJI") do
