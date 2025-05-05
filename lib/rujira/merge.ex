@@ -142,7 +142,7 @@ defmodule Rujira.Merge do
   def load_accounts(account) do
     with {:ok, pools} <- Rujira.Merge.list_pools(),
          {:ok, accounts} <-
-           Task.async_stream(pools, &Rujira.Merge.load_account(&1, account), timeout: 30000)
+           Task.async_stream(pools, &Rujira.Merge.load_account(&1, account))
            |> Enum.reduce({:ok, []}, fn
              {:ok, {:ok, pool}}, {:ok, acc} -> {:ok, [pool | acc]}
              {:ok, {:error, error}}, _ -> {:error, error}
