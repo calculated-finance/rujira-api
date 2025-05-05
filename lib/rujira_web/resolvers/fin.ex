@@ -51,6 +51,9 @@ defmodule RujiraWeb.Resolvers.Fin do
              amount: summary.volume
            }
        }}
+    else
+      nil -> {:ok, nil}
+      {:error, err} -> {:error, err}
     end
   end
 
