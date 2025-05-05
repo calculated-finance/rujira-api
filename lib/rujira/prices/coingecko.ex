@@ -2,6 +2,7 @@ defmodule Rujira.Prices.Coingecko do
   use Memoize
 
   def id("AUTO"), do: {:error, :not_found}
+  def id("TCY"), do: {:error, :not_found}
   def id("BTC"), do: {:ok, "bitcoin"}
   def id("RKUJI"), do: {:ok, "kujira"}
   def id("rKUJI"), do: {:ok, "kujira"}
