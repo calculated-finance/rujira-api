@@ -10,4 +10,21 @@ defmodule RujiraWeb.Resolvers.Bow do
       Rujira.Enum.reduce_while_ok(pools, [], &Rujira.Bow.load_account(&1, address))
     end
   end
+
+  def summary(%{address: _address}, _, _) do
+    {:ok,
+     %Rujira.Bow.Xyk.Summary{
+       spread: Decimal.new("0.05"),
+       depth_bid: 10_000_000_000,
+       depth_ask: 10_000_000_000,
+       volume: 1_000_000_000_000,
+       utilization: Decimal.new("0.27")
+     }}
+  end
+
+  def trades(%{address: address}, args, _) do
+    with {:ok, query} <- Rujira.Bow.list_trades_query(address) |> IO.inspect(label: :resolver) do
+      Absinthe.Relay.Connection.from_query(query, &Rujira.Repo.all/1, args)
+    end
+  end
 end

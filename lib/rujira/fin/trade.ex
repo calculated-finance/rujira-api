@@ -79,8 +79,8 @@ defmodule Rujira.Fin.Trade do
     |> unique_constraint([:height, :tx_idx, :idx], name: :trades_key)
   end
 
-  def query() do
-    from t in __MODULE__,
+  def query(q \\ __MODULE__) do
+    from t in q,
       select_merge: %{
         price: t.rate,
         quote_amount: fragment("CASE WHEN ? = 'base' THEN ? ELSE ? END", t.side, t.offer, t.bid),

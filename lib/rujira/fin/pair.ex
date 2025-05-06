@@ -4,6 +4,7 @@ defmodule Rujira.Fin.Pair do
   defstruct [
     :id,
     :address,
+    :market_maker,
     :token_base,
     :token_quote,
     :oracle_base,
@@ -20,6 +21,7 @@ defmodule Rujira.Fin.Pair do
   @type t :: %__MODULE__{
           id: String.t(),
           address: String.t(),
+          market_maker: String.t(),
           token_base: String.t(),
           token_quote: String.t(),
           oracle_base: String.t(),
@@ -33,6 +35,7 @@ defmodule Rujira.Fin.Pair do
 
   @spec from_config(String.t(), map()) :: :error | {:ok, __MODULE__.t()}
   def from_config(address, %{
+        "market_maker" => market_maker,
         "denoms" => denoms,
         "oracles" => oracles,
         "tick" => tick,
@@ -48,6 +51,7 @@ defmodule Rujira.Fin.Pair do
        %__MODULE__{
          id: address,
          address: address,
+         market_maker: market_maker,
          token_base: Enum.at(denoms, 0),
          token_quote: Enum.at(denoms, 1),
          oracle_base: oracle_base,

@@ -7,6 +7,8 @@ defmodule Rujira.Bow do
   alias Rujira.Chains.Thor
   alias Rujira.Contracts
   alias Rujira.Bow.Xyk
+  import Ecto.Query
+  use Memoize
   # use GenServer
 
   @code_ids Application.compile_env(:rujira, __MODULE__, code_ids: [110])
@@ -101,5 +103,31 @@ defmodule Rujira.Bow do
         denom: config.y
       }
     ]
+  end
+
+  # We don't have any kind of `swap` event on the bow pool, so we need to figure out which
+  # fin pair this pool is a market maker for, and find the `mm:` prefixed trades
+  @spec list_trades_query(String.t(), non_neg_integer(), :asc | :desc) ::
+          {:ok, Ecto.Query.t()} | {:error, any()}
+  def list_trades_query(contract, limit \\ 100, sort \\ :desc) do
+    with {:ok, %{address: address}} <- fin_pair(contract) do
+      {:ok,
+       Rujira.Fin.Trade
+       |> where(contract: ^address)
+       |> where([t], like(t.price, "mm:%"))
+       |> Rujira.Fin.Trade.query()
+       |> Rujira.Fin.sort_trades(sort)
+       |> limit(^limit)}
+    end
+  end
+
+  defmemo fin_pair(contract) do
+    with {:ok, pairs} <- Rujira.Fin.list_pairs(),
+         %Rujira.Fin.Pair{} = pair <-
+           Enum.find(pairs, fn %{market_maker: mm} -> mm == contract end) do
+      {:ok, pair}
+    else
+      _ -> {:error, :not_found}
+    end
   end
 end

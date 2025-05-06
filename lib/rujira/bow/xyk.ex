@@ -59,6 +59,18 @@ defmodule Rujira.Bow.Xyk do
     end
   end
 
+  defmodule Summary do
+    defstruct [:spread, :depth_bid, :depth_ask, :volume, :utilization]
+
+    @type t :: %__MODULE__{
+            spread: Decimal.t(),
+            depth_bid: non_neg_integer(),
+            depth_ask: non_neg_integer(),
+            volume: non_neg_integer(),
+            utilization: Decimal.t()
+          }
+  end
+
   defstruct [:id, :address, :config, :state]
 
   @type t :: %__MODULE__{

@@ -8,6 +8,14 @@ defmodule RujiraWeb.Schema.BowTypes do
     field :address, non_null(:string)
     field :config, non_null(:bow_config)
     field :state, non_null(:bow_state)
+
+    field :summary, :bow_summary do
+      resolve(&RujiraWeb.Resolvers.Bow.summary/3)
+    end
+
+    connection field :trades, node_type: :fin_trade, non_null: true do
+      resolve(&RujiraWeb.Resolvers.Bow.trades/3)
+    end
   end
 
   union :bow_config do
@@ -49,6 +57,22 @@ defmodule RujiraWeb.Schema.BowTypes do
     field :y, non_null(:bigint)
     field :k, non_null(:bigint)
     field :shares, non_null(:balance)
+  end
+
+  union :bow_summary do
+    types([:bow_summary_xyk])
+
+    resolve_type(fn
+      %Xyk.Summary{}, _ -> :bow_summary_xyk
+    end)
+  end
+
+  object :bow_summary_xyk do
+    field :spread, non_null(:bigint)
+    field :depth_bid, non_null(:bigint)
+    field :depth_ask, non_null(:bigint)
+    field :volume, non_null(:bigint)
+    field :utilization, non_null(:bigint)
   end
 
   node object(:bow_account) do
