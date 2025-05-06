@@ -59,19 +59,16 @@ defmodule RujiraWeb.Schema.BowTypes do
     field :shares, non_null(:balance)
   end
 
-  union :bow_summary do
-    types([:bow_summary_xyk])
-
-    resolve_type(fn
-      %Xyk.Summary{}, _ -> :bow_summary_xyk
-    end)
-  end
-
-  object :bow_summary_xyk do
+  object :bow_summary do
+    @desc "Percentage spread between the bid and ask price"
     field :spread, non_null(:bigint)
+    @desc "USD value of the bids within 2% of the spread"
     field :depth_bid, non_null(:bigint)
+    @desc "USD value of the asks within 2% of the spread"
     field :depth_ask, non_null(:bigint)
+    @desc "USD of the last 24h of trades"
     field :volume, non_null(:bigint)
+    @desc "Volume as a percentage of the total pool USD value"
     field :utilization, non_null(:bigint)
   end
 
