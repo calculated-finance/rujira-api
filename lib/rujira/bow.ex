@@ -55,7 +55,7 @@ defmodule Rujira.Bow do
   end
 
   def pool_from_id(id) do
-    load_pool(id)
+    load_pool(%{address: id})
   end
 
   @doc """
