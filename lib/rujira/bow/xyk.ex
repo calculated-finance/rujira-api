@@ -1,5 +1,6 @@
 defmodule Rujira.Bow.Xyk do
   import Ecto.Query
+  use Memoize
 
   defmodule Config do
     defstruct [:x, :y, :step, :min_quote, :share_denom, :fee]
@@ -79,7 +80,16 @@ defmodule Rujira.Bow.Xyk do
            {:ok, asset_x} <- Assets.from_denom(config.x),
            {:ok, price_x} <- Prices.get(asset_x.symbol),
            {:ok, asset_y} <- Assets.from_denom(config.y),
-           {:ok, price_y} <- Prices.get(asset_y.symbol) do
+           {:ok, price_y} <- Prices.get(asset_y.symbol),
+           {low, mid, high} <- Rujira.Bow.Xyk.limit(config, state) do
+        spread = Decimal.div(Decimal.sub(high, low), mid)
+
+        depth =
+          Rujira.Bow.Xyk.depth(config, state, Decimal.mult(Decimal.from_float(1.02), mid))
+          |> Decimal.mult(price_y.price)
+          |> Decimal.round()
+          |> Decimal.to_integer()
+
         volume =
           volume
           |> Decimal.mult(price_y.price)
@@ -102,9 +112,9 @@ defmodule Rujira.Bow.Xyk do
 
         {:ok,
          %Rujira.Bow.Xyk.Summary{
-           spread: Rujira.Bow.Xyk.spread(config, state),
-           depth_bid: 10_000_000_000,
-           depth_ask: 10_000_000_000,
+           spread: spread,
+           depth_bid: depth,
+           depth_ask: depth,
            volume: volume,
            utilization: utilization
          }}
@@ -139,7 +149,16 @@ defmodule Rujira.Bow.Xyk do
     end
   end
 
-  def spread(config, state) do
+  def limit(config, state) do
+    {bid, ask, _} = do_quote(config, state)
+    high = Decimal.div(ask, bid)
+    {bid, ask, _} = do_quote(config, %{state | x: state.y, y: state.x})
+    low = Decimal.div(bid, ask)
+    mid = Decimal.div(Decimal.add(high, low), Decimal.new(2))
+    {low, mid, high}
+  end
+
+  defmemo do_quote(config, state) do
     bid = state.x |> Decimal.new() |> Decimal.mult(config.step)
 
     ask =
@@ -149,19 +168,24 @@ defmodule Rujira.Bow.Xyk do
       |> Decimal.sub(Decimal.new(state.y))
       |> Decimal.mult(Decimal.add(Decimal.new(1), config.fee))
 
-    high = Decimal.div(ask, bid)
+    x = bid |> Decimal.round() |> Decimal.to_integer() |> then(&(state.x - &1))
+    y = ask |> Decimal.round() |> Decimal.to_integer() |> then(&(state.y + &1))
 
-    ask = state.y |> Decimal.new() |> Decimal.mult(config.step)
+    {bid, ask, %{state | x: x, y: y, k: x * y}}
+  end
 
-    bid =
-      state.k
-      |> Decimal.new()
-      |> Decimal.div(Decimal.sub(Decimal.new(state.y), ask))
-      |> Decimal.sub(Decimal.new(state.x))
-      |> Decimal.mult(Decimal.add(Decimal.new(1), config.fee))
+  defmemo depth(config, state, threshold, value \\ 0) do
+    IO.inspect({config, state, threshold, value}, label: "depth")
+    {bid, ask, state} = do_quote(config, state) |> IO.inspect()
 
-    low = Decimal.div(ask, bid)
-    mid = Decimal.div(Decimal.add(high, low), Decimal.new(2))
-    Decimal.div(Decimal.sub(high, low), mid)
+    price = Decimal.div(ask, bid)
+
+    case Decimal.compare(price, threshold) do
+      :gt ->
+        value
+
+      _ ->
+        depth(config, state, threshold, Decimal.add(value, ask))
+    end
   end
 end
