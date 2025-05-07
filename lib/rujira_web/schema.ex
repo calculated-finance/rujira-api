@@ -82,7 +82,7 @@ defmodule RujiraWeb.Schema do
       config(fn %{id: id}, _ ->
         {
           :ok,
-          # Use the node ID as the topic to allow absinthe to de-deduplicate updates for a given node
+          # Use the node ID as the context to allow absinthe to de-deduplicate updates for a given node
           # https://hexdocs.pm/absinthe/subscriptions.html#de-duplicating-updates
           topic: id, context_id: id
         }
@@ -112,6 +112,17 @@ defmodule RujiraWeb.Schema do
           {:ok, %{cursor: Relay.Connection.offset_to_cursor(node.id), node: node}}
         end
       end)
+    end
+
+    field :fin_order, :fin_order do
+      arg(:prefix, non_null(:string))
+      arg(:owner, non_null(:address))
+
+      config(fn %{prefix: prefix}, _ ->
+        {:ok, topic: prefix}
+      end)
+
+      resolve(&RujiraWeb.Resolvers.Fin.order/2)
     end
   end
 

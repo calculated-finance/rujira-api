@@ -47,7 +47,7 @@ defmodule Rujira.Fin.Order do
          {remaining, ""} <- Integer.parse(remaining),
          {filled, ""} <- Integer.parse(filled) do
       %__MODULE__{
-        id: "#{pair_address}/#{owner}/#{side}/#{price}",
+        id: "#{pair_address}/#{side}/#{price}/#{owner}",
         pair: pair_address,
         owner: owner,
         side: String.to_atom(side),
@@ -68,7 +68,7 @@ defmodule Rujira.Fin.Order do
   def encode_price("oracle", v), do: %{oracle: v}
 
   def from_id(id) do
-    [pair_address, owner, side, price_type, price] = String.split(id, "/")
+    [pair_address, side, price_type, price, owner] = String.split(id, "/")
 
     with {:ok, order} <-
            Rujira.Contracts.query_state_smart(
@@ -79,7 +79,7 @@ defmodule Rujira.Fin.Order do
            ) do
       {:ok, from_query(pair_address, order)}
     else
-      _ -> {:error, :not_found}
+      _ -> {:ok, nil}
     end
   end
 end

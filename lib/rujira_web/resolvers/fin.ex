@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Resolvers.Fin do
+  alias Rujira.Fin.Order
   alias Rujira.Fin.Summary
   alias Rujira.Repo
   alias Absinthe.Relay
@@ -59,6 +60,12 @@ defmodule RujiraWeb.Resolvers.Fin do
 
   def account(%{address: address}, _, _) do
     {:ok, %{address: address, orders: nil, history: nil}}
+  end
+
+  def order(%{owner: owner, prefix: prefix}, _) do
+    with {:ok, %{id: id}} <- Absinthe.Relay.Node.from_global_id(prefix, RujiraWeb.Schema) do
+      Order.from_id("#{id}/#{owner}")
+    end
   end
 
   def orders(%{address: address}, _, _) do

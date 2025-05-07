@@ -29,14 +29,26 @@ defmodule Rujira.Fin.Listener do
       end)
       |> scan_events()
       |> Enum.uniq()
+      |> IO.inspect()
 
-    for a <- addresses do
+    for {a, side, price} <- addresses do
       Logger.debug("#{__MODULE__} change #{a}")
 
       id =
         Absinthe.Relay.Node.to_global_id(:fin_book, a, RujiraWeb.Schema)
 
       Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+
+      if not is_nil(side) and not is_nil(price) do
+        prefix =
+          Absinthe.Relay.Node.to_global_id(
+            :fin_order,
+            "#{a}/#{side}/#{String.replace(price, ":", "/")}",
+            RujiraWeb.Schema
+          )
+
+        Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{prefix: prefix}, fin_order: prefix)
+      end
     end
   end
 
@@ -47,7 +59,9 @@ defmodule Rujira.Fin.Listener do
          collection
        ) do
     address = Map.get(event, "_contract_address")
-    scan_events(rest, [address | collection])
+    side = Map.get(event, "side")
+    price = Map.get(event, "price")
+    scan_events(rest, [{address, side, price} | collection])
   end
 
   defp scan_events([_ | rest], collection), do: scan_events(rest, collection)
