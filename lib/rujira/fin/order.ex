@@ -1,6 +1,4 @@
 defmodule Rujira.Fin.Order do
-  alias Rujira.Fin.Pair
-
   defstruct [
     :id,
     :pair,
@@ -31,7 +29,7 @@ defmodule Rujira.Fin.Order do
           deviation: deviation
         }
 
-  def from_query(%Pair{address: pair_address}, %{
+  def from_query(pair_address, %{
         "owner" => owner,
         "side" => side,
         "price" => price,
@@ -49,7 +47,7 @@ defmodule Rujira.Fin.Order do
          {remaining, ""} <- Integer.parse(remaining),
          {filled, ""} <- Integer.parse(filled) do
       %__MODULE__{
-        id: "#{pair_address}:#{price}",
+        id: "#{pair_address}/#{owner}/#{side}/#{price}",
         pair: pair_address,
         owner: owner,
         side: String.to_atom(side),
@@ -66,7 +64,22 @@ defmodule Rujira.Fin.Order do
 
   def parse_price(%{"fixed" => v}), do: {:fixed, nil, "fixed/#{v}"}
   def parse_price(%{"oracle" => deviation}), do: {:oracle, deviation, "oracle/#{deviation}"}
+  def encode_price("fixed", v), do: %{fixed: v}
+  def encode_price("oracle", v), do: %{oracle: v}
 
-  def from_id(_) do
+  def from_id(id) do
+    [pair_address, owner, side, price_type, price] = String.split(id, "/")
+
+    with {:ok, order} <-
+           Rujira.Contracts.query_state_smart(
+             pair_address,
+             %{
+               order: [owner, side, encode_price(price_type, price)]
+             }
+           ) do
+      {:ok, from_query(pair_address, order)}
+    else
+      _ -> {:error, :not_found}
+    end
   end
 end

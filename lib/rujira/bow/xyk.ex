@@ -75,7 +75,7 @@ defmodule Rujira.Bow.Xyk do
             utilization: Decimal.t()
           }
 
-    def load(%{address: address, config: %{step: step, fee: fee} = config, state: state}) do
+    def load(%{address: address, config: config, state: state}) do
       with {:ok, volume} <- Rujira.Bow.Xyk.volume(address),
            {:ok, asset_x} <- Assets.from_denom(config.x),
            {:ok, price_x} <- Prices.get(asset_x.symbol),

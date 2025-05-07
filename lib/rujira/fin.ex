@@ -79,7 +79,7 @@ defmodule Rujira.Fin do
            Contracts.query_state_smart(pair.address, %{
              orders: %{owner: address, offset: offset, limit: limit}
            }) do
-      {:ok, Enum.map(orders, &Order.from_query(pair, &1))}
+      {:ok, Enum.map(orders, &Order.from_query(pair.address, &1))}
     else
       err ->
         err
