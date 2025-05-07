@@ -60,6 +60,9 @@ defmodule Rujira.Bow.Xyk do
   end
 
   defmodule Summary do
+    alias Rujira.Prices
+    alias Rujira.Assets
+    import Ecto.Query
     defstruct [:spread, :depth_bid, :depth_ask, :volume, :utilization]
 
     @type t :: %__MODULE__{
@@ -69,6 +72,47 @@ defmodule Rujira.Bow.Xyk do
             volume: non_neg_integer(),
             utilization: Decimal.t()
           }
+
+    def load(%{address: address, config: %{step: step, fee: fee} = config, state: state}) do
+      with {:ok, trades} <- Rujira.Bow.list_trades_query(address),
+           {:ok, asset_x} <- Assets.from_denom(config.x),
+           {:ok, price_x} <- Prices.get(asset_x.symbol),
+           {:ok, asset_y} <- Assets.from_denom(config.y),
+           {:ok, price_y} <- Prices.get(asset_y.symbol) do
+        volume =
+          trades
+          |> where([t], fragment("? > NOW () - '1 day'::interval", t.timestamp))
+          |> subquery()
+          |> select([t], sum(t.quote_amount))
+          |> Rujira.Repo.one()
+          |> Decimal.mult(price_y.price)
+          |> Decimal.round()
+          |> Decimal.to_integer()
+
+        value =
+          state.x
+          |> Decimal.new()
+          |> Decimal.mult(price_x.price)
+          |> Decimal.add(
+            state.y
+            |> Decimal.new()
+            |> Decimal.mult(price_y.price)
+          )
+          |> Decimal.round()
+          |> Decimal.to_integer()
+
+        utilization = Decimal.div(volume, value)
+
+        {:ok,
+         %Rujira.Bow.Xyk.Summary{
+           spread: Rujira.Bow.Xyk.spread(config, state),
+           depth_bid: 10_000_000_000,
+           depth_ask: 10_000_000_000,
+           volume: volume,
+           utilization: utilization
+         }}
+      end
+    end
   end
 
   defstruct [:id, :address, :config, :state]
@@ -85,5 +129,31 @@ defmodule Rujira.Bow.Xyk do
          {:ok, state} <- State.from_query(address, state) do
       {:ok, %__MODULE__{id: address, address: address, config: config, state: state}}
     end
+  end
+
+  def spread(config, state) do
+    bid = state.x |> Decimal.new() |> Decimal.mult(config.step)
+
+    ask =
+      state.k
+      |> Decimal.new()
+      |> Decimal.div(Decimal.sub(Decimal.new(state.x), bid))
+      |> Decimal.sub(Decimal.new(state.y))
+      |> Decimal.mult(Decimal.add(Decimal.new(1), config.fee))
+
+    high = Decimal.div(ask, bid)
+
+    ask = state.y |> Decimal.new() |> Decimal.mult(config.step)
+
+    bid =
+      state.k
+      |> Decimal.new()
+      |> Decimal.div(Decimal.sub(Decimal.new(state.y), ask))
+      |> Decimal.sub(Decimal.new(state.x))
+      |> Decimal.mult(Decimal.add(Decimal.new(1), config.fee))
+
+    low = Decimal.div(ask, bid)
+    mid = Decimal.div(Decimal.add(high, low), Decimal.new(2))
+    Decimal.div(Decimal.sub(high, low), mid)
   end
 end

@@ -114,8 +114,9 @@ defmodule Rujira.Staking.Pool do
       revenue30 = sum_revenue(revenue, 30)
 
       value =
-        (account_bond + liquid_bond_size * price)
+        (account_bond + liquid_bond_size)
         |> Decimal.new()
+        |> Decimal.mult(price)
         |> Decimal.div(Decimal.new(1_000_000_000_000))
 
       apr =

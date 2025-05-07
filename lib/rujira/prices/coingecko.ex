@@ -51,6 +51,7 @@ defmodule Rujira.Prices.Coingecko do
              "include_24hr_change" => "true"
            }),
          %{"usd" => price, "usd_24h_change" => change} <- Map.get(res, id) do
+      {:ok, price} = Decimal.cast(price)
       {:ok, %{price: price, change: change}}
     else
       nil -> {:error, "error fetching #{id} price"}
@@ -69,6 +70,7 @@ defmodule Rujira.Prices.Coingecko do
        res
        |> Enum.map(fn
          {k, %{"usd" => price, "usd_24h_change" => change}} ->
+           {:ok, price} = Decimal.cast(price)
            {k, %{price: price, change: change}}
 
          {k, %{}} ->
