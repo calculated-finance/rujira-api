@@ -2,7 +2,7 @@ defmodule Rujira.Contracts.Contract do
   import Ecto.Changeset
   use Ecto.Schema
 
-  @primary_key {:address, :binary_id, autogenerate: false}
+  @primary_key {:address, :string, autogenerate: false}
   schema "contracts" do
     field :module, Ecto.Enum,
       values: [

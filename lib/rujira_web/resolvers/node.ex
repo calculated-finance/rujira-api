@@ -8,6 +8,7 @@ defmodule RujiraWeb.Resolvers.Node do
   alias Rujira.Merge
   alias Rujira.Fin
   alias Rujira.Staking
+  alias Rujira.Leagues
 
   def id(%{id: encoded_id}, _) do
     resolve_id(encoded_id)
@@ -41,6 +42,7 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Staking.Pool.Summary{}, _), do: :staking_summary
   def type(%Thorchain.Types.QueryInboundAddressResponse{}, _), do: :inbound_address
   def type(%{observed_tx: _}, _), do: :tx_in
+  def type(%{league: _, season: _, address: _}, _), do: :league_account
 
   defp resolve_id(id) do
     case Absinthe.Relay.Node.from_global_id(id, RujiraWeb.Schema) do
@@ -100,6 +102,9 @@ defmodule RujiraWeb.Resolvers.Node do
 
       {:ok, %{type: :tx_in, id: id}} ->
         Thorchain.tx_in(id)
+
+      {:ok, %{type: :league_account, id: id}} ->
+        Leagues.account_from_id(id)
 
       {:error, error} ->
         {:error, error}

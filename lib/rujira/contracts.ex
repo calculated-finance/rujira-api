@@ -297,11 +297,18 @@ defmodule Rujira.Contracts do
     |> Repo.all()
   end
 
-  @spec by_id(String.t()) :: %Contract{} | nil
-  def by_id(id) do
-    Contract
-    |> where([c], c.id == ^id)
-    |> Repo.one()
+  @spec by_id(String.t()) :: {:ok, %Contract{}} | {:error, :not_found}
+  def by_id(address) do
+    contract =
+      Contract
+      |> where([c], c.address == ^address)
+      |> Repo.one()
+
+    if contract do
+      {:ok, contract}
+    else
+      {:error, :not_found}
+    end
   end
 
   @spec list() :: list(%Contract{})

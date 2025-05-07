@@ -31,5 +31,9 @@ defmodule RujiraWeb.Schema.RujiraTypes do
     field :analytics, non_null(:analytics) do
       resolve(fn _, _, _ -> {:ok, %{}} end)
     end
+
+    field :league, non_null(list_of(non_null(:league))) do
+      resolve(&Resolvers.Leagues.resolver/3)
+    end
   end
 end

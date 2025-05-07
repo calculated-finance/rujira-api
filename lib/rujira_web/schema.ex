@@ -22,6 +22,7 @@ defmodule RujiraWeb.Schema do
   import_types(RujiraWeb.Schema.ThorchainTypes)
   import_types(RujiraWeb.Schema.TokenTypes)
   import_types(RujiraWeb.Schema.VenturesTypes)
+  import_types(RujiraWeb.Schema.LeaguesTypes)
 
   query do
     field :node, :node do

@@ -51,4 +51,26 @@ defmodule Rujira.Resolution do
 
   def truncate(%DateTime{} = datetime, "12M"),
     do: datetime |> truncate("1M") |> Map.put(:month, 1)
+
+  # To be moved in Analytics.Common mainly used to shift date in order to calculate moving avgs
+  def shift_from_back(from, period, "1D"), do: DateTime.add(from, -period, :day)
+
+  def shift_from_back(from, period, "1M") do
+    m_shift = rem(period, 12)
+    y_shift = div(period, 12)
+
+    {year, month} =
+      if from.month < m_shift do
+        {from.year - y_shift - 1, 12 + from.month - m_shift}
+      else
+        {from.year - y_shift, from.month - m_shift}
+      end
+
+    %{from | year: year, month: month}
+  end
+
+  def shift_from_back(from, period, "12M"), do: from |> Map.update!(:year, &(&1 - period))
+
+  def shift_from_back(from, period, resolution),
+    do: DateTime.add(from, -period * resolution, :minute)
 end

@@ -1,7 +1,17 @@
 defmodule Rujira.Prices do
+  alias Rujira.Fin
+
   def get("AUTO"), do: {:ok, %{price: nil, change: nil}}
   def get("TCY"), do: {:ok, %{price: nil, change: nil}}
   def get("LQDY"), do: get("MNTA")
+
+  # Switch Tokens or custom tokens: Retrieves the price from the applayer using the FIN pair with USDC.
+  def get("x/demo"),
+    do: Fin.book_price("sthor1df2x64qcyr2swrdgqtcjrxwny4vp0n622hnltr7k0cqdgw7t4szshcxvkj")
+
+  # Secure assets: Retrieves the price from the base layer pools.
+  def get("BTC-BTC"), do: secure_asset_price("BTC.BTC")
+  def get("ETH-ETH"), do: secure_asset_price("ETH.ETH")
 
   def get("RUJI") do
     with {:ok, kuji} <- get("KUJI") do
@@ -49,5 +59,11 @@ defmodule Rujira.Prices do
   def normalize(price, decimal \\ 8)
       when is_number(price) and is_integer(decimal) and decimal >= 0 do
     trunc(price * 10 ** (12 - decimal))
+  end
+
+  def secure_asset_price(id) do
+    with {:ok, %{asset_tor_price: price}} <- Thorchain.pool_from_id(id) do
+      {:ok, %{price: normalize(price), change: 0}}
+    end
   end
 end

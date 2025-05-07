@@ -338,4 +338,10 @@ defmodule Rujira.Fin do
       Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id, edge: prefix)
     end
   end
+
+  def book_price(id) do
+    with {:ok, book} <- book_from_id(id) do
+      {:ok, %{price: Rujira.Prices.normalize(book.center, 0), change: 0}}
+    end
+  end
 end

@@ -19,6 +19,7 @@ defmodule Thorchain do
   alias Thorchain.Types.QueryPoolsResponse
   alias Thorchain.Types.QueryTxRequest
   alias Thorchain.Types.QueryTxResponse
+  alias Thorchain.Types.QueryPoolRequest
   use GenServer
   use Memoize
 
@@ -36,6 +37,14 @@ defmodule Thorchain do
     req = %QueryNetworkRequest{}
 
     with {:ok, res} <- Thorchain.Node.stub(&Q.network/2, req) do
+      {:ok, res}
+    end
+  end
+
+  def pool_from_id(id) do
+    req = %QueryPoolRequest{asset: id}
+    with {:ok, res} <-
+           Thorchain.Node.stub(&Q.pool/2, req) do
       {:ok, res}
     end
   end
@@ -126,6 +135,17 @@ defmodule Thorchain do
       {:ok, {affiliate_id, affiliate_bp}}
     else
       {:error, :no_affiliate}
+    end
+  end
+
+  def get_dest_address(memo) do
+    parts = String.split(memo, ":")
+
+    if Enum.at(parts, 0) in ["SWAP", "="] do
+      dest = Enum.at(parts, 2)
+      {:ok, dest}
+    else
+      {:error, :invalid_memo}
     end
   end
 
