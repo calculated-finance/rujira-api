@@ -1,4 +1,6 @@
 defmodule Rujira.Bow.Xyk do
+  import Ecto.Query
+
   defmodule Config do
     defstruct [:x, :y, :step, :min_quote, :share_denom, :fee]
 
@@ -62,7 +64,6 @@ defmodule Rujira.Bow.Xyk do
   defmodule Summary do
     alias Rujira.Prices
     alias Rujira.Assets
-    import Ecto.Query
     defstruct [:spread, :depth_bid, :depth_ask, :volume, :utilization]
 
     @type t :: %__MODULE__{
@@ -74,17 +75,13 @@ defmodule Rujira.Bow.Xyk do
           }
 
     def load(%{address: address, config: %{step: step, fee: fee} = config, state: state}) do
-      with {:ok, trades} <- Rujira.Bow.list_trades_query(address),
+      with {:ok, volume} <- Rujira.Bow.Xyk.volume(address),
            {:ok, asset_x} <- Assets.from_denom(config.x),
            {:ok, price_x} <- Prices.get(asset_x.symbol),
            {:ok, asset_y} <- Assets.from_denom(config.y),
            {:ok, price_y} <- Prices.get(asset_y.symbol) do
         volume =
-          trades
-          |> where([t], fragment("? > NOW () - '1 day'::interval", t.timestamp))
-          |> subquery()
-          |> select([t], sum(t.quote_amount))
-          |> Rujira.Repo.one()
+          volume
           |> Decimal.mult(price_y.price)
           |> Decimal.round()
           |> Decimal.to_integer()
@@ -128,6 +125,17 @@ defmodule Rujira.Bow.Xyk do
     with {:ok, config} <- Config.from_query(config),
          {:ok, state} <- State.from_query(address, state) do
       {:ok, %__MODULE__{id: address, address: address, config: config, state: state}}
+    end
+  end
+
+  def volume(address) do
+    with {:ok, trades} <- Rujira.Bow.list_trades_query(address) do
+      {:ok,
+       trades
+       |> where([t], fragment("? > NOW () - '1 day'::interval", t.timestamp))
+       |> subquery()
+       |> select([t], sum(t.quote_amount))
+       |> Rujira.Repo.one()}
     end
   end
 
