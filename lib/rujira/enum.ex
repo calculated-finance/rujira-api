@@ -4,6 +4,7 @@ defmodule Rujira.Enum do
            case fun.(element) do
              {:ok, el} -> {:cont, {:ok, [el | acc]}}
              {:error, reason} -> {:halt, {:error, reason}}
+             :skip -> {:cont, {:ok, acc}}
            end
          end) do
       {:ok, acc} -> {:ok, Enum.reverse(acc)}

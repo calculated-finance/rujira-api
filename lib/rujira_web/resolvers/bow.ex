@@ -7,7 +7,12 @@ defmodule RujiraWeb.Resolvers.Bow do
 
   def accounts(%{address: address}, _, _) do
     with {:ok, pools} <- Rujira.Bow.list_pools() do
-      Rujira.Enum.reduce_while_ok(pools, [], &Rujira.Bow.load_account(&1, address))
+      Rujira.Enum.reduce_while_ok(pools, [], fn x ->
+        case Rujira.Bow.load_account(x, address) |> IO.inspect() do
+          {:ok, %{shares: 0}} -> :skip
+          other -> other
+        end
+      end)
     end
   end
 
