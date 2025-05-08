@@ -93,6 +93,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
   end
 
   object :pool do
+    field :id, non_null(:string)
     field :asset, non_null(:asset)
     field :short_code, non_null(:string)
     field :status, non_null(:pool_status)
