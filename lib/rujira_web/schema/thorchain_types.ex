@@ -92,8 +92,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :total_bps, non_null(:integer)
   end
 
-  object :pool do
-    field :id, non_null(:string)
+  node object(:pool) do
     field :asset, non_null(:asset)
     field :short_code, non_null(:string)
     field :status, non_null(:pool_status)

@@ -1,6 +1,7 @@
 defmodule Thorchain do
   # alias Thorchain.Types.QueryNodesResponse
   # alias Thorchain.Types.QueryNodesRequest
+  alias Rujira.Assets
   alias Rujira.Assets.Asset
   alias Thorchain.Common.Coin
   alias Thorchain.Common.Tx
@@ -43,9 +44,10 @@ defmodule Thorchain do
 
   def pool_from_id(id) do
     req = %QueryPoolRequest{asset: id}
+
     with {:ok, res} <-
            Thorchain.Node.stub(&Q.pool/2, req) do
-      {:ok, res}
+      {:ok, cast_pool(res)}
     end
   end
 
@@ -54,8 +56,17 @@ defmodule Thorchain do
 
     with {:ok, %QueryPoolsResponse{pools: pools}} <-
            Thorchain.Node.stub(&Q.pools/2, req) do
-      {:ok, pools}
+      {:ok, Enum.map(pools, &cast_pool/1)}
     end
+  end
+
+  def cast_pool(pool) do
+    pool
+    |> Map.put(:id, pool.asset)
+    |> Map.put(:asset, Assets.from_string(pool.asset))
+    |> Map.put(:lp_units, Map.get(pool, :LP_units))
+    |> Map.update(:derived_depth_bps, "0", &String.to_integer/1)
+    |> Map.update(:savers_fill_bps, "0", &String.to_integer/1)
   end
 
   def total_bonds() do

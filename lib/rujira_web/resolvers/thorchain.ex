@@ -57,7 +57,7 @@ defmodule RujiraWeb.Resolvers.Thorchain do
 
       with {:ok, %QueryPoolsResponse{pools: pools}} <-
              Thorchain.Node.stub(&Q.pools/2, req) do
-        {:ok, Enum.map(pools, &cast_pool/1)}
+        {:ok, pools}
       end
     end)
   end
@@ -68,18 +68,9 @@ defmodule RujiraWeb.Resolvers.Thorchain do
 
       with {:ok, %QueryPoolResponse{} = pool} <-
              Thorchain.Node.stub(&Q.pool/2, req) do
-        {:ok, cast_pool(pool)}
+        {:ok, pool}
       end
     end)
-  end
-
-  defp cast_pool(pool) do
-    pool
-    |> Map.put(:id, pool.asset)
-    |> Map.put(:asset, Assets.from_string(pool.asset))
-    |> Map.put(:lp_units, Map.get(pool, :LP_units))
-    |> Map.update(:derived_depth_bps, "0", &String.to_integer/1)
-    |> Map.update(:savers_fill_bps, "0", &String.to_integer/1)
   end
 
   def inbound_addresses(_, _, _) do

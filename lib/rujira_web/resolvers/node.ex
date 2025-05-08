@@ -42,6 +42,7 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Staking.Pool.Status{}, _), do: :staking_status
   def type(%Staking.Pool.Summary{}, _), do: :staking_summary
   def type(%Thorchain.Types.QueryInboundAddressResponse{}, _), do: :inbound_address
+  def type(%Thorchain.Types.QueryPoolResponse{}, _), do: :pool
   def type(%{observed_tx: _}, _), do: :tx_in
   def type(%{league: _, season: _, address: _}, _), do: :league_account
 
@@ -91,6 +92,9 @@ defmodule RujiraWeb.Resolvers.Node do
 
       {:ok, %{type: :fin_trade, id: id}} ->
         Fin.trade_from_id(id)
+
+      {:ok, %{type: :pool, id: id}} ->
+        Thorchain.pool_from_id(id)
 
       {:ok, %{type: :staking_pool, id: id}} ->
         Staking.pool_from_id(id)
