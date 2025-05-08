@@ -11,7 +11,7 @@ defmodule Rujira.Bow do
   use Memoize
   # use GenServer
 
-  @code_ids Application.compile_env(:rujira, __MODULE__, code_ids: [110])
+  @code_ids Application.compile_env(:rujira, __MODULE__, code_ids: [112])
             |> Keyword.get(:code_ids)
 
   # def start_link(_) do
