@@ -86,24 +86,24 @@ defmodule Rujira.Bow.Xyk do
 
         depth =
           Rujira.Bow.Xyk.depth(config, state, Decimal.mult(Decimal.from_float(1.02), mid))
-          |> Decimal.mult(price_y.price || 0)
+          |> Decimal.mult(price_y.price)
           |> Decimal.round()
           |> Decimal.to_integer()
 
         volume =
           volume
-          |> Decimal.mult(price_y.price || 0)
+          |> Decimal.mult(price_y.price)
           |> Decimal.round()
           |> Decimal.to_integer()
 
         value =
           state.x
           |> Decimal.new()
-          |> Decimal.mult(price_x.price || 0)
+          |> Decimal.mult(price_x.price)
           |> Decimal.add(
             state.y
             |> Decimal.new()
-            |> Decimal.mult(price_y.price || 0)
+            |> Decimal.mult(price_y.price)
           )
           |> Decimal.round()
           |> Decimal.to_integer()
@@ -144,7 +144,7 @@ defmodule Rujira.Bow.Xyk do
        trades
        |> where([t], fragment("? > NOW () - '1 day'::interval", t.timestamp))
        |> subquery()
-       |> select([t], sum(t.quote_amount))
+       |> select([t], fragment("COALESCE(?, 0)", sum(t.quote_amount)))
        |> Rujira.Repo.one()}
     end
   end
