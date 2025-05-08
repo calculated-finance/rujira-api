@@ -3,10 +3,6 @@ defmodule RujiraWeb.Resolvers.Thorchain do
   alias Absinthe.Resolution.Helpers
   alias Thorchain.Types.QueryInboundAddressesResponse
   alias Thorchain.Types.QueryInboundAddressesRequest
-  alias Thorchain.Types.QueryPoolsResponse
-  alias Thorchain.Types.QueryPoolsRequest
-  alias Thorchain.Types.QueryPoolResponse
-  alias Thorchain.Types.QueryPoolRequest
   alias Thorchain.Types.QueryQuoteSwapResponse
   alias Thorchain.Types.QueryQuoteSwapRequest
   alias Thorchain.Types.Query.Stub, as: Q
@@ -53,24 +49,12 @@ defmodule RujiraWeb.Resolvers.Thorchain do
 
   def pools(_, _, _) do
     Helpers.async(fn ->
-      req = %QueryPoolsRequest{}
-
-      with {:ok, %QueryPoolsResponse{pools: pools}} <-
-             Thorchain.Node.stub(&Q.pools/2, req) do
-        {:ok, pools}
-      end
+      Thorchain.pools()
     end)
   end
 
   def pool(_, %{asset: asset}, _) do
-    Helpers.async(fn ->
-      req = %QueryPoolRequest{asset: asset}
-
-      with {:ok, %QueryPoolResponse{} = pool} <-
-             Thorchain.Node.stub(&Q.pool/2, req) do
-        {:ok, pool}
-      end
-    end)
+    Thorchain.pool_from_id(asset)
   end
 
   def inbound_addresses(_, _, _) do

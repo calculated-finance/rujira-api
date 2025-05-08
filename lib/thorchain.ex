@@ -58,6 +58,7 @@ defmodule Thorchain do
            Thorchain.Node.stub(&Q.pools/2, req) do
       {:ok, Enum.map(pools, &cast_pool/1)}
     end
+    |> IO.inspect()
   end
 
   def cast_pool(pool) do
