@@ -86,24 +86,24 @@ defmodule Rujira.Bow.Xyk do
 
         depth =
           Rujira.Bow.Xyk.depth(config, state, Decimal.mult(Decimal.from_float(1.02), mid))
-          |> Decimal.mult(price_y.price)
+          |> Decimal.mult(price_y.price || 0)
           |> Decimal.round()
           |> Decimal.to_integer()
 
         volume =
           volume
-          |> Decimal.mult(price_y.price)
+          |> Decimal.mult(price_y.price || 0)
           |> Decimal.round()
           |> Decimal.to_integer()
 
         value =
           state.x
           |> Decimal.new()
-          |> Decimal.mult(price_x.price)
+          |> Decimal.mult(price_x.price || 0)
           |> Decimal.add(
             state.y
             |> Decimal.new()
-            |> Decimal.mult(price_y.price)
+            |> Decimal.mult(price_y.price || 0)
           )
           |> Decimal.round()
           |> Decimal.to_integer()
