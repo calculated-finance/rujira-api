@@ -118,6 +118,25 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :derived_depth_bps, non_null(:integer)
   end
 
+  node object(:liquidity_provider) do
+    field :asset, non_null(:asset)
+    field :rune_address, :address
+    field :asset_address, :address
+    field :last_add_height, non_null(:integer)
+    field :last_withdraw_height, :integer
+    field :units, non_null(:bigint)
+    field :pending_rune, non_null(:bigint)
+    field :pending_asset, non_null(:bigint)
+    field :pending_tx_id, :string
+    field :rune_deposit_value, non_null(:bigint)
+    field :asset_deposit_value, non_null(:bigint)
+    field :rune_redeem_value, non_null(:bigint)
+    field :asset_redeem_value, non_null(:bigint)
+    # field :luvi_deposit_value, 14, type: :string, json_name: "luviDepositValue"
+    # field :luvi_redeem_value, 15, type: :string, json_name: "luviRedeemValue"
+    # field :luvi_growth_pct, 16, type: :string, json_name: "luviGrowthPct"
+  end
+
   enum :pool_status do
     value(:unknown, as: "UnknownPoolStatus")
     value(:available, as: "Available")

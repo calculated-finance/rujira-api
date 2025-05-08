@@ -1,6 +1,7 @@
 defmodule Thorchain do
   # alias Thorchain.Types.QueryNodesResponse
   # alias Thorchain.Types.QueryNodesRequest
+  alias Thorchain.Types.QueryLiquidityProviderRequest
   alias Rujira.Assets
   alias Rujira.Assets.Asset
   alias Thorchain.Common.Coin
@@ -58,7 +59,43 @@ defmodule Thorchain do
            Thorchain.Node.stub(&Q.pools/2, req) do
       {:ok, Enum.map(pools, &cast_pool/1)}
     end
-    |> IO.inspect()
+  end
+
+  def liquidity_provider_from_id(id) do
+    case String.split(id, "/") do
+      [asset, address] -> liquidity_provider(asset, address)
+      _ -> {:error, :invalid_id}
+    end
+  end
+
+  defmemo liquidity_provider(asset, address) do
+    req = %QueryLiquidityProviderRequest{asset: asset, address: address}
+
+    with {:ok, res} <-
+           Thorchain.Node.stub(&Q.liquidity_provider/2, req) do
+      {:ok, cast_liquidity_provider(res)}
+    end
+  end
+
+  def cast_liquidity_provider(provider) do
+    provider
+    |> Map.put(:id, "#{provider.asset}/#{provider.rune_address}")
+    |> Map.put(:asset, Assets.from_string(provider.asset))
+    |> Map.update(:asset_address, nil, fn
+      "" -> nil
+      x -> x
+    end)
+    |> Map.update(:rune_address, nil, fn
+      "" -> nil
+      x -> x
+    end)
+    |> Map.update(:last_withdraw_height, nil, fn
+      0 -> nil
+      x -> x
+    end)
+    |> Map.update(:units, "0", &String.to_integer/1)
+    |> Map.update(:pending_rune, "0", &String.to_integer/1)
+    |> Map.update(:pending_asset, "0", &String.to_integer/1)
   end
 
   def cast_pool(pool) do
