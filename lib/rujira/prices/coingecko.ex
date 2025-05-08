@@ -2,7 +2,6 @@ defmodule Rujira.Prices.Coingecko do
   use Memoize
 
   def id("AUTO"), do: {:error, :not_found}
-  def id("TCY"), do: {:error, :not_found}
   def id("BTC"), do: {:ok, "bitcoin"}
   def id("RKUJI"), do: {:ok, "kujira"}
   def id("rKUJI"), do: {:ok, "kujira"}
@@ -18,6 +17,7 @@ defmodule Rujira.Prices.Coingecko do
   def id("NAMI"), do: {:ok, "nami-protocol"}
   def id("RAZE"), do: {:ok, "craze"}
   def id("SNX"), do: {:ok, "havven"}
+  def id("TCY"), do: {:ok, "tcy"}
   def id("TGT"), do: {:ok, "thorwallet"}
   def id("THOR"), do: {:ok, "thorswap"}
   def id("USDC"), do: {:ok, "usd-coin"}
