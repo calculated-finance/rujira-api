@@ -341,7 +341,7 @@ defmodule Rujira.Fin do
 
   def book_price(id) do
     with {:ok, book} <- book_from_id(id) do
-      {:ok, %{price: Rujira.Prices.normalize(book.center, 0), change: 0}}
+      {:ok, %{price: book.center, change: 0}}
     end
   end
 end

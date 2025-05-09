@@ -89,7 +89,12 @@ defmodule Rujira.Leagues.Collectors.Contract do
          {amount, _} <- Integer.parse(amt),
          {:ok, %{price: price}} <- Prices.get(asset),
          {:ok, category} <- module_category(module) do
-      revenue = Prices.normalize(amount * price, 20)
+      revenue =
+        amount
+        |> Decimal.mult(price)
+        |> Decimal.round(0)
+        |> Decimal.to_integer()
+
       [%{address: sender, revenue: revenue, category: category} | acc]
     end
   end
