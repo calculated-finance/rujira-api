@@ -54,6 +54,7 @@ defmodule Thorchain.Node.Grpc do
       %_{} -> req |> Map.get(:__struct__)
       _ -> "UnknownRequest"
     end
+    |> to_string()
     |> String.replace_prefix("Elixir.", "")
     |> Appsignal.instrument(fn span ->
       params = req |> Map.from_struct() |> Map.drop([:__unknown_fields__])
