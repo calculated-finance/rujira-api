@@ -29,25 +29,29 @@ defmodule Rujira.Fin.Listener do
       end)
       |> scan_events()
       |> Enum.uniq()
-      |> IO.inspect()
+      # Trades are withdrawn before retraction. Ensure we're not re-publishing an order that doens't exist
+      |> Enum.reverse()
 
-    for {a, side, price} <- addresses do
-      Logger.debug("#{__MODULE__} change #{a}")
+    for {name, contract, owner, side, price} <- addresses do
+      Logger.debug("#{__MODULE__} change #{contract}")
 
-      id =
-        Absinthe.Relay.Node.to_global_id(:fin_book, a, RujiraWeb.Schema)
-
+      id = Absinthe.Relay.Node.to_global_id(:fin_book, contract, RujiraWeb.Schema)
       Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
 
-      if not is_nil(side) and not is_nil(price) do
-        prefix =
-          Absinthe.Relay.Node.to_global_id(
-            :fin_order,
-            "#{a}/#{side}/#{String.replace(price, ":", "/")}",
-            RujiraWeb.Schema
+      case name do
+        "trade" ->
+          Absinthe.Subscription.publish(
+            RujiraWeb.Endpoint,
+            %{side: side, price: price},
+            fin_order_filled: "#{contract}/#{side}/#{price}"
           )
 
-        Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{prefix: prefix}, fin_order: prefix)
+        _ ->
+          Absinthe.Subscription.publish(
+            RujiraWeb.Endpoint,
+            %{side: side, price: price},
+            fin_order_updated: "#{contract}/#{owner}"
+          )
       end
     end
   end
@@ -55,13 +59,14 @@ defmodule Rujira.Fin.Listener do
   defp scan_events(attributes, collection \\ [])
 
   defp scan_events(
-         [%{"type" => "wasm-rujira-fin/" <> _} = event | rest],
+         [%{"type" => "wasm-rujira-fin/" <> name} = event | rest],
          collection
        ) do
     address = Map.get(event, "_contract_address")
     side = Map.get(event, "side")
     price = Map.get(event, "price")
-    scan_events(rest, [{address, side, price} | collection])
+    owner = Map.get(event, "owner")
+    scan_events(rest, [{name, address, owner, side, price} | collection])
   end
 
   defp scan_events([_ | rest], collection), do: scan_events(rest, collection)

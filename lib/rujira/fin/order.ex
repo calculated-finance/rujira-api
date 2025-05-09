@@ -69,7 +69,10 @@ defmodule Rujira.Fin.Order do
 
   def from_id(id) do
     [pair_address, side, price_type, price, owner] = String.split(id, "/")
+    load(pair_address, side, price_type, price, owner)
+  end
 
+  def load(pair_address, side, price_type, price, owner) do
     with {:ok, order} <-
            Rujira.Contracts.query_state_smart(
              pair_address,

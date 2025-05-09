@@ -114,16 +114,7 @@ defmodule RujiraWeb.Schema do
       end)
     end
 
-    field :fin_order, :fin_order do
-      arg(:prefix, non_null(:string))
-      arg(:owner, non_null(:address))
-
-      config(fn %{prefix: prefix}, _ ->
-        {:ok, topic: prefix}
-      end)
-
-      resolve(&RujiraWeb.Resolvers.Fin.order/2)
-    end
+    import_fields(:fin_subscriptions)
   end
 
   object :node_edge do

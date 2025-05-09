@@ -62,10 +62,11 @@ defmodule RujiraWeb.Resolvers.Fin do
     {:ok, %{address: address, orders: nil, history: nil}}
   end
 
-  def order(%{owner: owner, prefix: prefix}, _) do
-    with {:ok, %{id: id}} <- Absinthe.Relay.Node.from_global_id(prefix, RujiraWeb.Schema) do
-      Order.from_id("#{id}/#{owner}")
-    end
+  def order(order, args, _) do
+    # For `trade` events, the owner comes from args, otherwise it's in order
+    %{side: side, price: price, owner: owner, contract: contract} = Map.merge(order, args)
+    [price_type, price] = String.split(price, ":")
+    Order.load(contract, side, price_type, price, owner)
   end
 
   def orders(%{address: address}, _, _) do
