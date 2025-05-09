@@ -54,8 +54,11 @@ defmodule Rujira.Prices do
   end
 
   def secure_asset_price(id) do
-    with {:ok, %{asset_tor_price: price}} <- Thorchain.pool_from_id(id) do
-      {:ok, %{price: normalize(price), change: 0}}
+    with {:ok, %{asset_tor_price: price}} <- Thorchain.pool_from_id(id),
+         {price, _} <- Integer.parse(price) do
+      price = Decimal.new(price) |> Decimal.div(Decimal.new(10 ** 8))
+
+      {:ok, %{price: price, change: 0}}
     end
   end
 end

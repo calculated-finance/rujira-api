@@ -84,12 +84,17 @@ defmodule Rujira.Leagues.Collectors.Contract do
 
   defp scan_events([], _sender, _contract, acc), do: acc
 
-  defp league_event(sender, amount_str, module, acc) do
+  def league_event(sender, amount_str, module, acc) do
     with [amt, asset] <- String.split(amount_str, ~r/(?<=\d)(?=[A-Za-z])/),
          {amount, _} <- Integer.parse(amt),
          {:ok, %{price: price}} <- Prices.get(asset),
          {:ok, category} <- module_category(module) do
-      revenue = Prices.normalize(amount * price, 20)
+      revenue =
+        amount
+        |> Decimal.mult(price)
+        |> Decimal.round(0)
+        |> Decimal.to_integer()
+
       [%{address: sender, revenue: revenue, category: category} | acc]
     end
   end
