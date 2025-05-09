@@ -116,20 +116,15 @@ defmodule Thorchain.Swaps.Indexer do
   defp get_affiliate_data(memo, price, volume_usd) do
     case Thorchain.get_affiliate(memo) do
       {:ok, {aff, bps}} ->
-        case Integer.parse(bps) do
-          {bps_value, ""} ->
-            affiliate_fee = Float.round(volume_usd * bps_value / 10_000) |> trunc()
+        affiliate_fee =
+          Decimal.new(volume_usd) |> Decimal.mult(bps) |> Decimal.round() |> Decimal.to_integer()
 
-            %{
-              affiliate: aff,
-              affiliate_bps: bps_value,
-              affiliate_fee_in_rune: Prices.normalize(affiliate_fee / price, 4),
-              affiliate_fee_in_usd: affiliate_fee
-            }
-
-          :error ->
-            %{}
-        end
+        %{
+          affiliate: aff,
+          affiliate_bps: bps,
+          affiliate_fee_in_rune: Prices.normalize(affiliate_fee / price, 4),
+          affiliate_fee_in_usd: affiliate_fee
+        }
 
       {:error, :no_affiliate} ->
         %{}

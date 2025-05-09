@@ -67,27 +67,26 @@ defmodule Rujira.Leagues.Collectors.Swap do
 
   defp insert_event(collection, emit_asset, from, coin, memo, id) do
     with {:ok, {"rj", bps}} <- Thorchain.get_affiliate(memo),
-         [coin_amt_str, coin_asset] <- String.split(coin, " ", parts: 2),
-         [emit_amt_str, emit_asset_asset] <- String.split(emit_asset, " ", parts: 2),
-         {:ok, %{price: price, change: _}} <- Prices.get("RUNE"),
-         {bps, ""} <- Integer.parse(bps) do
-      volume_usd =
-        cond do
-          String.contains?(coin_asset, "THOR.RUNE") ->
-            Prices.normalize(String.to_integer(coin_amt_str) * price, 20)
+         [coin_amt, coin_asset] <- String.split(coin, " ", parts: 2),
+         {coin_amt, ""} <- Integer.parse(coin_amt),
+         [emit_amt, emit_asset] <- String.split(emit_asset, " ", parts: 2),
+         {emit_amt, ""} <- Integer.parse(emit_amt),
+         {:ok, %{price: price, change: _}} <- Prices.get("RUNE") do
+      affiliate_fee =
+        swap_size_rune({coin_asset, coin_amt}, {emit_asset, emit_amt})
+        |> Decimal.mult(price)
+        |> Decimal.mult(bps)
+        |> Decimal.round(0)
+        |> Decimal.to_integer()
 
-          String.contains?(emit_asset_asset, "THOR.RUNE") ->
-            Prices.normalize(String.to_integer(emit_amt_str) * price, 20)
-
-          true ->
-            0
-        end
-
-      affiliate_fee = (volume_usd * bps / 10_000) |> Float.round() |> trunc()
       event = %{address: from, revenue: affiliate_fee, txhash: id, category: :swap}
       [event | collection]
     else
       _ -> collection
     end
   end
+
+  defp swap_size_rune({"THOR.RUNE", in_amount}, _), do: in_amount
+  defp swap_size_rune(_, {"THOR.RUNE", out_amount}), do: out_amount
+  defp swap_size_rune(_, _), do: 0
 end

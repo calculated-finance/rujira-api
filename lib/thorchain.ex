@@ -181,7 +181,9 @@ defmodule Thorchain do
       affiliate_id = Enum.at(parts, 4) |> String.split("/") |> Enum.at(0)
       affiliate_bp = Enum.at(parts, 5) |> String.split("/") |> Enum.at(0)
 
-      {:ok, {affiliate_id, affiliate_bp}}
+      with {:ok, bps} <- Decimal.cast(affiliate_bp) do
+        {:ok, {affiliate_id, Decimal.div(bps, Decimal.new(10_000))}}
+      end
     else
       {:error, :no_affiliate}
     end
