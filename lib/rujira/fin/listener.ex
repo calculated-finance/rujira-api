@@ -35,9 +35,6 @@ defmodule Rujira.Fin.Listener do
     for {name, contract, owner, side, price} <- addresses do
       Logger.debug("#{__MODULE__} change #{contract}")
 
-      id = Absinthe.Relay.Node.to_global_id(:fin_book, contract, RujiraWeb.Schema)
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
-
       case name do
         "trade" ->
           Absinthe.Subscription.publish(
@@ -53,6 +50,11 @@ defmodule Rujira.Fin.Listener do
             fin_order_updated: "#{contract}/#{owner}"
           )
       end
+    end
+
+    for address <- addresses |> Enum.map(&elem(&1, 0)) |> Enum.uniq() do
+      id = Absinthe.Relay.Node.to_global_id(:fin_book, address, RujiraWeb.Schema)
+      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
     end
   end
 
