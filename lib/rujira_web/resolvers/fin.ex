@@ -62,42 +62,29 @@ defmodule RujiraWeb.Resolvers.Fin do
     {:ok, %{address: address, orders: nil, history: nil}}
   end
 
-  def order(order, args, _) do
+  def order_edge(order, args, _) do
     # For `trade` events, the owner comes from args, otherwise it's in order
     %{side: side, price: price, owner: owner, contract: contract} = Map.merge(order, args)
-    Order.load(contract, side, price, owner)
+
+    with {:ok, order} <- Order.load(contract, side, price, owner) do
+      {:ok, %{cursor: order.id, node: order}}
+    end
   end
 
-  def orders(%{address: address}, _, _) do
+  @spec orders(%{:address => any(), optional(any()) => any()}, any(), any()) ::
+          {:middleware, Absinthe.Middleware.Async, {any(), any()}}
+  def orders(%{address: address}, args, _) do
     Helpers.async(fn ->
       with {:ok, orders} <- Fin.list_all_orders(address) do
-        {:ok,
-         %{
-           page_info: %{
-             start_cursor: <<>>,
-             end_cursor: <<>>,
-             has_previous_page: false,
-             has_next_page: false
-           },
-           edges: Enum.map(orders, &%{cursor: <<>>, node: &1})
-         }}
+        Relay.Connection.from_list(orders, args)
       end
     end)
   end
 
-  def history(%{address: address}, _, _) do
+  def history(%{address: address}, args, _) do
     Helpers.async(fn ->
       with {:ok, history} <- Fin.list_account_history(address) do
-        {:ok,
-         %{
-           page_info: %{
-             start_cursor: <<>>,
-             end_cursor: <<>>,
-             has_previous_page: false,
-             has_next_page: false
-           },
-           edges: Enum.map(history, &%{cursor: <<>>, node: &1})
-         }}
+        Relay.Connection.from_list(history, args)
       end
     end)
   end

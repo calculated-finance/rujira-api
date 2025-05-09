@@ -196,7 +196,7 @@ defmodule RujiraWeb.Schema.FinTypes do
     Triggered any time an order is created, increased or decreased.
     One subscription for all orders for a given contract & owner.
     """
-    field :fin_order_updated, non_null(:fin_order) do
+    field :fin_order_updated, :node_edge do
       arg(:contract, non_null(:address))
       arg(:owner, non_null(:address))
 
@@ -204,14 +204,14 @@ defmodule RujiraWeb.Schema.FinTypes do
         {:ok, topic: "#{contract}/#{owner}"}
       end)
 
-      resolve(&RujiraWeb.Resolvers.Fin.order/3)
+      resolve(&RujiraWeb.Resolvers.Fin.order_edge/3)
     end
 
     @desc """
     Triggered when a order is filled.
     One subscription per order.
     """
-    field :fin_order_filled, non_null(:fin_order) do
+    field :fin_order_filled, :node_edge do
       arg(:contract, non_null(:address))
       arg(:side, non_null(:string))
       arg(:price, non_null(:string))
@@ -221,7 +221,7 @@ defmodule RujiraWeb.Schema.FinTypes do
         {:ok, topic: "#{contract}/#{side}/#{price}"}
       end)
 
-      resolve(&RujiraWeb.Resolvers.Fin.order/3)
+      resolve(&RujiraWeb.Resolvers.Fin.order_edge/3)
     end
   end
 end
