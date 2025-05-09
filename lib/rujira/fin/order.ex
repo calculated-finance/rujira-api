@@ -39,7 +39,7 @@ defmodule Rujira.Fin.Order do
         "remaining" => remaining,
         "filled" => filled
       }) do
-    with {type, deviation, price} <- parse_price(price),
+    with {type, deviation, price_id} <- parse_price(price),
          {rate, ""} <- Decimal.parse(rate),
          {updated_at, ""} <- Integer.parse(updated_at),
          {:ok, updated_at} <- DateTime.from_unix(updated_at, :nanosecond),
@@ -47,7 +47,7 @@ defmodule Rujira.Fin.Order do
          {remaining, ""} <- Integer.parse(remaining),
          {filled, ""} <- Integer.parse(filled) do
       %__MODULE__{
-        id: "#{pair_address}/#{side}/#{price}/#{owner}",
+        id: "#{pair_address}/#{side}/#{price_id}/#{owner}",
         pair: pair_address,
         owner: owner,
         side: String.to_atom(side),
@@ -62,27 +62,46 @@ defmodule Rujira.Fin.Order do
     end
   end
 
-  def parse_price(%{"fixed" => v}), do: {:fixed, nil, "fixed/#{v}"}
-  def parse_price(%{"oracle" => deviation}), do: {:oracle, deviation, "oracle/#{deviation}"}
-  def encode_price("fixed", v), do: %{fixed: v}
-  def encode_price("oracle", v), do: %{oracle: v}
+  def parse_price(%{"fixed" => v}), do: {:fixed, nil, "fixed:#{v}"}
+  def parse_price(%{"oracle" => v}), do: {:oracle, v, "oracle:#{v}"}
+  def decode_price("fixed:" <> v), do: %{fixed: v}
+  def decode_price("oracle:" <> v), do: %{oracle: v}
+  def encode_price(%{fixed: v}), do: "fixed:#{v}"
+  def encode_price(%{oracle: v}), do: "oracle:#{v}"
 
   def from_id(id) do
-    [pair_address, side, price_type, price, owner] = String.split(id, "/")
-    load(pair_address, side, price_type, price, owner)
+    [pair_address, side, price, owner] = String.split(id, "/")
+    load(pair_address, side, price, owner)
   end
 
-  def load(pair_address, side, price_type, price, owner) do
+  def load(pair_address, side, price, owner) do
     with {:ok, order} <-
            Rujira.Contracts.query_state_smart(
              pair_address,
-             %{
-               order: [owner, side, encode_price(price_type, price)]
-             }
+             %{order: [owner, side, decode_price(price)]}
            ) do
       {:ok, from_query(pair_address, order)}
     else
-      _ -> {:ok, nil}
+      {:error, %GRPC.RPCError{status: 2, message: "NotFound: query wasm contract failed"}} ->
+        [type | _] = String.split(price, ":")
+
+        {:ok,
+         %__MODULE__{
+           id: "#{pair_address}/#{side}/#{price}/#{owner}",
+           pair: pair_address,
+           owner: owner,
+           side: String.to_existing_atom(side),
+           rate: 0,
+           updated_at: DateTime.utc_now(),
+           offer: 0,
+           remaining: 0,
+           filled: 0,
+           type: type,
+           deviation: nil
+         }}
+
+      err ->
+        err
     end
   end
 end

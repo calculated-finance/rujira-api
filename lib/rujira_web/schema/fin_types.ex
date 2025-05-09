@@ -196,7 +196,7 @@ defmodule RujiraWeb.Schema.FinTypes do
     Triggered any time an order is created, increased or decreased.
     One subscription for all orders for a given contract & owner.
     """
-    field :fin_order_updated, :fin_order do
+    field :fin_order_updated, non_null(:fin_order) do
       arg(:contract, non_null(:address))
       arg(:owner, non_null(:address))
 
