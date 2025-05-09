@@ -50,28 +50,25 @@ defmodule Thorchain.Node.Grpc do
   end
 
   def handle_call({:request, stub_fn, req}, _, %GRPC.Channel{host: host} = channel) do
-    struct_name =
-      case req do
-        %_{} -> req |> Map.get(:__struct__)
-        _ -> "UnknownRequest"
+    case req do
+      %_{} -> req |> Map.get(:__struct__)
+      _ -> "UnknownRequest"
+    end
+    |> String.replace_prefix("Elixir.", "")
+    |> Appsignal.instrument(fn span ->
+      params = req |> Map.from_struct() |> Map.drop([:__unknown_fields__])
+      Appsignal.Span.set_namespace(span, "grpc")
+
+      Appsignal.Span.set_sample_data(span, "params", %{
+        params: params,
+        endpoint: host
+      })
+
+      case stub_fn.(channel, req) do
+        {:ok, res} -> {:ok, res}
+        {:error, error} -> {:error, error}
       end
-
-    Appsignal.instrument(
-      "grpc.#{struct_name}",
-      fn span ->
-        params = req |> Map.from_struct() |> Map.drop([:__unknown_fields__])
-
-        Appsignal.Span.set_sample_data(span, "params", %{
-          params: params,
-          endpoint: host
-        })
-
-        case stub_fn.(channel, req) do
-          {:ok, res} -> {:ok, res}
-          {:error, error} -> {:error, error}
-        end
-      end
-    )
+    end)
     |> case do
       {:ok, res} -> {:reply, {:ok, res}, channel}
       {:error, error} -> {:reply, {:error, error}, channel}
