@@ -57,11 +57,9 @@ defmodule Rujira.Bank.Supply do
       ) do
     events =
       txs
-      |> Enum.flat_map(fn x ->
-        case x["result"]["events"] do
-          nil -> []
-          xs when is_list(xs) -> xs
-        end
+      |> Enum.flat_map(fn
+        %{result: %{events: xs}} when is_list(xs) -> xs
+        _ -> []
       end)
       |> Enum.concat(begin_block_events)
       |> Enum.concat(end_block_events)
@@ -76,7 +74,7 @@ defmodule Rujira.Bank.Supply do
 
   defp handle_events(events) do
     events
-    |> scan_events()
+    |> Enum.flat_map(&scan_event/1)
     |> Enum.uniq()
     |> Enum.reduce(%{}, fn denom, acc ->
       case Thorchain.Node.stub(
@@ -94,26 +92,28 @@ defmodule Rujira.Bank.Supply do
     end)
   end
 
-  defp scan_events(attributes, collection \\ [])
+  def scan_event(%{attributes: attributes, type: "coinbase"}) do
+    scan_attributes(attributes)
+  end
 
-  defp scan_events(
-         [%{"type" => "coinbase"} = event | rest],
+  def scan_event(%{attributes: attributes, type: "burn"}) do
+    scan_attributes(attributes)
+  end
+
+  def scan_event(_), do: []
+
+  defp scan_attributes(attributes, collection \\ [])
+
+  defp scan_attributes(
+         [
+           %{value: amount, key: "amount"}
+           | rest
+         ],
          collection
        ) do
-    scan_events(rest, [parse_token(event) | collection])
+    scan_attributes(rest, [String.replace(amount, ~r/[0-9]+/, "") | collection])
   end
 
-  defp scan_events(
-         [%{"type" => "burn"} = event | rest],
-         collection
-       ) do
-    scan_events(rest, [parse_token(event) | collection])
-  end
-
-  defp scan_events([_ | rest], collection), do: scan_events(rest, collection)
-  defp scan_events([], collection), do: collection
-
-  defp parse_token(%{"amount" => amount}) do
-    String.replace(amount, ~r/[0-9]+/, "")
-  end
+  defp scan_attributes([_ | rest], collection), do: scan_attributes(rest, collection)
+  defp scan_attributes([], collection), do: collection
 end
