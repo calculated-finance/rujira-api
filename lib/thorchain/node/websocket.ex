@@ -7,10 +7,9 @@ defmodule Thorchain.Node.Websocket do
   def start_link(config) do
     endpoint = config[:websocket]
     pubsub = Keyword.get(config, :pubsub)
-    api = Keyword.get(config, :api)
     Logger.info("#{__MODULE__} Starting node websocket: #{endpoint}")
 
-    case WebSockex.start_link("#{endpoint}/websocket", __MODULE__, %{pubsub: pubsub, api: api}) do
+    case WebSockex.start_link("#{endpoint}/websocket", __MODULE__, %{pubsub: pubsub}) do
       {:ok, pid} ->
         for {s, idx} <- Enum.with_index(@subscriptions), do: subscribe(pid, idx, s)
         {:ok, pid}
@@ -36,7 +35,6 @@ defmodule Thorchain.Node.Websocket do
       {:ok, %{id: id, result: %{data: %{type: t, value: v}}}} ->
         Logger.debug("#{__MODULE__} Subscription #{id} event #{t}")
         pubsub = state[:pubsub]
-        api = state[:api]
 
         height =
           v
@@ -44,20 +42,8 @@ defmodule Thorchain.Node.Websocket do
           |> Map.get(:header)
           |> Map.get(:height)
 
-        # TODO move to GRPC once the parsing is alligned with the API
-        client =
-          Tesla.client([
-            {Tesla.Middleware.BaseUrl, api},
-            Tesla.Middleware.JSON,
-            {Tesla.Middleware.Headers, [{"Content-Type", "application/json"}]}
-          ])
-
-        case Tesla.get(client, "/thorchain/block", query: [height: height]) do
-          {:ok, response} ->
-            Phoenix.PubSub.broadcast(pubsub, t, Rujira.convert_map(response.body))
-
-          {:error, reason} ->
-            Logger.error("#{__MODULE__} Error fetching block data: #{reason}")
+        with {:ok, block} <- Thorchain.block(height) do
+          Phoenix.PubSub.broadcast(pubsub, t, block)
         end
 
         {:ok, state}
