@@ -19,15 +19,13 @@ defmodule Rujira.Balances.Listener do
       ) do
     addresses =
       txs
-      |> Enum.flat_map(fn x ->
-        case x["result"]["events"] do
-          nil -> []
-          xs when is_list(xs) -> xs
-        end
+      |> Enum.flat_map(fn
+        %{result: %{events: xs}} when is_list(xs) -> xs
+        _ -> []
       end)
       |> Enum.concat(begin_block_events)
       |> Enum.concat(end_block_events)
-      |> scan_attributes()
+      |> Enum.flat_map(&scan_event/1)
       |> Enum.uniq()
 
     for a <- addresses do
@@ -42,15 +40,18 @@ defmodule Rujira.Balances.Listener do
     {:noreply, state}
   end
 
+  defp scan_event(%{attributes: attributes, type: "transfer"}) do
+    scan_attributes(attributes)
+  end
+
+  defp scan_event(_), do: []
+
   defp scan_attributes(attributes, collection \\ [])
 
   defp scan_attributes(
          [
-           %{
-             "type" => "transfer",
-             "recipient" => recipient,
-             "sender" => sender
-           }
+           %{value: recipient, key: "recipient"},
+           %{value: sender, key: "sender"}
            | rest
          ],
          collection
