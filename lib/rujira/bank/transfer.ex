@@ -35,47 +35,44 @@ defmodule Rujira.Bank.Transfer do
         },
         state
       ) do
-    events =
-      txs
-      |> Enum.flat_map(fn x ->
-        case x["result"]["events"] do
-          nil -> []
-          xs when is_list(xs) -> xs
-        end
-      end)
-
-    {:ok, timestamp, _} = DateTime.from_iso8601(timestamp)
-
     transfers =
-      begin_block_events
-      |> Enum.concat(events)
+      txs
+      |> Enum.flat_map(fn
+        %{result: %{events: xs}} when is_list(xs) -> xs
+        _ -> []
+      end)
+      |> Enum.concat(begin_block_events)
       |> Enum.concat(end_block_events)
+      |> Enum.flat_map(&scan_event/1)
       |> Enum.with_index()
-      |> scan_events()
-      |> Enum.map(
-        &Map.merge(&1, %{
+      |> Enum.map(fn {transfer, idx} ->
+        Map.merge(transfer, %{
+          event_idx: idx,
           timestamp: timestamp,
           height: height,
           updated_at: DateTime.utc_now(),
           inserted_at: DateTime.utc_now()
         })
-      )
+      end)
 
     Rujira.Repo.insert_all(__MODULE__, transfers, on_conflict: :nothing)
 
     {:noreply, state}
   end
 
-  defp scan_events(attributes, collection \\ [])
+  def scan_event(%{attributes: attributes, type: "transfer"}) do
+    scan_attributes(attributes)
+  end
 
-  defp scan_events(
+  def scan_event(_), do: []
+
+  defp scan_attributes(attributes, collection \\ [])
+
+  defp scan_attributes(
          [
-           {%{
-              "amount" => amount,
-              "recipient" => recipient,
-              "sender" => sender,
-              "type" => "transfer"
-            }, idx}
+           %{key: "recipient", value: recipient},
+           %{key: "sender", value: sender},
+           %{key: "amount", value: amount}
            | rest
          ],
          collection
@@ -83,13 +80,13 @@ defmodule Rujira.Bank.Transfer do
     entries =
       amount
       |> parse_tokens()
-      |> Enum.map(&Map.merge(&1, %{event_idx: idx, recipient: recipient, sender: sender}))
+      |> Enum.map(&Map.merge(&1, %{recipient: recipient, sender: sender}))
 
-    scan_events(rest, collection ++ entries)
+    scan_attributes(rest, collection ++ entries)
   end
 
-  defp scan_events([_ | rest], collection), do: scan_events(rest, collection)
-  defp scan_events([], collection), do: collection
+  defp scan_attributes([_ | rest], collection), do: scan_attributes(rest, collection)
+  defp scan_attributes([], collection), do: collection
 
   defp parse_tokens(input) do
     input
