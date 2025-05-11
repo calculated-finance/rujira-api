@@ -21,13 +21,11 @@ defmodule Rujira.Fin.Listener do
   defp scan_txs(txs) do
     addresses =
       txs
-      |> Enum.flat_map(fn x ->
-        case x["result"]["events"] do
-          nil -> []
-          xs when is_list(xs) -> xs
-        end
+      |> Enum.flat_map(fn
+        %{result: %{events: xs}} when is_list(xs) ->xs
+        _ -> []
       end)
-      |> scan_events()
+      |> Enum.flat_map(&scan_event/1)
       |> Enum.uniq()
       # Trades are withdrawn before retraction. Ensure we're not re-publishing an order that doens't exist
       |> Enum.reverse()
@@ -58,19 +56,22 @@ defmodule Rujira.Fin.Listener do
     end
   end
 
-  defp scan_events(attributes, collection \\ [])
-
-  defp scan_events(
-         [%{"type" => "wasm-rujira-fin/" <> name} = event | rest],
-         collection
-       ) do
-    address = Map.get(event, "_contract_address")
-    side = Map.get(event, "side")
-    price = Map.get(event, "price")
-    owner = Map.get(event, "owner")
-    scan_events(rest, [{name, address, owner, side, price} | collection])
+  def scan_event(%{attributes: attributes, type: "wasm-rujira-fin/" <> name}) do
+    scan_attributes(attributes, name)
   end
 
-  defp scan_events([_ | rest], collection), do: scan_events(rest, collection)
-  defp scan_events([], collection), do: collection
+  def scan_event(_), do: []
+
+  defp scan_attributes(
+         attributes,
+         name
+       ) do
+    map = Map.new(attributes, fn %{key: k, value: v} -> {k, v} end)
+    address = Map.get(map, "_contract_address")
+    side = Map.get(map, "side")
+    price = Map.get(map, "price")
+    owner = Map.get(map, "owner")
+    [{name, address, owner, side, price}]
+  end
+
 end
