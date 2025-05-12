@@ -52,7 +52,7 @@ defmodule Rujira.Fin.Listener do
       end
     end
 
-    for address <- addresses |> Enum.map(&elem(&1, 0)) |> Enum.uniq() do
+    for address <- addresses |> Enum.map(&elem(&1, 1)) |> Enum.uniq() do
       id = Absinthe.Relay.Node.to_global_id(:fin_book, address, RujiraWeb.Schema)
       Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
     end
