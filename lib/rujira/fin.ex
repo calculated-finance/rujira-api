@@ -33,7 +33,7 @@ defmodule Rujira.Fin do
   Rujira's 100% on-chain, central limit order book style decentralized token exchange.
   """
 
-  @pair_code_ids Application.compile_env(:rujira, __MODULE__, pair_code_ids: [58, 97])
+  @pair_code_ids Application.compile_env(:rujira, __MODULE__, pair_code_ids: [115])
                  |> Keyword.get(:pair_code_ids)
 
   @doc """

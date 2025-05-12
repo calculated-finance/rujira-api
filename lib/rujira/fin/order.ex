@@ -9,7 +9,9 @@ defmodule Rujira.Fin.Order do
     :rate,
     :updated_at,
     :offer,
+    :offer_value,
     :remaining,
+    :remaining_value,
     :filled
   ]
 
@@ -23,7 +25,9 @@ defmodule Rujira.Fin.Order do
           rate: Decimal.t(),
           updated_at: DateTime.t(),
           offer: integer(),
+          offer_value: integer(),
           remaining: integer(),
+          remaining_value: integer(),
           filled: integer(),
           type: type_order,
           deviation: deviation
@@ -46,15 +50,19 @@ defmodule Rujira.Fin.Order do
          {offer, ""} <- Integer.parse(offer),
          {remaining, ""} <- Integer.parse(remaining),
          {filled, ""} <- Integer.parse(filled) do
+      side = String.to_existing_atom(side)
+
       %__MODULE__{
         id: "#{pair_address}/#{side}/#{price_id}/#{owner}",
         pair: pair_address,
         owner: owner,
-        side: String.to_atom(side),
+        side: side,
         rate: rate,
         updated_at: updated_at,
         offer: offer,
+        offer_value: value(offer, rate, side),
         remaining: remaining,
+        remaining_value: value(remaining, rate, side),
         filled: filled,
         type: type,
         deviation: deviation
@@ -103,5 +111,21 @@ defmodule Rujira.Fin.Order do
       err ->
         err
     end
+  end
+
+  defp value(amount, rate, :base) do
+    amount
+    |> Decimal.new()
+    |> Decimal.mult(rate)
+    |> Decimal.round(0, :floor)
+    |> Decimal.to_integer()
+  end
+
+  defp value(amount, rate, :quote) do
+    amount
+    |> Decimal.new()
+    |> Decimal.div(rate)
+    |> Decimal.round(0, :floor)
+    |> Decimal.to_integer()
   end
 end
