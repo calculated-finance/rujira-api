@@ -97,6 +97,7 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :deviation, :bigint
     field :offer_value, non_null(:bigint)
     field :remaining_value, non_null(:bigint)
+    field :filled_fee, non_null(:bigint)
   end
 
   @desc "Single trade executed by on a fin pair"

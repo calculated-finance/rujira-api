@@ -12,7 +12,8 @@ defmodule Rujira.Fin.Order do
     :offer_value,
     :remaining,
     :remaining_value,
-    :filled
+    :filled,
+    :filled_fee
   ]
 
   @type side :: :base | :quote
@@ -29,11 +30,12 @@ defmodule Rujira.Fin.Order do
           remaining: integer(),
           remaining_value: integer(),
           filled: integer(),
+          filled_fee: integer(),
           type: type_order,
           deviation: deviation
         }
 
-  def from_query(pair_address, %{
+  def from_query(%{address: address, fee_taker: fee_taker}, %{
         "owner" => owner,
         "side" => side,
         "price" => price,
@@ -52,9 +54,16 @@ defmodule Rujira.Fin.Order do
          {filled, ""} <- Integer.parse(filled) do
       side = String.to_existing_atom(side)
 
+      filled_fee =
+        filled
+        |> Decimal.new()
+        |> Decimal.mult(fee_taker)
+        |> Decimal.round(0, :floor)
+        |> Decimal.to_integer()
+
       %__MODULE__{
-        id: "#{pair_address}/#{side}/#{price_id}/#{owner}",
-        pair: pair_address,
+        id: "#{address}/#{side}/#{price_id}/#{owner}",
+        pair: address,
         owner: owner,
         side: side,
         rate: rate,
@@ -64,6 +73,7 @@ defmodule Rujira.Fin.Order do
         remaining: remaining,
         remaining_value: value(remaining, rate, side),
         filled: filled,
+        filled_fee: filled_fee,
         type: type,
         deviation: deviation
       }
