@@ -87,7 +87,7 @@ defmodule Rujira.Fin.Order do
   def encode_price(%{fixed: v}), do: "fixed:#{v}"
   def encode_price(%{oracle: v}), do: "oracle:#{v}"
 
-  def load(%{address: pair}, side, price, owner) do
+  def load(%{address: address} = pair, side, price, owner) do
     with {:ok, order} <-
            Rujira.Contracts.query_state_smart(
              pair,
@@ -100,8 +100,8 @@ defmodule Rujira.Fin.Order do
 
         {:ok,
          %__MODULE__{
-           id: "#{pair}/#{side}/#{price}/#{owner}",
-           pair: pair,
+           id: "#{address}/#{side}/#{price}/#{owner}",
+           pair: address,
            owner: owner,
            side: String.to_existing_atom(side),
            rate: 0,
