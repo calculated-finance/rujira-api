@@ -63,7 +63,7 @@ defmodule RujiraWeb.Resolvers.Fin do
   end
 
   def order_edge(order, args, _) do
-    # For `trade` events, the owner comes from args, otherwise it's in order
+    # For `trade` events, the owner and contract comes from args, otherwise it's in order
     %{side: side, price: price, owner: owner, contract: contract} = Map.merge(order, args)
 
     with {:ok, order} <- Order.load(contract, side, price, owner) do

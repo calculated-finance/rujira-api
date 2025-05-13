@@ -206,11 +206,12 @@ defmodule RujiraWeb.Schema.FinTypes do
     One subscription for all orders for a given contract & owner.
     """
     field :fin_order_updated, :node_edge do
-      arg(:contract, non_null(:address))
+      arg(:contract, :address, deprecate: "contract is read from the observed event")
+
       arg(:owner, non_null(:address))
 
-      config(fn %{contract: contract, owner: owner}, _ ->
-        {:ok, topic: "#{contract}/#{owner}"}
+      config(fn %{owner: owner}, _ ->
+        {:ok, topic: owner}
       end)
 
       resolve(&RujiraWeb.Resolvers.Fin.order_edge/3)

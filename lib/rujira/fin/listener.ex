@@ -46,8 +46,8 @@ defmodule Rujira.Fin.Listener do
         _ ->
           Absinthe.Subscription.publish(
             RujiraWeb.Endpoint,
-            %{side: side, price: price},
-            fin_order_updated: "#{contract}/#{owner}"
+            %{side: side, price: price, contract: contract},
+            fin_order_updated: owner
           )
       end
     end
