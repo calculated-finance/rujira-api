@@ -87,11 +87,6 @@ defmodule Rujira.Fin.Order do
   def encode_price(%{fixed: v}), do: "fixed:#{v}"
   def encode_price(%{oracle: v}), do: "oracle:#{v}"
 
-  def from_id(id) do
-    [pair_address, side, price, owner] = String.split(id, "/")
-    load(pair_address, side, price, owner)
-  end
-
   def load(%{address: pair}, side, price, owner) do
     with {:ok, order} <-
            Rujira.Contracts.query_state_smart(

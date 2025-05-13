@@ -151,7 +151,13 @@ defmodule Rujira.Fin do
   end
 
   def order_from_id(id) do
-    Order.from_id(id)
+    with [pair_address, side, price, owner] <- String.split(id, "/"),
+         {:ok, pair} <- get_pair(pair_address) do
+      Order.load(pair, side, price, owner)
+    else
+      {:error, err} -> {:error, err}
+      _ -> {:error, :invalid_id}
+    end
   end
 
   def summary_from_id(id) do
