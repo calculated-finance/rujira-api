@@ -90,7 +90,7 @@ defmodule Rujira.Fin.Order do
   def load(%{address: address} = pair, side, price, owner) do
     with {:ok, order} <-
            Rujira.Contracts.query_state_smart(
-             pair,
+             address,
              %{order: [owner, side, decode_price(price)]}
            ) do
       {:ok, from_query(pair, order)}
