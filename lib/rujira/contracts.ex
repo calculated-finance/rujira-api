@@ -184,7 +184,7 @@ defmodule Rujira.Contracts do
 
   @spec query_state_smart(String.t(), map()) ::
           {:ok, map()} | {:error, GRPC.RPCError.t()}
-  defmemo query_state_smart(address, query) do
+  def query_state_smart(address, query) do
     Memoize.Cache.get_or_run(
       {__MODULE__, :query_state_smart, [address]},
       fn ->
