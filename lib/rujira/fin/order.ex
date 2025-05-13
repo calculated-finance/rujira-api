@@ -92,7 +92,7 @@ defmodule Rujira.Fin.Order do
     load(pair_address, side, price, owner)
   end
 
-  def load(pair, side, price, owner) do
+  def load(%{address: pair}, side, price, owner) do
     with {:ok, order} <-
            Rujira.Contracts.query_state_smart(
              pair,
@@ -105,8 +105,8 @@ defmodule Rujira.Fin.Order do
 
         {:ok,
          %__MODULE__{
-           id: "#{pair.address}/#{side}/#{price}/#{owner}",
-           pair: pair.address,
+           id: "#{pair}/#{side}/#{price}/#{owner}",
+           pair: pair,
            owner: owner,
            side: String.to_existing_atom(side),
            rate: 0,
