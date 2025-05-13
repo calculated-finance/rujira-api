@@ -66,7 +66,8 @@ defmodule RujiraWeb.Resolvers.Fin do
     # For `trade` events, the owner and contract comes from args, otherwise it's in order
     %{side: side, price: price, owner: owner, contract: contract} = Map.merge(order, args)
 
-    with {:ok, order} <- Order.load(contract, side, price, owner) do
+    with {:ok, pair} <- Fin.get_pair(contract),
+         {:ok, order} <- Order.load(pair, side, price, owner) do
       {:ok, %{cursor: order.id, node: order}}
     end
   end
