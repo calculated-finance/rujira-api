@@ -92,21 +92,21 @@ defmodule Rujira.Fin.Order do
     load(pair_address, side, price, owner)
   end
 
-  def load(pair_address, side, price, owner) do
+  def load(pair, side, price, owner) do
     with {:ok, order} <-
            Rujira.Contracts.query_state_smart(
-             pair_address,
+             pair,
              %{order: [owner, side, decode_price(price)]}
            ) do
-      {:ok, from_query(pair_address, order)}
+      {:ok, from_query(pair, order)}
     else
       {:error, %GRPC.RPCError{status: 2, message: "NotFound: query wasm contract failed"}} ->
         [type | _] = String.split(price, ":")
 
         {:ok,
          %__MODULE__{
-           id: "#{pair_address}/#{side}/#{price}/#{owner}",
-           pair: pair_address,
+           id: "#{pair.address}/#{side}/#{price}/#{owner}",
+           pair: pair.address,
            owner: owner,
            side: String.to_existing_atom(side),
            rate: 0,
