@@ -186,7 +186,7 @@ defmodule Rujira.Contracts do
           {:ok, map()} | {:error, GRPC.RPCError.t()}
   def query_state_smart(address, query) do
     Memoize.Cache.get_or_run(
-      {__MODULE__, :query_state_smart, [address]},
+      {__MODULE__, :query_state_smart, [address, query]},
       fn ->
         with {:ok, %{data: data}} <-
                Thorchain.Node.stub(

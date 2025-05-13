@@ -54,7 +54,7 @@ defmodule Rujira.Invalidator do
          collection
        ) do
     scan_attributes(rest, [
-      {Rujira.Contracts, :query_state_smart, [contract_address]} | collection
+      {Rujira.Contracts, :query_state_smart, [contract_address, :_]} | collection
     ])
   end
 
