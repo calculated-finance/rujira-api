@@ -39,7 +39,23 @@ defmodule Rujira.Invalidator do
          ],
          collection
        ) do
-    scan_attributes(rest, [{Rujira.Contract, :codes} | collection])
+    scan_attributes(rest, [{Rujira.Contracts, :codes} | collection])
+  end
+
+  defp scan_attributes(
+         [
+           %{
+             "_contract_address" => contract_address,
+             "msg_index" => _,
+             "type" => "execute"
+           }
+           | rest
+         ],
+         collection
+       ) do
+    scan_attributes(rest, [
+      {Rujira.Contracts, :query_state_smart, [contract_address]} | collection
+    ])
   end
 
   defp scan_attributes(
@@ -50,7 +66,7 @@ defmodule Rujira.Invalidator do
          collection
        ) do
     code_id = Map.get(event, "code_id")
-    scan_attributes(rest, [{Rujira.Contract, :by_code, [code_id]} | collection])
+    scan_attributes(rest, [{Rujira.Contracts, :by_code, [code_id]} | collection])
   end
 
   defp scan_attributes([_ | rest], collection), do: scan_attributes(rest, collection)
