@@ -120,7 +120,7 @@ defmodule Rujira.Leagues do
       rank: fragment("DENSE_RANK() OVER (ORDER BY ? DESC)", r.points)
     })
     |> subquery()
-    |> order_by(desc: :rank)
+    |> order_by(asc: :rank)
   end
 
   def leaderboard(league, season) do
