@@ -2,18 +2,20 @@ defmodule Rujira.Chains.Gaia.Websocket do
   use WebSockex
   require Logger
 
-  def start_link(_opts \\ []) do
-    config = Application.get_env(:rujira, __MODULE__)
-    pubsub = Application.get_env(:rujira, :pubsub, Rujira.PubSub)
-    Logger.info("#{__MODULE__} Starting gaia websocket: #{config[:websocket]}")
+  @ws "wss://gaia-rpc.bryanlabs.net"
+  @subscription "tm.event='NewBlock'"
 
-    case WebSockex.start_link("#{config[:websocket]}/websocket", __MODULE__, %{pubsub: pubsub}) do
+  def start_link(_opts \\ []) do
+    pubsub = Application.get_env(:rujira, :pubsub, Rujira.PubSub)
+    Logger.info("#{__MODULE__} Starting gaia websocket: #{@ws}")
+
+    case WebSockex.start_link("#{@ws}/websocket", __MODULE__, %{pubsub: pubsub}) do
       {:ok, pid} ->
-        for {s, idx} <- Enum.with_index(config[:subscriptions]), do: subscribe(pid, idx, s)
+        subscribe(pid, 0, @subscription)
         {:ok, pid}
 
       {:error, _} ->
-        Logger.error("#{__MODULE__} Error connecting to websocket #{config[:websocket]}")
+        Logger.error("#{__MODULE__} Error connecting to websocket #{@ws}")
         # Ignore for now
         :ignore
     end
