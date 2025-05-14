@@ -80,7 +80,7 @@ defmodule Rujira.Leagues do
       season: le.season,
       address: tx.address,
       points: fragment("CAST(COALESCE(?, 0) AS bigint)", sum(le.points)),
-      total_tx: count(tx.id)
+      total_tx: fragment("COUNT(DISTINCT ?)", tx.txhash)
     })
     |> Repo.one()
     |> then(&{:ok, &1})
@@ -90,14 +90,16 @@ defmodule Rujira.Leagues do
     Event
     |> join(:inner, [le], tx in assoc(le, :tx_event))
     |> where([le, tx], le.league == ^league and le.season == ^season and tx.address == ^address)
-    |> order_by([_le, tx], desc: tx.timestamp)
+    |> group_by([_le, tx], [tx.txhash, tx.category])
     |> select([le, tx], %{
       tx_hash: tx.txhash,
-      timestamp: tx.timestamp,
-      height: tx.height,
-      points: le.points,
+      timestamp: min(tx.timestamp),
+      height: min(tx.height),
+      points: sum(le.points),
       category: tx.category
     })
+    |> subquery()
+    |> order_by(desc: :timestamp)
   end
 
   def leaderboard_at_time(league, season, time) do
@@ -108,7 +110,7 @@ defmodule Rujira.Leagues do
     |> select([le, tx], %{
       address: tx.address,
       points: fragment("CAST(COALESCE(?, 0) AS bigint)", sum(le.points)),
-      total_tx: count(tx.id)
+      total_tx: fragment("COUNT(DISTINCT ?)", tx.txhash)
     })
     |> subquery()
     |> select([r], %{
@@ -118,7 +120,7 @@ defmodule Rujira.Leagues do
       rank: fragment("DENSE_RANK() OVER (ORDER BY ? DESC)", r.points)
     })
     |> subquery()
-    |> order_by(desc: :rank)
+    |> order_by(asc: :rank)
   end
 
   def leaderboard(league, season) do

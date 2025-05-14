@@ -1,11 +1,19 @@
 defmodule RujiraWeb.Schema.FinTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
+  alias Rujira.Contracts
+  alias Rujira.Fin
   alias Rujira.Assets
 
   @desc "A fin_pair represents informations about a specific rujira-fin contract"
   node object(:fin_pair) do
     field :address, non_null(:address)
+
+    field :contract, non_null(:contract_info) do
+      resolve(fn %{address: address}, _, _ ->
+        Contracts.info(address)
+      end)
+    end
 
     field :asset_base, non_null(:asset) do
       resolve(fn %{token_base: denom}, _, _ ->
@@ -85,7 +93,12 @@ defmodule RujiraWeb.Schema.FinTypes do
 
   @desc "Single order of an account on a fin pair"
   node object(:fin_order) do
-    field :pair, non_null(:address)
+    field :pair, non_null(:fin_pair) do
+      resolve(fn %{pair: pair}, _, _ ->
+        Fin.get_pair(pair)
+      end)
+    end
+
     field :owner, non_null(:address)
     field :side, non_null(:string)
     field :rate, non_null(:bigint)
@@ -95,6 +108,9 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :filled, non_null(:bigint)
     field :type, non_null(:string)
     field :deviation, :bigint
+    field :offer_value, non_null(:bigint)
+    field :remaining_value, non_null(:bigint)
+    field :filled_fee, non_null(:bigint)
   end
 
   @desc "Single trade executed by on a fin pair"
@@ -196,22 +212,23 @@ defmodule RujiraWeb.Schema.FinTypes do
     Triggered any time an order is created, increased or decreased.
     One subscription for all orders for a given contract & owner.
     """
-    field :fin_order_updated, :fin_order do
-      arg(:contract, non_null(:address))
+    field :fin_order_updated, :node_edge do
+      arg(:contract, :address, deprecate: "contract is read from the observed event")
+
       arg(:owner, non_null(:address))
 
-      config(fn %{contract: contract, owner: owner}, _ ->
-        {:ok, topic: "#{contract}/#{owner}"}
+      config(fn %{owner: owner}, _ ->
+        {:ok, topic: owner}
       end)
 
-      resolve(&RujiraWeb.Resolvers.Fin.order/3)
+      resolve(&RujiraWeb.Resolvers.Fin.order_edge/3)
     end
 
     @desc """
     Triggered when a order is filled.
     One subscription per order.
     """
-    field :fin_order_filled, non_null(:fin_order) do
+    field :fin_order_filled, :node_edge do
       arg(:contract, non_null(:address))
       arg(:side, non_null(:string))
       arg(:price, non_null(:string))
@@ -221,7 +238,7 @@ defmodule RujiraWeb.Schema.FinTypes do
         {:ok, topic: "#{contract}/#{side}/#{price}"}
       end)
 
-      resolve(&RujiraWeb.Resolvers.Fin.order/3)
+      resolve(&RujiraWeb.Resolvers.Fin.order_edge/3)
     end
   end
 end

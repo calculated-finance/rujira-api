@@ -71,7 +71,6 @@ defmodule Rujira.Assets do
   def decimals(%{type: :layer_1, chain: "BASE"}), do: 18
   def decimals(%{type: :layer_1, chain: "BCH"}), do: 8
   def decimals(%{type: :layer_1, chain: "BTC"}), do: 8
-  def decimals(%{type: :layer_1, chain: "BSC", ticker: "USDC"}), do: 8
   def decimals(%{type: :layer_1, chain: "BSC"}), do: 18
   def decimals(%{type: :layer_1, chain: "DOGE"}), do: 8
   def decimals(%{type: :layer_1, chain: "ETH", ticker: "USDC"}), do: 6
@@ -80,6 +79,8 @@ defmodule Rujira.Assets do
   def decimals(%{type: :layer_1, chain: "GAIA"}), do: 6
   def decimals(%{type: :layer_1, chain: "KUJI"}), do: 6
   def decimals(%{type: :layer_1, chain: "LTC"}), do: 8
+  def decimals(%{type: :layer_1, chain: "NOBLE", ticker: "USDY"}), do: 18
+  def decimals(%{type: :layer_1, chain: "NOBLE"}), do: 6
   def decimals(_), do: 8
 
   def type(str) do

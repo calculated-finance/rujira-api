@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Schema.MergeTypes do
+  alias Rujira.Contracts
   alias Rujira.Assets
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
@@ -8,6 +9,12 @@ defmodule RujiraWeb.Schema.MergeTypes do
   @desc "A merge_pool represents the configuration about a rujira-merge contract"
   node object(:merge_pool) do
     field :address, non_null(:string)
+
+    field :contract, non_null(:contract_info) do
+      resolve(fn %{address: address}, _, _ ->
+        Contracts.info(address)
+      end)
+    end
 
     field :merge_asset, non_null(:asset) do
       resolve(fn %{merge_denom: denom}, _, _ ->

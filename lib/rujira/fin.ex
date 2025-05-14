@@ -33,7 +33,7 @@ defmodule Rujira.Fin do
   Rujira's 100% on-chain, central limit order book style decentralized token exchange.
   """
 
-  @pair_code_ids Application.compile_env(:rujira, __MODULE__, pair_code_ids: [58, 97])
+  @pair_code_ids Application.compile_env(:rujira, __MODULE__, pair_code_ids: [115, 118])
                  |> Keyword.get(:pair_code_ids)
 
   @doc """
@@ -79,7 +79,7 @@ defmodule Rujira.Fin do
            Contracts.query_state_smart(pair.address, %{
              orders: %{owner: address, offset: offset, limit: limit}
            }) do
-      {:ok, Enum.map(orders, &Order.from_query(pair.address, &1))}
+      {:ok, Enum.map(orders, &Order.from_query(pair, &1))}
     else
       err ->
         err
@@ -151,7 +151,13 @@ defmodule Rujira.Fin do
   end
 
   def order_from_id(id) do
-    Order.from_id(id)
+    with [pair_address, side, price, owner] <- String.split(id, "/"),
+         {:ok, pair} <- get_pair(pair_address) do
+      Order.load(pair, side, price, owner)
+    else
+      {:error, err} -> {:error, err}
+      _ -> {:error, :invalid_id}
+    end
   end
 
   def summary_from_id(id) do
@@ -341,7 +347,7 @@ defmodule Rujira.Fin do
 
   def book_price(id) do
     with {:ok, book} <- book_from_id(id) do
-      {:ok, %{price: Rujira.Prices.normalize(book.center, 0), change: 0}}
+      {:ok, %{price: book.center, change: 0}}
     end
   end
 end

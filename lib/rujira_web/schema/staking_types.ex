@@ -1,6 +1,7 @@
 defmodule RujiraWeb.Schema.StakingTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
+  alias Rujira.Contracts
   alias Rujira.Chains.Thor
   alias Rujira.Assets
 
@@ -24,6 +25,12 @@ defmodule RujiraWeb.Schema.StakingTypes do
   @desc "A staking_pool represents the configuration about a rujira-staking contract"
   node object(:staking_pool) do
     field :address, non_null(:string)
+
+    field :contract, non_null(:contract_info) do
+      resolve(fn %{address: address}, _, _ ->
+        Contracts.info(address)
+      end)
+    end
 
     field :bond_asset, non_null(:asset) do
       resolve(fn %{bond_denom: denom}, _, _ ->

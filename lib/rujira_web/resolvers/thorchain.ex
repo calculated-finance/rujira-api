@@ -12,7 +12,7 @@ defmodule RujiraWeb.Resolvers.Thorchain do
     streaming_interval = Map.get(x, :streaming_interval, nil)
     streaming_quantity = Map.get(x, :streaming_quantity, nil)
     destination = Map.get(x, :destination, nil)
-    tolerance_bps = Map.get(x, :tolerance_bps, nil)
+    liquidity_tolerance_bps = Map.get(x, :liquidity_tolerance_bps, nil)
     refund_address = Map.get(x, :refund_address, nil)
     affiliate = Map.get(x, :affiliate, nil)
     affiliate_bps = Map.get(x, :affiliate_bps, [])
@@ -25,7 +25,7 @@ defmodule RujiraWeb.Resolvers.Thorchain do
       streaming_interval: RujiraWeb.Grpc.to_string(streaming_interval),
       streaming_quantity: RujiraWeb.Grpc.to_string(streaming_quantity),
       destination: destination,
-      tolerance_bps: RujiraWeb.Grpc.to_string(tolerance_bps),
+      liquidity_tolerance_bps: RujiraWeb.Grpc.to_string(liquidity_tolerance_bps),
       refund_address: refund_address,
       affiliate: affiliate,
       affiliate_bps: Enum.map(affiliate_bps, &RujiraWeb.Grpc.to_string/1),

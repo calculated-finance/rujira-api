@@ -185,17 +185,22 @@ defmodule Rujira.Contracts do
   @spec query_state_smart(String.t(), map()) ::
           {:ok, map()} | {:error, GRPC.RPCError.t()}
   def query_state_smart(address, query) do
-    with {:ok, %{data: data}} <-
-           Thorchain.Node.stub(
-             &Stub.smart_contract_state/2,
-             %QuerySmartContractStateRequest{
-               address: address,
-               query_data: Jason.encode!(query)
-             }
-           ),
-         {:ok, res} <- Jason.decode(data) do
-      {:ok, res}
-    end
+    Memoize.Cache.get_or_run(
+      {__MODULE__, :query_state_smart, [address, query]},
+      fn ->
+        with {:ok, %{data: data}} <-
+               Thorchain.Node.stub(
+                 &Stub.smart_contract_state/2,
+                 %QuerySmartContractStateRequest{
+                   address: address,
+                   query_data: Jason.encode!(query)
+                 }
+               ),
+             {:ok, res} <- Jason.decode(data) do
+          {:ok, res}
+        end
+      end
+    )
   end
 
   @doc """
