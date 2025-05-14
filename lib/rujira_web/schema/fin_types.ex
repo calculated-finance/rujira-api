@@ -1,12 +1,19 @@
 defmodule RujiraWeb.Schema.FinTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
+  alias Rujira.Contracts
   alias Rujira.Fin
   alias Rujira.Assets
 
   @desc "A fin_pair represents informations about a specific rujira-fin contract"
   node object(:fin_pair) do
     field :address, non_null(:address)
+
+    field :contract, non_null(:contract_info) do
+      resolve(fn %{address: address}, _, _ ->
+        Contracts.info(address)
+      end)
+    end
 
     field :asset_base, non_null(:asset) do
       resolve(fn %{token_base: denom}, _, _ ->

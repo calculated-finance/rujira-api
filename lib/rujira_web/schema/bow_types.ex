@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Schema.BowTypes do
+  alias Rujira.Contracts
   alias Rujira.Assets
   alias Rujira.Bow.Xyk
   use Absinthe.Schema.Notation
@@ -6,6 +7,13 @@ defmodule RujiraWeb.Schema.BowTypes do
 
   node object(:bow_pool) do
     field :address, non_null(:string)
+
+    field :contract, non_null(:contract_info) do
+      resolve(fn %{address: address}, _, _ ->
+        Contracts.info(address)
+      end)
+    end
+
     field :config, non_null(:bow_config)
     field :state, non_null(:bow_state)
 
