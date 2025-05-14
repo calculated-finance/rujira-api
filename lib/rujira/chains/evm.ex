@@ -146,15 +146,13 @@ defmodule Rujira.Chains.Evm do
           txs
           |> Enum.each(fn %{"from" => from, "to" => to, "value" => "0x" <> value_hex} ->
             if String.to_integer(value_hex, 16) > 0 do
-              sender = Rujira.Chains.Evm.eip55("0x" <> String.slice(from, -40, 40))
-              recipient = Rujira.Chains.Evm.eip55("0x" <> String.slice(to, -40, 40))
-              Memoize.invalidate(__MODULE__, :balance_of, [sender, "0x0000000000000000000000000000000000000000"])
-              Memoize.invalidate(__MODULE__, :balance_of, [recipient, "0x0000000000000000000000000000000000000000"])
+              Memoize.invalidate(__MODULE__, :balance_of, [from, "0x0000000000000000000000000000000000000000"])
+              Memoize.invalidate(__MODULE__, :balance_of, [to, "0x0000000000000000000000000000000000000000"])
 
-              id = to_global_id(:layer_1_account, "#{@chain}:#{sender}", RujiraWeb.Schema)
+              id = to_global_id(:layer_1_account, "#{@chain}:#{from}", RujiraWeb.Schema)
               publish(RujiraWeb.Endpoint, %{id: id}, node: id)
 
-              id = to_global_id(:layer_1_account, "#{@chain}:#{recipient}", RujiraWeb.Schema)
+              id = to_global_id(:layer_1_account, "#{@chain}:#{to}", RujiraWeb.Schema)
               publish(RujiraWeb.Endpoint, %{id: id}, node: id)
             end
           end)
