@@ -144,7 +144,7 @@ defmodule Rujira.Chains.Evm do
         with {:ok, %{"transactions" => txs}} <-
                Ethereumex.HttpClient.eth_get_block_by_hash(block_hash, true, url: @rpc) do
           txs
-          |> Enum.each(fn %{"from" => from, "to" => to, "value" => "0x" <> value_hex} ->
+          |> Task.async_stream(fn %{"from" => from, "to" => to, "value" => "0x" <> value_hex} ->
             if String.to_integer(value_hex, 16) > 0 do
               Memoize.invalidate(__MODULE__, :balance_of, [from, "0x0000000000000000000000000000000000000000"])
               Memoize.invalidate(__MODULE__, :balance_of, [to, "0x0000000000000000000000000000000000000000"])
@@ -156,6 +156,7 @@ defmodule Rujira.Chains.Evm do
               publish(RujiraWeb.Endpoint, %{id: id}, node: id)
             end
           end)
+          |> Stream.run()
         end
       end
     end
