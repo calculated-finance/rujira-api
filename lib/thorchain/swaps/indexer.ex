@@ -33,7 +33,6 @@ defmodule Thorchain.Swaps.Indexer do
 
   defp scan_events(height, tx_idx, time, events) do
     swaps = Enum.flat_map(events, &scan_event(&1))
-    IO.inspect(swaps)
 
     for {swap, idx} <- Enum.with_index(swaps) do
       swap
@@ -48,7 +47,6 @@ defmodule Thorchain.Swaps.Indexer do
   end
 
   defp scan_event(%{attributes: attributes, type: "swap"}) do
-    IO.inspect(attributes)
     scan_attributes(attributes)
   end
 
