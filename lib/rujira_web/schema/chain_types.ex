@@ -13,6 +13,7 @@ defmodule RujiraWeb.Schema.ChainTypes do
     value(:gaia)
     value(:kuji)
     value(:ltc)
+    value(:noble)
     value(:thor)
   end
 end
