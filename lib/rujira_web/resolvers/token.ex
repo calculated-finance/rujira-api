@@ -29,8 +29,16 @@ defmodule RujiraWeb.Resolvers.Token do
     end
   end
 
-  def native(%{asset: %Asset{id: "GAIA." <> id}}, _, _) do
-    with {:ok, denom} <- Rujira.Chains.Gaia.to_denom(id) do
+  def native(%{asset: %Asset{chain: "GAIA", symbol: symbol}}, _, _) do
+    with {:ok, denom} <- Rujira.Chains.Gaia.to_denom(symbol) do
+      {:ok, %{denom: denom}}
+    else
+      _ -> {:ok, nil}
+    end
+  end
+
+  def native(%{asset: %Asset{chain: "NOBLE", symbol: symbol}}, _, _) do
+    with {:ok, denom} <- Rujira.Chains.Noble.to_denom(symbol) do
       {:ok, %{denom: denom}}
     else
       _ -> {:ok, nil}
