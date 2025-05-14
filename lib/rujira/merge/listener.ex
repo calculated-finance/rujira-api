@@ -21,13 +21,11 @@ defmodule Rujira.Merge.Listener do
   defp scan_txs(txs) do
     addresses =
       txs
-      |> Enum.flat_map(fn x ->
-        case x["result"]["events"] do
-          nil -> []
-          xs when is_list(xs) -> xs
-        end
+      |> Enum.flat_map(fn
+        %{result: %{events: xs}} when is_list(xs) -> xs
+        _ -> []
       end)
-      |> scan_events()
+      |> Enum.flat_map(&scan_event/1)
       |> Enum.uniq()
 
     for {a, account} <- addresses do
@@ -40,16 +38,26 @@ defmodule Rujira.Merge.Listener do
     end
   end
 
-  defp scan_events(attributes, collection \\ [])
-
-  defp scan_events(
-         [%{"type" => "wasm-rujira-merge/" <> _, "account" => account} = event | rest],
-         collection
-       ) do
-    address = Map.get(event, "_contract_address")
-    scan_events(rest, [{address, account} | collection])
+  defp scan_event(%{attributes: attrs, type: "wasm-rujira-merge/" <> _}) do
+    IO.inspect(attrs)
+    scan_attributes(attrs)
   end
 
-  defp scan_events([_ | rest], collection), do: scan_events(rest, collection)
-  defp scan_events([], collection), do: collection
+  defp scan_event(_), do: []
+
+  defp scan_attributes(attributes, collection \\ [])
+
+  defp scan_attributes(
+         [
+           %{value: contract_address, key: "_contract_address"},
+           %{value: account, key: "account"}
+           | rest
+         ],
+         collection
+       ) do
+    scan_attributes(rest, [{contract_address, account} | collection])
+  end
+
+  defp scan_attributes([_ | rest], collection), do: scan_attributes(rest, collection)
+  defp scan_attributes([], collection), do: collection
 end
