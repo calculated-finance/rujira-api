@@ -4,6 +4,7 @@ defmodule Rujira.Prices do
   def get("AUTO"), do: {:ok, %{price: nil, change: nil}}
   def get("TCY"), do: {:ok, %{price: nil, change: nil}}
   def get("LQDY"), do: get("MNTA")
+  def get("THOR.RUNE"), do: get("RUNE")
 
   # Switch Tokens or custom tokens: Retrieves the price from the applayer using the FIN pair with USDC.
   def get("x/demo"),
