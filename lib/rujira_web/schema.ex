@@ -3,14 +3,16 @@ defmodule RujiraWeb.Schema do
   use Absinthe.Schema
   use Absinthe.Relay.Schema, :modern
   import_types(RujiraWeb.Schema.AccountTypes)
+  import_types(RujiraWeb.Schema.AnalyticsTypes)
   import_types(RujiraWeb.Schema.BalanceTypes)
   import_types(RujiraWeb.Schema.BankTypes)
   import_types(RujiraWeb.Schema.BowTypes)
   import_types(RujiraWeb.Schema.ChainTypes)
   import_types(RujiraWeb.Schema.DeveloperTypes)
   import_types(RujiraWeb.Schema.FinTypes)
+  import_types(RujiraWeb.Schema.LeaguesTypes)
   import_types(RujiraWeb.Schema.MergeTypes)
-  import_types(RujiraWeb.Schema.AnalyticsTypes)
+  import_types(RujiraWeb.Schema.PilotTypes)
   import_types(RujiraWeb.Schema.RujiraTypes)
   import_types(RujiraWeb.Schema.Scalars.Address)
   import_types(RujiraWeb.Schema.Scalars.Asset)
@@ -22,7 +24,6 @@ defmodule RujiraWeb.Schema do
   import_types(RujiraWeb.Schema.ThorchainTypes)
   import_types(RujiraWeb.Schema.TokenTypes)
   import_types(RujiraWeb.Schema.VenturesTypes)
-  import_types(RujiraWeb.Schema.LeaguesTypes)
 
   query do
     field :node, :node do
