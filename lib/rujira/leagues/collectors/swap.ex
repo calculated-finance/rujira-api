@@ -36,7 +36,6 @@ defmodule Rujira.Leagues.Collectors.Swap do
   end
 
   defp scan_event(%{attributes: attrs, type: "affiliate_fee"}) do
-    IO.inspect(attrs)
     scan_attributes(attrs)
   end
 
