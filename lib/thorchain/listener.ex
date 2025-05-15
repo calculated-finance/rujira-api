@@ -16,7 +16,7 @@ defmodule Thorchain.Listener do
   def handle_info(%{txs: txs}, state) do
     hashes =
       txs
-      |> scan_txs()
+      |> Enum.flat_map(&scan_txs/1)
       |> Enum.uniq()
 
     for a <- hashes do
@@ -31,27 +31,21 @@ defmodule Thorchain.Listener do
     {:noreply, state}
   end
 
-  defp scan_txs(txs, collection \\ [])
-
-  defp scan_txs(
-         [
-           %{"tx" => %{"body" => %{"messages" => messages}}}
-           | rest
-         ],
-         collection
-       ) do
-    ids =
-      Enum.reduce(messages, [], fn
-        %{"@type" => "/types.MsgObservedTxIn", "txs" => txs}, acc ->
-          txs |> Enum.map(& &1["tx"]["id"]) |> Enum.concat(acc)
-
-        _, acc ->
-          acc
-      end)
-
-    scan_txs(rest, Enum.concat(ids, collection))
+  defp scan_txs(%{tx_data: tx_data}) do
+    with {:ok, decoded} <- Jason.decode(tx_data) do
+      scan_tx(decoded)
+    end
   end
 
-  defp scan_txs([_ | rest], collection), do: scan_txs(rest, collection)
-  defp scan_txs([], collection), do: collection
+  defp scan_tx(%{"body" => %{"messages" => messages}}) do
+    Enum.reduce(messages, [], fn
+      %{"@type" => "/types.MsgObservedTxIn", "txs" => txs}, acc ->
+        txs |> Enum.map(& &1["tx"]["id"]) |> Enum.concat(acc)
+
+      _, acc ->
+        acc
+    end)
+  end
+
+  defp scan_tx(_), do: []
 end
