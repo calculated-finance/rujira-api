@@ -41,7 +41,6 @@ defmodule Rujira.Merge.Listener do
   end
 
   defp scan_event(%{attributes: attrs, type: "wasm-rujira-merge/" <> _}) do
-    IO.inspect(attrs)
     scan_attributes(attrs)
   end
 

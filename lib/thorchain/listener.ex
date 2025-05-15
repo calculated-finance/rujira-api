@@ -38,7 +38,6 @@ defmodule Thorchain.Listener do
   end
 
   defp scan_tx(%{"body" => %{"messages" => messages}}) do
-    IO.inspect(messages)
     Enum.reduce(messages, [], fn
       %{"@type" => "/types.MsgObservedTxIn", "txs" => txs}, acc ->
         txs |> Enum.map(& &1["tx"]["id"]) |> Enum.concat(acc)
