@@ -1,5 +1,4 @@
 defmodule RujiraWeb.Resolvers.Fin do
-  alias Rujira.Fin.Order
   alias Rujira.Fin.Summary
   alias Rujira.Repo
   alias Absinthe.Relay

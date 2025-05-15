@@ -1,4 +1,4 @@
-defmodule Rujira.Invalidator do
+defmodule Rujira.Contracts.Listener do
   alias Phoenix.PubSub
   use GenServer
   require Logger

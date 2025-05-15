@@ -17,6 +17,17 @@ defmodule Rujira.Contracts do
   alias Rujira.Repo
   import Ecto.Query
   use Memoize
+  use GenServer
+
+  def start_link(_) do
+    children = [__MODULE__.Listener]
+    Supervisor.start_link(children, strategy: :one_for_one)
+  end
+
+  @impl true
+  def init(state) do
+    {:ok, state}
+  end
 
   defstruct [:id, :address, :info]
 
@@ -178,16 +189,11 @@ defmodule Rujira.Contracts do
   @spec query_state_smart(String.t(), map()) ::
           {:ok, map()} | {:error, GRPC.RPCError.t()}
   def query_state_smart(address, query) do
-    IO.inspect(query, label: address)
-
     with {:ok, %{data: data}} <-
-           Thorchain.Node.stub(
-             &Stub.smart_contract_state/2,
-             %QuerySmartContractStateRequest{
-               address: address,
-               query_data: Jason.encode!(query)
-             }
-           ),
+           Thorchain.Node.stub(&Stub.smart_contract_state/2, %QuerySmartContractStateRequest{
+             address: address,
+             query_data: Jason.encode!(query)
+           }),
          {:ok, res} <- Jason.decode(data) do
       {:ok, res}
     end
@@ -198,13 +204,8 @@ defmodule Rujira.Contracts do
   """
   @spec query_state_all(String.t()) ::
           {:ok, map()} | {:error, GRPC.RPCError.t()}
-  def query_state_all(address) do
-    Memoize.Cache.get_or_run(
-      {__MODULE__, :query_state_all, [address]},
-      fn ->
-        query_state_all_page(address, nil)
-      end
-    )
+  defmemo query_state_all(address) do
+    query_state_all_page(address, nil)
   end
 
   defp query_state_all_page(address, page) do
