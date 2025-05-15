@@ -60,7 +60,7 @@ defmodule Rujira.Fin do
   @spec load_pair(Pair.t(), integer()) ::
           {:ok, Pair.t()} | {:error, GRPC.RPCError.t()}
   def load_pair(pair, limit \\ 100) do
-    with {:ok, res} <- query_pair(pair.address, limit),
+    with {:ok, res} <- query_book(pair.address, limit),
          {:ok, book} <- Book.from_query(pair.address, res) do
       {:ok, %{pair | book: book}}
     else
@@ -69,7 +69,7 @@ defmodule Rujira.Fin do
     end
   end
 
-  defmemo query_pair(contract, limit \\ 100) do
+  defmemo query_book(contract, limit \\ 100) do
     Contracts.query_state_smart(contract, %{book: %{limit: limit}})
   end
 
@@ -150,7 +150,7 @@ defmodule Rujira.Fin do
   end
 
   def book_from_id(id) do
-    with {:ok, res} <- query_pair(id),
+    with {:ok, res} <- query_book(id),
          {:ok, book} <- Book.from_query(id, res) do
       {:ok, book}
     end

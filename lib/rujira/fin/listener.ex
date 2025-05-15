@@ -32,7 +32,7 @@ defmodule Rujira.Fin.Listener do
       |> Enum.reverse()
 
     for address <- addresses |> Enum.map(&elem(&1, 1)) |> Enum.uniq() do
-      Memoize.invalidate(Fin, :query_pair, [address])
+      Memoize.invalidate(Fin, :query_book, [address, :_])
       id = Absinthe.Relay.Node.to_global_id(:fin_book, address, RujiraWeb.Schema)
       Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
     end
