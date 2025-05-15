@@ -21,7 +21,7 @@ defmodule RujiraWeb.Schema.BowTypes do
       resolve(&RujiraWeb.Resolvers.Bow.summary/3)
     end
 
-    connection field :trades, node_type: :fin_trade, non_null: true do
+    connection field :trades, node_type: :fin_trade do
       resolve(&RujiraWeb.Resolvers.Bow.trades/3)
     end
   end
