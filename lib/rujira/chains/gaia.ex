@@ -4,7 +4,7 @@ defmodule Rujira.Chains.Gaia do
   alias Cosmos.Bank.V1beta1.QueryAllBalancesResponse
   import Cosmos.Bank.V1beta1.Query.Stub
 
-  use Rujira.Chains.Cosmos.Listener, ws: "wss://gaia-rpc.bryanlabs.net", chain: "gaia", subscription: "tm.event='NewBlock'"
+  use Rujira.Chains.Cosmos.Listener, ws: "wss://gaia-rpc.bryanlabs.net", chain: "gaia"
 
   @rpc "gaia-grpc.bryanlabs.net"
 

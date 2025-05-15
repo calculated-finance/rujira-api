@@ -1,7 +1,6 @@
 defmodule Rujira.Chains.Cosmos.Listener do
   defmacro __using__(opts) do
     chain = Keyword.fetch!(opts, :chain)
-    subscription = Keyword.fetch!(opts, :subscription)
     ws = Keyword.fetch!(opts, :ws)
 
     quote do
@@ -10,7 +9,7 @@ defmodule Rujira.Chains.Cosmos.Listener do
 
       @chain unquote(chain)
       @ws unquote(ws)
-      @subscription unquote(subscription)
+      @subscription "tm.event='NewBlock'"
 
       def start_link(_) do
         case WebSockex.start_link("#{@ws}/websocket", __MODULE__, %{}) do
@@ -18,10 +17,8 @@ defmodule Rujira.Chains.Cosmos.Listener do
             subscribe(pid, 0, @subscription)
             {:ok, pid}
 
-          {:error, _} ->
-            Logger.error("#{__MODULE__} Error connecting to websocket #{@ws}")
-            # Ignore for now
-            :ignore
+          {:error, err} ->
+            {:error, err}
         end
       end
 
@@ -35,27 +32,31 @@ defmodule Rujira.Chains.Cosmos.Listener do
       end
 
       def handle_frame({:text, msg}, state) do
-        case Jason.decode(msg, keys: :atoms) do
-          {:ok, %{id: id, result: %{data: %{type: "tendermint/event/NewBlock", value: v}}}} ->
-            handle_info(v)
-            {:ok, state}
-
+        with {:ok, %{id: id, result: %{data: %{type: "tendermint/event/NewBlock", value: v}}}} <-
+               Jason.decode(msg, keys: :atoms),
+             :ok <- process_block(v) do
+          {:ok, state}
+        else
           {:ok, %{id: id, jsonrpc: "2.0", result: %{}}} ->
             Logger.info("#{__MODULE__} Subscription #{id} successful")
             {:ok, state}
 
-          _ ->
-            {:ok, state}
+          err ->
+            err
         end
       end
 
       def handle_cast({:send, {_type, msg} = frame}, state) do
         Logger.debug("#{__MODULE__} [send] #{msg}")
-
         {:reply, frame, state}
       end
 
-      def handle_info(%{result_finalize_block: %{events: events}}) do
+      def process_block(%{result_finalize_block: result}),
+        do: result |> Map.get(:events, []) |> process_events()
+
+      def process_block(_), do: {:error, :invalid_block}
+
+      def process_events(events) do
         events
         |> Enum.flat_map(&scan_event/1)
         |> Enum.uniq()
@@ -71,6 +72,8 @@ defmodule Rujira.Chains.Cosmos.Listener do
 
           Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
         end)
+
+        :ok
       end
 
       defp scan_event(%{attributes: attributes, type: "transfer"}),

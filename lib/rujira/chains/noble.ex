@@ -4,6 +4,8 @@ defmodule Rujira.Chains.Noble do
   alias Cosmos.Bank.V1beta1.QueryAllBalancesResponse
   import Cosmos.Bank.V1beta1.Query.Stub
 
+  use Rujira.Chains.Cosmos.Listener, ws: "wss://noble-rpc.bryanlabs.net", chain: "noble"
+
   @rpc "noble-grpc.bryanlabs.net"
 
   @symbol_traces %{
