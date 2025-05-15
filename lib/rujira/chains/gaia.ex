@@ -1,9 +1,10 @@
 defmodule Rujira.Chains.Gaia do
-  use GenServer
   alias Rujira.Assets
   alias Cosmos.Bank.V1beta1.QueryAllBalancesRequest
   alias Cosmos.Bank.V1beta1.QueryAllBalancesResponse
   import Cosmos.Bank.V1beta1.Query.Stub
+
+  use Rujira.Chains.Cosmos.Listener, ws: "wss://gaia-rpc.bryanlabs.net", chain: "gaia", subscription: "tm.event='NewBlock'"
 
   @rpc "gaia-grpc.bryanlabs.net"
 
@@ -38,17 +39,6 @@ defmodule Rujira.Chains.Gaia do
 
       {:ok, balances}
     end
-  end
-
-  def start_link(_) do
-    Supervisor.start_link([__MODULE__.Websocket, __MODULE__.Listener],
-      strategy: :one_for_one
-    )
-  end
-
-  @impl true
-  def init(state) do
-    {:ok, state}
   end
 
   def connection() do
