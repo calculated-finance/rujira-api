@@ -20,9 +20,7 @@ defmodule Rujira.Fin.Indexer do
         },
         state
       ) do
-    {:ok, time, 0} = DateTime.from_iso8601(time)
-
-    for %{"hash" => txhash, "result" => %{"events" => events}} <- txs do
+    for %{hash: txhash, result: %{events: events}} <- txs do
       scan_events(height, txhash, events, time)
     end
 
@@ -31,7 +29,7 @@ defmodule Rujira.Fin.Indexer do
 
   defp scan_events(height, txhash, events, time) do
     events
-    |> scan_attributes()
+    |> Enum.flat_map(&scan_event/1)
     |> Enum.reverse()
     |> Enum.with_index()
     |> Enum.map(fn {trade, idx} ->
@@ -46,20 +44,23 @@ defmodule Rujira.Fin.Indexer do
     |> Rujira.Fin.insert_trades()
   end
 
+  defp scan_event(%{attributes: attributes, type: "wasm-rujira-fin/trade"}) do
+    scan_attributes(attributes)
+  end
+
+  defp scan_event(_), do: []
+
   defp scan_attributes(attributes, collection \\ [])
 
   defp scan_attributes(
          [
-           %{
-             "_contract_address" => contract_address,
-             "bid" => bid,
-             "msg_index" => msg_index,
-             "offer" => offer,
-             "price" => price,
-             "rate" => rate,
-             "side" => side,
-             "type" => "wasm-rujira-fin/trade"
-           }
+           %{key: "_contract_address", value: contract_address},
+           %{key: "bid", value: bid},
+           %{key: "offer", value: offer},
+           %{key: "price", value: price},
+           %{key: "rate", value: rate},
+           %{key: "side", value: side},
+           %{key: "msg_index", value: msg_index}
            | rest
          ],
          collection

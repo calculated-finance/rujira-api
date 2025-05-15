@@ -21,15 +21,13 @@ defmodule Rujira.Staking.Listener do
   defp scan_txs(txs) do
     events =
       txs
-      |> Enum.flat_map(fn x ->
-        case x["result"]["events"] do
-          nil -> []
-          xs when is_list(xs) -> xs
-        end
+      |> Enum.flat_map(fn
+        %{result: %{events: xs}} when is_list(xs) -> xs
+        _ -> []
       end)
 
-    executions = events |> scan_executions() |> Enum.uniq()
-    transfers = events |> scan_transfers() |> Enum.uniq()
+    executions = events |> Enum.flat_map(&scan_events(&1, :staking)) |> Enum.uniq()
+    transfers = events |> Enum.flat_map(&scan_events(&1, :transfers)) |> Enum.uniq()
 
     for {a, o} <- executions do
       Logger.debug("#{__MODULE__} execution #{a}")
@@ -54,16 +52,23 @@ defmodule Rujira.Staking.Listener do
     end
   end
 
+  def scan_events(%{attributes: attrs, type: "wasm-rujira-staking/" <> _}, :staking),
+    do: scan_executions(attrs)
+
+  def scan_events(%{attributes: attrs, type: "transfer"}, :transfers), do: scan_transfers(attrs)
+  def scan_events(_, _), do: []
+
   defp scan_executions(attributes, collection \\ [])
 
   defp scan_executions(
-         [%{"type" => "wasm-rujira-staking/" <> _} = event | rest],
+         [
+           %{value: contract_address, key: "_contract_address"},
+           %{value: owner, key: "owner"}
+           | rest
+         ],
          collection
        ) do
-    address = Map.get(event, "_contract_address")
-    owner = Map.get(event, "owner")
-
-    scan_executions(rest, [{address, owner} | collection])
+    scan_executions(rest, [{contract_address, owner} | collection])
   end
 
   defp scan_executions([_ | rest], collection), do: scan_executions(rest, collection)
@@ -72,15 +77,7 @@ defmodule Rujira.Staking.Listener do
   defp scan_transfers(attributes, collection \\ [])
 
   defp scan_transfers(
-         [
-           %{
-             "amount" => _,
-             "recipient" => recipient,
-             "sender" => _,
-             "type" => "transfer"
-           }
-           | rest
-         ],
+         [%{value: recipient, key: "recipient"} | rest],
          collection
        ) do
     scan_transfers(rest, [recipient | collection])

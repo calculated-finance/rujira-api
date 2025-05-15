@@ -13,7 +13,6 @@ defmodule Thorchain.Node do
   @impl true
   def init(x) do
     websocket = Keyword.get(x, :websocket, "")
-    api = Keyword.get(x, :api, "")
     grpcs = Keyword.get(x, :grpcs, [])
     size = Keyword.get(x, :size, 2)
     pubsub = Application.get_env(:rujira, :pubsub, Rujira.PubSub)
@@ -28,7 +27,7 @@ defmodule Thorchain.Node do
 
     children = [
       :poolboy.child_spec(@pool_name, poolboy_config, grpcs),
-      {__MODULE__.Websocket, websocket: websocket, pubsub: pubsub, api: api}
+      {__MODULE__.Websocket, websocket: websocket, pubsub: pubsub}
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

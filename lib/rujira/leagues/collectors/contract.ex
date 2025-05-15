@@ -21,15 +21,17 @@ defmodule Rujira.Leagues.Collectors.Contract do
 
   @impl true
   def handle_info(%{header: %{height: height, time: time}, txs: txs}, state) do
-    {:ok, time, 0} = DateTime.from_iso8601(time)
-
-    for %{"hash" => txhash, "result" => %{"events" => events}} <- txs do
+    for %{hash: txhash, result: %{events: events}} <- txs do
       events
       |> scan_events()
-      |> Enum.reverse()
       |> Enum.with_index()
       |> Enum.map(fn {event, idx} ->
-        Map.merge(event, %{height: height, idx: idx, txhash: txhash, timestamp: time})
+        Map.merge(event, %{
+          height: height,
+          idx: idx,
+          txhash: txhash,
+          timestamp: time
+        })
       end)
       |> Leagues.insert_tx_events()
       |> Leagues.update_leagues()
@@ -38,67 +40,56 @@ defmodule Rujira.Leagues.Collectors.Contract do
     {:noreply, state}
   end
 
-  defp scan_events(events), do: scan_events(events, nil, nil, [])
+  defp scan_events(events) do
+    Enum.reduce(events, %{sender: nil, contract: nil, acc: []}, fn %{type: type, attributes: attrs}, ctx ->
+      attr_map = Map.new(attrs, fn %{key: k, value: v} -> {k, v} end)
 
-  defp scan_events(
-         [
-           %{
-             "action" => "/cosmwasm.wasm.v1.MsgExecuteContract",
-             "module" => "wasm",
-             "sender" => sender
-           }
-           | rest
-         ],
-         prev_sender,
-         prev_contract,
-         acc
-       )
-       when is_nil(prev_sender) and is_nil(prev_contract),
-       do: scan_events(rest, sender, nil, acc)
+      case type do
+        "message" ->
+          case attr_map do
+            %{"action" => "/cosmwasm.wasm.v1.MsgExecuteContract", "sender" => sender} ->
+              %{ctx | sender: sender}
 
-  defp scan_events(
-         [%{"_contract_address" => contract} | rest],
-         sender,
-         prev_contract,
-         acc
-       )
-       when not is_nil(sender) and is_nil(prev_contract),
-       do: scan_events(rest, sender, contract, acc)
+            _ -> ctx
+          end
 
-  defp scan_events(
-         [%{"type" => "transfer", "recipient" => recipient, "amount" => amount} | rest],
-         sender,
-         contract,
-         acc
-       )
-       when not is_nil(sender) and not is_nil(contract) and recipient in @fee_addresses do
-    with {:ok, %Contract{module: module}} <- Contracts.by_id(contract) do
-      scan_events(rest, nil, nil, league_event(sender, amount, module, acc))
-    else
-      _ -> scan_events(rest, sender, contract, acc)
-    end
+        "execute" ->
+          case attr_map do
+            %{"_contract_address" => contract} -> %{ctx | contract: contract}
+            _ -> ctx
+          end
+
+        "transfer" ->
+          league_event(attr_map, ctx)
+
+        _ -> ctx
+      end
+    end).acc
   end
 
-  defp scan_events([_ | rest], sender, contract, acc),
-    do: scan_events(rest, sender, contract, acc)
-
-  defp scan_events([], _sender, _contract, acc), do: acc
-
-  defp league_event(sender, amount_str, module, acc) do
-    with [amt, asset] <- String.split(amount_str, ~r/(?<=\d)(?=[A-Za-z])/),
-         {amount, _} <- Integer.parse(amt),
-         {:ok, %{price: price}} <- Prices.get(asset),
-         {:ok, category} <- module_category(module) do
+  defp league_event(%{"recipient" => recipient, "amount" => amount}, %{sender: sender, contract: contract, acc: acc})
+       when not is_nil(sender) and not is_nil(contract) and recipient in @fee_addresses do
+    with {:ok, %Contract{module: module}} <- Contracts.by_id(contract),
+         {:ok, %{price: price}} <- Prices.get(asset(amount)),
+         {:ok, category} <- module_category(module),
+         {amt, _} <- Integer.parse(numeric(amount)) do
       revenue =
-        amount
+        amt
         |> Decimal.mult(price)
-        |> Decimal.round(0)
+        |> Decimal.round()
         |> Decimal.to_integer()
 
-      [%{address: sender, revenue: revenue, category: category} | acc]
+      %{sender: nil, contract: nil, acc: [%{address: sender, revenue: revenue, category: category} | acc]}
+    else
+      _ -> %{sender: sender, contract: contract, acc: acc}
     end
   end
 
-  def module_category(Rujira.Fin.Pair), do: {:ok, :trade}
-  def module_category(_), do: {:error, :unsupported_module}
+  defp league_event(_, ctx), do: ctx
+
+  defp asset(amount), do: String.replace(amount, ~r/^\d+/, "")
+  defp numeric(amount), do: String.replace(amount, ~r/\D+$/, "")
+
+  defp module_category(Rujira.Fin.Pair), do: {:ok, :trade}
+  defp module_category(_), do: {:error, :unsupported_module}
 end
