@@ -78,7 +78,7 @@ defmodule Rujira.Fin do
   """
   @spec list_orders(Pair.t(), String.t()) ::
           {:ok, list(Order.t())} | {:error, GRPC.RPCError.t()}
-  defmemo list_orders(pair, address, offset \\ 0, limit \\ 30) do
+  def list_orders(pair, address, offset \\ 0, limit \\ 30) do
     with {:ok, %{"orders" => orders}} <- query_orders(pair.address, address, offset, limit) do
       {:ok, Enum.map(orders, &Order.from_query(pair, &1))}
     else
