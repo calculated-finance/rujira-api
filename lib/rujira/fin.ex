@@ -11,6 +11,7 @@ defmodule Rujira.Fin do
   import Ecto.Query
   alias Rujira.Repo
   require Logger
+  use Memoize
 
   def start_link(_) do
     children =
@@ -59,8 +60,7 @@ defmodule Rujira.Fin do
   @spec load_pair(Pair.t(), integer()) ::
           {:ok, Pair.t()} | {:error, GRPC.RPCError.t()}
   def load_pair(pair, limit \\ 100) do
-    with {:ok, res} <-
-           Contracts.query_state_smart(pair.address, %{book: %{limit: limit}}),
+    with {:ok, res} <- query_pair(pair.address, limit),
          {:ok, book} <- Book.from_query(pair.address, res) do
       {:ok, %{pair | book: book}}
     else
@@ -69,21 +69,28 @@ defmodule Rujira.Fin do
     end
   end
 
+  defmemo query_pair(contract, limit \\ 100) do
+    Contracts.query_state_smart(contract, %{book: %{limit: limit}})
+  end
+
   @doc """
   Fetches all Orders for a pair
   """
   @spec list_orders(Pair.t(), String.t()) ::
           {:ok, list(Order.t())} | {:error, GRPC.RPCError.t()}
-  def list_orders(pair, address, offset \\ 0, limit \\ 30) do
-    with {:ok, %{"orders" => orders}} <-
-           Contracts.query_state_smart(pair.address, %{
-             orders: %{owner: address, offset: offset, limit: limit}
-           }) do
+  defmemo list_orders(pair, address, offset \\ 0, limit \\ 30) do
+    with {:ok, %{"orders" => orders}} <- query_orders(pair.address, address, offset, limit) do
       {:ok, Enum.map(orders, &Order.from_query(pair, &1))}
     else
       err ->
         err
     end
+  end
+
+  defmemo query_orders(contract, address, offset \\ 0, limit \\ 30) do
+    Contracts.query_state_smart(contract, %{
+      orders: %{owner: address, offset: offset, limit: limit}
+    })
   end
 
   def list_all_orders(address) do
@@ -143,8 +150,7 @@ defmodule Rujira.Fin do
   end
 
   def book_from_id(id) do
-    with {:ok, res} <-
-           Contracts.query_state_smart(id, %{book: %{}}),
+    with {:ok, res} <- query_pair(id),
          {:ok, book} <- Book.from_query(id, res) do
       {:ok, book}
     end
@@ -153,11 +159,30 @@ defmodule Rujira.Fin do
   def order_from_id(id) do
     with [pair_address, side, price, owner] <- String.split(id, "/"),
          {:ok, pair} <- get_pair(pair_address) do
-      Order.load(pair, side, price, owner)
+      query_order(pair, side, price, owner)
     else
       {:error, err} -> {:error, err}
       _ -> {:error, :invalid_id}
     end
+  end
+
+  def load_order(%{address: address} = pair, side, price, owner) do
+    with {:ok, order} <- query_order(address, owner, side, price) do
+      {:ok, Order.from_query(pair, order)}
+    else
+      {:error, %GRPC.RPCError{status: 2, message: "NotFound: query wasm contract failed"}} ->
+        {:ok, Order.new(address, side, price, owner)}
+
+      err ->
+        err
+    end
+  end
+
+  defmemop query_order(address, owner, side, price) do
+    Rujira.Contracts.query_state_smart(
+      address,
+      %{order: [owner, side, Order.decode_price(price)]}
+    )
   end
 
   def summary_from_id(id) do

@@ -48,10 +48,14 @@ defmodule Rujira.Bow do
   """
 
   def load_pool(%{address: address}) do
-    case Contracts.query_state_smart(address, %{strategy: %{}}) do
+    case query_pool(address) do
       {:ok, %{"xyk" => xyk}} -> Xyk.from_query(address, xyk)
       {:error, err} -> {:error, err}
     end
+  end
+
+  defmemop query_pool(address) do
+    Contracts.query_state_smart(address, %{strategy: %{}})
   end
 
   def pool_from_id(id) do

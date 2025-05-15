@@ -24,8 +24,8 @@ defmodule Rujira.Application do
       Rujira.Balances,
       Rujira.Bank,
       Rujira.Chains,
+      Rujira.Contracts,
       Rujira.Fin,
-      Rujira.Invalidator,
       Rujira.Merge,
       Rujira.Staking,
       Rujira.Leagues

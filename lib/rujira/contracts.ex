@@ -17,6 +17,17 @@ defmodule Rujira.Contracts do
   alias Rujira.Repo
   import Ecto.Query
   use Memoize
+  use GenServer
+
+  def start_link(_) do
+    children = [__MODULE__.Listener]
+    Supervisor.start_link(children, strategy: :one_for_one)
+  end
+
+  @impl true
+  def init(state) do
+    {:ok, state}
+  end
 
   defstruct [:id, :address, :info]
 
@@ -128,43 +139,36 @@ defmodule Rujira.Contracts do
   @spec get({module(), String.t() | __MODULE__.t()} | struct()) ::
           {:ok, struct()} | {:error, any()}
 
-  def get({module, %__MODULE__{address: address}}), do: get({module, address})
+  defmemo(get({module, %__MODULE__{address: address}}), do: get({module, address}))
 
-  def get({module, address}) do
-    Memoize.Cache.get_or_run({__MODULE__, :get, [{module, address}]}, fn ->
-      with {:ok, config} <- query_state_smart(address, %{config: %{}}),
-           {:ok, struct} <- module.from_config(address, config) do
-        {:ok, struct}
-      end
-    end)
+  defmemo get({module, address}) do
+    with {:ok, config} <- query_state_smart(address, %{config: %{}}),
+         {:ok, struct} <- module.from_config(address, config) do
+      {:ok, struct}
+    end
   end
 
-  def get(_channel, loaded), do: {:ok, loaded}
+  defmemo(get(_channel, loaded), do: {:ok, loaded})
 
   @spec list(module(), list(integer())) ::
           {:ok, list(struct())} | {:error, GRPC.RPCError.t()}
-  def list(module, code_ids) when is_list(code_ids) do
-    Memoize.Cache.get_or_run(
-      {__MODULE__, :list, [module, code_ids]},
-      fn ->
-        with {:ok, contracts} <- by_codes(code_ids),
-             {:ok, struct} <-
-               contracts
-               |> Task.async_stream(&get({module, &1}), timeout: 30_000)
-               |> Enum.reduce({:ok, []}, fn
-                 {:ok, {:ok, x}}, {:ok, xs} ->
-                   {:ok, [x | xs]}
+  defmemo list(module, code_ids) when is_list(code_ids) do
+    with {:ok, contracts} <- by_codes(code_ids),
+         {:ok, struct} <-
+           contracts
+           |> Task.async_stream(&get({module, &1}), timeout: 30_000)
+           |> Enum.reduce({:ok, []}, fn
+             {:ok, {:ok, x}}, {:ok, xs} ->
+               {:ok, [x | xs]}
 
-                 _, err ->
-                   err
-               end) do
-          {:ok, struct}
-        else
-          err ->
-            err
-        end
-      end
-    )
+             _, err ->
+               err
+           end) do
+      {:ok, struct}
+    else
+      err ->
+        err
+    end
   end
 
   @spec query_state_raw(String.t(), binary()) ::
@@ -185,22 +189,14 @@ defmodule Rujira.Contracts do
   @spec query_state_smart(String.t(), map()) ::
           {:ok, map()} | {:error, GRPC.RPCError.t()}
   def query_state_smart(address, query) do
-    Memoize.Cache.get_or_run(
-      {__MODULE__, :query_state_smart, [address, query]},
-      fn ->
-        with {:ok, %{data: data}} <-
-               Thorchain.Node.stub(
-                 &Stub.smart_contract_state/2,
-                 %QuerySmartContractStateRequest{
-                   address: address,
-                   query_data: Jason.encode!(query)
-                 }
-               ),
-             {:ok, res} <- Jason.decode(data) do
-          {:ok, res}
-        end
-      end
-    )
+    with {:ok, %{data: data}} <-
+           Thorchain.Node.stub(&Stub.smart_contract_state/2, %QuerySmartContractStateRequest{
+             address: address,
+             query_data: Jason.encode!(query)
+           }),
+         {:ok, res} <- Jason.decode(data) do
+      {:ok, res}
+    end
   end
 
   @doc """
@@ -208,13 +204,8 @@ defmodule Rujira.Contracts do
   """
   @spec query_state_all(String.t()) ::
           {:ok, map()} | {:error, GRPC.RPCError.t()}
-  def query_state_all(address) do
-    Memoize.Cache.get_or_run(
-      {__MODULE__, :query_state_all, [address]},
-      fn ->
-        query_state_all_page(address, nil)
-      end
-    )
+  defmemo query_state_all(address) do
+    query_state_all_page(address, nil)
   end
 
   defp query_state_all_page(address, page) do

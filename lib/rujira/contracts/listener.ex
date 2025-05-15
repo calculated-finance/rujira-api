@@ -1,4 +1,4 @@
-defmodule Rujira.Invalidator do
+defmodule Rujira.Contracts.Listener do
   alias Phoenix.PubSub
   use GenServer
   require Logger
@@ -40,22 +40,6 @@ defmodule Rujira.Invalidator do
          collection
        ) do
     scan_attributes(rest, [{Rujira.Contracts, :codes} | collection])
-  end
-
-  defp scan_attributes(
-         [
-           %{
-             "_contract_address" => contract_address,
-             "msg_index" => _,
-             "type" => "execute"
-           }
-           | rest
-         ],
-         collection
-       ) do
-    scan_attributes(rest, [
-      {Rujira.Contracts, :query_state_smart, [contract_address, :_]} | collection
-    ])
   end
 
   defp scan_attributes(
