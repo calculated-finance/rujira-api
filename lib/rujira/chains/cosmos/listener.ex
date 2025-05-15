@@ -51,8 +51,13 @@ defmodule Rujira.Chains.Cosmos.Listener do
         {:reply, frame, state}
       end
 
-      def process_block(%{result_finalize_block: result}),
-        do: result |> Map.get(:events, []) |> process_events()
+      def process_block(%{result_finalize_block: finalize}) do
+        finalize
+        |> Map.get(:tx_results, [])
+        |> Enum.flat_map(& &1.events)
+        |> Enum.concat(Map.get(finalize, :events, []))
+        |> process_events()
+      end
 
       def process_block(_), do: {:error, :invalid_block}
 
