@@ -15,5 +15,6 @@ defmodule RujiraWeb.Schema.ChainTypes do
     value(:ltc)
     value(:noble)
     value(:thor)
+    value(:xrp)
   end
 end
