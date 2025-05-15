@@ -150,7 +150,7 @@ defmodule Rujira.Fin do
   end
 
   def book_from_id(id) do
-    with {:ok, res} <- query_book(id),
+    with {:ok, res} <- query_book(id, 100),
          {:ok, book} <- Book.from_query(id, res) do
       {:ok, book}
     end
