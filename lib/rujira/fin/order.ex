@@ -87,35 +87,22 @@ defmodule Rujira.Fin.Order do
   def encode_price(%{fixed: v}), do: "fixed:#{v}"
   def encode_price(%{oracle: v}), do: "oracle:#{v}"
 
-  def load(%{address: address} = pair, side, price, owner) do
-    with {:ok, order} <-
-           Rujira.Contracts.query_state_smart(
-             address,
-             %{order: [owner, side, decode_price(price)]}
-           ) do
-      {:ok, from_query(pair, order)}
-    else
-      {:error, %GRPC.RPCError{status: 2, message: "NotFound: query wasm contract failed"}} ->
-        [type | _] = String.split(price, ":")
+  def new(address, side, price, owner) do
+    [type | _] = String.split(price, ":")
 
-        {:ok,
-         %__MODULE__{
-           id: "#{address}/#{side}/#{price}/#{owner}",
-           pair: address,
-           owner: owner,
-           side: String.to_existing_atom(side),
-           rate: 0,
-           updated_at: DateTime.utc_now(),
-           offer: 0,
-           remaining: 0,
-           filled: 0,
-           type: type,
-           deviation: nil
-         }}
-
-      err ->
-        err
-    end
+    %__MODULE__{
+      id: "#{address}/#{side}/#{price}/#{owner}",
+      pair: address,
+      owner: owner,
+      side: String.to_existing_atom(side),
+      rate: 0,
+      updated_at: DateTime.utc_now(),
+      offer: 0,
+      remaining: 0,
+      filled: 0,
+      type: type,
+      deviation: nil
+    }
   end
 
   defp value(amount, rate, :base) do

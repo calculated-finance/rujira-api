@@ -44,22 +44,6 @@ defmodule Rujira.Invalidator do
 
   defp scan_attributes(
          [
-           %{
-             "_contract_address" => contract_address,
-             "msg_index" => _,
-             "type" => "execute"
-           }
-           | rest
-         ],
-         collection
-       ) do
-    scan_attributes(rest, [
-      {Rujira.Contracts, :query_state_smart, [contract_address, :_]} | collection
-    ])
-  end
-
-  defp scan_attributes(
-         [
            %{"action" => "/cosmwasm.wasm.v1.MsgInstantiateContract"} = event
            | rest
          ],

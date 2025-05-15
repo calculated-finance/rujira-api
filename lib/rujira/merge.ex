@@ -8,6 +8,7 @@ defmodule Rujira.Merge do
   alias Rujira.Merge.Pool
   alias Rujira.Merge.Account
   use GenServer
+  use Memoize
 
   @code_ids Application.compile_env(:rujira, __MODULE__, code_ids: [78])
             |> Keyword.get(:code_ids)
@@ -70,10 +71,14 @@ defmodule Rujira.Merge do
   @spec load_pool(Pool.t()) ::
           {:ok, Pool.t()} | {:error, GRPC.RPCError.t()} | {:error, :parse_error}
   def load_pool(pool) do
-    with {:ok, res} <- Contracts.query_state_smart(pool.address, %{status: %{}}),
+    with {:ok, res} <- query_pool(pool.address),
          {:ok, status} <- Rujira.Merge.Pool.Status.from_query(res) do
       {:ok, Pool.set_rate(%{pool | status: status})}
     end
+  end
+
+  defmemop query_pool(address) do
+    Contracts.query_state_smart(address, %{status: %{}})
   end
 
   @doc """
@@ -99,33 +104,38 @@ defmodule Rujira.Merge do
   @spec load_account(Pool.t(), String.t()) ::
           {:ok, Account.t()} | {:error, GRPC.RPCError.t()}
   def load_account(pool, account) do
+    with {:ok, {share_pool, account_shares, account_merged}} <-
+           query_account(pool.address, account) do
+      Account.from_query(pool, %{
+        "addr" => account,
+        "merged" => account_merged,
+        "shares" => account_shares,
+        "size" => Account.ownership(share_pool, account_shares)
+      })
+    else
+      {:error, :not_found} ->
+        Account.from_query(pool, %{
+          "addr" => account,
+          "merged" => "0",
+          "shares" => "0",
+          "size" => "0"
+        })
+    end
+  end
+
+  defmemop query_account(address, account) do
     prefix = "accounts"
     separator = <<0>>
     prefix_len = <<byte_size(prefix)>>
 
     # SharePool has an overflow in its `ownership` query. Do the raw queries and calculate it here
-    with {:ok, share_pool} <-
-           Contracts.query_state_raw(pool.address, "pool") do
-      case Contracts.query_state_raw(
-             pool.address,
+    with {:ok, share_pool} <- Contracts.query_state_raw(address, "pool"),
+         {:ok, [account_shares, account_merged]} <-
+           Contracts.query_state_raw(
+             address,
              separator <> prefix_len <> prefix <> account
            ) do
-        {:ok, [account_shares, account_merged]} ->
-          Account.from_query(pool, %{
-            "addr" => account,
-            "merged" => account_merged,
-            "shares" => account_shares,
-            "size" => Account.ownership(share_pool, account_shares)
-          })
-
-        {:error, :not_found} ->
-          Account.from_query(pool, %{
-            "addr" => account,
-            "merged" => "0",
-            "shares" => "0",
-            "size" => "0"
-          })
-      end
+      {:ok, {share_pool, account_shares, account_merged}}
     end
   end
 

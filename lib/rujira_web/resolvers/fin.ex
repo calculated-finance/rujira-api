@@ -67,7 +67,7 @@ defmodule RujiraWeb.Resolvers.Fin do
     %{side: side, price: price, owner: owner, contract: contract} = Map.merge(order, args)
 
     with {:ok, pair} <- Fin.get_pair(contract),
-         {:ok, order} <- Order.load(pair, side, price, owner) do
+         {:ok, order} <- Fin.load_order(pair, side, price, owner) do
       {:ok, %{cursor: order.id, node: order}}
     end
   end

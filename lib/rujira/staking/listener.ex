@@ -1,4 +1,5 @@
 defmodule Rujira.Staking.Listener do
+  alias Rujira.Staking
   use GenServer
   require Logger
 
@@ -36,11 +37,14 @@ defmodule Rujira.Staking.Listener do
       Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
 
       id = Absinthe.Relay.Node.to_global_id(:staking_account, "#{a}/#{o}", RujiraWeb.Schema)
+      Memoize.invalidate(Staking, :query_account, [a, o])
+
       Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
     end
 
     for a <- transfers do
       Logger.debug("#{__MODULE__} transfer #{a}")
+      Memoize.invalidate(Staking, :query_account, [a, :_])
 
       # We can indiscriminately publish all transfer events over the :staking_summary
       # subscription.

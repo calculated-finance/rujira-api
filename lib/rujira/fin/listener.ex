@@ -1,4 +1,5 @@
 defmodule Rujira.Fin.Listener do
+  alias Rujira.Fin
   use GenServer
   require Logger
 
@@ -22,7 +23,7 @@ defmodule Rujira.Fin.Listener do
     addresses =
       txs
       |> Enum.flat_map(fn
-        %{result: %{events: xs}} when is_list(xs) ->xs
+        %{result: %{events: xs}} when is_list(xs) -> xs
         _ -> []
       end)
       |> Enum.flat_map(&scan_event/1)
@@ -30,8 +31,17 @@ defmodule Rujira.Fin.Listener do
       # Trades are withdrawn before retraction. Ensure we're not re-publishing an order that doens't exist
       |> Enum.reverse()
 
+    for address <- addresses |> Enum.map(&elem(&1, 1)) |> Enum.uniq() do
+      Memoize.invalidate(Fin, :query_pair, [address])
+      id = Absinthe.Relay.Node.to_global_id(:fin_book, address, RujiraWeb.Schema)
+      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+    end
+
     for {name, contract, owner, side, price} <- addresses do
       Logger.debug("#{__MODULE__} change #{contract}")
+
+      Memoize.invalidate(Fin, :query_orders, [contract, owner, :_, :_])
+      Memoize.invalidate(Fin, :query_order, [contract, owner, side, price])
 
       case name do
         "trade" ->
@@ -48,11 +58,6 @@ defmodule Rujira.Fin.Listener do
             fin_order_updated: owner
           )
       end
-    end
-
-    for address <- addresses |> Enum.map(&elem(&1, 1)) |> Enum.uniq() do
-      id = Absinthe.Relay.Node.to_global_id(:fin_book, address, RujiraWeb.Schema)
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
     end
   end
 
@@ -73,5 +78,4 @@ defmodule Rujira.Fin.Listener do
     owner = Map.get(map, "owner")
     [{name, address, owner, side, price}]
   end
-
 end

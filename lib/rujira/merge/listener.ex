@@ -1,4 +1,5 @@
 defmodule Rujira.Merge.Listener do
+  alias Rujira.DataMocks.Merge
   use GenServer
   require Logger
 
@@ -30,7 +31,8 @@ defmodule Rujira.Merge.Listener do
 
     for {a, account} <- addresses do
       Logger.debug("#{__MODULE__} change #{a}")
-
+      Memoize.invalidate(Merge, :query_pool, [a])
+      Memoize.invalidate(Merge, :query_account, [a, account])
       id = Absinthe.Relay.Node.to_global_id(:merge_pool, a, RujiraWeb.Schema)
       Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
       id = Absinthe.Relay.Node.to_global_id(:merge_account, "#{a}/#{account}", RujiraWeb.Schema)
