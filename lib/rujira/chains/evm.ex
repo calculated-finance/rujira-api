@@ -35,7 +35,17 @@ defmodule Rujira.Chains.Evm do
                 params: ["logs", %{"topics" => [@transfer]}]
               })
 
+            # Subscribe to new block headers
+            new_heads =
+              Jason.encode!(%{
+                jsonrpc: "2.0",
+                method: "eth_subscribe",
+                id: 2,
+                params: ["newHeads"]
+              })
+
             WebSockex.send_frame(pid, {:text, message})
+            WebSockex.send_frame(pid, {:text, new_heads})
 
             {:ok, pid}
 
@@ -57,8 +67,12 @@ defmodule Rujira.Chains.Evm do
 
       def handle_frame({:text, msg}, state) do
         case Jason.decode(msg) do
-          {:ok, %{"params" => %{"result" => result}}} ->
+          {:ok, %{"params" => %{"result" => %{"topics" => _} = result}}} ->
             handle_result(result)
+            {:ok, state}
+
+          {:ok, %{"params" => %{"result" => %{"hash" => block_hash}}}} ->
+            Task.start(fn -> handle_native_transfers(block_hash) end)
             {:ok, state}
 
           {:ok, _} ->
@@ -123,6 +137,26 @@ defmodule Rujira.Chains.Evm do
         with {:ok, native_balance} <- native_balance(address),
              {:ok, assets_balance} <- balances_of(address, assets) do
           {:ok, [%{asset: Assets.from_string(@asset), amount: native_balance} | assets_balance]}
+        end
+      end
+
+      defp handle_native_transfers(block_hash) do
+        with {:ok, %{"transactions" => txs}} <-
+               Ethereumex.HttpClient.eth_get_block_by_hash(block_hash, true, url: @rpc) do
+          txs
+          |> Task.async_stream(fn %{"from" => from, "to" => to, "value" => "0x" <> value_hex} ->
+            if String.to_integer(value_hex, 16) > 0 do
+              Memoize.invalidate(__MODULE__, :balance_of, [from, "0x0000000000000000000000000000000000000000"])
+              Memoize.invalidate(__MODULE__, :balance_of, [to, "0x0000000000000000000000000000000000000000"])
+
+              id = to_global_id(:layer_1_account, "#{@chain}:#{from}", RujiraWeb.Schema)
+              publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+
+              id = to_global_id(:layer_1_account, "#{@chain}:#{to}", RujiraWeb.Schema)
+              publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+            end
+          end)
+          |> Stream.run()
         end
       end
     end
