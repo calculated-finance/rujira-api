@@ -34,8 +34,8 @@ defmodule Rujira.Fin do
   Rujira's 100% on-chain, central limit order book style decentralized token exchange.
   """
 
-  @pair_code_ids Application.compile_env(:rujira, __MODULE__, pair_code_ids: [115, 118])
-                 |> Keyword.get(:pair_code_ids)
+  @code_ids Application.compile_env(:rujira, __MODULE__, code_ids: [9])
+            |> Keyword.get(:code_ids)
 
   @doc """
   Fetches the Pair contract and its current config from the chain
@@ -51,7 +51,7 @@ defmodule Rujira.Fin do
   """
   @spec list_pairs(list(integer())) ::
           {:ok, list(Pair.t())} | {:error, GRPC.RPCError.t()}
-  def list_pairs(code_ids \\ @pair_code_ids) when is_list(code_ids),
+  def list_pairs(code_ids \\ @code_ids) when is_list(code_ids),
     do: Contracts.list(Pair, code_ids)
 
   @doc """

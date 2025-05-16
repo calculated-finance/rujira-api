@@ -1,4 +1,5 @@
 defmodule Rujira.Fin.Pair do
+  alias Rujira.Assets
   alias Rujira.Fin.Book
 
   defstruct [
@@ -70,4 +71,43 @@ defmodule Rujira.Fin.Pair do
   end
 
   def get_asset(nil), do: {:ok, nil}
+
+  def init_msg(
+        %{
+          "denoms" => [x, y],
+          "fee_address" => fee_address
+        } = config
+      ) do
+    market_maker = Map.get(config, "market_maker")
+
+    with {:ok, base} <- Assets.from_denom(x),
+         {:ok, quote_} <- Assets.from_denom(y) do
+      %{
+        denoms: [x, y],
+        oracles: [
+          %{chain: String.downcase(base.chain), symbol: base.symbol},
+          %{chain: String.downcase(quote_.chain), symbol: quote_.symbol}
+        ],
+        market_maker: market_maker,
+        tick: 6,
+        fee_taker: "0.0015",
+        fee_maker: "0.00075",
+        fee_address: fee_address
+      }
+    else
+      _ ->
+        %{
+          denoms: [x, y],
+          market_maker: market_maker,
+          tick: 6,
+          fee_taker: "0.0015",
+          fee_maker: "0.00075",
+          fee_address: fee_address
+        }
+    end
+  end
+
+  def migrate_msg(_from, _to, _), do: %{}
+
+  def init_label(%{"denoms" => [x, y]}), do: "rujira-fin:#{x}:#{y}"
 end

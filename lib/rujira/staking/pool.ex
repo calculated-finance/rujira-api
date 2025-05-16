@@ -163,4 +163,25 @@ defmodule Rujira.Staking.Pool do
       end
     end)
   end
+
+  def init_msg(%{
+        "bond_denom" => bond_denom,
+        "revenue_converter" => %{
+          "contract" => contract,
+          "msg" => msg,
+          "min" => min
+        },
+        "revenue_denom" => revenue_denom
+      }) do
+    %{
+      bond_denom: bond_denom,
+      revenue_denom: revenue_denom,
+      receipt_token_metadata: TokenMetadata,
+      revenue_converter: [contract, Base.encode64(msg), min]
+    }
+  end
+
+  def migrate_msg(_from, _to, _), do: %{}
+
+  def init_label(%{"bond_denom" => x}), do: "rujira-staking:#{x}"
 end

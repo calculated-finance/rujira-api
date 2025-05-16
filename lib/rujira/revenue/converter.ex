@@ -24,4 +24,18 @@ defmodule Rujira.Revenue.Converter do
        target_addresses: Enum.reduce(target_addresses, %{}, &Map.put(&2, &1[0], &1[1]))
      }}
   end
+
+  def init_msg(%{
+        "executor" => _,
+        "target_addresses" => [
+          %{"address" => _, "weight" => _}
+        ],
+        "target_denoms" => _
+      }) do
+    %{}
+  end
+
+  def migrate_msg(_from, _to, _), do: %{}
+
+  def init_label(%{"target_denoms" => x}), do: "rujira-revenue:#{Enum.join(x, ",")}"
 end

@@ -1,12 +1,16 @@
 defmodule Rujira.Merge.Pool do
   defmodule Status do
+    alias Rujira.Chains.Thor
+    alias Rujira.Merge.Pool
+
     defstruct [
       :merged,
       :shares,
       :size,
       :current_rate,
       :share_value,
-      :share_value_change
+      :share_value_change,
+      :apr
     ]
 
     @type t :: %__MODULE__{
@@ -15,24 +19,20 @@ defmodule Rujira.Merge.Pool do
             size: integer(),
             current_rate: integer(),
             share_value: Decimal.t(),
-            share_value_change: non_neg_integer()
+            share_value_change: non_neg_integer(),
+            apr: Decimal.t()
           }
 
-    @spec from_query(map()) :: {:ok, __MODULE__.t()} | {:error, :parse_error}
-    def from_query(%{
-          "merged" => merged,
-          "shares" => shares,
-          "size" => size
-        }) do
-      with {merged, ""} <- Integer.parse(merged),
+    @spec from_query(Pool.t(), map()) :: {:ok, __MODULE__.t()} | {:error, :parse_error}
+    def from_query(pool, %{"merged" => merged, "shares" => shares, "size" => size}) do
+      with {:ok, balance} <- Thor.balance_of(pool.address, pool.ruji_denom),
+           {merged, ""} <- Integer.parse(merged),
            {shares, ""} <- Integer.parse(shares),
            {size, ""} <- Integer.parse(size) do
-        {:ok,
-         %__MODULE__{
-           merged: merged,
-           shares: shares,
-           size: size
-         }}
+        # max = balance - size
+        # apr = Decimal.new(max)
+
+        {:ok, %__MODULE__{merged: merged, shares: shares, size: size}}
       else
         _ -> {:error, :parse_error}
       end

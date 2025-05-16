@@ -2,6 +2,8 @@ defmodule Rujira.Contracts do
   @moduledoc """
   Convenience methods for querying CosmWasm smart contracts
   """
+  alias Cosmwasm.Wasm.V1.QueryBuildAddressRequest
+  alias Cosmwasm.Wasm.V1.QueryCodeRequest
   alias Cosmwasm.Wasm.V1.QueryRawContractStateRequest
   alias Cosmwasm.Wasm.V1.ContractInfo
   alias Cosmwasm.Wasm.V1.CodeInfoResponse
@@ -35,6 +37,38 @@ defmodule Rujira.Contracts do
 
   def from_id(id) do
     {:ok, %__MODULE__{id: id, address: id}}
+  end
+
+  @spec code_info(non_neg_integer()) ::
+          {:ok, Cosmwasm.Wasm.V1.CodeInfoResponse.t()} | {:error, GRPC.RPCError.t()}
+  defmemo code_info(code_id) do
+    with {:ok, %{code_info: code_info}} <-
+           Thorchain.Node.stub(
+             &Stub.code/2,
+             %QueryCodeRequest{code_id: code_id}
+           ) do
+      {:ok, code_info}
+    end
+  end
+
+  defmemo build_address(id, creator, salt) when is_integer(id) do
+    with {:ok, %{data_hash: data_hash}} <- code_info(id) do
+      build_address(Base.encode16(data_hash), creator, salt)
+    end
+  end
+
+  defmemo build_address(hash, creator, salt) do
+    with {:ok, %{address: address}} <-
+           Thorchain.Node.stub(
+             &Stub.build_address/2,
+             %QueryBuildAddressRequest{
+               code_hash: hash,
+               creator_address: creator,
+               salt: salt
+             }
+           ) do
+      {:ok, address}
+    end
   end
 
   @spec info(String.t()) ::

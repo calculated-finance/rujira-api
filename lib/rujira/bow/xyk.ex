@@ -185,4 +185,12 @@ defmodule Rujira.Bow.Xyk do
         depth(config, state, threshold, Decimal.add(value, ask))
     end
   end
+
+  def init_msg(%{"x" => _x, "y" => _y}) do
+    %{}
+  end
+
+  def migrate_msg(_from, _to, _), do: %{}
+
+  def init_label(%{"x" => x, "y" => y}), do: "rujira-bow:xyk:#{x}:#{y}"
 end

@@ -72,7 +72,7 @@ defmodule Rujira.Merge do
           {:ok, Pool.t()} | {:error, GRPC.RPCError.t()} | {:error, :parse_error}
   def load_pool(pool) do
     with {:ok, res} <- query_pool(pool.address),
-         {:ok, status} <- Rujira.Merge.Pool.Status.from_query(res) do
+         {:ok, status} <- Rujira.Merge.Pool.Status.from_query(pool, res) do
       {:ok, Pool.set_rate(%{pool | status: status})}
     end
   end

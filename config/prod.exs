@@ -40,6 +40,3 @@ config :logger, level: :info
 config :appsignal, :config,
   active: true,
   revision: System.get_env("SOURCE_VERSION")
-
-network = System.get_env("NETWORK", "devnet")
-import_config "prod.#{network}.exs"

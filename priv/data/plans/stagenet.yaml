@@ -1,0 +1,58 @@
+codes: 
+  staking: 1
+  revenue: 2
+  fin: 3
+  bow: 4
+
+contracts:
+  staking: 
+    - id: ruji
+      admin: ${account:admin}
+      bond_denom: x/ruji
+      revenue_denom: eth-usdt
+      revenue_converter: 
+        contract: ${contracts:fin.ruji-eth-usdt}
+        msg: '{"swap": {}}'
+        min: "10000"
+
+  revenue: 
+    - id: usdt
+      admin: ${account:admin}
+      executor: ${account:admin}
+      target_denoms:
+        - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+      target_addresses:
+        - address: ${contracts:staking.ruji}
+          weight: 1
+
+  fin: 
+    - id: ruji-rune
+      admin: ${account:admin}
+      denoms: 
+        - x/ruji
+        - rune
+      market_maker: ${contracts:bow.ruji-rune}
+      fee_address: ${contracts:revenue.usdt}
+
+    - id: ruji-eth-usdt
+      admin: ${account:admin}
+      denoms: 
+        - x/ruji
+        - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+      market_maker: ${contracts:bow.ruji-eth-usdt}
+      fee_address: ${contracts:revenue.usdt}
+
+  bow: 
+    - id: ruji-rune
+      admin: ${account:admin}
+      strategy: 
+        xyk: 
+          x: x/ruji
+          y: rune
+
+    - id: ruji-eth-usdt
+      admin: ${account:admin}
+      strategy: 
+        xyk: 
+          x: x/ruji
+          y: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7

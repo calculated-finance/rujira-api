@@ -14,5 +14,4 @@ config :phoenix, :stacktrace_depth, 20
 config :phoenix, :plug_init_mode, :runtime
 
 network = System.get_env("NETWORK", "devnet")
-
 import_config "dev.#{network}.exs"
