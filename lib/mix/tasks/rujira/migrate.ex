@@ -58,14 +58,14 @@ defmodule Mix.Tasks.Rujira.Migrate do
       |> File.read!()
       |> YamlElixir.read_from_string!()
 
-    # We need to grab accounts first so that they're available for other step
-    accounts = parse_ctx(%{}, accounts)
+    # Do accounts first, so they're available for contract interpolation
+    %{accounts: accounts} = parse_ctx(%{accounts: accounts}, %{})
+    IO.inspect(accounts)
 
-    ctx = %{accounts: accounts, codes: codes}
-
-    ctx
-    |> parse_ctx(%{contracts: contracts})
-    |> Map.merge(ctx)
+    parse_ctx(
+      %{accounts: accounts, codes: codes, contracts: contracts},
+      %{accounts: accounts, codes: codes, contracts: contracts}
+    )
   end
 
   # Existing contract, no change, ignore
@@ -120,39 +120,46 @@ defmodule Mix.Tasks.Rujira.Migrate do
 
   defp to_init_label(protocol, config), do: to_module(protocol).init_label(config)
 
-  defp parse_ctx(ctx, map) when is_map(map) do
+  defp parse_ctx(map, ctx) when is_map(map) do
     map
-    |> Enum.map(fn {k, v} -> {k, parse_ctx(ctx, v)} end)
+    |> Enum.map(fn {k, v} -> {k, parse_ctx(v, ctx)} end)
     |> Enum.into(%{})
   end
 
-  defp parse_ctx(ctx, v) when is_list(v), do: Enum.map(v, &parse_ctx(ctx, &1))
-  defp parse_ctx(ctx, v) when is_binary(v), do: interpolate_string(ctx, v)
-  defp parse_ctx(_, v), do: v
+  defp parse_ctx(v, ctx) when is_list(v), do: Enum.map(v, &parse_ctx(&1, ctx))
+  defp parse_ctx(v, ctx) when is_binary(v), do: interpolate_string(v, ctx)
+  defp parse_ctx(v, _), do: v
 
-  defp interpolate_string(ctx, str) do
+  defp interpolate_string(str, ctx) do
     case Regex.run(~r/^\${(.*)}$/, str) do
       nil -> str
-      [_, x] -> parse_arg(ctx, x)
+      [_, x] -> parse_arg(x, ctx)
     end
   end
 
-  def parse_arg(%{contracts: contracts, codes: codes}, "contracts:" <> id) do
+  def parse_arg("contracts:" <> id, %{contracts: contracts, codes: codes} = ctx) do
     [protocol, id] = String.split(id, ".")
     code_id = Map.get(codes, protocol)
-    creator = contracts |> Map.get(id, %{}) |> Map.get(:creator)
+
+    creator =
+      contracts
+      |> Map.get(protocol)
+      |> Enum.find(&(&1["id"] == id))
+      |> Map.get("creator")
+      |> interpolate_string(ctx)
+
     protocol |> build_address_salt(id) |> Contracts.build_address!(creator, code_id)
   end
 
-  def parse_arg(%{accounts: accounts}, "accounts:" <> id) do
+  def parse_arg("accounts:" <> id, %{accounts: accounts}) do
     Map.get(accounts, id)
   end
 
-  def parse_arg(_, "env:" <> id) do
+  def parse_arg("env:" <> id, _) do
     System.get_env(id)
   end
 
-  def parse_arg(_, x), do: x
+  def parse_arg(x, _), do: x
 
   def build_address_salt(protocol, id), do: Base.encode16("#{protocol}:#{id}")
 end

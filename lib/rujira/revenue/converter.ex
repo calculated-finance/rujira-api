@@ -26,13 +26,15 @@ defmodule Rujira.Revenue.Converter do
   end
 
   def init_msg(%{
-        "executor" => _,
-        "target_addresses" => [
-          %{"address" => _, "weight" => _}
-        ],
-        "target_denoms" => _
+        "executor" => executor,
+        "target_addresses" => target_addresses,
+        "target_denoms" => target_denoms
       }) do
-    %{}
+    %{
+      executor: executor,
+      target_addresses: target_addresses,
+      target_denoms: target_denoms
+    }
   end
 
   def migrate_msg(_from, _to, _), do: %{}

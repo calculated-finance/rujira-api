@@ -1,4 +1,5 @@
 defmodule Rujira.Bow.Xyk do
+  alias Rujira.Assets
   import Ecto.Query
   use Memoize
 
@@ -186,11 +187,31 @@ defmodule Rujira.Bow.Xyk do
     end
   end
 
-  def init_msg(%{"x" => _x, "y" => _y}) do
-    %{}
+  def init_msg(%{"x" => x, "y" => y}) do
+    {:ok, x_asset} = Assets.from_denom(x)
+    {:ok, y_asset} = Assets.from_denom(y)
+
+    %{
+      strategy: %{
+        xyk: %{
+          x: x,
+          y: y,
+          step: "0.001",
+          min_quote: "10000",
+          fee: "0.003"
+        }
+      },
+      metadata: %{
+        description:
+          "Transferable shares issued when depositing funds into the Rujira XYK #{x_asset.ticker}/#{y_asset.ticker} liquidity pool",
+        display: "x/bow-xyk-#{x}-#{y}",
+        name: "#{x_asset.ticker}/#{y_asset.ticker} XYK Liquidity Shares",
+        symbol: "LP-#{x_asset.ticker}-#{y_asset.ticker}-XYK"
+      }
+    }
   end
 
   def migrate_msg(_from, _to, _), do: %{}
 
-  def init_label(%{"x" => x, "y" => y}), do: "rujira-bow:xyk:#{x}:#{y}"
+  def init_label(%{"x" => x, "y" => y}), do: "rujira-bow:#{x}-#{y}:xyk"
 end

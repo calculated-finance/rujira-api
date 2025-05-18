@@ -1,4 +1,5 @@
 defmodule Rujira.Staking.Pool do
+  alias Rujira.Assets
   use Memoize
   import Ecto.Query
 
@@ -173,10 +174,18 @@ defmodule Rujira.Staking.Pool do
         },
         "revenue_denom" => revenue_denom
       }) do
+    {:ok, asset} = Assets.from_denom(bond_denom)
+
     %{
       bond_denom: bond_denom,
       revenue_denom: revenue_denom,
-      receipt_token_metadata: TokenMetadata,
+      receipt_token_metadata: %{
+        description:
+          "Transferable shares issued when staking #{asset.ticker} on Rujira via the Liquid Staking interface",
+        display: "x/staking-#{bond_denom}",
+        name: "Yield bearing s#{asset.ticker}",
+        symbol: "s#{asset.ticker}"
+      },
       revenue_converter: [contract, Base.encode64(msg), min]
     }
   end
