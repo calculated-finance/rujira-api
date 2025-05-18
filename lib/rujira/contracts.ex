@@ -51,13 +51,13 @@ defmodule Rujira.Contracts do
     end
   end
 
-  defmemo build_address(id, creator, salt) when is_integer(id) do
+  defmemo build_address(salt, creator, id) when is_integer(id) do
     with {:ok, %{data_hash: data_hash}} <- code_info(id) do
-      build_address(Base.encode16(data_hash), creator, salt)
+      build_address(salt, creator, Base.encode16(data_hash))
     end
   end
 
-  defmemo build_address(hash, creator, salt) do
+  defmemo build_address(salt, creator, hash) do
     with {:ok, %{address: address}} <-
            Thorchain.Node.stub(
              &Stub.build_address/2,
@@ -69,6 +69,11 @@ defmodule Rujira.Contracts do
            ) do
       {:ok, address}
     end
+  end
+
+  defmemo build_address!(salt, deployer, code_id) do
+    {:ok, address} = build_address(salt, deployer, code_id)
+    address
   end
 
   @spec info(String.t()) ::
