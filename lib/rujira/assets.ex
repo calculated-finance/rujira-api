@@ -191,4 +191,6 @@ defmodule Rujira.Assets do
         {:error, "Invalid Denom #{denom}"}
     end
   end
+
+  def short_id(%{chain: chain, ticker: ticker}), do: "#{chain}.#{ticker}"
 end

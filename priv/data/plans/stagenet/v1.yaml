@@ -1,17 +1,19 @@
 accounts: 
-  admin: ${env:CREATOR}
+  admin: sthor1qm7vtdca95aj7nvtrarqm3uah33nhffpnhhg3j
+  creator: sthor1qm7vtdca95aj7nvtrarqm3uah33nhffpnhhg3j
+  revenue: sthor1qm7vtdca95aj7nvtrarqm3uah33nhffpnhhg3j
 
 codes: 
-  staking: 1
-  revenue: 2
-  fin: 3
-  bow: 4
+  staking: 33
+  revenue: 34
+  fin: 35
+  bow: 36
 
 contracts:
   staking: 
     - id: ruji
       admin: ${accounts:admin}
-      creator: ${accounts:admin}
+      creator: ${accounts:creator}
       config: 
         bond_denom: x/ruji
         revenue_denom: eth-usdt
@@ -21,9 +23,9 @@ contracts:
           min: "10000"
 
   revenue: 
-    - id: usdt
+    - id: single
       admin: ${accounts:admin}
-      creator: ${accounts:admin}
+      creator: ${accounts:creator}
       config:
         executor: ${accounts:admin}
         target_denoms:
@@ -32,31 +34,120 @@ contracts:
           - address: ${contracts:staking.ruji}
             weight: 1
 
+    - id: split
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        executor: ${accounts:admin}
+        target_denoms:
+          - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+        target_addresses:
+          - address: ${contracts:staking.ruji}
+            weight: 1
+          - address: ${accounts:revenue}
+            weight: 1
+
   fin: 
+    - id: btc-eth-usdt
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - btc-btc
+          - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+        market_maker: ${contracts:bow.btc-eth-usdt}
+        fee_address: ${contracts:revenue.split}
+
+    - id: bnb-eth-usdt
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - bsc-bnb
+          - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+        market_maker: ${contracts:bow.bnb-eth-usdt}
+        fee_address: ${contracts:revenue.split}
+
+    - id: eth-eth-usdt
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - eth-eth
+          - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+        market_maker: ${contracts:bow.eth-eth-usdt}
+        fee_address: ${contracts:revenue.split}
+
+    - id: bsc-usdc-eth-usdt
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - bsc-usdt-0x55d398326f99059ff775485246999027b3197955
+          - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+        fee_address: ${contracts:revenue.split}
+
     - id: ruji-rune
       admin: ${accounts:admin}
-      creator: ${accounts:admin}
+      creator: ${accounts:creator}
       config:
         denoms: 
           - x/ruji
           - rune
         market_maker: ${contracts:bow.ruji-rune}
-        fee_address: ${contracts:revenue.usdt}
+        fee_address: ${contracts:revenue.split}
 
     - id: ruji-eth-usdt
       admin: ${accounts:admin}
-      creator: ${accounts:admin}
+      creator: ${accounts:creator}
       config:
         denoms: 
           - x/ruji
           - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
         market_maker: ${contracts:bow.ruji-eth-usdt}
-        fee_address: ${contracts:revenue.usdt}
+        fee_address: ${contracts:revenue.split}
+
+    - id: tcy-eth-usdt
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - tcy
+          - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+        market_maker: ${contracts:bow.tcy-eth-usdt}
+        fee_address: ${contracts:revenue.split}
 
   bow: 
+    - id: btc-eth-usdt
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        strategy:
+          xyk: 
+            x: btc-btc
+            y: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+        
+    - id: bnb-eth-usdt
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        strategy:
+          xyk: 
+            x: bsc-bnb
+            y: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+        
+    - id: eth-eth-usdt
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        strategy:
+          xyk: 
+            x: eth-eth
+            y: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+        
     - id: ruji-rune
       admin: ${accounts:admin}
-      creator: ${accounts:admin}
+      creator: ${accounts:creator}
       config:
         strategy: 
           xyk: 
@@ -65,9 +156,18 @@ contracts:
 
     - id: ruji-eth-usdt
       admin: ${accounts:admin}
-      creator: ${accounts:admin}
+      creator: ${accounts:creator}
       config:
         strategy: 
           xyk: 
             x: x/ruji
+            y: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+
+    - id: tcy-eth-usdt
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        strategy: 
+          xyk: 
+            x: tcy
             y: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
