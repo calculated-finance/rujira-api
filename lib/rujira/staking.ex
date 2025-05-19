@@ -3,6 +3,7 @@ defmodule Rujira.Staking do
   Rujira Staking.
   """
 
+  alias Rujira.Deployments
   alias Rujira.Staking.Listener
   alias Rujira.Staking.Pool.Status
   alias Rujira.Staking.Account
@@ -12,16 +13,6 @@ defmodule Rujira.Staking do
   use Memoize
 
   use Supervisor
-
-  @single :rujira
-          |> Application.compile_env(__MODULE__,
-            single: "sthor1k0grs37wafwjdawc27fsqdrl2y3ghuad2dqdrwmnj56tz084xrmsmdydfs"
-          )
-          |> Keyword.get(:single)
-
-  @dual :rujira
-        |> Application.compile_env(__MODULE__, dual: nil)
-        |> Keyword.get(:dual)
 
   def start_link(_) do
     children = [Listener]
@@ -33,8 +24,13 @@ defmodule Rujira.Staking do
     {:ok, state}
   end
 
-  def single(), do: @single
-  def dual(), do: @dual
+  def single() do
+    with %{address: address} <- Deployments.get_target(Pool, "ruji") do
+      address
+    end
+  end
+
+  def dual(), do: nil
 
   @doc """
   Fetches the Staking Pool contract and its current config from the chain

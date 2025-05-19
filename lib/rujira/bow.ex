@@ -3,6 +3,7 @@ defmodule Rujira.Bow do
   Rujira Bow - AMM pools.
   """
 
+  alias Rujira.Deployments
   alias Rujira.Bow.Account
   alias Rujira.Chains.Thor
   alias Rujira.Contracts
@@ -10,9 +11,6 @@ defmodule Rujira.Bow do
   import Ecto.Query
   use Memoize
   # use GenServer
-
-  @code_ids Application.compile_env(:rujira, __MODULE__, code_ids: [114])
-            |> Keyword.get(:code_ids)
 
   # def start_link(_) do
   #   Supervisor.start_link([__MODULE__.Listener], strategy: :one_for_one)
@@ -27,20 +25,19 @@ defmodule Rujira.Bow do
   Fetches all Bow Pools
   """
 
-  @spec list_pools(list(integer())) ::
+  @spec list_pools() ::
           {:ok, list(Xyk.t())} | {:error, GRPC.RPCError.t()}
-  def list_pools(code_ids \\ @code_ids) when is_list(code_ids) do
-    with {:ok, contracts} <- Contracts.by_codes(@code_ids) do
-      contracts
-      |> Task.async_stream(&load_pool/1, timeout: 30_000)
-      |> Enum.reduce({:ok, []}, fn
-        {:ok, {:ok, x}}, {:ok, xs} ->
-          {:ok, [x | xs]}
+  def list_pools() do
+    __MODULE__
+    |> Deployments.list_targets()
+    |> Task.async_stream(&load_pool/1, timeout: 30_000)
+    |> Enum.reduce({:ok, []}, fn
+      {:ok, {:ok, x}}, {:ok, xs} ->
+        {:ok, [x | xs]}
 
-        _, err ->
-          err
-      end)
-    end
+      _, err ->
+        err
+    end)
   end
 
   @doc """

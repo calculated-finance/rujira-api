@@ -1,5 +1,6 @@
 defmodule Rujira.Fin do
   use GenServer
+  alias Rujira.Deployments
   alias Rujira.Resolution
   alias Rujira.Fin.Trade
   alias Rujira.Contracts
@@ -34,9 +35,6 @@ defmodule Rujira.Fin do
   Rujira's 100% on-chain, central limit order book style decentralized token exchange.
   """
 
-  @code_ids Application.compile_env(:rujira, __MODULE__, code_ids: [9])
-            |> Keyword.get(:code_ids)
-
   @doc """
   Fetches the Pair contract and its current config from the chain
   """
@@ -49,10 +47,15 @@ defmodule Rujira.Fin do
   @doc """
   Fetches all Pairs
   """
-  @spec list_pairs(list(integer())) ::
+  @spec list_pairs() ::
           {:ok, list(Pair.t())} | {:error, GRPC.RPCError.t()}
-  def list_pairs(code_ids \\ @code_ids) when is_list(code_ids),
-    do: Contracts.list(Pair, code_ids)
+  def list_pairs() do
+    Pair
+    |> Deployments.list_targets()
+    |> Rujira.Enum.reduce_while_ok([], fn %{module: module, address: address} ->
+      Contracts.get({module, address})
+    end)
+  end
 
   @doc """
   Loads the current Book into the Pair

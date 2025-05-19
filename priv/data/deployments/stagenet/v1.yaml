@@ -9,7 +9,7 @@ codes:
   fin: 35
   bow: 36
 
-contracts:
+targets:
   staking: 
     - id: ruji
       admin: ${accounts:admin}
@@ -18,7 +18,7 @@ contracts:
         bond_denom: x/ruji
         revenue_denom: eth-usdt
         revenue_converter: 
-          contract: ${contracts:fin.ruji-eth-usdt}
+          contract: ${targets:fin.ruji-eth-usdt}
           msg: '{"swap": {}}'
           min: "10000000"
 
@@ -31,7 +31,7 @@ contracts:
         target_denoms:
           - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
         target_addresses:
-          - address: ${contracts:staking.ruji}
+          - address: ${targets:staking.ruji}
             weight: 1
 
     - id: split
@@ -42,7 +42,7 @@ contracts:
         target_denoms:
           - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
         target_addresses:
-          - address: ${contracts:staking.ruji}
+          - address: ${targets:staking.ruji}
             weight: 1
           - address: ${accounts:revenue}
             weight: 1
@@ -55,8 +55,8 @@ contracts:
         denoms: 
           - btc-btc
           - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
-        market_maker: ${contracts:bow.btc-eth-usdt}
-        fee_address: ${contracts:revenue.split}
+        market_maker: ${targets:bow.btc-eth-usdt}
+        fee_address: ${targets:revenue.split}
 
     - id: bnb-eth-usdt
       admin: ${accounts:admin}
@@ -65,8 +65,8 @@ contracts:
         denoms: 
           - bsc-bnb
           - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
-        market_maker: ${contracts:bow.bnb-eth-usdt}
-        fee_address: ${contracts:revenue.split}
+        market_maker: ${targets:bow.bnb-eth-usdt}
+        fee_address: ${targets:revenue.split}
 
     - id: eth-eth-usdt
       admin: ${accounts:admin}
@@ -75,8 +75,8 @@ contracts:
         denoms: 
           - eth-eth
           - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
-        market_maker: ${contracts:bow.eth-eth-usdt}
-        fee_address: ${contracts:revenue.split}
+        market_maker: ${targets:bow.eth-eth-usdt}
+        fee_address: ${targets:revenue.split}
 
     - id: bsc-usdc-eth-usdt
       admin: ${accounts:admin}
@@ -85,7 +85,7 @@ contracts:
         denoms: 
           - bsc-usdt-0x55d398326f99059ff775485246999027b3197955
           - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
-        fee_address: ${contracts:revenue.split}
+        fee_address: ${targets:revenue.split}
 
     - id: ruji-rune
       admin: ${accounts:admin}
@@ -94,8 +94,8 @@ contracts:
         denoms: 
           - x/ruji
           - rune
-        market_maker: ${contracts:bow.ruji-rune}
-        fee_address: ${contracts:revenue.split}
+        market_maker: ${targets:bow.ruji-rune}
+        fee_address: ${targets:revenue.split}
 
     - id: ruji-eth-usdt
       admin: ${accounts:admin}
@@ -104,8 +104,8 @@ contracts:
         denoms: 
           - x/ruji
           - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
-        market_maker: ${contracts:bow.ruji-eth-usdt}
-        fee_address: ${contracts:revenue.split}
+        market_maker: ${targets:bow.ruji-eth-usdt}
+        fee_address: ${targets:revenue.split}
 
     - id: tcy-eth-usdt
       admin: ${accounts:admin}
@@ -114,8 +114,8 @@ contracts:
         denoms: 
           - tcy
           - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
-        market_maker: ${contracts:bow.tcy-eth-usdt}
-        fee_address: ${contracts:revenue.split}
+        market_maker: ${targets:bow.tcy-eth-usdt}
+        fee_address: ${targets:revenue.split}
 
   bow: 
     - id: btc-eth-usdt
