@@ -121,11 +121,17 @@ defmodule Rujira.Staking.Pool do
         |> Decimal.div(Decimal.new(1_000_000_000_000))
 
       apr =
-        revenue30
-        |> Decimal.new()
-        |> Decimal.div(Decimal.new(30))
-        |> Decimal.mult(Decimal.new(365))
-        |> Decimal.div(value)
+        case revenue30 do
+          0 ->
+            Decimal.new(0)
+
+          r ->
+            r
+            |> Decimal.new()
+            |> Decimal.div(Decimal.new(30))
+            |> Decimal.mult(Decimal.new(365))
+            |> Decimal.div(value)
+        end
 
       {:ok,
        %__MODULE__.Summary{

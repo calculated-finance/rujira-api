@@ -120,6 +120,9 @@ defmodule Rujira.Bow.Xyk do
            utilization: utilization
          }}
       end
+    else
+      nil -> {:ok, nil}
+      other -> other
     end
   end
 
@@ -149,6 +152,8 @@ defmodule Rujira.Bow.Xyk do
        |> Rujira.Repo.one()}
     end
   end
+
+  def limit(_, %{k: 0}), do: nil
 
   def limit(config, state) do
     {bid, ask, _} = do_quote(config, state)
