@@ -1,7 +1,7 @@
 accounts: 
   admin: sthor1qm7vtdca95aj7nvtrarqm3uah33nhffpnhhg3j
   creator: sthor1qm7vtdca95aj7nvtrarqm3uah33nhffpnhhg3j
-  revenue: sthor1qm7vtdca95aj7nvtrarqm3uah33nhffpnhhg3j
+  revenue: sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4
 
 codes: 
   staking: 33
@@ -20,7 +20,7 @@ contracts:
         revenue_converter: 
           contract: ${contracts:fin.ruji-eth-usdt}
           msg: '{"swap": {}}'
-          min: "10000"
+          min: "10000000"
 
   revenue: 
     - id: single
