@@ -31,8 +31,12 @@ defmodule Rujira.Revenue.Converter do
         "target_denoms" => target_denoms
       }) do
     %{
+      owner: executor,
       executor: executor,
-      target_addresses: target_addresses,
+      target_addresses:
+        Enum.map(target_addresses, fn
+          %{"address" => address, "weight" => weight} -> [address, weight]
+        end),
       target_denoms: target_denoms
     }
   end

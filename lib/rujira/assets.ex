@@ -162,6 +162,17 @@ defmodule Rujira.Assets do
     end
   end
 
+  def from_denom("x/ruji") do
+    {:ok,
+     %Asset{
+       id: "THOR.RUJI",
+       type: :native,
+       chain: "THOR",
+       symbol: "RUJI",
+       ticker: "RUJI"
+     }}
+  end
+
   def from_denom("x/" <> id = denom) do
     {:ok,
      %Asset{

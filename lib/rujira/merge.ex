@@ -10,7 +10,8 @@ defmodule Rujira.Merge do
   use GenServer
   use Memoize
 
-  @code_ids Application.compile_env(:rujira, __MODULE__, code_ids: [78])
+  @code_ids :rujira
+            |> Application.compile_env(__MODULE__)
             |> Keyword.get(:code_ids)
 
   def start_link(_) do

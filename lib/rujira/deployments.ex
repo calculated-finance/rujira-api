@@ -99,7 +99,7 @@ defmodule Rujira.Deployments do
       }) do
     %MsgMigrateContract{
       sender: admin,
-      code_id: target_code_id,
+      code_id: to_string(target_code_id),
       msg: module.migrate_msg(code_id, target_code_id, config)
     }
   end
@@ -115,12 +115,12 @@ defmodule Rujira.Deployments do
     %MsgInstantiateContract2{
       sender: admin,
       admin: admin,
-      code_id: code_id,
+      code_id: to_string(code_id),
       msg: module.init_msg(config),
       # TODO: update once any of the targets need funds on init
       funds: [],
       label: module.init_label(config),
-      salt: salt
+      salt: Base.encode64(Base.decode16!(salt))
     }
   end
 
