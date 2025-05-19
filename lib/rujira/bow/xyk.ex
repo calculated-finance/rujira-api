@@ -119,10 +119,10 @@ defmodule Rujira.Bow.Xyk do
            volume: volume,
            utilization: utilization
          }}
+      else
+        nil -> {:ok, nil}
+        other -> other
       end
-    else
-      nil -> {:ok, nil}
-      other -> other
     end
   end
 

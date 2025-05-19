@@ -1,5 +1,7 @@
 defmodule Rujira.Assets do
   use Memoize
+  alias Rujira.Bow
+  alias Rujira.Deployments
   alias Thorchain.Types.QueryPoolsRequest
   alias Thorchain.Types.Query.Stub, as: Q
   alias __MODULE__.Asset
@@ -148,7 +150,13 @@ defmodule Rujira.Assets do
   end
 
   def from_denom("x/bow-xyk-" <> id = denom) do
-    with [x, y] <- String.split(id, "-"),
+    with %{config: %{"strategy" => %{"xyk" => %{"x" => x, "y" => y}}}} <-
+           Bow
+           |> Deployments.list_targets()
+           |> Enum.find(fn %{config: %{"strategy" => %{"xyk" => %{"x" => x, "y" => y}}}} ->
+             # `-` is used as a separator for the xyk denom as well as secured assets
+             String.downcase("#{x}-#{y}") == String.downcase(id)
+           end),
          {:ok, x} <- from_denom(x),
          {:ok, y} <- from_denom(y) do
       {:ok,
@@ -159,6 +167,8 @@ defmodule Rujira.Assets do
          symbol: "#{x.symbol}/#{y.symbol} LP",
          ticker: "#{x.ticker}/#{y.ticker} LP"
        }}
+    else
+      _ -> {:error, :invalid_denom_string}
     end
   end
 
