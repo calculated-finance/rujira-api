@@ -10,43 +10,51 @@ defmodule Mix.Tasks.Rujira.Migrate do
   alias Rujira.Contracts
   use Mix.Task
 
-  def run([plan]) do
+  def run([plan, out]) do
     Mix.Task.run("app.start")
     %{codes: codes, contracts: contracts} = load_config!(plan)
 
-    contracts
-    |> Enum.flat_map(fn {protocol, configs} ->
-      Enum.map(configs, fn %{
-                             "id" => id,
-                             "admin" => admin,
-                             "creator" => creator,
-                             "config" => config
-                           } ->
-        code_id = Map.get(codes, protocol)
-        salt = build_address_salt(protocol, id)
+    tx =
+      contracts
+      |> Enum.flat_map(&parse_protocol(codes, &1))
+      |> Enum.map(fn x -> Map.put(x, :msg, to_msg(x)) end)
+      |> to_tx()
+      |> Jason.encode!(pretty: true)
 
-        address = Contracts.build_address!(salt, creator, code_id)
+    File.write!(out, tx)
+  end
 
-        contract =
-          case Contracts.info(address) do
-            {:ok, info} -> info
-            _ -> nil
-          end
+  defp parse_protocol(codes, {protocol, configs}) do
+    Enum.map(configs, &parse_contract(codes, protocol, &1))
+  end
 
-        %{
-          address: address,
-          creator: creator,
-          code_id: code_id,
-          salt: salt,
-          admin: admin,
-          protocol: protocol,
-          config: config,
-          contract: contract
-        }
-      end)
-    end)
-    |> Enum.map(fn x -> Map.put(x, :msg, to_msg(x)) end)
-    |> IO.inspect()
+  defp parse_contract(codes, protocol, %{
+         "id" => id,
+         "admin" => admin,
+         "creator" => creator,
+         "config" => config
+       }) do
+    code_id = Map.get(codes, protocol)
+    salt = build_address_salt(protocol, id)
+
+    address = Contracts.build_address!(salt, creator, code_id)
+
+    contract =
+      case Contracts.info(address) do
+        {:ok, info} -> info
+        _ -> nil
+      end
+
+    %{
+      address: address,
+      creator: creator,
+      code_id: code_id,
+      salt: salt,
+      admin: admin,
+      protocol: protocol,
+      config: config,
+      contract: contract
+    }
   end
 
   defp load_config!(plan) do
@@ -60,7 +68,6 @@ defmodule Mix.Tasks.Rujira.Migrate do
 
     # Do accounts first, so they're available for contract interpolation
     %{accounts: accounts} = parse_ctx(%{accounts: accounts}, %{})
-    IO.inspect(accounts)
 
     parse_ctx(
       %{accounts: accounts, codes: codes, contracts: contracts},
@@ -162,4 +169,46 @@ defmodule Mix.Tasks.Rujira.Migrate do
   def parse_arg(x, _), do: x
 
   def build_address_salt(protocol, id), do: Base.encode16("#{protocol}:#{id}")
+
+  def to_tx(list) do
+    %{
+      body: %{
+        messages:
+          Enum.reduce(list, [], fn
+            %{msg: nil}, a ->
+              a
+
+            %{msg: %MsgInstantiateContract2{} = msg}, a ->
+              [
+                msg
+                |> Map.from_struct()
+                |> Map.delete(:__unknown_fields__)
+                |> Map.delete(:fix_msg)
+                |> Map.put("@type", "/cosmwasm.wasm.v1.MsgInstantiateContract2")
+                | a
+              ]
+
+            %{msg: %MsgMigrateContract{} = msg}, a ->
+              [
+                msg
+                |> Map.from_struct()
+                |> Map.delete(:__unknown_fields__)
+                |> Map.delete(:fix_msg)
+                |> Map.put("@type", "/cosmwasm.wasm.v1.MsgMigrateContract")
+                | a
+              ]
+          end),
+        memo: "",
+        timeout_height: "0",
+        extension_options: [],
+        non_critical_extension_options: []
+      },
+      auth_info: %{
+        signer_infos: [],
+        fee: %{amount: [], gas_limit: "1000000", payer: "", granter: ""},
+        tip: nil
+      },
+      signatures: []
+    }
+  end
 end
