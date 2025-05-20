@@ -96,6 +96,7 @@ defmodule Rujira.Assets do
   end
 
   def to_native(%{id: "THOR.RUNE"}), do: {:ok, "rune"}
+  def to_native(%{id: "THOR.RUJI"}), do: {:ok, "x/ruji"}
   def to_native(%{id: "THOR.TCY"}), do: {:ok, "tcy"}
   def to_native(%{id: "THOR." <> _ = id}), do: {:ok, String.downcase(id)}
   def to_native(%{id: "x/" <> _ = denom}), do: {:ok, denom}
