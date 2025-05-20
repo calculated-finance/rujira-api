@@ -128,6 +128,15 @@ targets:
         market_maker: ${targets:bow.tcy-eth-usdt}
         fee_address: ${targets:revenue.split}
 
+    - id: tcy-rune
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - tcy
+          - rune
+        fee_address: ${targets:revenue.single}
+
   bow: 
     - id: btc-eth-usdt
       admin: ${accounts:admin}

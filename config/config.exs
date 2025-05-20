@@ -46,7 +46,7 @@ config :tesla, :adapter, {Tesla.Adapter.Finch, name: Rujira.Finch}
 
 config :memoize, cache_strategy: Rujira.CacheStrategy
 
-network = System.get_env("NETWORK", "devnet")
+network = System.get_env("NETWORK", "stagenet")
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
