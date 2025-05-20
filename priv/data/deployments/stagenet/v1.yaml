@@ -1,7 +1,7 @@
 accounts: 
   admin: sthor1qm7vtdca95aj7nvtrarqm3uah33nhffpnhhg3j
   creator: sthor1qm7vtdca95aj7nvtrarqm3uah33nhffpnhhg3j
-  revenue: sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4
+  thorchain-reserve: sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4
 
 codes: 
   staking: 33
@@ -55,7 +55,7 @@ targets:
         target_denoms:
           - rune
         target_addresses:
-          - address: ${accounts:revenue}
+          - address: ${accounts:thorchain-reserve}
             weight: 1
 
   fin: 
@@ -67,7 +67,7 @@ targets:
           - btc-btc
           - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
         market_maker: ${targets:bow.btc-eth-usdt}
-        fee_address: ${targets:revenue.split}
+        fee_address: ${targets:revenue.single}
 
     - id: bnb-eth-usdt
       admin: ${accounts:admin}
@@ -77,7 +77,7 @@ targets:
           - bsc-bnb
           - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
         market_maker: ${targets:bow.bnb-eth-usdt}
-        fee_address: ${targets:revenue.split}
+        fee_address: ${targets:revenue.single}
 
     - id: eth-eth-usdt
       admin: ${accounts:admin}
@@ -87,7 +87,7 @@ targets:
           - eth-eth
           - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
         market_maker: ${targets:bow.eth-eth-usdt}
-        fee_address: ${targets:revenue.split}
+        fee_address: ${targets:revenue.single}
 
     - id: bsc-usdc-eth-usdt
       admin: ${accounts:admin}
@@ -96,7 +96,7 @@ targets:
         denoms: 
           - bsc-usdt-0x55d398326f99059ff775485246999027b3197955
           - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
-        fee_address: ${targets:revenue.split}
+        fee_address: ${targets:revenue.single}
 
     - id: ruji-rune
       admin: ${accounts:admin}
@@ -106,7 +106,7 @@ targets:
           - x/ruji
           - rune
         market_maker: ${targets:bow.ruji-rune}
-        fee_address: ${targets:revenue.split}
+        fee_address: ${targets:revenue.single}
 
     - id: ruji-eth-usdt
       admin: ${accounts:admin}
@@ -116,7 +116,7 @@ targets:
           - x/ruji
           - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
         market_maker: ${targets:bow.ruji-eth-usdt}
-        fee_address: ${targets:revenue.split}
+        fee_address: ${targets:revenue.single}
 
     - id: tcy-eth-usdt
       admin: ${accounts:admin}
@@ -126,7 +126,7 @@ targets:
           - tcy
           - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
         market_maker: ${targets:bow.tcy-eth-usdt}
-        fee_address: ${targets:revenue.split}
+        fee_address: ${targets:revenue.single}
 
     - id: tcy-rune
       admin: ${accounts:admin}
@@ -136,6 +136,47 @@ targets:
           - tcy
           - rune
         fee_address: ${targets:revenue.single}
+
+    - id: auto-eth-usdt
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - thor.auto
+          - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+        market_maker: ${targets:bow.auto-eth-usdt}
+        fee_address: ${targets:revenue.split}
+
+    - id: lqdy-btc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - thor.lqdy
+          - btc-btc
+        market_maker: ${targets:bow.lqdy-btc}
+        fee_address: ${targets:revenue.split}
+
+
+    - id: lqdy-eth-usdt
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - thor.lqdy
+          - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+        market_maker: ${targets:bow.lqdy-eth-usdt}
+        fee_address: ${targets:revenue.split}
+
+    - id: nami-eth-usdt
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - thor.nami
+          - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+        market_maker: ${targets:bow.nami-eth-usdt}
+        fee_address: ${targets:revenue.split}
 
   bow: 
     - id: btc-eth-usdt
@@ -190,4 +231,40 @@ targets:
         strategy: 
           xyk: 
             x: tcy
+            y: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+
+    - id: auto-eth-usdt
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        strategy: 
+          xyk: 
+            x: thor.auto
+            y: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+
+    - id: lqdy-btc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        strategy: 
+          xyk: 
+            x: thor.lqdy
+            y: btc-btc
+
+    - id: lqdy-eth-usdt
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        strategy: 
+          xyk: 
+            x: thor.lqdy
+            y: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+
+    - id: nami-eth-usdt
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        strategy: 
+          xyk: 
+            x: thor.nami
             y: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
