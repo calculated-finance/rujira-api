@@ -14,9 +14,9 @@ targets:
     - id: ruji
       admin: ${accounts:admin}
       creator: ${accounts:creator}
-      config: 
+      config:
         bond_denom: x/ruji
-        revenue_denom: eth-usdt
+        revenue_denom: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
         revenue_converter: 
           contract: ${targets:fin.ruji-eth-usdt}
           msg: '{"swap": {}}'
@@ -44,6 +44,17 @@ targets:
         target_addresses:
           - address: ${targets:staking.ruji}
             weight: 1
+          - address: ${targets:revenue.base}
+            weight: 1
+
+    - id: base
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        executor: ${accounts:admin}
+        target_denoms:
+          - rune
+        target_addresses:
           - address: ${accounts:revenue}
             weight: 1
 
