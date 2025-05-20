@@ -226,7 +226,7 @@ defmodule Thorchain do
     end
   end
 
-  defmemo block(height) do
+  def block(height) do
     with {:ok, %QueryBlockResponse{} = block} <-
            Thorchain.Node.stub(&Q.block/2, %QueryBlockRequest{height: to_string(height)}) do
       {:ok,
