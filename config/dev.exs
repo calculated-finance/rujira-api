@@ -13,5 +13,5 @@ config :phoenix, :stacktrace_depth, 20
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
 
-network = System.get_env("NETWORK", "devnet")
+network = System.get_env("NETWORK", "stagenet")
 import_config "dev.#{network}.exs"

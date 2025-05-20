@@ -79,6 +79,7 @@ defmodule Rujira.Fin.Pair do
         } = config
       ) do
     market_maker = Map.get(config, "market_maker")
+    tick = Map.get(config, "tick", 6)
 
     with {:ok, base} <- Assets.from_denom(x),
          {:ok, quote_} <- Assets.from_denom(y) do
@@ -89,7 +90,7 @@ defmodule Rujira.Fin.Pair do
           %{chain: String.downcase(quote_.chain), symbol: quote_.symbol}
         ],
         market_maker: market_maker,
-        tick: 6,
+        tick: tick,
         fee_taker: "0.0015",
         fee_maker: "0.00075",
         fee_address: fee_address
@@ -99,7 +100,7 @@ defmodule Rujira.Fin.Pair do
         %{
           denoms: [x, y],
           market_maker: market_maker,
-          tick: 6,
+          tick: tick,
           fee_taker: "0.0015",
           fee_maker: "0.00075",
           fee_address: fee_address

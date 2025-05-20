@@ -12,7 +12,7 @@ defmodule Rujira.Deployments do
   use Memoize
 
   @path "data/deployments"
-  @plan Application.compile_env(:rujira, __MODULE__, plan: "stagenet/v1")
+  @plan Application.get_env(:rujira, __MODULE__, plan: "stagenet/v1")
         |> Keyword.get(:plan)
 
   def get_target(module, id, plan \\ @plan) do
@@ -53,16 +53,20 @@ defmodule Rujira.Deployments do
     Enum.map(configs, &parse_contract(codes, protocol, &1))
   end
 
-  defp parse_contract(codes, protocol, %{
-         "id" => id,
-         "admin" => admin,
-         "creator" => creator,
-         "config" => config
-       }) do
+  defp parse_contract(
+         codes,
+         protocol,
+         %{
+           "id" => id,
+           "admin" => admin,
+           "creator" => creator,
+           "config" => config
+         } = item
+       ) do
     code_id = Map.get(codes, protocol)
     salt = build_address_salt(protocol, id)
 
-    address = Contracts.build_address!(salt, creator, code_id)
+    address = Map.get(item, "address", Contracts.build_address!(salt, creator, code_id))
 
     contract =
       case Contracts.info(address) do
@@ -91,6 +95,7 @@ defmodule Rujira.Deployments do
 
   # Existing contract, change, migrate
   def to_msg(%{
+        address: address,
         module: module,
         code_id: target_code_id,
         admin: admin,
@@ -100,6 +105,7 @@ defmodule Rujira.Deployments do
     %MsgMigrateContract{
       sender: admin,
       code_id: to_string(target_code_id),
+      contract: address,
       msg: module.migrate_msg(code_id, target_code_id, config)
     }
   end

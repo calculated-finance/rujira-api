@@ -63,6 +63,7 @@ targets:
       admin: ${accounts:admin}
       creator: ${accounts:creator}
       config:
+        tick: 8 
         denoms: 
           - btc-btc
           - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
@@ -116,16 +117,6 @@ targets:
           - x/ruji
           - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
         market_maker: ${targets:bow.ruji-eth-usdt}
-        fee_address: ${targets:revenue.single}
-
-    - id: tcy-eth-usdt
-      admin: ${accounts:admin}
-      creator: ${accounts:creator}
-      config:
-        denoms: 
-          - tcy
-          - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
-        market_maker: ${targets:bow.tcy-eth-usdt}
         fee_address: ${targets:revenue.single}
 
     - id: tcy-rune
@@ -222,15 +213,6 @@ targets:
         strategy: 
           xyk: 
             x: x/ruji
-            y: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
-
-    - id: tcy-eth-usdt
-      admin: ${accounts:admin}
-      creator: ${accounts:creator}
-      config:
-        strategy: 
-          xyk: 
-            x: tcy
             y: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
 
     - id: auto-eth-usdt

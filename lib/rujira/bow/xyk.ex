@@ -210,7 +210,7 @@ defmodule Rujira.Bow.Xyk do
         description:
           "Transferable shares issued when depositing funds into the Rujira XYK #{Assets.short_id(x_asset)}/#{Assets.short_id(y_asset)} liquidity pool",
         display: "x/bow-xyk-#{x}-#{y}",
-        name: "#{Assets.short_id(x_asset)}/#{Assets.short_id(y_asset)} XYK Liquidity Shares",
+        name: "#{Assets.short_id(x_asset)}/#{Assets.short_id(y_asset)} XYK LP Shares",
         symbol: "LP-#{Assets.short_id(x_asset)}/#{Assets.short_id(y_asset)}-XYK"
       }
     }
