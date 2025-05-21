@@ -10,16 +10,16 @@ defmodule Rujira.Bow do
   alias Rujira.Bow.Xyk
   import Ecto.Query
   use Memoize
-  # use GenServer
+  use GenServer
 
-  # def start_link(_) do
-  #   Supervisor.start_link([__MODULE__.Listener], strategy: :one_for_one)
-  # end
+  def start_link(_) do
+    Supervisor.start_link([__MODULE__.Listener], strategy: :one_for_one)
+  end
 
-  # @impl true
-  # def init(state) do
-  #   {:ok, state}
-  # end
+  @impl true
+  def init(state) do
+    {:ok, state}
+  end
 
   @doc """
   Fetches all Bow Pools
@@ -71,7 +71,7 @@ defmodule Rujira.Bow do
          {shares, ""} <- Integer.parse(shares) do
       {:ok,
        %Account{
-         id: "#{pool.id}/#{account}",
+         id: "#{account}/#{pool.config.share_denom}",
          account: account,
          pool: pool,
          shares: shares,
@@ -81,10 +81,11 @@ defmodule Rujira.Bow do
   end
 
   def account_from_id(id) do
-    [pool, account] = String.split(id, "/")
-
-    with {:ok, pool} <- load_pool(%{address: pool}) do
-      load_account(pool, account)
+    with [account, denom] <- String.split(id, "/", parts: 2) do
+      with {:ok, pool} <- pool_from_share_denom(denom),
+           {:ok, account} <- load_account(pool, account) do
+        {:ok, account}
+      end
     end
   end
 
@@ -130,6 +131,40 @@ defmodule Rujira.Bow do
       {:ok, pair}
     else
       _ -> {:error, :not_found}
+    end
+  end
+
+  def load_quotes(address), do: query_quotes(address)
+
+  defmemop query_quotes(address) do
+    with {:ok, pair} <- fin_pair(address),
+         {:ok, %{book: book}} <- Rujira.Fin.load_pair(pair) do
+      {:ok, book}
+    end
+  end
+
+  def share_denom_map() do
+    case list_pools() do
+      {:ok, pools} ->
+        pools
+        |> Enum.map(&{&1.config.share_denom, &1})
+        |> Enum.into(%{})
+
+      error ->
+        error
+    end
+  end
+
+  def pool_from_share_denom(share_denom) do
+    case share_denom_map() do
+      %{} = map ->
+        case Map.get(map, share_denom) do
+          nil -> {:error, :not_found}
+          pool -> {:ok, pool}
+        end
+
+      error ->
+        error
     end
   end
 

@@ -12,7 +12,7 @@ defmodule Rujira.Deployments do
   use Memoize
 
   @path "data/deployments"
-  @plan Application.get_env(:rujira, __MODULE__, plan: "stagenet/v1")
+  @plan Application.compile_env(:rujira, __MODULE__, plan: "stagenet/v1")
         |> Keyword.get(:plan)
 
   def get_target(module, id, plan \\ @plan) do
