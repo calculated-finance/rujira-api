@@ -13,7 +13,7 @@ defmodule RujiraWeb.Resolvers.Leagues do
 
   def leaderboard(%{league: league, season: season}, args, _) do
     Helpers.async(fn ->
-      Leagues.leaderboard(league, season)
+      Leagues.leaderboard(league, season, args.search, args.sort_by, args.sort_dir)
       |> Relay.Connection.from_query(&Repo.all/1, args)
     end)
   end
@@ -37,6 +37,13 @@ defmodule RujiraWeb.Resolvers.Leagues do
   def account_txs(%{address: address, league: league, season: season}, args, _) do
     Helpers.async(fn ->
       Leagues.account_txs(address, league, season)
+      |> Relay.Connection.from_query(&Repo.all/1, args)
+    end)
+  end
+
+  def search(%{address: address}, args, _) do
+    Helpers.async(fn ->
+      Leagues.search(address)
       |> Relay.Connection.from_query(&Repo.all/1, args)
     end)
   end

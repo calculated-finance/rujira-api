@@ -123,7 +123,7 @@ defmodule Rujira.Leagues do
     |> order_by(asc: :rank)
   end
 
-  def leaderboard(league, season) do
+  def leaderboard(league, season, search, sort_by, sort_dir) do
     now = DateTime.utc_now()
     week_ago = Rujira.Resolution.shift_from_back(now, 7, "1D") |> Rujira.Resolution.truncate("1D")
 
@@ -140,6 +140,13 @@ defmodule Rujira.Leagues do
       rank_change:
         fragment("CASE WHEN ? IS NULL THEN NULL ELSE ? - ? END", past.rank, past.rank, curr.rank)
     })
+    |> subquery()
+    |> then(fn q ->
+      if search in [nil, ""], do: q,
+        else:
+          where(q, [curr], fragment("? ILIKE ?", curr.address, ^"%#{search}%"))
+    end)
+    |> order_by([curr], {^sort_dir, ^sort_by})
   end
 
   def badges(league, season) do
