@@ -23,11 +23,16 @@ defmodule Rujira.Deployments do
     |> Enum.find(&(&1.module === module and &1.id == id))
   end
 
-  def list_targets(module, plan \\ @plan) do
+  def list_all_targets(plan \\ @plan) do
     %{codes: codes, targets: targets} = load_config!(plan)
 
     targets
     |> Enum.flat_map(&parse_protocol(codes, &1))
+  end
+
+  def list_targets(module, plan \\ @plan) do
+    plan
+    |> list_all_targets()
     |> Enum.filter(&(&1.module === module))
   end
 
