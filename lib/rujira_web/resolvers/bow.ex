@@ -25,4 +25,8 @@ defmodule RujiraWeb.Resolvers.Bow do
       Absinthe.Relay.Connection.from_query(query, &Rujira.Repo.all/1, args)
     end
   end
+
+  def quotes(%{address: address}, _, _) do
+    Rujira.Bow.load_quotes(address)
+  end
 end

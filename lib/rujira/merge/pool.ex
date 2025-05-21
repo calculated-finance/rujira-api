@@ -25,7 +25,7 @@ defmodule Rujira.Merge.Pool do
 
     @spec from_query(Pool.t(), map()) :: {:ok, __MODULE__.t()} | {:error, :parse_error}
     def from_query(pool, %{"merged" => merged, "shares" => shares, "size" => size}) do
-      with {:ok, balance} <- Thor.balance_of(pool.address, pool.ruji_denom),
+      with {:ok, _balance} <- Thor.balance_of(pool.address, pool.ruji_denom),
            {merged, ""} <- Integer.parse(merged),
            {shares, ""} <- Integer.parse(shares),
            {size, ""} <- Integer.parse(size) do

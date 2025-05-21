@@ -80,7 +80,7 @@ defmodule Rujira.Chains.Evm do
         end
       end
 
-      def native_balance(address) do
+      defmemo native_balance(address) do
         Rujira.Chains.Evm.native_balance(@rpc, address)
       end
 
@@ -146,8 +146,8 @@ defmodule Rujira.Chains.Evm do
           txs
           |> Task.async_stream(fn %{"from" => from, "to" => to, "value" => "0x" <> value_hex} ->
             if String.to_integer(value_hex, 16) > 0 do
-              Memoize.invalidate(__MODULE__, :balance_of, [from, "0x0000000000000000000000000000000000000000"])
-              Memoize.invalidate(__MODULE__, :balance_of, [to, "0x0000000000000000000000000000000000000000"])
+              Memoize.invalidate(__MODULE__, :native_balance, [from])
+              Memoize.invalidate(__MODULE__, :native_balance, [to])
 
               id = to_global_id(:layer_1_account, "#{@chain}:#{from}", RujiraWeb.Schema)
               publish(RujiraWeb.Endpoint, %{id: id}, node: id)

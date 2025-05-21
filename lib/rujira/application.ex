@@ -28,7 +28,8 @@ defmodule Rujira.Application do
       Rujira.Fin,
       Rujira.Merge,
       Rujira.Staking,
-      Rujira.Leagues
+      Rujira.Leagues,
+      Rujira.Bow
     ]
 
     Thorchain.Node.Appsignal.attach()

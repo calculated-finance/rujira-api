@@ -7,6 +7,8 @@ defmodule Rujira.Assets do
   alias __MODULE__.Asset
 
   @delimiters [".", "-", "/", "~"]
+  # https://github.com/cosmos/cosmos-sdk/blob/main/types/coin.go#L871
+  @coin_regex ~r/^(\d+(?:\.\d+)?|\.\d+)\s*([a-zA-Z][a-zA-Z0-9\/:._-]{2,127})$/
 
   defmemo assets() do
     with {:ok, %{pools: pools}} <- Thorchain.Node.stub(&Q.pools/2, %QueryPoolsRequest{}) do
@@ -217,4 +219,36 @@ defmodule Rujira.Assets do
   end
 
   def short_id(%{chain: chain, ticker: ticker}), do: "#{chain}.#{ticker}"
+
+  @doc """
+  Parses a comma-separated string of coin amounts into a map of `denom => amount`.
+
+  ## Examples
+
+      iex> parse_coins("1000uatom")
+      {:ok, %{"uatom" => "1000"}}
+
+      iex> parse_coins("0.5x/ruji,42.0uatom")
+      {:ok, %{"x/ruji" => "0.5", "uatom" => "42.0"}}
+
+      iex> parse_coins(".25test-token,100foo/bar")
+      {:ok, %{"test-token" => ".25", "foo/bar" => "100"}}
+
+      iex> parse_coins("invalid")
+      {:error, :invalid_denom_format}
+  """
+
+  def parse_coins(str) do
+    str
+    |> String.split(",", trim: true)
+    |> Enum.map(&Regex.run(@coin_regex, &1))
+    |> Enum.reduce_while(%{}, fn
+      [_, amount, denom], acc -> {:cont, Map.put(acc, denom, String.to_integer(amount))}
+      _, _ -> {:halt, {:error, :invalid_denom_format}}
+    end)
+    |> case do
+      {:error, _} = error -> error
+      map -> {:ok, map}
+    end
+  end
 end

@@ -21,6 +21,10 @@ defmodule RujiraWeb.Schema.BowTypes do
       resolve(&RujiraWeb.Resolvers.Bow.summary/3)
     end
 
+    field :quotes, :fin_book do
+      resolve(&RujiraWeb.Resolvers.Bow.quotes/3)
+    end
+
     connection field :trades, node_type: :fin_trade do
       resolve(&RujiraWeb.Resolvers.Bow.trades/3)
     end
@@ -47,6 +51,11 @@ defmodule RujiraWeb.Schema.BowTypes do
       end)
     end
 
+    field :share_asset, non_null(:asset) do
+      resolve(fn %{share_denom: share_denom}, _, _ ->
+        Assets.from_denom(share_denom)
+      end)
+    end
     field :step, non_null(:bigint)
     field :min_quote, non_null(:bigint)
     field :fee, non_null(:bigint)
