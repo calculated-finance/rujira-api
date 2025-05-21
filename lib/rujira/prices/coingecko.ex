@@ -48,11 +48,13 @@ defmodule Rujira.Prices.Coingecko do
            proxy("v3/simple/price", %{
              "ids" => id,
              "vs_currencies" => "usd",
-             "include_24hr_change" => "true"
+             "include_24hr_change" => "true",
+             "include_market_cap" => "true"
            }),
-         %{"usd" => price, "usd_24h_change" => change} <- Map.get(res, id) do
+         %{"usd" => price, "usd_24h_change" => change, "usd_market_cap" => mcap} <-
+           Map.get(res, id) do
       {:ok, price} = Decimal.cast(price)
-      {:ok, %{price: price, change: change}}
+      {:ok, %{price: price, change: change, mcap: :math.floor(mcap)}}
     else
       nil -> {:error, "error fetching #{id} price"}
       err -> err
@@ -64,17 +66,19 @@ defmodule Rujira.Prices.Coingecko do
            proxy("v3/simple/price", %{
              "ids" => Enum.join(ids, ","),
              "vs_currencies" => "usd",
-             "include_24hr_change" => "true"
+             "include_24hr_change" => "true",
+             "include_market_cap" => "true"
            }) do
       {:ok,
        res
        |> Enum.map(fn
-         {k, %{"usd" => price, "usd_24h_change" => change}} ->
+         {k, %{"usd" => price, "usd_24h_change" => change, "usd_market_cap" => mcap}} ->
            {:ok, price} = Decimal.cast(price)
-           {k, %{price: price, change: change}}
+
+           {k, %{price: price, change: change, mcap: :math.floor(mcap)}}
 
          {k, %{}} ->
-           {k, %{price: nil, change: nil}}
+           {k, %{price: nil, change: nil, mcap: nil}}
        end)
        |> Map.new()}
     else

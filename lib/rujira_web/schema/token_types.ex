@@ -39,6 +39,7 @@ defmodule RujiraWeb.Schema.TokenTypes do
     @desc "Current price, 12 decimal places"
     field :current, :bigint
     field :change_day, :float
+    field :mcap, :bigint
   end
 
   object :asset_variants do
@@ -57,6 +58,8 @@ defmodule RujiraWeb.Schema.TokenTypes do
     value(:synth)
   end
 
-  defp map(%{price: price, change: change}), do: %{current: price, change_day: change}
+  defp map(%{price: price, change: change, mcap: mcap}),
+    do: %{current: price, change_day: change, mcap: mcap}
+
   defp map(nil), do: nil
 end
