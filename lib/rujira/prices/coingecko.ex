@@ -54,7 +54,8 @@ defmodule Rujira.Prices.Coingecko do
          %{"usd" => price, "usd_24h_change" => change, "usd_market_cap" => mcap} <-
            Map.get(res, id) do
       {:ok, price} = Decimal.cast(price)
-      {:ok, %{price: price, change: change, mcap: :math.floor(mcap)}}
+
+      {:ok, %{price: price, change: change, mcap: floor(mcap)}}
     else
       nil -> {:error, "error fetching #{id} price"}
       err -> err
@@ -75,7 +76,7 @@ defmodule Rujira.Prices.Coingecko do
          {k, %{"usd" => price, "usd_24h_change" => change, "usd_market_cap" => mcap}} ->
            {:ok, price} = Decimal.cast(price)
 
-           {k, %{price: price, change: change, mcap: :math.floor(mcap)}}
+           {k, %{price: price, change: change, mcap: floor(mcap)}}
 
          {k, %{}} ->
            {k, %{price: nil, change: nil, mcap: nil}}
