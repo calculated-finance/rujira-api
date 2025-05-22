@@ -129,15 +129,4 @@ if config_env() == :prod do
     websocket: websocket,
     size: size,
     grpcs: String.split(grpcs, ",")
-
-  config :libcluster,
-    topologies: [
-      k8s_example: [
-        strategy: Cluster.Strategy.Kubernetes,
-        config: [
-          kubernetes_selector: System.get_env("LIBCLUSTER_KUBERNETES_SELECTOR"),
-          kubernetes_node_basename: System.get_env("LIBCLUSTER_KUBERNETES_NODE_BASENAME")
-        ]
-      ]
-    ]
 end
