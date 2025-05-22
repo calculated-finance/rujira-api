@@ -40,7 +40,6 @@ defmodule Rujira.MixProject do
       {:bandit, "~> 1.5"},
       {:cors_plug, "~> 3.0"},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
-      {:dns_cluster, "~> 0.1.1"},
       {:ecto_sql, "~> 3.10"},
       {:ethereumex, "~> 0.10"},
       {:ex_abi, "~> 0.5"},

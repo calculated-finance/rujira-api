@@ -14,7 +14,6 @@ defmodule Rujira.Application do
       {Cluster.Supervisor, [topologies, [name: Rujira.ClusterSupervisor]]},
       RujiraWeb.Telemetry,
       Rujira.Repo,
-      {DNSCluster, query: Application.get_env(:rujira, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Rujira.PubSub},
       # Start a worker by calling: Rujira.Worker.start_link(arg)
       # {Rujira.Worker, arg},
