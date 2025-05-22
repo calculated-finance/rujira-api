@@ -48,6 +48,7 @@ defmodule RujiraWeb.Schema.LeaguesTypes do
     field :total_tx, non_null(:integer)
     field :rank_change, :integer
     field :rank, non_null(:integer)
+    field :badges, non_null(list_of(:string))
     connection field :transactions, node_type: :league_tx do
       resolve(&Resolvers.Leagues.account_txs/3)
     end

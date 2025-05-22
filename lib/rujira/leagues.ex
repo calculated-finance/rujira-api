@@ -85,10 +85,14 @@ defmodule Rujira.Leagues do
            query_account_data(league, season, account),
          leaderboard_data when not is_nil(leaderboard_data) <-
            query_leaderboard_account_data(league, season, account) do
+      badges =
+        query_account_badges(league, season, account)
+
       {:ok,
        Map.merge(account_data, %{
          rank: leaderboard_data.rank,
-         rank_change: leaderboard_data.rank_change
+         rank_change: leaderboard_data.rank_change,
+         badges: badges
        })}
     else
       _ -> {:ok, default}
@@ -115,6 +119,14 @@ defmodule Rujira.Leagues do
     |> subquery()
     |> where([x], x.address == ^account)
     |> Repo.one()
+  end
+
+  defp query_account_badges(league, season, account) do
+    with {:ok, badges} <- badges(league, season) do
+      badges
+      |> Enum.filter(fn %{address: address} -> address == account end)
+      |> Enum.map(fn %{badges: badges} -> Enum.map(badges, &Atom.to_string/1) end)
+    end
   end
 
   def account_txs(address, league, season) do
