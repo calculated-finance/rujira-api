@@ -49,11 +49,18 @@ defmodule Rujira.Balances.Listener do
   defp scan_attributes(attributes, collection \\ [])
 
   defp scan_attributes(
-         [
-           %{value: recipient, key: "recipient"},
-           %{value: sender, key: "sender"}
-           | rest
-         ],
+         [_, %{value: recipient, key: "recipient"}, %{value: sender, key: "sender"} | rest],
+         collection
+       ) do
+    scan_attributes(rest, [
+      recipient,
+      sender | collection
+    ])
+  end
+
+  # x/wasm doesn't emit sorted events for the transfer when a contract is instantiated.
+  defp scan_attributes(
+         [%{value: recipient, key: "recipient"}, %{value: sender, key: "sender"} | rest],
          collection
        ) do
     scan_attributes(rest, [

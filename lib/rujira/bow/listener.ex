@@ -61,12 +61,30 @@ defmodule Rujira.Bow.Listener do
     [{contract, owner}]
   end
 
+  # TODO: handle x/wasm events being in a different order
   defp scan_transfer(%{
          type: "transfer",
          attributes: [
            %{key: "recipient", value: recipient},
            %{key: "sender", value: sender},
            %{key: "amount", value: amount} | _
+         ]
+       }) do
+    with {:ok, coins} <- Assets.parse_coins(amount) do
+      coins
+      |> Enum.filter(&is_lp_coin/1)
+      |> Enum.flat_map(&merge_accounts(&1, [recipient, sender]))
+    else
+      _ -> []
+    end
+  end
+
+  defp scan_transfer(%{
+         type: "transfer",
+         attributes: [
+           %{key: "amount", value: amount},
+           %{key: "recipient", value: recipient},
+           %{key: "sender", value: sender} | _
          ]
        }) do
     with {:ok, coins} <- Assets.parse_coins(amount) do

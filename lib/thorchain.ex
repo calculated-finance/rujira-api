@@ -174,6 +174,7 @@ defmodule Thorchain do
     end
   end
 
+  @spec get_affiliate(binary()) :: :error | {:error, :no_affiliate} | {:ok, {any(), Decimal.t()}}
   def get_affiliate(memo) do
     parts = String.split(memo, ":")
 

@@ -99,7 +99,7 @@ defmodule Rujira.Fin do
   def list_all_orders(address) do
     with {:ok, pairs} <- list_pairs(),
          {:ok, orders} <-
-           Task.async_stream(pairs, &list_orders(&1, address))
+           Task.async_stream(pairs, &list_orders(&1, address), timeout: 15_000)
            |> Enum.reduce({:ok, []}, fn
              # Flatten orders here
              {:ok, {:ok, orders}}, {:ok, acc} -> {:ok, acc ++ orders}
