@@ -26,6 +26,12 @@ defmodule RujiraWeb.Resolvers.Leagues do
     end)
   end
 
+  def account_badges(%{league: league, season: season, address: address}, _, _) do
+    Helpers.async(fn ->
+      Leagues.account_badges(league, season, address)
+    end)
+  end
+
   def stats(%{league: league, season: season}, _, _) do
     Helpers.async(fn ->
       with {:ok, stats} <- Leagues.stats(league, season) do

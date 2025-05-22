@@ -23,10 +23,15 @@ defmodule RujiraWeb.Schema.LeaguesTypes do
   connection(node_type: :league_leaderboard_entry)
 
   object :league_leaderboard_entry do
-    field :rank, non_null(:integer)
     field :address, non_null(:string)
+    field :league, non_null(:string)
+    field :season, non_null(:integer)
+    field :rank, non_null(:integer)
     field :points, non_null(:bigint)
     field :total_tx, non_null(:integer)
+    field :badges, list_of(:string) do
+      resolve(&Resolvers.Leagues.account_badges/3)
+    end
     field :rank_change, :integer
   end
 

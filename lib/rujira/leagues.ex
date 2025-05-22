@@ -84,10 +84,8 @@ defmodule Rujira.Leagues do
     with account_data when not is_nil(account_data) <-
            query_account_data(league, season, account),
          leaderboard_data when not is_nil(leaderboard_data) <-
-           query_leaderboard_account_data(league, season, account) do
-      badges =
-        query_account_badges(league, season, account)
-
+           query_leaderboard_account_data(league, season, account),
+         {:ok, badges} <- account_badges(league, season, account) do
       {:ok,
        Map.merge(account_data, %{
          rank: leaderboard_data.rank,
@@ -121,11 +119,12 @@ defmodule Rujira.Leagues do
     |> Repo.one()
   end
 
-  defp query_account_badges(league, season, account) do
+  def account_badges(league, season, account) do
     with {:ok, badges} <- badges(league, season) do
       badges
       |> Enum.filter(fn %{address: address} -> address == account end)
       |> Enum.map(fn %{badges: badges} -> Enum.map(badges, &Atom.to_string/1) end)
+      |> then(&{:ok, &1})
     end
   end
 
@@ -149,14 +148,18 @@ defmodule Rujira.Leagues do
     Event
     |> join(:inner, [le], tx in assoc(le, :tx_event))
     |> where([le, tx], le.league == ^league and le.season == ^season and tx.timestamp <= ^time)
-    |> group_by([le, tx], tx.address)
+    |> group_by([le, tx], [le.league, le.season, tx.address])
     |> select([le, tx], %{
+      league: le.league,
+      season: le.season,
       address: tx.address,
       points: fragment("CAST(COALESCE(?, 0) AS bigint)", sum(le.points)),
       total_tx: fragment("COUNT(DISTINCT ?)", tx.txhash)
     })
     |> subquery()
     |> select([r], %{
+      league: r.league,
+      season: r.season,
       address: r.address,
       points: r.points,
       total_tx: r.total_tx,
@@ -176,6 +179,8 @@ defmodule Rujira.Leagues do
     current
     |> join(:left, [curr], past in ^previous, on: past.address == curr.address)
     |> select([curr, past], %{
+      league: curr.league,
+      season: curr.season,
       address: curr.address,
       points: curr.points,
       total_tx: curr.total_tx,
