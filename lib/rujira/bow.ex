@@ -139,7 +139,7 @@ defmodule Rujira.Bow do
   defmemop query_quotes(address) do
     with {:ok, pair} <- fin_pair(address),
          {:ok, %{book: book}} <- Rujira.Fin.load_pair(pair) do
-      {:ok, book}
+      {:ok, Map.put(book, :contract, pair.address)}
     end
   end
 
