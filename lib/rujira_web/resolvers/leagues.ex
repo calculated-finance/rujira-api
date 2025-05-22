@@ -40,11 +40,4 @@ defmodule RujiraWeb.Resolvers.Leagues do
       |> Relay.Connection.from_query(&Repo.all/1, args)
     end)
   end
-
-  def search(%{address: address}, args, _) do
-    Helpers.async(fn ->
-      Leagues.search(address)
-      |> Relay.Connection.from_query(&Repo.all/1, args)
-    end)
-  end
 end
