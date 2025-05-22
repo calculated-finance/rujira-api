@@ -101,28 +101,27 @@ defmodule Thorchain.Swaps.Indexer do
   defp scan_attributes([], collection), do: collection
 
   defp get_affiliate_data(memo, price, volume_usd) do
-    case Thorchain.get_affiliate(memo) do
-      {:ok, {aff, bps}} ->
-        affiliate_fee_in_usd =
-          volume_usd
-          |> Decimal.mult(bps)
-          |> Decimal.round()
-          |> Decimal.to_integer()
+    with {:ok, {aff, bps}} <- Thorchain.get_affiliate(memo) do
+      affiliate_fee_in_usd =
+        volume_usd
+        |> Decimal.mult(bps)
+        |> Decimal.round()
+        |> Decimal.to_integer()
 
-        affiliate_fee_in_rune =
-          affiliate_fee_in_usd
-          |> Decimal.div(price)
-          |> Decimal.round()
-          |> Decimal.to_integer()
+      affiliate_fee_in_rune =
+        affiliate_fee_in_usd
+        |> Decimal.div(price)
+        |> Decimal.round()
+        |> Decimal.to_integer()
 
-        %{
-          affiliate: aff,
-          affiliate_bps: bps,
-          affiliate_fee_in_rune: affiliate_fee_in_rune,
-          affiliate_fee_in_usd: affiliate_fee_in_usd
-        }
-
-      {:error, :no_affiliate} ->
+      %{
+        affiliate: aff,
+        affiliate_bps: bps,
+        affiliate_fee_in_rune: affiliate_fee_in_rune,
+        affiliate_fee_in_usd: affiliate_fee_in_usd
+      }
+    else
+      _ ->
         %{}
     end
   end
