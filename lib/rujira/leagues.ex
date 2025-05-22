@@ -71,6 +71,31 @@ defmodule Rujira.Leagues do
   end
 
   def load_account(league, season, account) do
+    default = %{
+      league: league,
+      season: String.to_integer(season),
+      address: account,
+      points: 0,
+      total_tx: 0,
+      rank: 0,
+      rank_change: nil
+    }
+
+    with account_data when not is_nil(account_data) <-
+           query_account_data(league, season, account),
+         leaderboard_data when not is_nil(leaderboard_data) <-
+           query_leaderboard_account_data(league, season, account) do
+      {:ok,
+       Map.merge(account_data, %{
+         rank: leaderboard_data.rank,
+         rank_change: leaderboard_data.rank_change
+       })}
+    else
+      _ -> {:ok, default}
+    end
+  end
+
+  defp query_account_data(league, season, account) do
     Event
     |> join(:inner, [le], tx in assoc(le, :tx_event))
     |> where([le, tx], le.league == ^league and le.season == ^season and tx.address == ^account)
@@ -83,7 +108,13 @@ defmodule Rujira.Leagues do
       total_tx: fragment("COUNT(DISTINCT ?)", tx.txhash)
     })
     |> Repo.one()
-    |> then(&{:ok, &1})
+  end
+
+  defp query_leaderboard_account_data(league, season, account) do
+    leaderboard(league, season, nil, :rank, :asc)
+    |> subquery()
+    |> where([x], x.address == ^account)
+    |> Repo.one()
   end
 
   def account_txs(address, league, season) do
@@ -142,9 +173,9 @@ defmodule Rujira.Leagues do
     })
     |> subquery()
     |> then(fn q ->
-      if search in [nil, ""], do: q,
-        else:
-          where(q, [curr], fragment("? ILIKE ?", curr.address, ^"%#{search}%"))
+      if search in [nil, ""],
+        do: q,
+        else: where(q, [curr], fragment("? ILIKE ?", curr.address, ^"%#{search}%"))
     end)
     |> order_by([curr], {^sort_dir, ^sort_by})
   end
