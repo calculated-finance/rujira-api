@@ -2,7 +2,6 @@ defmodule Rujira.Bow.Xyk do
   alias Rujira.Assets
   import Ecto.Query
   use Memoize
-  alias Rujira.Fin.Book
 
   @max_quotes 50
 
