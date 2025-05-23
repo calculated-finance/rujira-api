@@ -21,7 +21,7 @@ defmodule Thorchain.Swaps.Listener do
   end
 
   defp scan_events(events) do
-    swap_pools = Enum.flat_map(events, &scan_event(&1))
+    swap_pools = events |> Enum.flat_map(&scan_event(&1)) |> Enum.uniq()
 
     for pool <- swap_pools do
       Logger.debug("#{__MODULE__} change #{pool}")
