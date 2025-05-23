@@ -137,16 +137,18 @@ defmodule RujiraWeb.Resolvers.Thorchain do
 
   def oracle_price("THOR.RUNE") do
     Helpers.async(fn ->
-      with {:ok, %{rune_price_in_tor: price}} <- Thorchain.network() do
-        {:ok, price}
+      with {:ok, %{rune_price_in_tor: price}} <- Thorchain.network(),
+           {:ok, price} <- Decimal.cast(price) do
+        {:ok, Decimal.div(price, Decimal.new(10_000_000))}
       end
     end)
   end
 
   def oracle_price(asset) do
     Helpers.async(fn ->
-      with {:ok, %{asset_tor_price: price}} <- Thorchain.pool_from_id(asset) do
-        {:ok, price}
+      with {:ok, %{asset_tor_price: price}} <- Thorchain.pool_from_id(asset),
+           {:ok, price} <- Decimal.cast(price) do
+        {:ok, Decimal.div(price, Decimal.new(10_000_000))}
       else
         _ ->
           {:ok, nil}
