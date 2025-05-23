@@ -252,4 +252,13 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
   object :thorchain_tcy do
     field :claimable, non_null(:bigint)
   end
+
+  node object(:thorchain_oracle) do
+    field :asset, non_null(:asset) do
+      resolve(fn %{asset: asset}, _, _ ->
+        {:ok, Assets.from_string(asset)}
+      end)
+    end
+    field :oracle_price, non_null(:bigint)
+  end
 end

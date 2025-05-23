@@ -6,7 +6,7 @@ defmodule Thorchain.Swaps do
   use GenServer
 
   def start_link(_) do
-    Supervisor.start_link([__MODULE__.Indexer], strategy: :one_for_one)
+    Supervisor.start_link([__MODULE__.Indexer, __MODULE__.Listener], strategy: :one_for_one)
   end
 
   @impl true

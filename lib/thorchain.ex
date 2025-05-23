@@ -22,6 +22,8 @@ defmodule Thorchain do
   alias Thorchain.Types.QueryTxRequest
   alias Thorchain.Types.QueryTxResponse
   alias Thorchain.Types.QueryPoolRequest
+  alias Thorchain.Oracle
+  
   use GenServer
   use Memoize
 
@@ -326,5 +328,11 @@ defmodule Thorchain do
     Enum.filter(events, fn %{attributes: attributes} ->
       Enum.any?(attributes, &(&1.value == hash))
     end)
+  end
+
+  defmemo oracle(asset) do
+    with {:ok, pool} <- pool_from_id(asset) do
+      {:ok, %Oracle{asset: asset, oracle_price: pool.asset_tor_price}}
+    end
   end
 end

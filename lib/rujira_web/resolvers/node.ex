@@ -46,6 +46,7 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Thorchain.Types.QueryPoolResponse{}, _), do: :pool
   def type(%{observed_tx: _}, _), do: :tx_in
   def type(%{league: _, season: _, address: _}, _), do: :league_account
+  def type(%Thorchain.Oracle{}, _), do: :thorchain_oracle
 
   defp resolve_id(id) do
     case Absinthe.Relay.Node.from_global_id(id, RujiraWeb.Schema) do
@@ -117,6 +118,9 @@ defmodule RujiraWeb.Resolvers.Node do
 
       {:ok, %{type: :league_account, id: id}} ->
         Leagues.account_from_id(id)
+
+      {:ok, %{type: :thorchain_oracle, id: id}} ->
+        Thorchain.oracle(id)
 
       {:error, error} ->
         {:error, error}
