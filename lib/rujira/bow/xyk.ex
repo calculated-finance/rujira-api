@@ -4,6 +4,8 @@ defmodule Rujira.Bow.Xyk do
   use Memoize
   alias Rujira.Fin.Book
 
+  @max_quotes 50
+
   defmodule Config do
     defstruct [:x, :y, :step, :min_quote, :share_denom, :fee]
 
@@ -198,7 +200,7 @@ defmodule Rujira.Bow.Xyk do
     |> Enum.reverse()
   end
 
-  defp do_quotes(_config, _state, _side, acc, count) when count >= 1 do
+  defp do_quotes(_config, _state, _side, acc, count) when count >= @max_quotes do
     acc
   end
 
@@ -227,8 +229,8 @@ defmodule Rujira.Bow.Xyk do
     # now bid_x was ΔY, ask_y was ΔX in flipped-land → swap them
     {y, x, %{state | x: x1, y: y1, k: k1}}
   end
-  defp quote_for(:ask, config, state), do: do_quote(config, state)
 
+  defp quote_for(:ask, config, state), do: do_quote(config, state)
 
   defp get_price(:ask, x, y), do: Decimal.div(y, x)
   defp get_price(:bid, x, y), do: Decimal.div(x, y)
@@ -246,7 +248,6 @@ defmodule Rujira.Bow.Xyk do
     |> Decimal.mult(price)
     |> Decimal.div(Decimal.new(1_000_000_000_000))
   end
-
 
   def init_msg(%{"x" => x, "y" => y}) do
     {:ok, x_asset} = Assets.from_denom(x)
