@@ -152,7 +152,6 @@ defmodule Rujira.Bow do
   end
 
   defp populate(%{asks: [ask | _], bids: [bid | _]} = book) do
-    IO.inspect(book)
     center = ask.price |> Decimal.add(bid.price) |> Decimal.div(Decimal.new(2))
 
     %{
