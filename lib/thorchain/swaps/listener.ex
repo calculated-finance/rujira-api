@@ -21,10 +21,11 @@ defmodule Thorchain.Swaps.Listener do
   end
 
   defp scan_events(events) do
-    swap_pools = events |> Enum.flat_map(&scan_event(&1)) |> Enum.uniq()
+    swap_pools = events |> Enum.flat_map(&scan_event(&1)) |> Enum.uniq() |> IO.inspect()
 
     for pool <- swap_pools do
       Logger.debug("#{__MODULE__} change #{pool}")
+      Memoize.invalidate(Thorchain, :oracle, ["THOR.RUNE"])
       Memoize.invalidate(Thorchain, :oracle, [pool])
 
       id = Absinthe.Relay.Node.to_global_id(:thorchain_oracle, pool, RujiraWeb.Schema)

@@ -1,3 +1,3 @@
 defmodule Thorchain.Oracle do
-  defstruct [:asset, :oracle_price]
+  defstruct [:id, :asset, :price]
 end

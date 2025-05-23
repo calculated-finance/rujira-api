@@ -254,11 +254,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
   end
 
   node object(:thorchain_oracle) do
-    field :asset, non_null(:asset) do
-      resolve(fn %{asset: asset}, _, _ ->
-        {:ok, Assets.from_string(asset)}
-      end)
-    end
-    field :oracle_price, non_null(:bigint)
+    field :asset, non_null(:asset)
+    field :price, non_null(:bigint)
   end
 end

@@ -27,17 +27,17 @@ defmodule RujiraWeb.Schema.FinTypes do
       end)
     end
 
-    field :oracle_base, :bigint do
+    field :oracle_base, :thorchain_oracle do
       resolve(fn
         %{oracle_base: asset}, _, _ ->
-          RujiraWeb.Resolvers.Thorchain.oracle_price(asset)
+          RujiraWeb.Resolvers.Thorchain.oracle(asset)
       end)
     end
 
-    field :oracle_quote, :bigint do
+    field :oracle_quote, :thorchain_oracle do
       resolve(fn
         %{oracle_quote: asset}, _, _ ->
-          RujiraWeb.Resolvers.Thorchain.oracle_price(asset)
+          RujiraWeb.Resolvers.Thorchain.oracle(asset)
       end)
     end
 

@@ -23,7 +23,7 @@ defmodule Thorchain do
   alias Thorchain.Types.QueryTxResponse
   alias Thorchain.Types.QueryPoolRequest
   alias Thorchain.Oracle
-  
+
   use GenServer
   use Memoize
 
@@ -330,9 +330,27 @@ defmodule Thorchain do
     end)
   end
 
-  defmemo oracle(asset) do
-    with {:ok, pool} <- pool_from_id(asset) do
-      {:ok, %Oracle{asset: asset, oracle_price: pool.asset_tor_price}}
+  def oracle_from_id(id) do
+    with {:ok, price} <- oracle_price(id),
+         {:ok, asset} <- Assets.from_id(id) do
+      {:ok, %Oracle{id: id, asset: asset, price: price}}
+    end
+  end
+
+  defmemo oracle_price("THOR.RUNE") do
+    with {:ok, %{rune_price_in_tor: price}} <- Thorchain.network(),
+         {:ok, price} <- Decimal.cast(price) do
+      {:ok, Decimal.div(price, Decimal.new(10_000_000))}
+    end
+  end
+
+  defmemo oracle_price(asset) do
+    with {:ok, %{asset_tor_price: price}} <- Thorchain.pool_from_id(asset) |> IO.inspect(),
+         {:ok, price} <- Decimal.cast(price) |> IO.inspect() do
+      {:ok, Decimal.div(price, Decimal.new(10_000_000))}
+    else
+      _ ->
+        {:ok, nil}
     end
   end
 end

@@ -120,7 +120,7 @@ defmodule RujiraWeb.Resolvers.Node do
         Leagues.account_from_id(id)
 
       {:ok, %{type: :thorchain_oracle, id: id}} ->
-        Thorchain.oracle(id)
+        Thorchain.oracle_from_id(id)
 
       {:error, error} ->
         {:error, error}
