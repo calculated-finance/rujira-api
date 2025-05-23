@@ -204,34 +204,19 @@ defmodule Rujira.Bow.Xyk do
 
   defp do_quotes(_config, %{shares: 0}, _side, _, _), do: []
 
-  defp do_quotes(config, state, :ask, acc, count) do
-    {x, y, new_state} = do_quote(config, state)
-    price = Decimal.div(y, x)
+  defp do_quotes(config, state, side, acc, count) do
+    {x, y, new_state} = quote_for(side, config, state)
+    price = get_price(side, x, y)
     total = y |> Decimal.round() |> Decimal.to_integer()
 
     entry = %{
       price: price,
       total: total,
-      side: Atom.to_string(:ask),
-      value: Book.Price.value(:bid, price, total)
+      side: Atom.to_string(side),
+      value: value(side, price, total)
     }
 
-    do_quotes(config, new_state, :ask, [entry | acc], count + 1)
-  end
-
-  defp do_quotes(config, state, :bid, acc, count) do
-    {x, y, new_state} = quote_for(:bid, config, state)
-    price = Decimal.div(y, x)
-    total = x |> Decimal.round() |> Decimal.to_integer()
-
-    entry = %{
-      price: price,
-      total: total,
-      side: Atom.to_string(:bid),
-      value: Book.Price.value(:ask, price, total)
-    }
-
-    do_quotes(config, new_state, :bid, [entry | acc], count + 1)
+    do_quotes(config, new_state, side, [entry | acc], count + 1)
   end
 
   defp quote_for(:bid, config, state) do
@@ -240,8 +225,28 @@ defmodule Rujira.Bow.Xyk do
       do_quote(config, %{x: state.y, y: state.x, k: state.k})
 
     # now bid_x was ΔY, ask_y was ΔX in flipped-land → swap them
-    {x, y, %{state | x: x1, y: y1, k: k1}}
+    {y, x, %{state | x: x1, y: y1, k: k1}}
   end
+  defp quote_for(:ask, config, state), do: do_quote(config, state)
+
+
+  defp get_price(:ask, x, y), do: Decimal.div(y, x)
+  defp get_price(:bid, x, y), do: Decimal.div(x, y)
+
+  defp value(:ask, price, total) do
+    total
+    |> Decimal.new()
+    |> Decimal.div(price)
+    |> Decimal.div(Decimal.new(1_000_000_000_000))
+  end
+
+  defp value(:bid, price, total) do
+    total
+    |> Decimal.new()
+    |> Decimal.mult(price)
+    |> Decimal.div(Decimal.new(1_000_000_000_000))
+  end
+
 
   def init_msg(%{"x" => x, "y" => y}) do
     {:ok, x_asset} = Assets.from_denom(x)
