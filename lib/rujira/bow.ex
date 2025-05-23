@@ -137,11 +137,32 @@ defmodule Rujira.Bow do
   def load_quotes(address), do: query_quotes(address)
 
   defmemop query_quotes(address) do
-    with {:ok, pair} <- fin_pair(address),
-         {:ok, %{book: book}} <- Rujira.Fin.load_pair(pair) do
-      {:ok, book}
+    with {:ok, %Xyk{config: config, state: state}} <- load_pool(%{address: address}) do
+      bow_quotes =
+        %{
+          asks: Xyk.do_quotes(config, state, :ask),
+          bids: Xyk.do_quotes(config, state, :bid),
+          center: nil,
+          spread: nil
+        }
+        |> populate()
+
+      {:ok, bow_quotes}
     end
   end
+
+  defp populate(%{asks: [ask | _], bids: [bid | _]} = book) do
+    IO.inspect(book)
+    center = ask.price |> Decimal.add(bid.price) |> Decimal.div(Decimal.new(2))
+
+    %{
+      book
+      | center: center,
+        spread: ask.price |> Decimal.sub(bid.price) |> Decimal.div(center)
+    }
+  end
+
+  defp populate(book), do: book
 
   def share_denom_map() do
     case list_pools() do

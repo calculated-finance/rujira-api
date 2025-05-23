@@ -25,14 +25,14 @@ defmodule Rujira.Fin.Book do
       end
     end
 
-    defp value(:ask, price, total) do
+    def value(:ask, price, total) do
       total
       |> Decimal.new()
       |> Decimal.mult(price)
       |> Decimal.div(Decimal.new(1_000_000_000_000))
     end
 
-    defp value(:bid, price, total) do
+    def value(:bid, price, total) do
       total
       |> Decimal.new()
       |> Decimal.div(price)

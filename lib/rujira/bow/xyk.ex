@@ -2,6 +2,7 @@ defmodule Rujira.Bow.Xyk do
   alias Rujira.Assets
   import Ecto.Query
   use Memoize
+  alias Rujira.Fin.Book
 
   defmodule Config do
     defstruct [:x, :y, :step, :min_quote, :share_denom, :fee]
@@ -164,7 +165,7 @@ defmodule Rujira.Bow.Xyk do
     {low, mid, high}
   end
 
-  defmemo do_quote(config, state) do
+  def do_quote(config, state) do
     bid = state.x |> Decimal.new() |> Decimal.mult(config.step)
 
     ask =
@@ -190,6 +191,56 @@ defmodule Rujira.Bow.Xyk do
       _ ->
         depth(config, state, threshold, Decimal.add(value, ask))
     end
+  end
+
+  def do_quotes(config, state, side) do
+    do_quotes(config, state, side, [], 0)
+    |> Enum.reverse()
+  end
+
+  defp do_quotes(_config, _state, _side, acc, count) when count >= 1 do
+    acc
+  end
+
+  defp do_quotes(_config, %{shares: 0}, _side, _, _), do: []
+
+  defp do_quotes(config, state, :ask, acc, count) do
+    {x, y, new_state} = do_quote(config, state)
+    price = Decimal.div(y, x)
+    total = y |> Decimal.round() |> Decimal.to_integer()
+
+    entry = %{
+      price: price,
+      total: total,
+      side: Atom.to_string(:ask),
+      value: Book.Price.value(:bid, price, total)
+    }
+
+    do_quotes(config, new_state, :ask, [entry | acc], count + 1)
+  end
+
+  defp do_quotes(config, state, :bid, acc, count) do
+    {x, y, new_state} = quote_for(:bid, config, state)
+    price = Decimal.div(y, x)
+    total = x |> Decimal.round() |> Decimal.to_integer()
+
+    entry = %{
+      price: price,
+      total: total,
+      side: Atom.to_string(:bid),
+      value: Book.Price.value(:ask, price, total)
+    }
+
+    do_quotes(config, new_state, :bid, [entry | acc], count + 1)
+  end
+
+  defp quote_for(:bid, config, state) do
+    # flip X↔Y, ask side does the right thing, then flip result back
+    {y, x, %{x: y1, y: x1, k: k1}} =
+      do_quote(config, %{x: state.y, y: state.x, k: state.k})
+
+    # now bid_x was ΔY, ask_y was ΔX in flipped-land → swap them
+    {x, y, %{state | x: x1, y: y1, k: k1}}
   end
 
   def init_msg(%{"x" => x, "y" => y}) do

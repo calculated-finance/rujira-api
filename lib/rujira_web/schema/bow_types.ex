@@ -21,7 +21,7 @@ defmodule RujiraWeb.Schema.BowTypes do
       resolve(&RujiraWeb.Resolvers.Bow.summary/3)
     end
 
-    field :quotes, :fin_book do
+    field :quotes, :bow_quotes do
       resolve(&RujiraWeb.Resolvers.Bow.quotes/3)
     end
 
@@ -110,5 +110,13 @@ defmodule RujiraWeb.Schema.BowTypes do
         end)
       end)
     end
+  end
+
+
+  object :bow_quotes do
+    field :bids, non_null(list_of(non_null(:fin_book_entry)))
+    field :asks, non_null(list_of(non_null(:fin_book_entry)))
+    field :center, :bigint
+    field :spread, :bigint
   end
 end
