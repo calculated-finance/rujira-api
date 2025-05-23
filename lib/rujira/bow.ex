@@ -8,6 +8,7 @@ defmodule Rujira.Bow do
   alias Rujira.Chains.Thor
   alias Rujira.Contracts
   alias Rujira.Bow.Xyk
+  alias Rujira.Fin.Book
   import Ecto.Query
   use Memoize
   use GenServer
@@ -145,23 +146,11 @@ defmodule Rujira.Bow do
           center: nil,
           spread: nil
         }
-        |> populate()
+        |> Book.populate()
 
       {:ok, bow_quotes}
     end
   end
-
-  defp populate(%{asks: [ask | _], bids: [bid | _]} = book) do
-    center = ask.price |> Decimal.add(bid.price) |> Decimal.div(Decimal.new(2))
-
-    %{
-      book
-      | center: center,
-        spread: ask.price |> Decimal.sub(bid.price) |> Decimal.div(center)
-    }
-  end
-
-  defp populate(book), do: book
 
   def share_denom_map() do
     case list_pools() do
