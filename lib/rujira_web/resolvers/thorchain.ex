@@ -134,4 +134,23 @@ defmodule RujiraWeb.Resolvers.Thorchain do
       _ -> {:ok, nil}
     end
   end
+
+  def oracle_price("THOR.RUNE") do
+    Helpers.async(fn ->
+      with {:ok, %{rune_price_in_tor: price}} <- Thorchain.network() do
+        {:ok, price}
+      end
+    end)
+  end
+
+  def oracle_price(asset) do
+    Helpers.async(fn ->
+      with {:ok, %{asset_tor_price: price}} <- Thorchain.pool_from_id(asset) do
+        {:ok, price}
+      else
+        _ ->
+          {:ok, nil}
+      end
+    end)
+  end
 end

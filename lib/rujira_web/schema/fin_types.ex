@@ -27,15 +27,17 @@ defmodule RujiraWeb.Schema.FinTypes do
       end)
     end
 
-    field :oracle_base, non_null(:pool) do
-      resolve(fn %{oracle_base: asset}, x, y ->
-        RujiraWeb.Resolvers.Thorchain.pool(x, %{asset: asset}, y)
+    field :oracle_base, :bigint do
+      resolve(fn
+        %{oracle_base: asset}, _, _ ->
+          RujiraWeb.Resolvers.Thorchain.oracle_price(asset)
       end)
     end
 
-    field :oracle_quote, non_null(:pool) do
-      resolve(fn %{oracle_quote: asset}, x, y ->
-        RujiraWeb.Resolvers.Thorchain.pool(x, %{asset: asset}, y)
+    field :oracle_quote, :bigint do
+      resolve(fn
+        %{oracle_quote: asset}, _, _ ->
+          RujiraWeb.Resolvers.Thorchain.oracle_price(asset)
       end)
     end
 
