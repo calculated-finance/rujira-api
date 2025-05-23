@@ -165,7 +165,7 @@ defmodule Rujira.Bow.Xyk do
     {low, mid, high}
   end
 
-  def do_quote(config, state) do
+  defmemo do_quote(config, state) do
     bid = state.x |> Decimal.new() |> Decimal.mult(config.step)
 
     ask =
