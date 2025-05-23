@@ -136,7 +136,6 @@ defmodule Rujira.Leagues.Collectors.Contract do
           amount
           |> Decimal.new()
           |> Decimal.mult(price)
-          |> Decimal.mult(Decimal.new(69))
           |> Decimal.round()
           |> Decimal.to_integer(),
         category: category

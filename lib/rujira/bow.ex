@@ -138,7 +138,8 @@ defmodule Rujira.Bow do
   def load_quotes(address), do: query_quotes(address)
 
   defmemop query_quotes(address) do
-    with {:ok, %Xyk{config: config, state: state}} <- load_pool(%{address: address}) do
+    with {:ok, %Xyk{config: config, state: state}} <- load_pool(%{address: address}),
+         {:ok, pair} <- fin_pair(address) do
       bow_quotes =
         %Book{
           asks: Xyk.do_quotes(config, state, :ask),
@@ -146,7 +147,7 @@ defmodule Rujira.Bow do
         }
         |> Book.populate()
 
-      {:ok, bow_quotes}
+      {:ok, Map.put(bow_quotes, :contract, pair.address)}
     end
   end
 

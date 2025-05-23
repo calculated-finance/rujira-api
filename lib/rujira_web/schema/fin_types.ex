@@ -69,6 +69,10 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :center, :bigint
     field :spread, :bigint
     field :bids, non_null(list_of(non_null(:fin_book_entry)))
+
+    field :pair, non_null(:fin_pair) do
+      resolve(&RujiraWeb.Resolvers.Fin.book_pair/3)
+    end
   end
 
   @desc "single entry of an orderbook"

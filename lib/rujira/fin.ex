@@ -105,6 +105,7 @@ defmodule Rujira.Fin do
              {:ok, {:ok, orders}}, {:ok, acc} -> {:ok, acc ++ orders}
              {:ok, {:error, error}}, _ -> {:error, error}
              {:error, err}, _ -> {:error, err}
+             _, {:error, err} -> {:error, err}
            end) do
       {:ok, orders}
     end

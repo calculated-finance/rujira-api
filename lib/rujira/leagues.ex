@@ -23,10 +23,12 @@ defmodule Rujira.Leagues do
   end
 
   def account_from_id(id) do
-    [league, season, account] = String.split(id, "/")
-
-    with {:ok, account} <- load_account(league, season, account) do
+    with [league, season, account] <- String.split(id, "/"),
+         {:ok, %{} = account} <- load_account(league, season, account) do
       {:ok, Map.put(account, :id, id)}
+    else
+      {:ok, nil} -> {:error, :not_found}
+      _ -> {:error, :invalid_id}
     end
   end
 

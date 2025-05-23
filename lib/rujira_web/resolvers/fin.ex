@@ -25,11 +25,13 @@ defmodule RujiraWeb.Resolvers.Fin do
 
   def book(%{book: :not_loaded} = pair, _, _) do
     with {:ok, %{book: book}} <- Rujira.Fin.load_pair(pair) do
-      {:ok, book}
+      {:ok, Map.put(book, :contract, pair.address)}
     end
   end
 
   def book(%{book: book}, _, _), do: {:ok, book}
+
+  def book_pair(%{contract: contract}, _, _), do: Rujira.Fin.get_pair(contract)
 
   def trades(%{address: address}, args, _) do
     address
