@@ -8,6 +8,7 @@ defmodule Rujira.Bow do
   alias Rujira.Chains.Thor
   alias Rujira.Contracts
   alias Rujira.Bow.Xyk
+  alias Rujira.Fin.Book
   import Ecto.Query
   use Memoize
   use GenServer
@@ -137,9 +138,14 @@ defmodule Rujira.Bow do
   def load_quotes(address), do: query_quotes(address)
 
   defmemop query_quotes(address) do
-    with {:ok, pair} <- fin_pair(address),
-         {:ok, %{book: book}} <- Rujira.Fin.load_pair(pair) do
-      {:ok, Map.put(book, :contract, pair.address)}
+    with {:ok, %Xyk{config: config, state: state}} <- load_pool(%{address: address}) do
+      {:ok,
+       %Book{
+         id: address,
+         asks: Xyk.do_quotes(config, state, :ask),
+         bids: Xyk.do_quotes(config, state, :bid)
+       }
+       |> Book.populate()}
     end
   end
 

@@ -3,6 +3,8 @@ defmodule Rujira.Bow.Xyk do
   import Ecto.Query
   use Memoize
 
+  @max_quotes 50
+
   defmodule Config do
     defstruct [:x, :y, :step, :min_quote, :share_denom, :fee]
 
@@ -190,6 +192,60 @@ defmodule Rujira.Bow.Xyk do
       _ ->
         depth(config, state, threshold, Decimal.add(value, ask))
     end
+  end
+
+  def do_quotes(config, state, side) do
+    do_quotes(config, state, side, [], 0)
+    |> Enum.reverse()
+  end
+
+  defp do_quotes(_config, _state, _side, acc, count) when count >= @max_quotes do
+    acc
+  end
+
+  defp do_quotes(_config, %{shares: 0}, _side, _, _), do: []
+
+  defp do_quotes(config, state, side, acc, count) do
+    {x, y, new_state} = quote_for(side, config, state)
+    price = get_price(side, x, y)
+    total = y |> Decimal.round() |> Decimal.to_integer()
+
+    entry = %{
+      price: price,
+      total: total,
+      side: Atom.to_string(side),
+      value: value(side, price, total)
+    }
+
+    do_quotes(config, new_state, side, [entry | acc], count + 1)
+  end
+
+  defp quote_for(:bid, config, state) do
+    # flip X↔Y, ask side does the right thing, then flip result back
+    {y, x, %{x: y1, y: x1, k: k1}} =
+      do_quote(config, %{x: state.y, y: state.x, k: state.k})
+
+    # now bid_x was ΔY, ask_y was ΔX in flipped-land → swap them
+    {y, x, %{state | x: x1, y: y1, k: k1}}
+  end
+
+  defp quote_for(:ask, config, state), do: do_quote(config, state)
+
+  defp get_price(:ask, x, y), do: Decimal.div(y, x)
+  defp get_price(:bid, x, y), do: Decimal.div(x, y)
+
+  defp value(:ask, price, total) do
+    total
+    |> Decimal.new()
+    |> Decimal.div(price)
+    |> Decimal.div(Decimal.new(1_000_000_000_000))
+  end
+
+  defp value(:bid, price, total) do
+    total
+    |> Decimal.new()
+    |> Decimal.mult(price)
+    |> Decimal.div(Decimal.new(1_000_000_000_000))
   end
 
   def init_msg(%{"x" => x, "y" => y}) do
