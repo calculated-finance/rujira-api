@@ -43,10 +43,16 @@ defmodule Rujira.Fin.Listener do
       Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
     end
 
-    for pair <- bow_addresses do
-      Memoize.invalidate(Fin, :query_book, [pair, :_])
-      id = Absinthe.Relay.Node.to_global_id(:fin_book, pair, RujiraWeb.Schema)
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+    for address <- bow_addresses do
+      with {:ok, %{address: pair}} <- Bow.fin_pair(address) do
+        Memoize.invalidate(Bow, :query_quotes, [address])
+        Memoize.invalidate(Fin, :query_book, [pair, :_])
+        id_bow = Absinthe.Relay.Node.to_global_id(:fin_book, address, RujiraWeb.Schema)
+        id_pair = Absinthe.Relay.Node.to_global_id(:fin_pair, pair, RujiraWeb.Schema)
+
+        Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id_bow}, node: id_bow)
+        Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id_pair}, node: id_pair)
+      end
     end
 
     for {name, contract, owner, side, price} <- addresses do
@@ -101,8 +107,6 @@ defmodule Rujira.Fin.Listener do
     map = Map.new(attributes, fn %{key: k, value: v} -> {k, v} end)
     address = Map.get(map, "_contract_address")
 
-    with {:ok, pair} <- Bow.fin_pair(address) do
-      [pair]
-    end
+    [address]
   end
 end
