@@ -56,6 +56,7 @@ defmodule RujiraWeb.Schema.BowTypes do
         Assets.from_denom(share_denom)
       end)
     end
+
     field :step, non_null(:bigint)
     field :min_quote, non_null(:bigint)
     field :fee, non_null(:bigint)
@@ -73,7 +74,7 @@ defmodule RujiraWeb.Schema.BowTypes do
     field :x, non_null(:bigint)
     field :y, non_null(:bigint)
     field :k, non_null(:bigint)
-    field :shares, non_null(:balance)
+    field :shares, non_null(:bigint)
   end
 
   object :bow_summary do
