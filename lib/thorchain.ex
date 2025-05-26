@@ -331,8 +331,8 @@ defmodule Thorchain do
   end
 
   def oracle_from_id(id) do
-    with {:ok, price} <- oracle_price(id),
-         {:ok, asset} <- Assets.from_id(id) do
+    with {:ok, %Decimal{} = price} <- oracle_price(id),
+         {:ok, %Asset{} = asset} <- Assets.from_id(id) do
       {:ok, %Oracle{id: id, asset: asset, price: price}}
     end
   end
