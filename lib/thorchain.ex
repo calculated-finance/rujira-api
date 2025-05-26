@@ -345,8 +345,8 @@ defmodule Thorchain do
   end
 
   defmemo oracle_price(asset) do
-    with {:ok, %{asset_tor_price: price}} <- Thorchain.pool_from_id(asset) |> IO.inspect(),
-         {:ok, price} <- Decimal.cast(price) |> IO.inspect() do
+    with {:ok, %{asset_tor_price: price}} <- Thorchain.pool_from_id(asset),
+         {:ok, price} <- Decimal.cast(price) do
       {:ok, Decimal.div(price, Decimal.new(10_000_000))}
     else
       _ ->

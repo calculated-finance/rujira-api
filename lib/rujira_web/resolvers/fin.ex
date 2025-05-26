@@ -42,7 +42,7 @@ defmodule RujiraWeb.Resolvers.Fin do
   def summary(%{address: address, token_quote: token_quote}, _, _) do
     with %Summary{} = summary <- Rujira.Fin.get_summary(address),
          {:ok, volume_asset} <- Assets.from_denom(token_quote),
-         {:ok, %{price: price}} <- Rujira.Prices.get(String.upcase(volume_asset.symbol)) do
+         {:ok, %{price: price}} <- Rujira.Prices.get(String.upcase(volume_asset.ticker)) do
       {:ok,
        %{
          summary
