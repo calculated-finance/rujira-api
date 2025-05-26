@@ -35,8 +35,8 @@ defmodule Rujira.Bow.Listener do
       |> Enum.flat_map(&scan_transfer/1)
       |> Enum.uniq()
 
-    for {pool, account} <- pools do
-      Logger.debug("#{__MODULE__} change #{pool} #{account}")
+    for pool <- pools do
+      Logger.debug("#{__MODULE__} change #{pool}")
       Memoize.invalidate(Rujira.Bow, :query_pool, [pool])
       Memoize.invalidate(Rujira.Bow, :query_quotes, [pool])
 
@@ -65,8 +65,7 @@ defmodule Rujira.Bow.Listener do
   defp scan_attributes(attrs) do
     attr_map = Map.new(attrs, fn %{key: k, value: v} -> {k, v} end)
     contract = Map.get(attr_map, "_contract_address")
-    owner = Map.get(attr_map, "owner")
-    [{contract, owner}]
+    [contract]
   end
 
   # TODO: handle x/wasm events being in a different order

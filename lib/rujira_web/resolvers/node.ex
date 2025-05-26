@@ -74,9 +74,6 @@ defmodule RujiraWeb.Resolvers.Node do
       {:ok, %{type: :inbound_address, id: id}} ->
         Resolvers.Thorchain.inbound_address(id)
 
-      {:ok, %{type: :liquidity_provider, id: id}} ->
-        Thorchain.liquidity_provider_from_id(id)
-
       {:ok, %{type: :merge_account, id: id}} ->
         Merge.account_from_id(id)
 
@@ -112,6 +109,9 @@ defmodule RujiraWeb.Resolvers.Node do
 
       {:ok, %{type: :staking_summary, id: id}} ->
         Staking.summary_from_id(id)
+
+      {:ok, %{type: :thorchain_liquidity_provider, id: id}} ->
+        Thorchain.liquidity_provider_from_id(id)
 
       {:ok, %{type: :tx_in, id: id}} ->
         Thorchain.tx_in(id)

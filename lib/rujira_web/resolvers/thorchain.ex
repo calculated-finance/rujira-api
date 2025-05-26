@@ -79,6 +79,16 @@ defmodule RujiraWeb.Resolvers.Thorchain do
     end
   end
 
+  def liquidity_accounts(%{address: address}, _, _) do
+    with {:ok, pools} <- Thorchain.pools() do
+      pools
+      |> Task.async_stream(fn pool ->
+        Thorchain.liquidity_provider(pool.asset.id, address)
+      end)
+      |> Rujira.Enum.reduce_while_ok([], &elem(&1, 1))
+    end
+  end
+
   defp cast_response(x) do
     x
     |> Map.update(:chain, nil, &String.to_existing_atom(String.downcase(&1)))
