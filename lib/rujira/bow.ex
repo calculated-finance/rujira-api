@@ -68,7 +68,8 @@ defmodule Rujira.Bow do
   def load_account(nil, _), do: {:ok, nil}
 
   def load_account(pool, account) do
-    with {:ok, %{amount: shares}} <- Thor.balance_of(account, pool.config.share_denom),
+    with {:ok, %{amount: shares}} <-
+           Thor.balance_of(account, pool.config.share_denom),
          {shares, ""} <- Integer.parse(shares) do
       {:ok,
        %Account{

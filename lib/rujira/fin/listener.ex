@@ -45,13 +45,9 @@ defmodule Rujira.Fin.Listener do
 
     for address <- bow_addresses do
       with {:ok, %{address: pair}} <- Bow.fin_pair(address) do
-        Memoize.invalidate(Bow, :query_quotes, [address])
         Memoize.invalidate(Fin, :query_book, [pair, :_])
-        id_bow = Absinthe.Relay.Node.to_global_id(:fin_book, address, RujiraWeb.Schema)
-        id_pair = Absinthe.Relay.Node.to_global_id(:fin_pair, pair, RujiraWeb.Schema)
-
-        Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id_bow}, node: id_bow)
-        Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id_pair}, node: id_pair)
+        id = Absinthe.Relay.Node.to_global_id(:fin_book, pair, RujiraWeb.Schema)
+        Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
       end
     end
 

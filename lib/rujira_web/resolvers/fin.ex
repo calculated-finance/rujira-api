@@ -29,7 +29,7 @@ defmodule RujiraWeb.Resolvers.Fin do
     end
   end
 
-  def book(%{book: book}, _, _), do: {:ok, book}
+  def book(%{address: address, book: book}, _, _), do: {:ok, Map.put(book, :contract, address)}
 
   def book_pair(%{contract: contract}, _, _), do: Rujira.Fin.get_pair(contract)
 
