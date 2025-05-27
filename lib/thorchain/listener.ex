@@ -84,5 +84,27 @@ defmodule Thorchain.Listener do
     [{pool, rune_address}, {pool, asset_address}]
   end
 
+  defp scan_event(%{
+         attributes: [
+           %{key: "pool", value: pool},
+           %{key: "liquidity_provider_units", value: _},
+           %{key: "rune_address", value: rune_address},
+           %{key: "rune_amount", value: _rune_amount},
+           %{key: "asset_amount", value: _asset_amount},
+           %{key: "asset_address", value: asset_address}
+           | _
+         ],
+         type: "add_liquidity"
+       }) do
+    [{pool, rune_address}, {pool, asset_address}]
+  end
+
+  defp scan_event(%{
+         attributes: [%{key: "pool", value: pool} | _],
+         type: "withdraw"
+       }) do
+    [{pool, :_}]
+  end
+
   defp scan_event(_), do: []
 end
