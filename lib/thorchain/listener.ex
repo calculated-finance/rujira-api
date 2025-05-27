@@ -28,6 +28,26 @@ defmodule Thorchain.Listener do
       Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
     end
 
+    events =
+      txs
+      |> Enum.flat_map(fn
+        %{result: %{events: xs}} when is_list(xs) -> xs
+        _ -> []
+      end)
+
+    for {pool, address} <- events |> Enum.flat_map(&scan_event/1) |> Enum.uniq() do
+      Memoize.invalidate(Thorchain, :liquidity_provider, [pool, address])
+
+      id =
+        Absinthe.Relay.Node.to_global_id(
+          :thorchain_liquidity_provider,
+          "#{pool}/#{address}",
+          RujiraWeb.Schema
+        )
+
+      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+    end
+
     {:noreply, state}
   end
 
@@ -48,4 +68,21 @@ defmodule Thorchain.Listener do
   end
 
   defp scan_tx(_), do: []
+
+  defp scan_event(%{
+         attributes: [
+           %{key: "pool", value: pool},
+           %{key: "type", value: _},
+           %{key: "rune_address", value: rune_address},
+           %{key: "rune_amount", value: _rune_amount},
+           %{key: "asset_amount", value: _asset_amount},
+           %{key: "asset_address", value: asset_address}
+           | _
+         ],
+         type: "pending_liquidity"
+       }) do
+    [{pool, rune_address}, {pool, asset_address}]
+  end
+
+  defp scan_event(_), do: []
 end
