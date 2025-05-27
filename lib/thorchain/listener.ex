@@ -21,7 +21,7 @@ defmodule Thorchain.Listener do
 
     for a <- hashes do
       Logger.debug("#{__MODULE__} change #{a}")
-      Rujira.Events.publish_node(:tx_in, a, RujiraWeb.Schema)
+      Rujira.Events.publish_node(:tx_in, a)
     end
 
     events =
