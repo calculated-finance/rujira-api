@@ -91,6 +91,7 @@ defmodule Rujira.Assets do
 
   def type(str) do
     cond do
+      String.starts_with?(str, "THOR.") -> :native
       String.match?(str, ~r/^[A-Z]+\./) -> :layer_1
       String.match?(str, ~r/^[A-Z]+\//) -> :synth
       String.match?(str, ~r/^[A-Z]+~/) -> :trade
