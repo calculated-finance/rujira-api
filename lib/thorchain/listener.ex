@@ -46,6 +46,11 @@ defmodule Thorchain.Listener do
         )
 
       Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+
+      id =
+        Absinthe.Relay.Node.to_global_id(:pool, pool, RujiraWeb.Schema)
+
+      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
     end
 
     {:noreply, state}
