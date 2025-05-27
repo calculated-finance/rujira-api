@@ -28,6 +28,7 @@ defmodule Thorchain.Swaps.Listener do
       Memoize.invalidate(Thorchain, :oracle, ["THOR.RUNE"])
       Memoize.invalidate(Thorchain, :oracle, [pool])
       Rujira.Events.publish_node(:thorchain_oracle, pool)
+      Rujira.Events.publish_node(:pool, pool)
     end
   end
 
