@@ -21,11 +21,7 @@ defmodule Thorchain.Listener do
 
     for a <- hashes do
       Logger.debug("#{__MODULE__} change #{a}")
-
-      id =
-        Absinthe.Relay.Node.to_global_id(:tx_in, a, RujiraWeb.Schema)
-
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+      Rujira.Events.publish_node(:tx_in, a, RujiraWeb.Schema)
     end
 
     events =
@@ -38,19 +34,8 @@ defmodule Thorchain.Listener do
     for {pool, address} <- events |> Enum.flat_map(&scan_event/1) |> Enum.uniq() do
       Memoize.invalidate(Thorchain, :liquidity_provider, [pool, address])
 
-      id =
-        Absinthe.Relay.Node.to_global_id(
-          :thorchain_liquidity_provider,
-          "#{pool}/#{address}",
-          RujiraWeb.Schema
-        )
-
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
-
-      id =
-        Absinthe.Relay.Node.to_global_id(:pool, pool, RujiraWeb.Schema)
-
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+      Rujira.Events.publish_node(:thorchain_liquidity_provider, "#{pool}/#{address}")
+      Rujira.Events.publish_node(:pool, pool)
     end
 
     {:noreply, state}

@@ -32,14 +32,9 @@ defmodule Rujira.Staking.Listener do
 
     for {a, o} <- executions do
       Logger.debug("#{__MODULE__} execution #{a}")
-
-      id = Absinthe.Relay.Node.to_global_id(:staking_status, a, RujiraWeb.Schema)
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
-
-      id = Absinthe.Relay.Node.to_global_id(:staking_account, "#{a}/#{o}", RujiraWeb.Schema)
       Memoize.invalidate(Staking, :query_account, [a, o])
-
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+      Rujira.Events.publish_node(:staking_status, a)
+      Rujira.Events.publish_node(:staking_account, "#{a}/#{o}")
     end
 
     for a <- transfers do
@@ -51,8 +46,7 @@ defmodule Rujira.Staking.Listener do
       # Most will be ignored unless the specific subscription is requested
 
       # TODO: Broadcast the same for transfers of `x/staking-` prefixed tokens
-      id = Absinthe.Relay.Node.to_global_id(:staking_summary, a, RujiraWeb.Schema)
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+      Rujira.Events.publish_node(:staking_summary, a)
     end
   end
 

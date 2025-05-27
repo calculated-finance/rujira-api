@@ -39,20 +39,16 @@ defmodule Rujira.Bow.Listener do
       Logger.debug("#{__MODULE__} change #{pool}")
       Memoize.invalidate(Rujira.Bow, :query_pool, [pool])
       Memoize.invalidate(Rujira.Bow, :query_quotes, [pool])
-
-      id = Absinthe.Relay.Node.to_global_id(:bow_pool, pool, RujiraWeb.Schema)
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+      Rujira.Events.publish_node(:bow_pool, pool)
 
       # We use the FinBook on the UI to re-use thie Bok & History components from trade.
       # Broadcast a change to the FinBook that is scoped to the pool
-      id = Absinthe.Relay.Node.to_global_id(:fin_book, pool, RujiraWeb.Schema)
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+      Rujira.Events.publish_node(:fin_book, pool)
     end
 
     for {denom, account} <- transfers do
       Logger.debug("#{__MODULE__} change #{denom} #{account}")
-      id = Absinthe.Relay.Node.to_global_id(:bow_account, "#{account}/#{denom}", RujiraWeb.Schema)
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+      Rujira.Events.publish_node(:bow_account, "#{account}/#{denom}")
     end
   end
 

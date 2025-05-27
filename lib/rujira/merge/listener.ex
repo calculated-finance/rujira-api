@@ -33,10 +33,8 @@ defmodule Rujira.Merge.Listener do
       Logger.debug("#{__MODULE__} change #{a}")
       Memoize.invalidate(Merge, :query_pool, [a])
       Memoize.invalidate(Merge, :query_account, [a, account])
-      id = Absinthe.Relay.Node.to_global_id(:merge_pool, a, RujiraWeb.Schema)
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
-      id = Absinthe.Relay.Node.to_global_id(:merge_account, "#{a}/#{account}", RujiraWeb.Schema)
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+      Rujira.Events.publish_node(:merge_pool, a)
+      Rujira.Events.publish_node(:merge_account, "#{a}/#{account}")
     end
   end
 

@@ -39,15 +39,13 @@ defmodule Rujira.Fin.Listener do
 
     for address <- addresses |> Enum.map(&elem(&1, 1)) |> Enum.uniq() do
       Memoize.invalidate(Fin, :query_book, [address, :_])
-      id = Absinthe.Relay.Node.to_global_id(:fin_book, address, RujiraWeb.Schema)
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+      Rujira.Events.publish_node(:fin_book, address)
     end
 
     for address <- bow_addresses do
       with {:ok, %{address: pair}} <- Bow.fin_pair(address) do
         Memoize.invalidate(Fin, :query_book, [pair, :_])
-        id = Absinthe.Relay.Node.to_global_id(:fin_book, pair, RujiraWeb.Schema)
-        Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+        Rujira.Events.publish_node(:fin_book, pair)
       end
     end
 

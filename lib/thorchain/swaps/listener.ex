@@ -27,9 +27,7 @@ defmodule Thorchain.Swaps.Listener do
       Logger.debug("#{__MODULE__} change #{pool}")
       Memoize.invalidate(Thorchain, :oracle, ["THOR.RUNE"])
       Memoize.invalidate(Thorchain, :oracle, [pool])
-
-      id = Absinthe.Relay.Node.to_global_id(:thorchain_oracle, pool, RujiraWeb.Schema)
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+      Rujira.Events.publish_node(:thorchain_oracle, pool)
     end
   end
 
