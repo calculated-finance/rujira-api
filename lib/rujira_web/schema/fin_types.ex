@@ -220,7 +220,6 @@ defmodule RujiraWeb.Schema.FinTypes do
     """
     field :fin_order_updated, :node_edge do
       arg(:contract, :address, deprecate: "contract is read from the observed event")
-
       arg(:owner, non_null(:address))
 
       config(fn %{owner: owner}, _ ->
