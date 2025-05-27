@@ -41,7 +41,10 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Staking.Pool{}, _), do: :staking_pool
   def type(%Staking.Pool.Status{}, _), do: :staking_status
   def type(%Staking.Pool.Summary{}, _), do: :staking_summary
-  def type(%Thorchain.Types.QueryLiquidityProviderResponse{}, _), do: :liquidity_provider
+
+  def type(%Thorchain.Types.QueryLiquidityProviderResponse{}, _),
+    do: :thorchain_liquidity_provider
+
   def type(%Thorchain.Types.QueryInboundAddressResponse{}, _), do: :inbound_address
   def type(%Thorchain.Types.QueryPoolResponse{}, _), do: :pool
   def type(%{observed_tx: _}, _), do: :tx_in
