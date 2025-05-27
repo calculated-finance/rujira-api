@@ -42,15 +42,19 @@ defmodule Thorchain.Listener do
   end
 
   defp scan_txs(%{tx_data: tx_data}) do
-    with {:ok, decoded} <- Jason.decode(tx_data) do
+    with {:ok, decoded} <- Jason.decode(tx_data) |> IO.inspect() do
       scan_tx(decoded)
     end
   end
 
-  defp scan_tx(%{"body" => %{"messages" => messages}}) do
+  defp scan_tx(%{"messages" => messages}) do
     Enum.reduce(messages, [], fn
-      %{"@type" => "/types.MsgObservedTxIn", "txs" => txs}, acc ->
-        txs |> Enum.map(& &1["tx"]["id"]) |> Enum.concat(acc)
+      %{
+        "@type" => "/types.MsgObservedTxQuorum",
+        "quoTx" => %{"obsTx" => %{"tx" => %{"id" => id}}}
+      },
+      acc ->
+        [id | acc]
 
       _, acc ->
         acc
