@@ -24,15 +24,37 @@ defmodule Rujira.Merge.Pool do
           }
 
     @spec from_query(Pool.t(), map()) :: {:ok, __MODULE__.t()} | {:error, :parse_error}
-    def from_query(pool, %{"merged" => merged, "shares" => shares, "size" => size}) do
-      with {:ok, _balance} <- Thor.balance_of(pool.address, pool.ruji_denom),
+    def from_query(
+          %{
+            address: address,
+            ruji_denom: ruji_denom,
+            ruji_allocation: ruji_allocation,
+            current_rate: current_rate,
+            decay_ends_at: decay_ends_at
+          },
+          %{
+            "merged" => merged,
+            "shares" => shares,
+            "size" => size
+          }
+        ) do
+      with {:ok, %{amount: balance}} <- Thor.balance_of(address, ruji_denom),
+           {balance, ""} <- Integer.parse(balance),
            {merged, ""} <- Integer.parse(merged),
            {shares, ""} <- Integer.parse(shares),
            {size, ""} <- Integer.parse(size) do
-        # max = balance - size
-        # apr = Decimal.new(max)
+        apr =
+          case balance do
+            0 -> ruji_allocation
+            x -> x
+          end
+          |> Decimal.new()
+          |> Decimal.sub(Decimal.new(size))
+          |> Decimal.div(Decimal.new(size))
+          |> Decimal.mult(Decimal.new(365 * 24 * 60 * 60))
+          |> Decimal.div(Decimal.new(DateTime.diff(decay_ends_at, DateTime.utc_now(), :second)))
 
-        {:ok, %__MODULE__{merged: merged, shares: shares, size: size}}
+        {:ok, %__MODULE__{merged: merged, shares: shares, size: size, apr: apr}}
       else
         _ -> {:error, :parse_error}
       end

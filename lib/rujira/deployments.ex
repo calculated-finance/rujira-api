@@ -8,6 +8,7 @@ defmodule Rujira.Deployments do
   alias Rujira.Revenue
   alias Rujira.Bow
   alias Rujira.Fin
+  alias Rujira.Merge
   alias Rujira.Staking
   alias Rujira.Contracts
   use Memoize
