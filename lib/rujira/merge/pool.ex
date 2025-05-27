@@ -29,7 +29,6 @@ defmodule Rujira.Merge.Pool do
             address: address,
             ruji_denom: ruji_denom,
             ruji_allocation: ruji_allocation,
-            current_rate: current_rate,
             decay_ends_at: decay_ends_at
           },
           %{
