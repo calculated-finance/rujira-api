@@ -19,14 +19,6 @@ defmodule RujiraWeb.Resolvers.Leagues do
     end)
   end
 
-  def badges(%{league: league, season: season}, _, _) do
-    Helpers.async(fn ->
-      with {:ok, badges} <- Leagues.badges(league, season) do
-        {:ok, badges}
-      end
-    end)
-  end
-
   def stats(%{league: league, season: season}, _, _) do
     Helpers.async(fn ->
       with {:ok, stats} <- Leagues.stats(league, season) do
@@ -37,7 +29,8 @@ defmodule RujiraWeb.Resolvers.Leagues do
 
   def account_txs(%{address: address, league: league, season: season}, args, _) do
     Helpers.async(fn ->
-      Leagues.account_txs(address, league, season)
+      address
+      |> Leagues.account_txs(league, season)
       |> Relay.Connection.from_query(&Repo.all/1, args)
     end)
   end
