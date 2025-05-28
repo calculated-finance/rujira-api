@@ -27,8 +27,9 @@ defmodule RujiraWeb.Resolvers.Bow do
   end
 
   def quotes(%{address: address}, _, _) do
-    with {:ok, quotes} <- Rujira.Bow.load_quotes(address) do
-      {:ok, Map.put(quotes, :contract, address)}
+    with {:ok, pair} <- Rujira.Bow.fin_pair(address),
+         {:ok, quotes} <- Rujira.Bow.load_quotes(address) do
+      {:ok, Map.put(quotes, :contract, pair.address)}
     end
   end
 end
