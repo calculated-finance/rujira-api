@@ -42,7 +42,7 @@ defmodule Thorchain.Listener do
   end
 
   defp scan_txs(%{tx_data: tx_data}) do
-    with {:ok, decoded} <- Jason.decode(tx_data) |> IO.inspect() do
+    with {:ok, decoded} <- Jason.decode(tx_data) do
       scan_tx(decoded)
     end
   end
