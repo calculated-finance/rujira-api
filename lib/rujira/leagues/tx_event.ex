@@ -26,6 +26,8 @@ defmodule Rujira.Leagues.TxEvent do
 
     field :category, Ecto.Enum, values: @categories
 
+    has_many :events, Rujira.Leagues.Event
+
     timestamps(type: :utc_datetime_usec)
   end
 

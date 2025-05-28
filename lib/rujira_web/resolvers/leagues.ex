@@ -13,7 +13,8 @@ defmodule RujiraWeb.Resolvers.Leagues do
 
   def leaderboard(%{league: league, season: season}, args, _) do
     Helpers.async(fn ->
-      Leagues.leaderboard(league, season)
+      league
+      |> Leagues.leaderboard(season)
       |> Relay.Connection.from_query(&Repo.all/1, args)
     end)
   end
