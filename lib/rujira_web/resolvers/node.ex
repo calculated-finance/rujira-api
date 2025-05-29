@@ -28,7 +28,7 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Assets.Asset{}, _), do: :asset
   def type(%Bank.Supply{}, _), do: :bank_supply
   def type(%Bow.Account{}, _), do: :bow_account
-  def type(%Bow.Xyk{}, _), do: :bow_pool
+  def type(%Bow.Xyk{}, _), do: :bow_pool_xyk
   def type(%Contracts.Contract{}, _), do: :contract
   def type(%Merge.Account{}, _), do: :merge_account
   def type(%Merge.Pool{}, _), do: :merge_pool
