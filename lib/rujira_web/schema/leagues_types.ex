@@ -22,12 +22,11 @@ defmodule RujiraWeb.Schema.LeaguesTypes do
   connection(node_type: :league_leaderboard_entry)
 
   object :league_leaderboard_entry do
-    field :address, non_null(:string)
-    field :league, non_null(:string)
-    field :season, non_null(:integer)
     field :rank, non_null(:integer)
+    field :address, non_null(:string)
     field :points, non_null(:bigint)
     field :total_tx, non_null(:integer)
+    field :rank_change, :integer
     @desc "Rank from 7 days ago"
     field :rank_previous, :integer
     field :badges, list_of(non_null(:string))
@@ -44,8 +43,6 @@ defmodule RujiraWeb.Schema.LeaguesTypes do
     field :address, non_null(:string)
     field :points, non_null(:bigint)
     field :total_tx, non_null(:integer)
-    field :rank_change, :integer
-    field :rank, non_null(:integer)
     field :badges, list_of(non_null(:string))
 
     connection field :transactions, node_type: :league_tx do
