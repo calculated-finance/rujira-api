@@ -65,6 +65,9 @@ defmodule RujiraWeb.Resolvers.Node do
       {:ok, %{type: :bow_pool, id: id}} ->
         Bow.pool_from_id(id)
 
+      {:ok, %{type: :bow_pool_xyk, id: id}} ->
+        Bow.pool_from_id(id)
+
       {:ok, %{type: :contract, id: id}} ->
         Contracts.from_id(id)
 
