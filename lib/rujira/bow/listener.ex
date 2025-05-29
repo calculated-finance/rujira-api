@@ -39,7 +39,7 @@ defmodule Rujira.Bow.Listener do
       Logger.debug("#{__MODULE__} change #{pool}")
       Memoize.invalidate(Rujira.Bow, :query_pool, [pool])
       Memoize.invalidate(Rujira.Bow, :query_quotes, [pool])
-      Rujira.Events.publish_node(:bow_pool, pool)
+      Rujira.Events.publish_node(:bow_pool_xyk, pool)
 
       # We use the FinBook on the UI to re-use thie Bok & History components from trade.
       # Broadcast a change to the FinBook that is scoped to the pool
