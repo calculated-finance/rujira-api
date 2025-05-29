@@ -106,20 +106,36 @@ defmodule Rujira.Leagues do
     |> order_by([le, tx], desc: tx.timestamp)
   end
 
-  def leaderboard(league, season) do
+  def leaderboard_base(league, season) do
     TxEvent
     |> join(:inner, [tx], e in assoc(tx, :events))
-    |> join(:left, [tx, e], l in subquery(leaders(league, season)), on: l.address == tx.address)
     |> where([tx, e], e.league == ^league and e.season == ^season)
+    |> join(:left, [tx, e], l in subquery(leaders(league, season)), on: l.address == tx.address)
     |> group_by([tx], tx.address)
     |> select([tx, e, l], %{
       address: tx.address,
       points: fragment("CAST(COALESCE(?, 0) AS bigint)", sum(e.points)),
-      rank: dense_rank() |> over(partition_by: tx.address, order_by: sum(e.points)),
+      rank: dense_rank() |> over(order_by: sum(e.points)),
       total_tx: count(tx),
       badges:
         fragment("ARRAY_AGG(DISTINCT(?)) FILTER (WHERE ? IS NOT NULL)", l.category, l.category)
     })
+  end
+
+  def leaderboard(league, season) do
+    league
+    |> leaderboard_base(season)
+    |> subquery()
+    |> join(
+      :left,
+      [tx],
+      prev in (league
+               |> leaderboard_base(season)
+               |> where([tx], tx.timestamp < fragment("NOW() - '7 day'::interval"))
+               |> subquery()),
+      on: prev.address == tx.address
+    )
+    |> select_merge([x, prev], %{rank_previous: prev.rank})
   end
 
   def leaders(league, season) do

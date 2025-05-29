@@ -24,6 +24,8 @@ defmodule RujiraWeb.Schema.LeaguesTypes do
     field :points, non_null(:bigint)
     field :total_tx, non_null(:integer)
     field :rank_change, :integer
+    @desc "Rank from 7 days ago"
+    field :rank_previous, :integer
     field :badges, list_of(non_null(:string))
   end
 
