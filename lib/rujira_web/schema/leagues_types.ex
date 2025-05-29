@@ -67,7 +67,7 @@ defmodule RujiraWeb.Schema.LeaguesTypes do
     value(:points)
     value(:total_tx)
     value(:rank)
-    value(:rank_change)
+    value(:rank_previous)
   end
 
   enum :league_leaderboard_sort_dir do
