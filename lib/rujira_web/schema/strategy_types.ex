@@ -13,4 +13,15 @@ defmodule RujiraWeb.Schema.StrategyTypes do
   end
 
   connection(node_type: :strategy)
+
+  union :strategy_account do
+    types([:bow_account, :thorchain_liquidity_provider])
+
+    resolve_type(fn
+      %Bow.Account{}, _ -> :bow_account
+      %Thorchain.Types.QueryLiquidityProviderResponse{}, _ -> :thorchain_liquidity_provider
+    end)
+  end
+
+  connection(node_type: :strategy_account)
 end

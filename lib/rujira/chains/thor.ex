@@ -5,8 +5,9 @@ defmodule Rujira.Chains.Thor do
   alias Cosmos.Bank.V1beta1.QueryAllBalancesResponse
   import Cosmos.Bank.V1beta1.Query.Stub
   alias Rujira.Assets
+  use Memoize
 
-  def balance_of(address, denom) do
+  defmemo balance_of(address, denom) do
     req = %QueryBalanceRequest{address: address, denom: denom}
 
     with {:ok, %QueryBalanceResponse{balance: %{amount: balance}}} <-

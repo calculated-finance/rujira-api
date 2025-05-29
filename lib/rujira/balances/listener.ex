@@ -30,6 +30,9 @@ defmodule Rujira.Balances.Listener do
 
     for a <- addresses do
       Logger.debug("#{__MODULE__} change #{a}")
+      # TODO: extract specific denoms
+      Memoize.invalidate(Rujira.Chains.Thor, :balance_of, [a, :_])
+
       Rujira.Events.publish_node(:layer_1_account, "thor:#{a}")
     end
 
