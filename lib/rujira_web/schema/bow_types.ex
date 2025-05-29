@@ -30,6 +30,31 @@ defmodule RujiraWeb.Schema.BowTypes do
     end
   end
 
+  node object(:bow_pool_xyk) do
+    field :address, non_null(:string)
+
+    field :contract, non_null(:contract_info) do
+      resolve(fn %{address: address}, _, _ ->
+        Contracts.info(address)
+      end)
+    end
+
+    field :config, non_null(:bow_config_xyk)
+    field :state, non_null(:bow_state_xyk)
+
+    field :summary, :bow_summary do
+      resolve(&RujiraWeb.Resolvers.Bow.summary/3)
+    end
+
+    field :quotes, :fin_book do
+      resolve(&RujiraWeb.Resolvers.Bow.quotes/3)
+    end
+
+    connection field :trades, node_type: :fin_trade do
+      resolve(&RujiraWeb.Resolvers.Bow.trades/3)
+    end
+  end
+
   union :bow_config do
     types([:bow_config_xyk])
 

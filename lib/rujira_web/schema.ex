@@ -20,8 +20,10 @@ defmodule RujiraWeb.Schema do
   import_types(RujiraWeb.Schema.Scalars.Resolution)
   import_types(RujiraWeb.Schema.Scalars.Timestamp)
   import_types(RujiraWeb.Schema.StakingTypes)
+  import_types(RujiraWeb.Schema.StrategyTypes)
   import_types(RujiraWeb.Schema.Thorchain.AnalyticsTypes)
   import_types(RujiraWeb.Schema.ThorchainTypes)
+  import_types(RujiraWeb.Schema.ThorchainTypesOld)
   import_types(RujiraWeb.Schema.TokenTypes)
   import_types(RujiraWeb.Schema.VenturesTypes)
 
@@ -48,6 +50,10 @@ defmodule RujiraWeb.Schema do
     @desc "THORChain related queries"
     field :thorchain, :thorchain do
       resolve(fn _, _, _ -> {:ok, %{thorchain: %{}}} end)
+    end
+
+    field :thorchain_v2, :thorchain_v2 do
+      resolve(fn _, _, _ -> {:ok, %{thorchain_v2: %{}}} end)
     end
 
     @desc "Rujira related queries"

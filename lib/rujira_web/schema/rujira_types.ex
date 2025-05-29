@@ -1,5 +1,6 @@
 defmodule RujiraWeb.Schema.RujiraTypes do
   use Absinthe.Schema.Notation
+  use Absinthe.Relay.Schema.Notation, :modern
   alias RujiraWeb.Resolvers
 
   @desc "A rujira represents data about rujira products"
@@ -34,6 +35,10 @@ defmodule RujiraWeb.Schema.RujiraTypes do
 
     field :league, non_null(list_of(non_null(:league))) do
       resolve(&Resolvers.Leagues.resolver/3)
+    end
+
+    connection field :strategies, node_type: :strategy, non_null: true do
+      resolve(&Resolvers.Strategy.list/3)
     end
   end
 end
