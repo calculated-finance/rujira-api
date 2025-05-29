@@ -252,4 +252,33 @@ defmodule Rujira.Assets do
       map -> {:ok, map}
     end
   end
+
+  def query_match(query, %{ticker: b}, %{ticker: q}) do
+    case parse_query_parts(query) do
+      [part] ->
+        matches(part, b) or matches(part, q)
+
+      [part1, part2] ->
+        matches(part1, b) and matches(part2, q)
+
+      _ ->
+        true
+    end
+  end
+
+  defp matches(nil, _target), do: true
+  defp matches("*", _target), do: true
+
+  defp matches(query, target) do
+    target
+    |> String.downcase()
+    |> String.contains?(String.downcase(query))
+  end
+
+  defp parse_query_parts(nil), do: []
+  defp parse_query_parts(""), do: []
+
+  defp parse_query_parts(query) do
+    Regex.split(~r/[\s\-\/]/, query, trim: true)
+  end
 end

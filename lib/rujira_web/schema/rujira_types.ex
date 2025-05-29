@@ -38,6 +38,8 @@ defmodule RujiraWeb.Schema.RujiraTypes do
     end
 
     connection field :strategies, node_type: :strategy, non_null: true do
+      arg(:typenames, list_of(non_null(:string)))
+      arg(:query, :string)
       resolve(&Resolvers.Strategy.list/3)
     end
   end
