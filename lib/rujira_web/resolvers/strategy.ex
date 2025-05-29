@@ -49,9 +49,11 @@ defmodule RujiraWeb.Resolvers.Strategy do
     end
   end
 
-  defp thorchain_query(query, %{asset: asset}) do
+  defp thorchain_query(query, %{asset: %{chain: "THOR"}}) do
     Assets.query_match(query, asset, Assets.from_string("THOR.RUNE"))
   end
+
+  defp thorchain_query(_, _), do: false
 
   def filter_type(_, nil), do: true
   def filter_type(%Rujira.Bow.Xyk{}, list), do: Enum.member?(list, "BowPoolXyk")
