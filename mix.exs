@@ -7,7 +7,7 @@ defmodule Rujira.MixProject do
       version: "0.1.0",
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
-      start_permanent: Mix.env() == :main,
+      start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps()
     ]
@@ -40,7 +40,6 @@ defmodule Rujira.MixProject do
       {:bandit, "~> 1.5"},
       {:cors_plug, "~> 3.0"},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
-      {:dns_cluster, "~> 0.1.1"},
       {:ecto_sql, "~> 3.10"},
       {:ethereumex, "~> 0.10"},
       {:ex_abi, "~> 0.5"},
@@ -61,7 +60,8 @@ defmodule Rujira.MixProject do
       {:tesla, "~> 1.11"},
       {:timex, "~> 3.7.11"},
       {:websockex, "~> 0.4.3"},
-      {:yaml_elixir, "~> 2.11.0"}
+      {:yaml_elixir, "~> 2.11.0"},
+      {:libcluster, "~> 3.3.3"}
     ]
   end
 

@@ -23,10 +23,12 @@ defmodule Rujira.Leagues do
   end
 
   def account_from_id(id) do
-    [league, season, account] = String.split(id, "/")
-
-    with {:ok, account} <- load_account(league, season, account) do
+    with [league, season, account] <- String.split(id, "/"),
+         {:ok, %{} = account} <- load_account(league, season, account) do
       {:ok, Map.put(account, :id, id)}
+    else
+      {:ok, nil} -> {:error, :not_found}
+      _ -> {:error, :invalid_id}
     end
   end
 
@@ -71,123 +73,69 @@ defmodule Rujira.Leagues do
   end
 
   def load_account(league, season, account) do
-    default = %{
-      league: league,
-      season: String.to_integer(season),
-      address: account,
-      points: 0,
-      total_tx: 0,
-      rank: 0,
-      rank_change: nil
-    }
-
-    with account_data when not is_nil(account_data) <-
-           query_account_data(league, season, account),
-         leaderboard_data when not is_nil(leaderboard_data) <-
-           query_leaderboard_account_data(league, season, account),
-         {:ok, badges} <- account_badges(league, season, account) do
-      {:ok,
-       Map.merge(account_data, %{
-         rank: leaderboard_data.rank,
-         rank_change: leaderboard_data.rank_change,
-         badges: badges
-       })}
-    else
-      _ -> {:ok, default}
-    end
-  end
-
-  defp query_account_data(league, season, account) do
     Event
     |> join(:inner, [le], tx in assoc(le, :tx_event))
+    |> join(:left, [le, tx], l in subquery(leaders(league, season)), on: l.address == tx.address)
     |> where([le, tx], le.league == ^league and le.season == ^season and tx.address == ^account)
     |> group_by([le, tx], [le.league, le.season, tx.address])
-    |> select([le, tx], %{
+    |> select([le, tx, l], %{
       league: le.league,
       season: le.season,
       address: tx.address,
       points: fragment("CAST(COALESCE(?, 0) AS bigint)", sum(le.points)),
-      total_tx: fragment("COUNT(DISTINCT ?)", tx.txhash)
+      total_tx: fragment("COUNT(DISTINCT ?)", tx.txhash),
+      badges:
+        fragment("ARRAY_AGG(DISTINCT(?)) FILTER (WHERE ? IS NOT NULL)", l.category, l.category)
     })
     |> Repo.one()
-  end
-
-  defp query_leaderboard_account_data(league, season, account) do
-    leaderboard(league, season, nil, :rank, :asc)
-    |> subquery()
-    |> where([x], x.address == ^account)
-    |> Repo.one()
-  end
-
-  def account_badges(league, season, account) do
-    with {:ok, badges} <- badges(league, season) do
-      badges
-      |> Enum.filter(fn %{address: address} -> address == account end)
-      |> Enum.map(fn %{badges: badges} -> Enum.map(badges, &Atom.to_string/1) end)
-      |> then(&{:ok, &1})
-    end
+    |> then(&{:ok, &1})
   end
 
   def account_txs(address, league, season) do
     Event
     |> join(:inner, [le], tx in assoc(le, :tx_event))
     |> where([le, tx], le.league == ^league and le.season == ^season and tx.address == ^address)
-    |> group_by([_le, tx], [tx.txhash, tx.category])
+    |> group_by([_le, tx], [tx.timestamp, tx.height, tx.txhash, tx.category])
     |> select([le, tx], %{
       tx_hash: tx.txhash,
-      timestamp: min(tx.timestamp),
-      height: min(tx.height),
+      timestamp: tx.timestamp,
+      height: tx.height,
       points: sum(le.points),
       category: tx.category
     })
-    |> subquery()
-    |> order_by(desc: :timestamp)
+    |> order_by([le, tx], desc: tx.timestamp)
   end
 
-  def leaderboard_at_time(league, season, time) do
-    Event
-    |> join(:inner, [le], tx in assoc(le, :tx_event))
-    |> where([le, tx], le.league == ^league and le.season == ^season and tx.timestamp <= ^time)
-    |> group_by([le, tx], [le.league, le.season, tx.address])
-    |> select([le, tx], %{
-      league: le.league,
-      season: le.season,
+  def leaderboard_base(league, season) do
+    TxEvent
+    |> join(:inner, [tx], e in assoc(tx, :events))
+    |> where([tx, e], e.league == ^league and e.season == ^season)
+    |> join(:left, [tx, e], l in subquery(leaders(league, season)), on: l.address == tx.address)
+    |> group_by([tx], tx.address)
+    |> select([tx, e, l], %{
       address: tx.address,
-      points: fragment("CAST(COALESCE(?, 0) AS bigint)", sum(le.points)),
-      total_tx: fragment("COUNT(DISTINCT ?)", tx.txhash)
+      points: fragment("CAST(COALESCE(?, 0) AS bigint)", sum(e.points)),
+      rank: dense_rank() |> over(order_by: sum(e.points)),
+      total_tx: count(tx),
+      badges:
+        fragment("ARRAY_AGG(DISTINCT(?)) FILTER (WHERE ? IS NOT NULL)", l.category, l.category)
     })
-    |> subquery()
-    |> select([r], %{
-      league: r.league,
-      season: r.season,
-      address: r.address,
-      points: r.points,
-      total_tx: r.total_tx,
-      rank: fragment("DENSE_RANK() OVER (ORDER BY ? DESC)", r.points)
-    })
-    |> subquery()
-    |> order_by(asc: :rank)
   end
 
   def leaderboard(league, season, search, sort_by, sort_dir) do
-    now = DateTime.utc_now()
-    week_ago = Rujira.Resolution.shift_from_back(now, 7, "1D") |> Rujira.Resolution.truncate("1D")
-
-    current = leaderboard_at_time(league, season, now) |> subquery()
-    previous = leaderboard_at_time(league, season, week_ago) |> subquery()
-
-    current
-    |> join(:left, [curr], past in ^previous, on: past.address == curr.address)
-    |> select([curr, past], %{
-      league: curr.league,
-      season: curr.season,
-      address: curr.address,
-      points: curr.points,
-      total_tx: curr.total_tx,
-      rank: curr.rank,
-      rank_change:
-        fragment("CASE WHEN ? IS NULL THEN NULL ELSE ? - ? END", past.rank, past.rank, curr.rank)
-    })
+    league
+    |> leaderboard_base(season)
+    |> subquery()
+    |> join(
+      :left,
+      [tx],
+      prev in (league
+               |> leaderboard_base(season)
+               |> where([tx], tx.timestamp < fragment("NOW() - '7 day'::interval"))
+               |> subquery()),
+      on: prev.address == tx.address
+    )
+    |> select_merge([x, prev], %{rank_previous: prev.rank})
     |> subquery()
     |> then(fn q ->
       if search in [nil, ""],
@@ -197,45 +145,23 @@ defmodule Rujira.Leagues do
     |> order_by([curr], {^sort_dir, ^sort_by})
   end
 
-  def badges(league, season) do
-    base =
-      Event
-      |> join(:inner, [le], tx in assoc(le, :tx_event))
-      |> where([le, tx], le.league == ^league and le.season == ^season)
-      |> group_by([le, tx], [tx.category, tx.address])
-      |> select([le, tx], %{
-        category: tx.category,
-        address: tx.address,
-        total_points: sum(le.points)
-      })
-
-    max_per_category =
-      base
-      |> subquery()
-      |> group_by([p], p.category)
-      |> select([p], %{
-        category: p.category,
-        max_points: max(p.total_points)
-      })
-
-    base
-    |> subquery()
-    |> join(:inner, [p], maxp in subquery(max_per_category),
-      on: p.category == maxp.category and p.total_points == maxp.max_points
-    )
-    |> select([p, _maxp], %{
-      category: p.category,
-      address: p.address,
-      points: p.total_points
+  def leaders(league, season) do
+    Event
+    |> where([le], le.league == ^league and le.season == ^season)
+    |> join(:inner, [le], lte in TxEvent, on: le.tx_event_id == lte.id)
+    |> group_by([le, lte], [lte.address, lte.category])
+    |> select([le, lte], %{
+      address: lte.address,
+      category: lte.category,
+      category_points: sum(le.points),
+      rank:
+        over(
+          rank(),
+          partition_by: lte.category,
+          order_by: [desc: sum(le.points)]
+        )
     })
-    |> Repo.all()
-    |> Enum.group_by(& &1.address)
-    |> Enum.map(fn {address, items} ->
-      %{
-        address: address,
-        badges: Enum.map(items, fn %{category: category} -> category end)
-      }
-    end)
-    |> then(&{:ok, &1})
+    |> subquery()
+    |> where([cl], cl.rank == 1)
   end
 end

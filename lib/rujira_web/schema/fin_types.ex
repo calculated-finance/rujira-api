@@ -27,15 +27,17 @@ defmodule RujiraWeb.Schema.FinTypes do
       end)
     end
 
-    field :oracle_base, non_null(:pool) do
-      resolve(fn %{oracle_base: asset}, x, y ->
-        RujiraWeb.Resolvers.Thorchain.pool(x, %{asset: asset}, y)
+    field :oracle_base, :thorchain_oracle do
+      resolve(fn
+        %{oracle_base: asset}, _, _ ->
+          RujiraWeb.Resolvers.Thorchain.oracle(asset)
       end)
     end
 
-    field :oracle_quote, non_null(:pool) do
-      resolve(fn %{oracle_quote: asset}, x, y ->
-        RujiraWeb.Resolvers.Thorchain.pool(x, %{asset: asset}, y)
+    field :oracle_quote, :thorchain_oracle do
+      resolve(fn
+        %{oracle_quote: asset}, _, _ ->
+          RujiraWeb.Resolvers.Thorchain.oracle(asset)
       end)
     end
 
@@ -69,6 +71,10 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :center, :bigint
     field :spread, :bigint
     field :bids, non_null(list_of(non_null(:fin_book_entry)))
+
+    field :pair, non_null(:fin_pair) do
+      resolve(&RujiraWeb.Resolvers.Fin.book_pair/3)
+    end
   end
 
   @desc "single entry of an orderbook"
@@ -214,7 +220,6 @@ defmodule RujiraWeb.Schema.FinTypes do
     """
     field :fin_order_updated, :node_edge do
       arg(:contract, :address, deprecate: "contract is read from the observed event")
-
       arg(:owner, non_null(:address))
 
       config(fn %{owner: owner}, _ ->

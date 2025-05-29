@@ -40,3 +40,14 @@ config :logger, level: :info
 config :appsignal, :config,
   active: true,
   revision: System.get_env("SOURCE_VERSION")
+
+config :libcluster,
+  topologies: [
+    k8s_example: [
+      strategy: Cluster.Strategy.Kubernetes,
+      config: [
+        kubernetes_selector: System.get_env("LIBCLUSTER_KUBERNETES_SELECTOR"),
+        kubernetes_node_basename: System.get_env("LIBCLUSTER_KUBERNETES_NODE_BASENAME")
+      ]
+    ]
+  ]

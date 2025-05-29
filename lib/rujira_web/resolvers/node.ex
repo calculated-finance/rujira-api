@@ -28,7 +28,7 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Assets.Asset{}, _), do: :asset
   def type(%Bank.Supply{}, _), do: :bank_supply
   def type(%Bow.Account{}, _), do: :bow_account
-  def type(%Bow.Xyk{}, _), do: :bow_pool
+  def type(%Bow.Xyk{}, _), do: :bow_pool_xyk
   def type(%Contracts.Contract{}, _), do: :contract
   def type(%Merge.Account{}, _), do: :merge_account
   def type(%Merge.Pool{}, _), do: :merge_pool
@@ -37,15 +37,19 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Fin.Trade{}, _), do: :fin_trade
   def type(%Fin.Candle{}, _), do: :fin_candle
   def type(%Fin.Order{}, _), do: :fin_order
+  def type(%{league: _, season: _, address: _}, _), do: :league_account
   def type(%Staking.Account{}, _), do: :staking_account
   def type(%Staking.Pool{}, _), do: :staking_pool
   def type(%Staking.Pool.Status{}, _), do: :staking_status
   def type(%Staking.Pool.Summary{}, _), do: :staking_summary
-  def type(%Thorchain.Types.QueryLiquidityProviderResponse{}, _), do: :liquidity_provider
-  def type(%Thorchain.Types.QueryInboundAddressResponse{}, _), do: :inbound_address
-  def type(%Thorchain.Types.QueryPoolResponse{}, _), do: :pool
-  def type(%{observed_tx: _}, _), do: :tx_in
-  def type(%{league: _, season: _, address: _}, _), do: :league_account
+
+  def type(%Thorchain.Types.QueryLiquidityProviderResponse{}, _),
+    do: :thorchain_liquidity_provider
+
+  def type(%Thorchain.Types.QueryInboundAddressResponse{}, _), do: :thorchain_inbound_address
+  def type(%Thorchain.Types.QueryPoolResponse{}, _), do: :thorchain_pool
+  def type(%{observed_tx: _}, _), do: :thorchain_tx_in
+  def type(%Thorchain.Oracle{}, _), do: :thorchain_oracle
 
   defp resolve_id(id) do
     case Absinthe.Relay.Node.from_global_id(id, RujiraWeb.Schema) do
@@ -61,6 +65,9 @@ defmodule RujiraWeb.Resolvers.Node do
       {:ok, %{type: :bow_pool, id: id}} ->
         Bow.pool_from_id(id)
 
+      {:ok, %{type: :bow_pool_xyk, id: id}} ->
+        Bow.pool_from_id(id)
+
       {:ok, %{type: :contract, id: id}} ->
         Contracts.from_id(id)
 
@@ -69,12 +76,6 @@ defmodule RujiraWeb.Resolvers.Node do
 
       {:ok, %{type: :bow_account, id: id}} ->
         Bow.account_from_id(id)
-
-      {:ok, %{type: :inbound_address, id: id}} ->
-        Resolvers.Thorchain.inbound_address(id)
-
-      {:ok, %{type: :liquidity_provider, id: id}} ->
-        Thorchain.liquidity_provider_from_id(id)
 
       {:ok, %{type: :merge_account, id: id}} ->
         Merge.account_from_id(id)
@@ -97,9 +98,6 @@ defmodule RujiraWeb.Resolvers.Node do
       {:ok, %{type: :fin_trade, id: id}} ->
         Fin.trade_from_id(id)
 
-      {:ok, %{type: :pool, id: id}} ->
-        Thorchain.pool_from_id(id)
-
       {:ok, %{type: :staking_pool, id: id}} ->
         Staking.pool_from_id(id)
 
@@ -112,11 +110,36 @@ defmodule RujiraWeb.Resolvers.Node do
       {:ok, %{type: :staking_summary, id: id}} ->
         Staking.summary_from_id(id)
 
-      {:ok, %{type: :tx_in, id: id}} ->
+      {:ok, %{type: :thorchain_liquidity_provider, id: id}} ->
+        Thorchain.liquidity_provider_from_id(id)
+
+      {:ok, %{type: :thorchain_pool, id: id}} ->
+        Thorchain.pool_from_id(id)
+
+      {:ok, %{type: :thorchain_inbound_address, id: id}} ->
+        Resolvers.Thorchain.inbound_address(id)
+
+      {:ok, %{type: :thorchain_tx_in, id: id}} ->
         Thorchain.tx_in(id)
 
       {:ok, %{type: :league_account, id: id}} ->
         Leagues.account_from_id(id)
+
+      {:ok, %{type: :thorchain_oracle, id: id}} ->
+        Thorchain.oracle_from_id(id)
+
+      # ---
+      # TODO: remove once UIs are using v2
+      {:ok, %{type: :inbound_address, id: id}} ->
+        Resolvers.Thorchain.inbound_address(id)
+
+      {:ok, %{type: :pool, id: id}} ->
+        Thorchain.pool_from_id(id)
+
+      {:ok, %{type: :tx_in, id: id}} ->
+        Thorchain.tx_in(id)
+
+      # ---
 
       {:error, error} ->
         {:error, error}

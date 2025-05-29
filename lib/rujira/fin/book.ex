@@ -25,14 +25,14 @@ defmodule Rujira.Fin.Book do
       end
     end
 
-    defp value(:ask, price, total) do
+    def value(:ask, price, total) do
       total
       |> Decimal.new()
       |> Decimal.mult(price)
       |> Decimal.div(Decimal.new(1_000_000_000_000))
     end
 
-    defp value(:bid, price, total) do
+    def value(:bid, price, total) do
       total
       |> Decimal.new()
       |> Decimal.div(price)
@@ -64,7 +64,7 @@ defmodule Rujira.Fin.Book do
      |> populate()}
   end
 
-  defp populate(%__MODULE__{asks: [ask | _], bids: [bid | _]} = book) do
+  def populate(%__MODULE__{asks: [ask | _], bids: [bid | _]} = book) do
     center = ask.price |> Decimal.add(bid.price) |> Decimal.div(Decimal.new(2))
 
     %{
@@ -74,5 +74,5 @@ defmodule Rujira.Fin.Book do
     }
   end
 
-  defp populate(book), do: book
+  def populate(book), do: book
 end

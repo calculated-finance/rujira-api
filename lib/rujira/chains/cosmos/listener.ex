@@ -67,15 +67,7 @@ defmodule Rujira.Chains.Cosmos.Listener do
         |> Enum.uniq()
         |> Enum.each(fn address ->
           Logger.debug("#{__MODULE__} change #{address}")
-
-          id =
-            Absinthe.Relay.Node.to_global_id(
-              :layer_1_account,
-              "#{@chain}:#{address}",
-              RujiraWeb.Schema
-            )
-
-          Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+          Rujira.Events.publish_node(:layer_1_account, "#{@chain}:#{address}")
         end)
 
         :ok

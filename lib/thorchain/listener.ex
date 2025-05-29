@@ -21,11 +21,21 @@ defmodule Thorchain.Listener do
 
     for a <- hashes do
       Logger.debug("#{__MODULE__} change #{a}")
+      Rujira.Events.publish_node(:tx_in, a)
+    end
 
-      id =
-        Absinthe.Relay.Node.to_global_id(:tx_in, a, RujiraWeb.Schema)
+    events =
+      txs
+      |> Enum.flat_map(fn
+        %{result: %{events: xs}} when is_list(xs) -> xs
+        _ -> []
+      end)
 
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+    for {pool, address} <- events |> Enum.flat_map(&scan_event/1) |> Enum.uniq() do
+      Memoize.invalidate(Thorchain, :liquidity_provider, [pool, address])
+
+      Rujira.Events.publish_node(:thorchain_liquidity_provider, "#{pool}/#{address}")
+      Rujira.Events.publish_node(:pool, pool)
     end
 
     {:noreply, state}
@@ -37,10 +47,14 @@ defmodule Thorchain.Listener do
     end
   end
 
-  defp scan_tx(%{"body" => %{"messages" => messages}}) do
+  defp scan_tx(%{"messages" => messages}) do
     Enum.reduce(messages, [], fn
-      %{"@type" => "/types.MsgObservedTxIn", "txs" => txs}, acc ->
-        txs |> Enum.map(& &1["tx"]["id"]) |> Enum.concat(acc)
+      %{
+        "@type" => "/types.MsgObservedTxQuorum",
+        "quoTx" => %{"obsTx" => %{"tx" => %{"id" => id}}}
+      },
+      acc ->
+        [id | acc]
 
       _, acc ->
         acc
@@ -48,4 +62,43 @@ defmodule Thorchain.Listener do
   end
 
   defp scan_tx(_), do: []
+
+  defp scan_event(%{
+         attributes: [
+           %{key: "pool", value: pool},
+           %{key: "type", value: _},
+           %{key: "rune_address", value: rune_address},
+           %{key: "rune_amount", value: _rune_amount},
+           %{key: "asset_amount", value: _asset_amount},
+           %{key: "asset_address", value: asset_address}
+           | _
+         ],
+         type: "pending_liquidity"
+       }) do
+    [{pool, rune_address}, {pool, asset_address}]
+  end
+
+  defp scan_event(%{
+         attributes: [
+           %{key: "pool", value: pool},
+           %{key: "liquidity_provider_units", value: _},
+           %{key: "rune_address", value: rune_address},
+           %{key: "rune_amount", value: _rune_amount},
+           %{key: "asset_amount", value: _asset_amount},
+           %{key: "asset_address", value: asset_address}
+           | _
+         ],
+         type: "add_liquidity"
+       }) do
+    [{pool, rune_address}, {pool, asset_address}]
+  end
+
+  defp scan_event(%{
+         attributes: [%{key: "pool", value: pool} | _],
+         type: "withdraw"
+       }) do
+    [{pool, :_}]
+  end
+
+  defp scan_event(_), do: []
 end

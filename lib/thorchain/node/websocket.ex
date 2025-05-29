@@ -42,9 +42,8 @@ defmodule Thorchain.Node.Websocket do
           |> Map.get(:header)
           |> Map.get(:height)
 
-        with {:ok, block} <- Thorchain.block(height) do
-          Phoenix.PubSub.broadcast(pubsub, t, block)
-        end
+        {:ok, block} = Thorchain.block(height)
+        Phoenix.PubSub.broadcast(pubsub, t, block)
 
         {:ok, state}
 

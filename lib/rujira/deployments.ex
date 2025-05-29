@@ -1,5 +1,6 @@
 defmodule Rujira.Deployments do
   @moduledoc "Migrates "
+  alias Rujira.Ventures
   alias Rujira.Deployments.Target
   alias Cosmwasm.Wasm.V1.ContractInfo
   alias Cosmwasm.Wasm.V1.MsgMigrateContract
@@ -139,6 +140,7 @@ defmodule Rujira.Deployments do
   defp to_module("fin"), do: Fin.Pair
   defp to_module("revenue"), do: Revenue.Converter
   defp to_module("staking"), do: Staking.Pool
+  defp to_module("keiko"), do: Ventures.Keiko
 
   defp parse_ctx(map, ctx) when is_map(map) do
     map

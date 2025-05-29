@@ -99,12 +99,13 @@ defmodule Rujira.Fin do
   def list_all_orders(address) do
     with {:ok, pairs} <- list_pairs(),
          {:ok, orders} <-
-           Task.async_stream(pairs, &list_orders(&1, address))
+           Task.async_stream(pairs, &list_orders(&1, address), timeout: 15_000)
            |> Enum.reduce({:ok, []}, fn
              # Flatten orders here
              {:ok, {:ok, orders}}, {:ok, acc} -> {:ok, acc ++ orders}
              {:ok, {:error, error}}, _ -> {:error, error}
              {:error, err}, _ -> {:error, err}
+             _, {:error, err} -> {:error, err}
            end) do
       {:ok, orders}
     end
@@ -344,32 +345,15 @@ defmodule Rujira.Fin do
   defp broadcast_trades({_count, trades}) do
     for t <- trades do
       Logger.debug("#{__MODULE__} broadcast trade #{t.id}")
-
-      id = Absinthe.Relay.Node.to_global_id(:fin_trade, t.id, RujiraWeb.Schema)
-      prefix = Absinthe.Relay.Node.to_global_id(:fin_trade, t.contract, RujiraWeb.Schema)
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, edge: prefix)
-
-      id =
-        Absinthe.Relay.Node.to_global_id(:fin_pair, t.contract, RujiraWeb.Schema)
-
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+      Rujira.Events.publish_edge(:fin_trade, t.contract, t.id)
+      Rujira.Events.publish_node(:fin_pair, t.contract)
     end
   end
 
   defp broadcast_candles({_count, candles}) do
     for c <- candles do
       Logger.debug("#{__MODULE__} broadcast candle #{c.id}")
-
-      id = Absinthe.Relay.Node.to_global_id(:fin_candle, c.id, RujiraWeb.Schema)
-
-      prefix =
-        Absinthe.Relay.Node.to_global_id(
-          :fin_candle,
-          "#{c.contract}/#{c.resolution}",
-          RujiraWeb.Schema
-        )
-
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id, edge: prefix)
+      Rujira.Events.publish_edge(:fin_candle, "#{c.contract}/#{c.resolution}", c.id)
     end
   end
 

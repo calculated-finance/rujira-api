@@ -1,15 +1,15 @@
-defmodule RujiraWeb.Schema.ThorchainTypes do
+defmodule RujiraWeb.Schema.ThorchainTypesOld do
   use Absinthe.Schema.Notation
   alias Rujira.Assets
   alias RujiraWeb.Resolvers
   use Absinthe.Relay.Schema.Notation, :modern
 
-  object :thorchain_v2 do
-    field :inbound_addresses, non_null(list_of(non_null(:thorchain_inbound_address))) do
+  object :thorchain do
+    field :inbound_addresses, non_null(list_of(non_null(:inbound_address))) do
       resolve(&Resolvers.Thorchain.inbound_addresses/3)
     end
 
-    field :quote, :thorchain_quote do
+    field :quote, :quote do
       arg(:from_asset, non_null(:asset_string))
       arg(:to_asset, non_null(:asset_string))
       arg(:amount, non_null(:bigint))
@@ -28,12 +28,12 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
       resolve(&Resolvers.Thorchain.quote/3)
     end
 
-    field :pool, :thorchain_pool do
+    field :pool, :pool do
       arg(:asset, non_null(:asset_string))
       resolve(&Resolvers.Thorchain.pool/3)
     end
 
-    field :pools, non_null(list_of(non_null(:thorchain_pool))) do
+    field :pools, non_null(list_of(non_null(:pool))) do
       resolve(&Resolvers.Thorchain.pools/3)
     end
 
@@ -47,7 +47,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
       resolve(&Resolvers.Thorchain.summary/3)
     end
 
-    field :tx_in, :thorchain_tx_in do
+    field :tx_in, :tx_in do
       arg(:hash, non_null(:string))
       resolve(&Resolvers.Thorchain.tx_in/3)
     end
@@ -57,7 +57,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     end
   end
 
-  object :thorchain_quote do
+  object :quote do
     field :asset_in, non_null(:layer_1_balance)
     field :inbound_address, non_null(:address)
     field :inbound_confirmation_blocks, non_null(:integer)
@@ -82,7 +82,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :total_swap_seconds, non_null(:integer)
   end
 
-  object :thorchain_fees do
+  object :fees do
     field :asset, non_null(:asset)
     field :affiliate, non_null(:string)
     field :outbound, non_null(:bigint)
@@ -92,10 +92,10 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :total_bps, non_null(:integer)
   end
 
-  node object(:thorchain_pool) do
+  node object(:pool) do
     field :asset, non_null(:asset)
     field :short_code, non_null(:string)
-    field :status, non_null(:thorchain_pool_status)
+    field :status, non_null(:pool_status)
     field :decimals, non_null(:integer)
     field :pending_inbound_asset, non_null(:bigint)
     field :pending_inbound_rune, non_null(:bigint)
@@ -118,7 +118,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :derived_depth_bps, non_null(:integer)
   end
 
-  node object(:thorchain_thorchain_liquidity_provider) do
+  node object(:thorchain_liquidity_provider) do
     field :asset, non_null(:asset)
     field :rune_address, :address
     field :asset_address, :address
@@ -137,14 +137,14 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     # field :luvi_growth_pct, 16, type: :string, json_name: "luviGrowthPct"
   end
 
-  enum :thorchain_pool_status do
+  enum :pool_status do
     value(:unknown, as: "UnknownPoolStatus")
     value(:available, as: "Available")
     value(:staged, as: "Staged")
     value(:suspended, as: "Suspended")
   end
 
-  node object(:thorchain_inbound_address) do
+  node object(:inbound_address) do
     field :chain, non_null(:chain)
     field :pub_key, :string
     field :address, non_null(:address)
@@ -160,7 +160,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :dust_threshold, non_null(:bigint)
   end
 
-  object :thorchain_thorchain_summary do
+  object :thorchain_summary do
     field :unique_swappers, :bigint
     field :total_validator_bond, :bigint
 
@@ -178,23 +178,23 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :blockchain_integrated, :bigint
   end
 
-  object :thorchain_tx_id do
+  object :tx_id do
     field :block_height, :bigint
     field :tx_index, :bigint
   end
 
-  node object(:thorchain_tx_in) do
-    field :observed_tx, :thorchain_observed_tx
+  node object(:tx_in) do
+    field :observed_tx, :observed_tx
     field :finalized_height, :integer
-    field :finalized_events, list_of(non_null(:thorchain_block_event))
+    field :finalized_events, list_of(non_null(:block_event))
   end
 
-  object :thorchain_observed_tx do
+  object :observed_tx do
     field :tx, :layer1_tx
     field :status, :string
   end
 
-  object :thorchain_layer1_tx do
+  object :layer1_tx do
     field :id, :string
     field :chain, :chain
     field :from_address, :address
@@ -204,57 +204,48 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :memo, :string
   end
 
-  object :thorchain_block do
+  object :block do
     field :id, non_null(:block_id)
     field :header, non_null(:block_header)
-    field :begin_block_events, non_null(list_of(non_null(:thorchain_block_event)))
-    field :end_block_events, non_null(list_of(non_null(:thorchain_block_event)))
+    field :begin_block_events, non_null(list_of(non_null(:block_event)))
+    field :end_block_events, non_null(list_of(non_null(:block_event)))
     field :txs, non_null(list_of(non_null(:block_tx)))
   end
 
-  object :thorchain_block_id do
+  object :block_id do
     field :hash, non_null(:string)
   end
 
-  object :thorchain_block_header do
+  object :block_header do
     field :chain_id, non_null(:string)
     field :height, non_null(:bigint)
     field :time, non_null(:timestamp)
   end
 
-  object :thorchain_block_event do
+  object :block_event do
     field :type, non_null(:string)
-    field :attributes, non_null(list_of(non_null(:thorchain_block_event_attribute)))
+    field :attributes, non_null(list_of(non_null(:block_event_attribute)))
   end
 
-  object :thorchain_block_event_attribute do
+  object :block_event_attribute do
     field :key, non_null(:string)
     field :value, non_null(:string)
   end
 
-  object :thorchain_block_tx do
+  object :block_tx do
     field :hash, non_null(:string)
     field :tx_data, non_null(:string)
     field :result, non_null(:tx_result)
   end
 
-  object :thorchain_tx_result do
+  object :tx_result do
     field :code, non_null(:integer)
     field :data, :string
     field :log, :string
     field :info, :string
     field :gas_wanted, non_null(:integer)
     field :gas_used, non_null(:integer)
-    field :events, non_null(list_of(non_null(:thorchain_block_event)))
+    field :events, non_null(list_of(non_null(:block_event)))
     field :codespace, :string
-  end
-
-  object :thorchain_tcy do
-    field :claimable, non_null(:bigint)
-  end
-
-  node object(:thorchain_oracle) do
-    field :asset, non_null(:asset)
-    field :price, non_null(:bigint)
   end
 end

@@ -30,11 +30,10 @@ defmodule Rujira.Balances.Listener do
 
     for a <- addresses do
       Logger.debug("#{__MODULE__} change #{a}")
+      # TODO: extract specific denoms
+      Memoize.invalidate(Rujira.Chains.Thor, :balance_of, [a, :_])
 
-      id =
-        Absinthe.Relay.Node.to_global_id(:layer_1_account, "thor:#{a}", RujiraWeb.Schema)
-
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+      Rujira.Events.publish_node(:layer_1_account, "thor:#{a}")
     end
 
     {:noreply, state}
@@ -49,11 +48,18 @@ defmodule Rujira.Balances.Listener do
   defp scan_attributes(attributes, collection \\ [])
 
   defp scan_attributes(
-         [
-           %{value: recipient, key: "recipient"},
-           %{value: sender, key: "sender"}
-           | rest
-         ],
+         [_, %{value: recipient, key: "recipient"}, %{value: sender, key: "sender"} | rest],
+         collection
+       ) do
+    scan_attributes(rest, [
+      recipient,
+      sender | collection
+    ])
+  end
+
+  # x/wasm doesn't emit sorted events for the transfer when a contract is instantiated.
+  defp scan_attributes(
+         [%{value: recipient, key: "recipient"}, %{value: sender, key: "sender"} | rest],
          collection
        ) do
     scan_attributes(rest, [

@@ -16,6 +16,10 @@ defmodule RujiraWeb.Schema.AccountTypes do
     field :account, :account do
       resolve(&Resolvers.Account.resolver/3)
     end
+
+    field :liquidity_accounts, non_null(list_of(non_null(:thorchain_liquidity_provider))) do
+      resolve(&Resolvers.Thorchain.liquidity_accounts/3)
+    end
   end
 
   @desc "An account represents data about this address on THORChain and the Rujira app layer, using the mapped address from the root account when required"
@@ -41,6 +45,10 @@ defmodule RujiraWeb.Schema.AccountTypes do
 
     field :staking, non_null(:staking_accounts) do
       resolve(&Resolvers.Staking.accounts/3)
+    end
+
+    field :strategy, non_null(list_of(non_null(:strategy_account))) do
+      resolve(&Resolvers.Strategy.accounts/3)
     end
   end
 end

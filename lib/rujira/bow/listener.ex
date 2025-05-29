@@ -35,16 +35,20 @@ defmodule Rujira.Bow.Listener do
       |> Enum.flat_map(&scan_transfer/1)
       |> Enum.uniq()
 
-    for {pool, account} <- pools do
-      Logger.debug("#{__MODULE__} change #{pool} #{account}")
+    for pool <- pools do
+      Logger.debug("#{__MODULE__} change #{pool}")
       Memoize.invalidate(Rujira.Bow, :query_pool, [pool])
       Memoize.invalidate(Rujira.Bow, :query_quotes, [pool])
+      Rujira.Events.publish_node(:bow_pool_xyk, pool)
+
+      # We use the FinBook on the UI to re-use thie Bok & History components from trade.
+      # Broadcast a change to the FinBook that is scoped to the pool
+      Rujira.Events.publish_node(:fin_book, pool)
     end
 
     for {denom, account} <- transfers do
       Logger.debug("#{__MODULE__} change #{denom} #{account}")
-      id = Absinthe.Relay.Node.to_global_id(:bow_account, "#{account}/#{denom}", RujiraWeb.Schema)
-      Absinthe.Subscription.publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+      Rujira.Events.publish_node(:bow_account, "#{account}/#{denom}")
     end
   end
 
@@ -57,16 +61,33 @@ defmodule Rujira.Bow.Listener do
   defp scan_attributes(attrs) do
     attr_map = Map.new(attrs, fn %{key: k, value: v} -> {k, v} end)
     contract = Map.get(attr_map, "_contract_address")
-    owner = Map.get(attr_map, "owner")
-    [{contract, owner}]
+    [contract]
   end
 
+  # TODO: handle x/wasm events being in a different order
   defp scan_transfer(%{
          type: "transfer",
          attributes: [
            %{key: "recipient", value: recipient},
            %{key: "sender", value: sender},
            %{key: "amount", value: amount} | _
+         ]
+       }) do
+    with {:ok, coins} <- Assets.parse_coins(amount) do
+      coins
+      |> Enum.filter(&is_lp_coin/1)
+      |> Enum.flat_map(&merge_accounts(&1, [recipient, sender]))
+    else
+      _ -> []
+    end
+  end
+
+  defp scan_transfer(%{
+         type: "transfer",
+         attributes: [
+           %{key: "amount", value: amount},
+           %{key: "recipient", value: recipient},
+           %{key: "sender", value: sender} | _
          ]
        }) do
     with {:ok, coins} <- Assets.parse_coins(amount) do

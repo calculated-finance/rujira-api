@@ -129,7 +129,7 @@ defmodule Rujira.Leagues.Collectors.Contract do
          %Target{module: module} <-
            Enum.find(Deployments.list_all_targets(), &(&1.address == contract)),
          {:ok, category} <- module_category(module),
-         {:ok, %{price: price}} <- Prices.get(asset.symbol) do
+         {:ok, %{price: price}} <- Prices.get(asset.ticker) do
       %{
         address: sender,
         revenue:

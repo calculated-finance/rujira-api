@@ -22,6 +22,8 @@ defmodule Thorchain do
   alias Thorchain.Types.QueryTxRequest
   alias Thorchain.Types.QueryTxResponse
   alias Thorchain.Types.QueryPoolRequest
+  alias Thorchain.Oracle
+
   use GenServer
   use Memoize
 
@@ -174,6 +176,7 @@ defmodule Thorchain do
     end
   end
 
+  @spec get_affiliate(binary()) :: :error | {:error, :no_affiliate} | {:ok, {any(), Decimal.t()}}
   def get_affiliate(memo) do
     parts = String.split(memo, ":")
 
@@ -325,5 +328,29 @@ defmodule Thorchain do
     Enum.filter(events, fn %{attributes: attributes} ->
       Enum.any?(attributes, &(&1.value == hash))
     end)
+  end
+
+  def oracle_from_id(id) do
+    with {:ok, %Decimal{} = price} <- oracle_price(id),
+         {:ok, %Asset{} = asset} <- Assets.from_id(id) do
+      {:ok, %Oracle{id: id, asset: asset, price: price}}
+    end
+  end
+
+  defmemo oracle_price("THOR.RUNE") do
+    with {:ok, %{rune_price_in_tor: price}} <- Thorchain.network(),
+         {:ok, price} <- Decimal.cast(price) do
+      {:ok, Decimal.div(price, Decimal.new(10_000_000))}
+    end
+  end
+
+  defmemo oracle_price(asset) do
+    with {:ok, %{asset_tor_price: price}} <- Thorchain.pool_from_id(asset),
+         {:ok, price} <- Decimal.cast(price) do
+      {:ok, Decimal.div(price, Decimal.new(10_000_000))}
+    else
+      _ ->
+        {:ok, nil}
+    end
   end
 end

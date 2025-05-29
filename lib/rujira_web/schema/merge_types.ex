@@ -57,8 +57,8 @@ defmodule RujiraWeb.Schema.MergeTypes do
     field :share_value, non_null(:bigint)
     @desc "Percentage increase in share_value since the start of the merge"
     field :share_value_change, non_null(:bigint)
-    # @desc "Annualized growth in merging RUJI assuming re-distribution of all un-allocated RUJI"
-    # field :apr, non_null(:bigint)
+    @desc "Annualized growth in merging RUJI assuming re-distribution of all un-allocated RUJI"
+    field :apr, non_null(:bigint)
   end
 
   @desc "A merge_accounts represents aggregate data about account address related to the merge pools"
