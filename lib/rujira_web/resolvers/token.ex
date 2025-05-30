@@ -52,10 +52,10 @@ defmodule RujiraWeb.Resolvers.Token do
   def chain(%{chain: chain}, _, _),
     do: {:ok, chain |> String.downcase() |> String.to_existing_atom()}
 
-  def metadata(%Asset{ticker: ticker} = asset, _, _) do
-    decimals = Rujira.Assets.decimals(asset)
-    # As per THORChain, ticker is the short version
-    {:ok, %{symbol: ticker, decimals: decimals}}
+  def metadata(%Asset{} = asset, _, _) do
+    with {:ok, metadata} <- Assets.load_metadata(asset) do
+      {:ok, metadata}
+    end
   end
 
   def prices(_, b) do

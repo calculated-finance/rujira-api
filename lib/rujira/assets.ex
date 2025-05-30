@@ -2,6 +2,7 @@ defmodule Rujira.Assets do
   use Memoize
   alias Rujira.Bow
   alias Rujira.Deployments
+  alias Rujira.Assets.Metadata
   alias Thorchain.Types.QueryPoolsRequest
   alias Thorchain.Types.Query.Stub, as: Q
   alias __MODULE__.Asset
@@ -280,5 +281,15 @@ defmodule Rujira.Assets do
 
   defp parse_query_parts(query) do
     Regex.split(~r/[\s\-\/]/, query, trim: true)
+  end
+
+  def load_metadata(%Asset{type: :native} = asset) do
+    with {:ok, metadata} <- Metadata.load_metadata(asset) do
+      {:ok, %{metadata | decimals: decimals(asset)}}
+    end
+  end
+
+  def load_metadata(%Asset{ticker: ticker} = asset) do
+    {:ok, %{symbol: ticker, decimals: decimals(asset)}}
   end
 end
