@@ -32,7 +32,7 @@ defmodule Rujira.Merge.Listener do
     for {a, account} <- addresses do
       Logger.debug("#{__MODULE__} change #{a}")
       Memoize.invalidate(Merge, :query_pool, [a])
-      Memoize.invalidate(Merge, :query_account, [a, account])
+      Memoize.invalidate(Merge, :query_account, [a, :_])
       Rujira.Events.publish_node(:merge_pool, a)
       Rujira.Events.publish_node(:merge_account, "#{a}/#{account}")
     end
