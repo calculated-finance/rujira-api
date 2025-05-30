@@ -118,7 +118,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :derived_depth_bps, non_null(:integer)
   end
 
-  node object(:thorchain_thorchain_liquidity_provider) do
+  node object(:thorchain_liquidity_provider) do
     field :asset, non_null(:asset)
     field :rune_address, :address
     field :asset_address, :address
