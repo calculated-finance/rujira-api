@@ -32,6 +32,11 @@ defmodule RujiraWeb.Schema.TokenTypes do
   object :metadata do
     field :symbol, non_null(:string)
     field :decimals, non_null(:integer)
+    field :description, :string
+    field :display, :string
+    field :name, :string
+    field :uri, :string
+    field :uri_hash, :string
   end
 
   @desc "Price data for a token"
