@@ -283,9 +283,13 @@ defmodule Rujira.Assets do
     Regex.split(~r/[\s\-\/]/, query, trim: true)
   end
 
-  def load_metadata(asset) do
+  def load_metadata(%Asset{type: :native} = asset) do
     with {:ok, metadata} <- Metadata.load_metadata(asset) do
       {:ok, %{metadata | decimals: decimals(asset)}}
     end
+  end
+
+  def load_metadata(%Asset{ticker: ticker} = asset) do
+    {:ok, %{symbol: ticker, decimals: decimals(asset)}}
   end
 end

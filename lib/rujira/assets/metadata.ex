@@ -30,6 +30,8 @@ defmodule Rujira.Assets.Metadata do
         uri: metadata.uri,
         uri_hash: metadata.uri_hash
       }}
+    else
+      _ -> {:ok, %__MODULE__{symbol: asset.ticker}}
     end
   end
 end
