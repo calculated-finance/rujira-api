@@ -12,6 +12,9 @@ defmodule RujiraWeb.Schema.LeaguesTypes do
     end
 
     connection field :leaderboard, node_type: :league_leaderboard_entry do
+      arg :search, :string
+      arg :sort_by, :league_leaderboard_sort_by
+      arg :sort_dir, :league_leaderboard_sort_dir
       resolve(&Resolvers.Leagues.leaderboard/3)
     end
   end
@@ -55,5 +58,17 @@ defmodule RujiraWeb.Schema.LeaguesTypes do
     field :timestamp, non_null(:timestamp)
     field :points, non_null(:bigint)
     field :category, non_null(:string)
+  end
+
+  enum :league_leaderboard_sort_by do
+    value(:points)
+    value(:total_tx)
+    value(:rank)
+    value(:rank_previous)
+  end
+
+  enum :league_leaderboard_sort_dir do
+    value(:asc)
+    value(:desc)
   end
 end

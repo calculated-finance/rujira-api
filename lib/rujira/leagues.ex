@@ -122,7 +122,7 @@ defmodule Rujira.Leagues do
     })
   end
 
-  def leaderboard(league, season) do
+  def leaderboard(league, season, search, sort_by, sort_dir) do
     league
     |> leaderboard_base(season)
     |> subquery()
@@ -136,6 +136,13 @@ defmodule Rujira.Leagues do
       on: prev.address == tx.address
     )
     |> select_merge([x, prev], %{rank_previous: prev.rank})
+    |> subquery()
+    |> then(fn q ->
+      if search in [nil, ""],
+        do: q,
+        else: where(q, [curr], fragment("? ILIKE ?", curr.address, ^"%#{search}%"))
+    end)
+    |> order_by([curr], {^sort_dir, ^sort_by})
   end
 
   def leaders(league, season) do
