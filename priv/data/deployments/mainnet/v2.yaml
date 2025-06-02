@@ -11,6 +11,18 @@ codes:
   merge: 8
 
 targets:
+  staking: 
+    - id: ruji
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        bond_denom: x/ruji
+        revenue_denom: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+        revenue_converter: 
+          contract: ${targets:fin.ruji-eth-usdc}
+          msg: '{"swap": {}}'
+          min: "10000000"
+
   revenue: 
     - id: single
       admin: ${accounts:admin}
@@ -20,7 +32,7 @@ targets:
         target_denoms:
           - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
         target_addresses:
-          - address: ${accounts:admin}
+          - address: ${targets:staking.ruji}
             weight: 1
 
     - id: split
@@ -31,7 +43,7 @@ targets:
         target_denoms:
           - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
         target_addresses:
-          - address: ${accounts:admin}
+          - address: ${targets:staking.ruji}
             weight: 1
           - address: ${targets:revenue.base}
             weight: 1
@@ -98,6 +110,16 @@ targets:
         market_maker: ${targets:bow.nami-eth-usdc}
         fee_address: ${targets:revenue.split}
 
+    - id: ruji-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - x/ruji
+          - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+        market_maker: ${targets:bow.ruji-eth-usdc}
+        fee_address: ${targets:revenue.split}
+
   bow: 
     - id: auto-eth-usdc
       admin: ${accounts:admin}
@@ -133,4 +155,13 @@ targets:
         strategy: 
           xyk: 
             x: thor.nami
+            y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+
+    - id: ruji-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        strategy: 
+          xyk: 
+            x: x/ruji
             y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
