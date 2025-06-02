@@ -38,7 +38,7 @@ defmodule RujiraWeb.Resolvers.Thorchain do
       {:ok,
        %{res | expiry: expiry}
        |> Map.put(:request, req)
-       |> Map.put(:asset_in, %{asset: from_asset, amount: amount})
+       |> Map.put(:asset_in, %{asset: Assets.from_string(from_asset), amount: amount})
        |> Map.put(:expected_asset_out, %{
          asset: Assets.from_string(to_asset),
          amount: res.expected_amount_out
