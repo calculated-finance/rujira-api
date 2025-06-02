@@ -1,5 +1,5 @@
 defmodule Rujira.Merge.Listener do
-  alias Rujira.DataMocks.Merge
+  alias Rujira.Merge
   use GenServer
   require Logger
 
