@@ -248,18 +248,21 @@ defmodule Rujira.Bow.Xyk do
     |> Decimal.div(Decimal.new(1_000_000_000_000))
   end
 
-  def init_msg(%{"x" => x, "y" => y}) do
+  def init_msg(%{"x" => x, "y" => y} = params) do
     {:ok, x_asset} = Assets.from_denom(x)
     {:ok, y_asset} = Assets.from_denom(y)
+    step = Map.get(params, "step", "0.001")
+    min_quote = Map.get(params, "min_quote", "10000")
+    fee = Map.get(params, "fee", "0.003")
 
     %{
       strategy: %{
         xyk: %{
           x: x,
           y: y,
-          step: "0.001",
-          min_quote: "10000",
-          fee: "0.003"
+          step: step,
+          min_quote: min_quote,
+          fee: fee
         }
       },
       metadata: %{

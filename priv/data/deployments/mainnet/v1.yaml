@@ -116,6 +116,8 @@ targets:
           xyk: 
             x: thor.lqdy
             y: btc-btc
+            min_quote: 10000, 
+            step: "0.002"
 
     - id: lqdy-eth-usdc
       admin: ${accounts:admin}
