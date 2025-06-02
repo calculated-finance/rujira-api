@@ -115,7 +115,7 @@ defmodule Rujira.Leagues do
     |> select([tx, e, l], %{
       address: tx.address,
       points: fragment("CAST(COALESCE(?, 0) AS bigint)", sum(e.points)),
-      rank: dense_rank() |> over(order_by: sum(e.points)),
+      rank: dense_rank() |> over(order_by: {:desc, sum(e.points)}),
       total_tx: count(tx),
       badges:
         fragment("ARRAY_AGG(DISTINCT(?)) FILTER (WHERE ? IS NOT NULL)", l.category, l.category)
