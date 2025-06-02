@@ -14,7 +14,7 @@ defmodule RujiraWeb.Resolvers.Leagues do
   def leaderboard(%{league: league, season: season}, args, _) do
     Helpers.async(fn ->
       league
-      |> Leagues.leaderboard(season, args.search, args.sort_by, args.sort_dir)
+      |> Leagues.leaderboard(season, Map.get(args, :search), args.sort_by, args.sort_dir)
       |> Relay.Connection.from_query(&Repo.all/1, args)
     end)
   end

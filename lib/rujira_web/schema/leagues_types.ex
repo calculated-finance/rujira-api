@@ -12,9 +12,9 @@ defmodule RujiraWeb.Schema.LeaguesTypes do
     end
 
     connection field :leaderboard, node_type: :league_leaderboard_entry do
-      arg :search, :string
-      arg :sort_by, :league_leaderboard_sort_by
-      arg :sort_dir, :league_leaderboard_sort_dir
+      arg(:search, :string)
+      arg(:sort_by, non_null(:league_leaderboard_sort_by))
+      arg(:sort_dir, non_null(:league_leaderboard_sort_dir))
       resolve(&Resolvers.Leagues.leaderboard/3)
     end
   end
