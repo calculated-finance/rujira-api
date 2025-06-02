@@ -43,5 +43,5 @@ defmodule Rujira.Revenue.Converter do
 
   def migrate_msg(_from, _to, _), do: %{}
 
-  def init_label(%{"target_denoms" => x}), do: "rujira-revenue:#{Enum.join(x, ",")}"
+  def init_label(id, _), do: "rujira-revenue:#{id}"
 end

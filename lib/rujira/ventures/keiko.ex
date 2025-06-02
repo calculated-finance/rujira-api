@@ -195,5 +195,5 @@ defmodule Rujira.Ventures.Keiko do
 
   def init_msg(msg), do: msg
   def migrate_msg(_from, _to, _), do: %{}
-  def init_label(_), do: "rujira-ventures-factory"
+  def init_label(_, _), do: "rujira-ventures-factory"
 end

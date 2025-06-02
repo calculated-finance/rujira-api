@@ -177,5 +177,5 @@ defmodule Rujira.Bow do
 
   def init_msg(%{"strategy" => %{"xyk" => xyk}}), do: Xyk.init_msg(xyk)
   def migrate_msg(from, to, %{"strategy" => %{"xyk" => xyk}}), do: Xyk.migrate_msg(from, to, xyk)
-  def init_label(%{"strategy" => %{"xyk" => xyk}}), do: Xyk.init_label(xyk)
+  def init_label(id, %{"strategy" => %{"xyk" => xyk}}), do: Xyk.init_label(id, xyk)
 end

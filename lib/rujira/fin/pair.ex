@@ -110,5 +110,5 @@ defmodule Rujira.Fin.Pair do
 
   def migrate_msg(_from, _to, _), do: %{}
 
-  def init_label(%{"denoms" => [x, y]}), do: "rujira-fin:#{x}:#{y}"
+  def init_label(_, %{"denoms" => [x, y]}), do: "rujira-fin:#{x}:#{y}"
 end

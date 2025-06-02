@@ -274,5 +274,5 @@ defmodule Rujira.Bow.Xyk do
 
   def migrate_msg(_from, _to, _), do: %{}
 
-  def init_label(%{"x" => x, "y" => y}), do: "rujira-bow:#{x}-#{y}:xyk"
+  def init_label(_, %{"x" => x, "y" => y}), do: "rujira-bow:#{x}-#{y}:xyk"
 end

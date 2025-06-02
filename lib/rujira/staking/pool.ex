@@ -198,5 +198,5 @@ defmodule Rujira.Staking.Pool do
 
   def migrate_msg(_from, _to, _), do: %{}
 
-  def init_label(%{"bond_denom" => x}), do: "rujira-staking:#{x}"
+  def init_label(_, %{"bond_denom" => x}), do: "rujira-staking:#{x}"
 end

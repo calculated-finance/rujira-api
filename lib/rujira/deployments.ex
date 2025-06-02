@@ -118,6 +118,7 @@ defmodule Rujira.Deployments do
 
   # No contract, no change, instantiate
   def to_msg(%{
+        id: id,
         module: module,
         code_id: code_id,
         config: config,
@@ -131,7 +132,7 @@ defmodule Rujira.Deployments do
       msg: module.init_msg(config),
       # TODO: update once any of the targets need funds on init
       funds: [],
-      label: module.init_label(config),
+      label: module.init_label(id, config),
       salt: Base.encode64(Base.decode16!(salt))
     }
   end
