@@ -340,14 +340,14 @@ defmodule Thorchain do
   defmemo oracle_price("THOR.RUNE") do
     with {:ok, %{rune_price_in_tor: price}} <- Thorchain.network(),
          {:ok, price} <- Decimal.cast(price) do
-      {:ok, Decimal.div(price, Decimal.new(10_000_000))}
+      {:ok, Decimal.div(price, Decimal.new(100_000_000))}
     end
   end
 
   defmemo oracle_price(asset) do
     with {:ok, %{asset_tor_price: price}} <- Thorchain.pool_from_id(asset),
          {:ok, price} <- Decimal.cast(price) do
-      {:ok, Decimal.div(price, Decimal.new(10_000_000))}
+      {:ok, Decimal.div(price, Decimal.new(100_000_000))}
     else
       _ ->
         {:ok, nil}
