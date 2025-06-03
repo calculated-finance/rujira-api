@@ -110,7 +110,7 @@ defmodule Rujira.Staking.Pool do
   def summary(%__MODULE__{} = pool) do
     with {:ok, %{status: %{account_bond: account_bond, liquid_bond_size: liquid_bond_size}}} <-
            Rujira.Staking.load_pool(pool),
-         {:ok, %{price: price}} <- Rujira.Prices.get("RUJI") do
+         {:ok, %{current: %Decimal{} = price}} <- Rujira.Prices.get("RUJI") do
       revenue = get_revenue(pool, 30)
       revenue30 = sum_revenue(revenue, 30)
 
@@ -142,6 +142,17 @@ defmodule Rujira.Staking.Pool do
          revenue7: sum_revenue(revenue, 7),
          revenue30: revenue30
        }}
+    else
+      _ ->
+        {:ok,
+         %__MODULE__.Summary{
+           id: pool.address,
+           apr: 0,
+           revenue: [],
+           revenue1: 0,
+           revenue7: 0,
+           revenue30: 0
+         }}
     end
   end
 

@@ -121,6 +121,9 @@ defmodule Rujira.Bow do
        |> where(contract: ^address)
        |> where([t], like(t.price, "mm:%"))
        |> Rujira.Fin.Trade.query()
+       |> select_merge([t], %{
+         type: fragment("CASE WHEN ? = 'base' THEN 'sell' ELSE 'buy' END", t.side)
+       })
        |> Rujira.Fin.sort_trades(sort)
        |> limit(^limit)}
     end

@@ -57,6 +57,22 @@ defmodule Rujira.Fin do
     end)
   end
 
+  def get_stable_pair(base_denom) do
+    with {:ok, pairs} <- list_pairs(),
+         %Pair{} = pair <-
+           Enum.find(
+             pairs,
+             &(&1.token_base == base_denom &&
+                 (String.contains?(&1.token_quote, "usdc") ||
+                    String.contains?(&1.token_quote, "usdt")))
+           ) do
+      {:ok, pair}
+    else
+      nil -> {:error, :not_found}
+      err -> err
+    end
+  end
+
   @doc """
   Loads the current Book into the Pair
   """

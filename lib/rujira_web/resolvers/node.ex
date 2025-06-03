@@ -9,6 +9,7 @@ defmodule RujiraWeb.Resolvers.Node do
   alias Rujira.Fin
   alias Rujira.Staking
   alias Rujira.Leagues
+  alias Rujira.Prices
 
   def id(%{id: encoded_id}, _) do
     resolve_id(encoded_id)
@@ -37,6 +38,7 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Fin.Trade{}, _), do: :fin_trade
   def type(%Fin.Candle{}, _), do: :fin_candle
   def type(%Fin.Order{}, _), do: :fin_order
+  def type(%Prices.Price{}, _), do: :price
   def type(%{league: _, season: _, address: _}, _), do: :league_account
   def type(%Staking.Account{}, _), do: :staking_account
   def type(%Staking.Pool{}, _), do: :staking_pool
@@ -97,6 +99,9 @@ defmodule RujiraWeb.Resolvers.Node do
 
       {:ok, %{type: :fin_trade, id: id}} ->
         Fin.trade_from_id(id)
+
+      {:ok, %{type: :price, id: id}} ->
+        Prices.price_from_id(id)
 
       {:ok, %{type: :staking_pool, id: id}} ->
         Staking.pool_from_id(id)

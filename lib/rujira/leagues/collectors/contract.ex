@@ -129,13 +129,13 @@ defmodule Rujira.Leagues.Collectors.Contract do
          %Target{module: module} <-
            Enum.find(Deployments.list_all_targets(), &(&1.address == contract)),
          {:ok, category} <- module_category(module),
-         {:ok, %{price: price}} <- Prices.get(asset.ticker) do
+         {:ok, %{current: price}} <- Prices.get(asset.ticker) do
       %{
         address: sender,
         revenue:
           amount
           |> Decimal.new()
-          |> Decimal.mult(price)
+          |> Decimal.mult(price || Decimal.new(0))
           |> Decimal.round()
           |> Decimal.to_integer(),
         category: category

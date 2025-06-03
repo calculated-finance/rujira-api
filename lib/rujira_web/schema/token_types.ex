@@ -12,7 +12,7 @@ defmodule RujiraWeb.Schema.TokenTypes do
       resolve(fn %{ticker: ticker}, _, _ ->
         batch({RujiraWeb.Resolvers.Token, :prices}, ticker, fn x ->
           with {:ok, prices} <- x do
-            {:ok, map(Map.get(prices, ticker))}
+            Map.get(prices, ticker)
           end
         end)
       end)
@@ -40,11 +40,20 @@ defmodule RujiraWeb.Schema.TokenTypes do
   end
 
   @desc "Price data for a token"
-  object :price do
+  node object(:price) do
     @desc "Current price, 12 decimal places"
+    field :source, non_null(:price_source)
     field :current, :bigint
     field :change_day, :float
     field :mcap, :bigint
+    field :timestamp, non_null(:timestamp)
+  end
+
+  enum :price_source do
+    value(:coingecko)
+    value(:fin)
+    value(:tor)
+    value(:none)
   end
 
   object :asset_variants do
@@ -62,9 +71,4 @@ defmodule RujiraWeb.Schema.TokenTypes do
     value(:native)
     value(:synth)
   end
-
-  defp map(%{price: price, change: change, mcap: mcap}),
-    do: %{current: price, change_day: change, mcap: mcap}
-
-  defp map(nil), do: nil
 end

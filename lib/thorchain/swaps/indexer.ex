@@ -140,7 +140,7 @@ defmodule Thorchain.Swaps.Indexer do
          coin,
          memo
        ) do
-    with {:ok, %{price: price}} <- Prices.get("RUNE") do
+    with {:ok, %{current: price}} <- Prices.get("RUNE") do
       liquidity_fee_in_rune = String.to_integer(liquidity_fee_in_rune)
       streaming_swap_quantity = String.to_integer(streaming_swap_quantity)
       streaming_swap_count = String.to_integer(streaming_swap_count)

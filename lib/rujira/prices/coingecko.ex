@@ -57,6 +57,7 @@ defmodule Rujira.Prices.Coingecko do
 
       {:ok, %{price: price, change: change, mcap: floor(mcap)}}
     else
+      %{} -> {:error, "error fetching #{id} price"}
       nil -> {:error, "error fetching #{id} price"}
       err -> err
     end

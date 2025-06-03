@@ -65,7 +65,7 @@ defmodule Rujira.Leagues.Collectors.Swap do
 
   defp league_event(asset, memo, fee_amount, tx_id) do
     with {:ok, address} <- Thorchain.get_dest_address(memo),
-         {:ok, %{price: price, change: _}} <- Prices.get(asset) do
+         {:ok, %{current: price, change: _}} <- Prices.get(asset) do
       affiliate_fee =
         fee_amount
         |> Decimal.mult(price)
