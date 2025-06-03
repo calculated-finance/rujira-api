@@ -10,7 +10,7 @@ defmodule Rujira.Prices do
       {:ok, {id, res}}, {:ok, agg} ->
         {:ok, Map.put(agg, id, res)}
 
-      {:error, err}, {:ok, agg} ->
+      {:error, err}, _ ->
         {:error, err}
 
       _, {:error, err} ->
