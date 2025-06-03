@@ -43,10 +43,6 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
       end)
     end
 
-    field :summary, :thorchain_summary do
-      resolve(&Resolvers.Thorchain.summary/3)
-    end
-
     field :tx_in, :thorchain_tx_in do
       arg(:hash, non_null(:string))
       resolve(&Resolvers.Thorchain.tx_in/3)
@@ -64,7 +60,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :inbound_confirmation_seconds, non_null(:integer)
     field :outbound_delay_blocks, non_null(:integer)
     field :outbound_delay_seconds, non_null(:integer)
-    field :fees, non_null(:fees)
+    field :fees, non_null(:thorchain_quote_fees)
     field :router, :address
     field :expiry, non_null(:timestamp)
     field :warning, non_null(:string)
@@ -82,7 +78,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :total_swap_seconds, non_null(:integer)
   end
 
-  object :thorchain_fees do
+  object :thorchain_quote_fees do
     field :asset, non_null(:asset)
     field :affiliate, non_null(:string)
     field :outbound, non_null(:bigint)
@@ -160,24 +156,6 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :dust_threshold, non_null(:bigint)
   end
 
-  object :thorchain_thorchain_summary do
-    field :unique_swappers, :bigint
-    field :total_validator_bond, :bigint
-
-    field :tvl, :bigint
-    field :pools_liquidity, :bigint
-    field :total_pool_earnings, :bigint
-
-    field :total_transactions, :bigint
-    field :total_swaps, :bigint
-    field :daily_swap_volume, :bigint
-    field :total_swap_volume, :bigint
-    field :affiliate_volume, :bigint
-    field :affiliate_transactions, :bigint
-    field :running_since, :bigint
-    field :blockchain_integrated, :bigint
-  end
-
   object :thorchain_tx_id do
     field :block_height, :bigint
     field :tx_index, :bigint
@@ -190,7 +168,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
   end
 
   object :thorchain_observed_tx do
-    field :tx, :layer1_tx
+    field :tx, :thorchain_layer1_tx
     field :status, :string
   end
 
@@ -205,11 +183,11 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
   end
 
   object :thorchain_block do
-    field :id, non_null(:block_id)
-    field :header, non_null(:block_header)
+    field :id, non_null(:thorchain_block_id)
+    field :header, non_null(:thorchain_block_header)
     field :begin_block_events, non_null(list_of(non_null(:thorchain_block_event)))
     field :end_block_events, non_null(list_of(non_null(:thorchain_block_event)))
-    field :txs, non_null(list_of(non_null(:block_tx)))
+    field :txs, non_null(list_of(non_null(:thorchain_block_tx)))
   end
 
   object :thorchain_block_id do
@@ -235,7 +213,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
   object :thorchain_block_tx do
     field :hash, non_null(:string)
     field :tx_data, non_null(:string)
-    field :result, non_null(:tx_result)
+    field :result, non_null(:thorchain_tx_result)
   end
 
   object :thorchain_tx_result do

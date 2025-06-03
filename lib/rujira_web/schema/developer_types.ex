@@ -47,7 +47,7 @@ defmodule RujiraWeb.Schema.DeveloperTypes do
     field :creator, non_null(:address)
     field :admin, :address
     field :label, non_null(:string)
-    field :created, :tx_id
+    field :created, :tx_position
     field :ibc_port_id, :string
     field :extension, :string
   end
@@ -56,5 +56,10 @@ defmodule RujiraWeb.Schema.DeveloperTypes do
     field :key, :string
     field :key_ascii, :string
     field :value, :string
+  end
+
+  object :tx_position do
+    field :block_height, non_null(:integer)
+    field :tx_index, non_null(:integer)
   end
 end
