@@ -79,7 +79,7 @@ defmodule Rujira.Prices do
          current: book.center,
          change_day:
            case Fin.get_summary(pair.address) do
-             %{change: change} -> change
+             %{change: change} -> Decimal.to_float(change)
              nil -> nil
            end,
          timestamp: DateTime.utc_now()
