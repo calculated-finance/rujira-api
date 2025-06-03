@@ -10,7 +10,7 @@ defmodule Rujira.Prices do
       {:ok, {id, res}}, {:ok, agg} ->
         {:ok, Map.put(agg, id, res)}
 
-      {:error, err}, _ ->
+      {:error, err}, {:ok, agg} ->
         {:error, err}
 
       _, {:error, err} ->
@@ -23,8 +23,9 @@ defmodule Rujira.Prices do
   end
 
   def price_from_id(id) do
-    with {_, v} <- get(id) do
-      v
+    with {:ok, v} <- get(id) do
+      # Ensure we have a consistent ID returned
+      {:ok, %{v | id: id}}
     end
   end
 
@@ -41,6 +42,7 @@ defmodule Rujira.Prices do
   def fetch("BTC-BTC"), do: tor_price("BTC.BTC")
   def fetch("ETH-ETH"), do: tor_price("ETH.ETH")
   def fetch("TCY"), do: tor_price("THOR.TCY")
+  def fetch("VTHOR"), do: tor_price("ETH.VTHOR-0X815C23ECA83261B6EC689B60CC4A58B54BC24D8D")
 
   def fetch(symbol) do
     with {:ok, id} <- __MODULE__.Coingecko.id(symbol),
@@ -66,6 +68,9 @@ defmodule Rujira.Prices do
   def tor_price(id) do
     with {:ok, price} <- Thorchain.oracle_price(id) do
       {:ok, %Price{id: id, source: :tor, current: price, timestamp: DateTime.utc_now()}}
+    else
+      _ ->
+        {:ok, nil}
     end
   end
 
