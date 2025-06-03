@@ -63,7 +63,7 @@ defmodule Rujira.Prices.Coingecko do
   end
 
   def prices(ids) do
-    with {:ok, %{body: res}} <-
+    with {:ok, %{body: %{} = res}} <-
            proxy("v3/simple/price", %{
              "ids" => Enum.join(ids, ","),
              "vs_currencies" => "usd",
@@ -84,6 +84,7 @@ defmodule Rujira.Prices.Coingecko do
        |> Map.new()}
     else
       nil -> {:error, "error fetching #{ids} price"}
+      str when is_binary(str) -> {:error, "error fetching #{ids} price: #{str}"}
       err -> err
     end
   end
