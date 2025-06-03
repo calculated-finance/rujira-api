@@ -109,14 +109,21 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :side, non_null(:string)
     field :rate, non_null(:bigint)
     field :updated_at, non_null(:timestamp)
+    @desc "The amount of asset offered at updated_at"
     field :offer, non_null(:bigint)
+    @desc "The value of the offer in the ask asset"
+    field :offer_value, non_null(:bigint)
+    @desc "The remaining amount of offer asset"
     field :remaining, non_null(:bigint)
+    @desc "The value of the remaining offer in the ask asset"
+    field :remaining_value, non_null(:bigint)
+    @desc "The amount of ask asset available for withdrawal"
     field :filled, non_null(:bigint)
+    @desc "The value of ask asset available for withdrawal in the offer asset"
+    field :filled_value, non_null(:bigint)
+    field :filled_fee, non_null(:bigint)
     field :type, non_null(:string)
     field :deviation, :bigint
-    field :offer_value, non_null(:bigint)
-    field :remaining_value, non_null(:bigint)
-    field :filled_fee, non_null(:bigint)
   end
 
   @desc "Single trade executed by on a fin pair"

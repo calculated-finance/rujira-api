@@ -13,6 +13,7 @@ defmodule Rujira.Fin.Order do
     :remaining,
     :remaining_value,
     :filled,
+    :filled_value,
     :filled_fee
   ]
 
@@ -30,6 +31,7 @@ defmodule Rujira.Fin.Order do
           remaining: integer(),
           remaining_value: integer(),
           filled: integer(),
+          filled_value: integer(),
           filled_fee: integer(),
           type: type_order,
           deviation: deviation
@@ -73,6 +75,7 @@ defmodule Rujira.Fin.Order do
         remaining: remaining,
         remaining_value: value(remaining, rate, side),
         filled: filled,
+        filled_value: value(filled, Decimal.div(Decimal.new(1), rate), side),
         filled_fee: filled_fee,
         type: type,
         deviation: deviation
