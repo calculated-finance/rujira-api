@@ -59,7 +59,9 @@ defmodule RujiraWeb.Resolvers.Token do
   end
 
   def prices(_, b) do
-    Rujira.Prices.get(b)
+    b
+    |> Enum.uniq()
+    |> Rujira.Prices.get()
   end
 
   def quote(%{request: %{to_asset: asset}, expected_amount_out: amount}, _, _) do
