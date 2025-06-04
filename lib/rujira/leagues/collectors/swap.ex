@@ -47,7 +47,7 @@ defmodule Rujira.Leagues.Collectors.Swap do
          [
            %{key: "tx_id", value: tx_id},
            %{key: "memo", value: memo},
-           %{key: "thorname", value: "rujira"},
+           %{key: "thorname", value: "rj"},
            %{key: "rune_address", value: _},
            %{key: "asset", value: asset},
            %{key: "gross_amount", value: _},
