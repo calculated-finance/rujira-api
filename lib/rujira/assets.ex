@@ -116,13 +116,13 @@ defmodule Rujira.Assets do
   def to_layer1(%Asset{chain: "THOR"}), do: nil
 
   def to_layer1(%Asset{id: id} = a) do
-    %{a | type: :layer_1, id: String.replace(id, ~r/[\.\-\/]/, ".")}
+    %{a | type: :layer_1, id: String.replace(id, ~r/[\.\-\/]/, ".", global: false)}
   end
 
   def to_secured(%Asset{chain: "THOR"}), do: nil
 
   def to_secured(%Asset{id: id} = a) do
-    %{a | type: :secured, id: String.replace(id, ~r/[\.\-\/]/, "-")}
+    %{a | type: :secured, id: String.replace(id, ~r/[\.\-\/]/, "-", global: false)}
   end
 
   @doc """
