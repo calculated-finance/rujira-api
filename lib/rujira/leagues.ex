@@ -75,7 +75,6 @@ defmodule Rujira.Leagues do
   def load_account(league, season, account) do
     league
     |> leaderboard_base(season)
-    |> where([tx], tx.address == ^account)
     |> subquery()
     |> join(
       :left,
@@ -83,7 +82,6 @@ defmodule Rujira.Leagues do
       prev in (league
                |> leaderboard_base(season)
                |> where([tx], tx.timestamp < fragment("NOW() - '7 day'::interval"))
-               |> where([tx], tx.address == ^account)
                |> subquery()),
       on: prev.address == tx.address
     )
@@ -92,6 +90,7 @@ defmodule Rujira.Leagues do
       league: ^league,
       rank_previous: prev.rank
     })
+    |> where([tx], tx.address == ^account)
     |> Repo.one()
     |> then(&{:ok, &1})
   end
