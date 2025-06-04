@@ -46,13 +46,7 @@ defmodule Thorchain do
   end
 
   def pool_from_id(id) do
-    req = %QueryPoolRequest{
-      asset:
-        case Assets.to_layer1(Assets.from_string(id)) do
-          nil -> id
-          %{id: id} -> id
-        end
-    }
+    req = %QueryPoolRequest{asset: id}
 
     with {:ok, res} <-
            Thorchain.Node.stub(&Q.pool/2, req) do
