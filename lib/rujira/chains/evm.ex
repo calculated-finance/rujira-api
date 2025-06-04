@@ -15,6 +15,7 @@ defmodule Rujira.Chains.Evm do
       alias Rujira.Assets
       import Absinthe.Relay.Node
       import Absinthe.Subscription
+      import Rujira.Chains.Evm
 
       @chain unquote(chain)
       @asset unquote(asset)
@@ -80,12 +81,20 @@ defmodule Rujira.Chains.Evm do
         end
       end
 
-      defmemo native_balance(address) do
-        Rujira.Chains.Evm.native_balance(@rpc, address)
+      def native_balance(address) do
+        native_balance(@rpc, address)
       end
 
-      defmemo balance_of(address, asset) do
-        Rujira.Chains.Evm.balance_of(@rpc, address, asset)
+      defmemo do_native_balance(address) do
+        native_balance(@rpc, eip55(address))
+      end
+
+      def balance_of(address, asset) do
+        balance_of(@rpc, eip55(address), eip55(asset))
+      end
+
+      defmemo do_balance_of(address, asset) do
+        balance_of(@rpc, address, asset)
       end
 
       @decorate transaction_event()
@@ -94,11 +103,7 @@ defmodule Rujira.Chains.Evm do
                assets
                |> Task.async_stream(fn a ->
                  [_, contract] = String.split(a.symbol, "-")
-
-                 {a,
-                  address
-                  |> Rujira.Chains.Evm.eip55()
-                  |> balance_of(Rujira.Chains.Evm.eip55(contract))}
+                 {a, balance_of(eip55(address), eip55(contract))}
                end)
                |> Enum.reduce({:ok, []}, fn
                  {:ok, {asset, {:ok, balance}}}, {:ok, acc} ->
@@ -118,19 +123,14 @@ defmodule Rujira.Chains.Evm do
       end
 
       defp handle_result(%{"address" => contract, "topics" => [_, sender, recipient | _]}) do
-        sender = Rujira.Chains.Evm.eip55("0x" <> String.slice(sender, -40, 40))
-        recipient = Rujira.Chains.Evm.eip55("0x" <> String.slice(recipient, -40, 40))
-        contract = Rujira.Chains.Evm.eip55(contract)
-        # Logger.debug("#{__MODULE__} #{contract}:#{sender}:#{recipient}")
+        sender = eip55("0x" <> String.slice(sender, -40, 40))
+        recipient = eip55("0x" <> String.slice(recipient, -40, 40))
+        contract = eip55(contract)
 
-        Memoize.invalidate(__MODULE__, :balance_of, [sender, contract])
-        Memoize.invalidate(__MODULE__, :balance_of, [recipient, contract])
-
-        id = to_global_id(:layer_1_account, "#{@chain}:#{sender}", RujiraWeb.Schema)
-        publish(RujiraWeb.Endpoint, %{id: id}, node: id)
-
-        id = to_global_id(:layer_1_account, "#{@chain}:#{recipient}", RujiraWeb.Schema)
-        publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+        Memoize.invalidate(__MODULE__, :do_balance_of, [sender, contract])
+        Memoize.invalidate(__MODULE__, :do_balance_of, [recipient, contract])
+        Rujira.Events.publish_node(:layer_1_account, "#{@chain}:#{sender}")
+        Rujira.Events.publish_node(:layer_1_account, "#{@chain}:#{recipient}")
       end
 
       def balances(address, assets) do
@@ -143,17 +143,14 @@ defmodule Rujira.Chains.Evm do
       defp handle_native_transfers(block_hash) do
         with {:ok, %{"transactions" => txs}} <-
                Ethereumex.HttpClient.eth_get_block_by_hash(block_hash, true, url: @rpc) do
-          txs
-          |> Task.async_stream(fn %{"from" => from, "to" => to, "value" => "0x" <> value_hex} ->
+          Task.async_stream(txs, fn %{"from" => from, "to" => to, "value" => "0x" <> value_hex} ->
             if String.to_integer(value_hex, 16) > 0 do
-              Memoize.invalidate(__MODULE__, :native_balance, [from])
-              Memoize.invalidate(__MODULE__, :native_balance, [to])
-
-              id = to_global_id(:layer_1_account, "#{@chain}:#{from}", RujiraWeb.Schema)
-              publish(RujiraWeb.Endpoint, %{id: id}, node: id)
-
-              id = to_global_id(:layer_1_account, "#{@chain}:#{to}", RujiraWeb.Schema)
-              publish(RujiraWeb.Endpoint, %{id: id}, node: id)
+              from = eip55(from)
+              to = eip55(to)
+              Memoize.invalidate(__MODULE__, :do_native_balance, [from])
+              Memoize.invalidate(__MODULE__, :do_native_balance, [to])
+              Rujira.Events.publish_node(:layer_1_account, "#{@chain}:#{from}")
+              Rujira.Events.publish_node(:layer_1_account, "#{@chain}:#{to}")
             end
           end)
           |> Stream.run()
