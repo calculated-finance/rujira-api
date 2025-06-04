@@ -47,7 +47,11 @@ defmodule Thorchain do
 
   def pool_from_id(id) do
     req = %QueryPoolRequest{
-      asset: id |> Assets.from_string() |> Assets.to_layer1() |> Map.get(:id)
+      asset:
+        case Assets.to_layer1(Assets.from_string(id)) do
+          nil -> id
+          %{id: id} -> id
+        end
     }
 
     with {:ok, res} <-
