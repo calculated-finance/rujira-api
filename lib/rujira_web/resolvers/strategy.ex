@@ -49,7 +49,7 @@ defmodule RujiraWeb.Resolvers.Strategy do
     end
   end
 
-  defp thorchain_query(query, %{asset: %{symbol: "TCY"}}), do: false
+  defp thorchain_query(_, %{asset: %{symbol: "TCY"}}), do: false
 
   defp thorchain_query(query, %{asset: %{chain: "THOR"} = asset}) do
     Assets.query_match(query, asset, Assets.from_string("THOR.RUNE"))
