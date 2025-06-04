@@ -73,19 +73,24 @@ defmodule Rujira.Leagues do
   end
 
   def load_account(league, season, account) do
-    Event
-    |> join(:inner, [le], tx in assoc(le, :tx_event))
-    |> join(:left, [le, tx], l in subquery(leaders(league, season)), on: l.address == tx.address)
-    |> where([le, tx], le.league == ^league and le.season == ^season and tx.address == ^account)
-    |> group_by([le, tx], [le.league, le.season, tx.address])
-    |> select([le, tx, l], %{
-      league: le.league,
-      season: le.season,
-      address: tx.address,
-      points: fragment("CAST(COALESCE(?, 0) AS bigint)", sum(le.points)),
-      total_tx: fragment("COUNT(DISTINCT ?)", tx.txhash),
-      badges:
-        fragment("ARRAY_AGG(DISTINCT(?)) FILTER (WHERE ? IS NOT NULL)", l.category, l.category)
+    league
+    |> leaderboard_base(season)
+    |> where([tx], tx.address == ^account)
+    |> subquery()
+    |> join(
+      :left,
+      [tx],
+      prev in (league
+               |> leaderboard_base(season)
+               |> where([tx], tx.timestamp < fragment("NOW() - '7 day'::interval"))
+               |> where([tx], tx.address == ^account)
+               |> subquery()),
+      on: prev.address == tx.address
+    )
+    |> select_merge([x, prev], %{
+      season: type(^season, :integer),
+      league: ^league,
+      rank_previous: prev.rank
     })
     |> Repo.one()
     |> then(&{:ok, &1})
