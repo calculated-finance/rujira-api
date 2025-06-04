@@ -195,6 +195,8 @@ defmodule Rujira.Chains.Evm do
     end
   end
 
+  def eip55(nil), do: nil
+
   def eip55(address) when is_binary(address) do
     # Remove the "0x" prefix if present and downcase the address.
     addr =
