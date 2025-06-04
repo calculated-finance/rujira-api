@@ -145,6 +145,8 @@ defmodule RujiraWeb.Resolvers.Thorchain do
     end
   end
 
+  def oracle(nil), do: {:ok, nil}
+
   def oracle(id) do
     Helpers.async(fn ->
       Thorchain.oracle_from_id(id)

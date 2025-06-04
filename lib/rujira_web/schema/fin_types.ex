@@ -29,6 +29,9 @@ defmodule RujiraWeb.Schema.FinTypes do
 
     field :oracle_base, :thorchain_oracle do
       resolve(fn
+        %{oracle_base: nil}, _, _ ->
+          {:ok, nil}
+
         %{oracle_base: asset}, _, _ ->
           RujiraWeb.Resolvers.Thorchain.oracle(asset)
       end)
@@ -36,6 +39,9 @@ defmodule RujiraWeb.Schema.FinTypes do
 
     field :oracle_quote, :thorchain_oracle do
       resolve(fn
+        %{oracle_quote: nil}, _, _ ->
+          {:ok, nil}
+
         %{oracle_quote: asset}, _, _ ->
           RujiraWeb.Resolvers.Thorchain.oracle(asset)
       end)
