@@ -105,6 +105,7 @@ defmodule Rujira.Fin.Order do
       remaining: 0,
       remaining_value: 0,
       filled: 0,
+      filled_value: 0,
       filled_fee: 0,
       type: type,
       deviation: nil
