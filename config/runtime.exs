@@ -129,4 +129,18 @@ if config_env() == :prod do
     websocket: websocket,
     size: size,
     grpcs: String.split(grpcs, ",")
+
+  xrp_http =
+    System.get_env("XRP_HTTP") ||
+      raise """
+      environment variable XRP_HTTP is missing.
+      """
+
+  xrp_ws =
+    System.get_env("XRP_WS") ||
+      raise """
+      environment variable XRP_WS is missing.
+      """
+
+  config :rujira, Rujira.Chains.Xrp, http: xrp_http, ws: xrp_ws
 end
