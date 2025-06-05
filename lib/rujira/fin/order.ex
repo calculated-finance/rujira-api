@@ -1,21 +1,19 @@
 defmodule Rujira.Fin.Order do
-  defstruct [
-    :id,
-    :pair,
-    :owner,
-    :side,
-    :type,
-    :deviation,
-    :rate,
-    :updated_at,
-    :offer,
-    :offer_value,
-    :remaining,
-    :remaining_value,
-    :filled,
-    :filled_value,
-    :filled_fee
-  ]
+  defstruct id: nil,
+            pair: nil,
+            owner: nil,
+            side: nil,
+            rate: 0,
+            updated_at: nil,
+            offer: 0,
+            offer_value: 0,
+            remaining: 0,
+            remaining_value: 0,
+            filled: 0,
+            filled_value: 0,
+            filled_fee: 0,
+            type: nil,
+            deviation: nil
 
   @type side :: :base | :quote
   @type deviation :: nil | integer()
@@ -98,17 +96,7 @@ defmodule Rujira.Fin.Order do
       pair: address,
       owner: owner,
       side: String.to_existing_atom(side),
-      rate: 0,
-      updated_at: DateTime.utc_now(),
-      offer: 0,
-      offer_value: 0,
-      remaining: 0,
-      remaining_value: 0,
-      filled: 0,
-      filled_value: 0,
-      filled_fee: 0,
-      type: type,
-      deviation: nil
+      type: type
     }
   end
 

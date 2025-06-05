@@ -12,4 +12,12 @@ defmodule Rujira.Events do
     prefix = Absinthe.Relay.Node.to_global_id(type, prefix, @schema)
     Absinthe.Subscription.publish(@endpoint, %{id: id}, node: id, edge: prefix)
   end
+
+  def publish(payload, topics) do
+    Absinthe.Subscription.publish(
+      RujiraWeb.Endpoint,
+      payload,
+      topics
+    )
+  end
 end

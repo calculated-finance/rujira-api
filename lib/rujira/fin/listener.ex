@@ -57,15 +57,12 @@ defmodule Rujira.Fin.Listener do
 
       case name do
         "trade" ->
-          Absinthe.Subscription.publish(
-            RujiraWeb.Endpoint,
-            %{side: side, price: price},
+          Rujira.Events.publish(%{side: side, price: price},
             fin_order_filled: "#{contract}/#{side}/#{price}"
           )
 
         _ ->
-          Absinthe.Subscription.publish(
-            RujiraWeb.Endpoint,
+          Rujira.Events.publish(
             %{side: side, price: price, contract: contract},
             fin_order_updated: owner
           )
