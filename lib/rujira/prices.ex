@@ -41,7 +41,6 @@ defmodule Rujira.Prices do
   # Secure assets: Retrieves the price from the base layer pools.
   def fetch("BTC-BTC"), do: tor_price("BTC.BTC")
   def fetch("ETH-ETH"), do: tor_price("ETH.ETH")
-  def fetch("TCY"), do: tor_price("THOR.TCY")
   def fetch("VTHOR"), do: tor_price("ETH.VTHOR-0X815C23ECA83261B6EC689B60CC4A58B54BC24D8D")
 
   def fetch(symbol) do
