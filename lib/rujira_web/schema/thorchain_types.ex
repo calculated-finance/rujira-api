@@ -113,10 +113,22 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :loan_cr, non_null(:bigint)
     field :derived_depth_bps, non_null(:integer)
 
-    connection field :candles, node_type: :fin_candle, non_null: true do
+    connection field :candles, node_type: :thorchain_tor_candle, non_null: true do
       arg(:resolution, non_null(:string))
       resolve(&Resolvers.Thorchain.tor_candles/3)
     end
+  end
+
+  connection(node_type: :thorchain_tor_candle)
+
+  @desc "Represents a candlestick chart data point for a specific time period, including high, low, open, close, and timestamp."
+  node object(:thorchain_tor_candle) do
+    field :resolution, non_null(:string)
+    field :high, non_null(:bigint)
+    field :low, non_null(:bigint)
+    field :open, non_null(:bigint)
+    field :close, non_null(:bigint)
+    field :bin, non_null(:timestamp)
   end
 
   node object(:thorchain_liquidity_provider) do

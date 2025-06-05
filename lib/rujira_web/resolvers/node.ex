@@ -44,6 +44,7 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Staking.Pool{}, _), do: :staking_pool
   def type(%Staking.Pool.Status{}, _), do: :staking_status
   def type(%Staking.Pool.Summary{}, _), do: :staking_summary
+  def type(%Thorchain.Tor.Candle{}, _), do: :thorchain_tor_candle
 
   def type(%Thorchain.Types.QueryLiquidityProviderResponse{}, _),
     do: :thorchain_liquidity_provider
@@ -132,6 +133,9 @@ defmodule RujiraWeb.Resolvers.Node do
 
       {:ok, %{type: :thorchain_oracle, id: id}} ->
         Thorchain.oracle_from_id(id)
+
+      {:ok, %{type: :thorchain_tor_candle, id: id}} ->
+        Thorchain.Tor.candle_from_id(id)
 
       # ---
       # TODO: remove once UIs are using v2

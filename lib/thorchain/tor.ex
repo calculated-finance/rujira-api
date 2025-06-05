@@ -18,6 +18,21 @@ defmodule Thorchain.Tor do
     {:ok, state}
   end
 
+  @spec candle_from_id(any()) :: {:error, :not_found} | {:ok, Candle.t()}
+  def candle_from_id(id) do
+    case get_candle(id) do
+      nil -> {:error, :not_found}
+      candle -> {:ok, candle}
+    end
+  end
+
+  @spec get_candle(String.t()) :: Candle.t() | nil
+  def get_candle(id) do
+    Candle
+    |> where(id: ^id)
+    |> Repo.one()
+  end
+
   def range_candles(asset, from, to, resolution) do
     Candle
     |> where(
