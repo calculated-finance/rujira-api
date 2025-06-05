@@ -9,8 +9,8 @@ defmodule Rujira.Chains do
         __MODULE__.Bsc,
         __MODULE__.Eth,
         __MODULE__.Gaia,
-        __MODULE__.Noble,
-        __MODULE__.Xrp
+        __MODULE__.Noble
+        # __MODULE__.Xrp
       ],
       strategy: :one_for_one
     )
