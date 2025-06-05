@@ -1,6 +1,25 @@
 defmodule RujiraWeb.Schema.ThorchainTest do
   use RujiraWeb.ConnCase
 
+  @inbound_address_fragment """
+  fragment ThorchainInboundAddressFragment on ThorchainInboundAddress {
+    address
+    chain
+    chainLpActionsPaused
+    chainTradingPaused
+    dustThreshold
+    gasRate
+    gasRateUnits
+    globalTradingPaused
+    halted
+    id
+    outboundFee
+    outboundTxSize
+    pubKey
+    router
+  }
+  """
+
   @pool_fragment """
   fragment ThorchainPoolFragment on ThorchainPool {
     asset {
@@ -35,6 +54,67 @@ defmodule RujiraWeb.Schema.ThorchainTest do
   @query """
   query {
     thorchainV2 {
+      inboundAddresses {
+        ...ThorchainInboundAddressFragment
+      }
+    }
+  }
+  #{@inbound_address_fragment}
+  """
+
+  test "inbound addresses", %{conn: conn} do
+    conn = post(conn, "/api", %{"query" => @query})
+    res = json_response(conn, 200)
+    assert Map.get(res, "errors") == nil
+    %{"data" => %{"thorchainV2" => %{"inboundAddresses" => [_ | _]}}} = res
+  end
+
+  @query """
+  query($id: ID!) {
+    node(id: $id) {
+      ... on ThorchainInboundAddress {
+        ...ThorchainInboundAddressFragment
+      }
+    }
+  }
+  #{@inbound_address_fragment}
+  """
+
+  test "inbound address", %{conn: conn} do
+    conn =
+      post(conn, "/api", %{
+        "query" => @query,
+        "variables" => %{"id" => Base.encode64("ThorchainInboundAddress:BTC")}
+      })
+
+    res = json_response(conn, 200)
+    assert Map.get(res, "errors") == nil
+
+    %{
+      "data" => %{
+        "node" => %{
+          "address" => "bc1" <> _,
+          "chain" => "BTC",
+          "chainLpActionsPaused" => _,
+          "chainTradingPaused" => _,
+          "dustThreshold" => _,
+          "gasRate" => _,
+          "gasRateUnits" => _,
+          "globalTradingPaused" => _,
+          "halted" => _,
+          "id" => _,
+          "outboundFee" => _,
+          "outboundTxSize" => _,
+          "pubKey" => "sthor" <> _,
+          "router" => _
+        }
+      }
+    } = res
+  end
+
+  @query """
+  query {
+    thorchainV2 {
       pools {
         ...ThorchainPoolFragment
       }
@@ -47,8 +127,7 @@ defmodule RujiraWeb.Schema.ThorchainTest do
     conn = post(conn, "/api", %{"query" => @query})
     res = json_response(conn, 200)
     assert Map.get(res, "errors") == nil
-    %{"data" => %{"thorchainV2" => %{"pools" => pools}}} = res
-    assert Enum.count(pools) > 0
+    %{"data" => %{"thorchainV2" => %{"pools" => [_ | _]}}} = res
   end
 
   @query """
