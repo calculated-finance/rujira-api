@@ -28,7 +28,7 @@ defmodule Thorchain do
   use Memoize
 
   def start_link(_) do
-    children = [__MODULE__.Listener, __MODULE__.Node, __MODULE__.Swaps]
+    children = [__MODULE__.Listener, __MODULE__.Node, __MODULE__.Swaps, __MODULE__.Tor]
     Supervisor.start_link(children, strategy: :one_for_one)
   end
 
@@ -114,6 +114,7 @@ defmodule Thorchain do
     |> Map.put(:lp_units, Map.get(pool, :LP_units))
     |> Map.update(:derived_depth_bps, "0", &String.to_integer/1)
     |> Map.update(:savers_fill_bps, "0", &String.to_integer/1)
+    |> Map.update(:asset_tor_price, nil, &Decimal.div(Decimal.new(&1), Decimal.new(100_000_000)))
   end
 
   def total_bonds() do
@@ -352,9 +353,8 @@ defmodule Thorchain do
   end
 
   defmemo oracle_price(asset) do
-    with {:ok, %{asset_tor_price: price}} <- pool_from_id(asset),
-         {:ok, price} <- Decimal.cast(price) do
-      {:ok, Decimal.div(price, Decimal.new(100_000_000))}
+    with {:ok, %{asset_tor_price: price}} <- pool_from_id(asset) do
+      {:ok, price}
     else
       _ ->
         {:ok, nil}

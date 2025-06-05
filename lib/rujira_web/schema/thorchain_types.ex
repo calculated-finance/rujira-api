@@ -112,6 +112,11 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :loan_collateral_remaining, non_null(:bigint)
     field :loan_cr, non_null(:bigint)
     field :derived_depth_bps, non_null(:integer)
+
+    connection field :candles, node_type: :fin_candle, non_null: true do
+      arg(:resolution, non_null(:string))
+      resolve(&Resolvers.Thorchain.tor_candles/3)
+    end
   end
 
   node object(:thorchain_liquidity_provider) do
