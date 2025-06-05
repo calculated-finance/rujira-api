@@ -29,7 +29,7 @@ defmodule Rujira.Prices do
     end
   end
 
-  def fetch("RUJI"), do: {:ok, %Price{id: "RUJI", source: :none, timestamp: DateTime.utc_now()}}
+  def fetch("RUJI"), do: fin_price("x/ruji")
   def fetch("AUTO"), do: fin_price("thor.auto")
   def fetch("LQDY"), do: fetch("MNTA")
 
