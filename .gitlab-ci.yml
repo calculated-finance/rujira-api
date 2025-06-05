@@ -4,10 +4,6 @@ stages:
 
 variables:
   MIX_ENV: test
-  POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: postgres
-  POSTGRES_DB: my_app_test
-  DATABASE_URL: ecto://postgres:postgres@postgres:5432/rujira_test
 
 services:
   - name: postgres:14
