@@ -34,3 +34,10 @@ config :rujira, Thorchain.Node,
 config :appsignal, :config,
   active: true,
   env: :test
+
+# Test against stagenet
+config :rujira, Thorchain.Node,
+  websocket: "wss://stagenet-rpc.ninerealms.com",
+  subscriptions: ["tm.event='NewBlock'"],
+  size: 5,
+  grpcs: ["stagenet-grpc.ninerealms.com:443"]
