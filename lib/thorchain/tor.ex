@@ -85,6 +85,8 @@ defmodule Thorchain.Tor do
         |> Rujira.Resolution.active()
         |> Enum.map(&to_candle(asset, price, &1))
 
+      Rujira.Events.publish_node(:thorchain_pool, asset)
+
       Candle
       |> Repo.insert_all(
         entries,
