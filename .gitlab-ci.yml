@@ -1,29 +1,40 @@
 stages:
-  - check
   - test
+  - check
 
 variables:
   MIX_ENV: test
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  POSTGRES_DB: my_app_test
+  DATABASE_URL: ecto://postgres:postgres@postgres:5432/rujira_test
 
+services:
+  - name: postgres:14
+    alias: postgres
+    
 before_script:
   - mix local.hex --force
   - mix local.rebar --force
   - mix deps.get
+  - mix ecto.create --quiet
+  - mix ecto.migrate --quiet
 
 check_warnings:
   stage: check
   image: elixir:1.17.3
   script:
-    - MIX_ENV=test mix compile --warnings-as-errors
+    - mix compile --warnings-as-errors
   only:
     - merge_requests
     - main
     - dev
+
 test:
   stage: test
   image: elixir:1.17.3
   script:
-    - MIX_ENV=test mix test
+    - mix test
   only:
     - merge_requests
     - main
