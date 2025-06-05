@@ -14,8 +14,8 @@ defmodule Thorchain.Tor.Indexer do
   end
 
   @impl true
-  def handle_info(%{header: %{time: time}}, state) do
-    with {:ok, pools} <- Thorchain.pools(),
+  def handle_info(%{header: %{height: height, time: time}}, state) do
+    with {:ok, pools} <- Thorchain.pools(height),
          {:ok, time} <- DateTime.from_naive(time, "Etc/UTC") do
       pools
       |> Enum.map(&{&1.asset.id, &1.asset_tor_price, time})

@@ -61,8 +61,15 @@ defmodule Thorchain do
     end
   end
 
-  def pools() do
-    req = %QueryPoolsRequest{}
+  def pools(height \\ nil) do
+    req = %QueryPoolsRequest{
+      height:
+        if height do
+          Integer.to_string(height)
+        else
+          ""
+        end
+    }
 
     with {:ok, %QueryPoolsResponse{pools: pools}} <-
            Thorchain.Node.stub(&Q.pools/2, req) do
