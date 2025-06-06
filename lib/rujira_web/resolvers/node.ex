@@ -39,7 +39,7 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Fin.Candle{}, _), do: :fin_candle
   def type(%Fin.Order{}, _), do: :fin_order
   def type(%Prices.Price{}, _), do: :price
-  def type(%{league: _, season: _, address: _}, _), do: :league_account
+  def type(%Leagues.Account{}, _), do: :league_account
   def type(%Staking.Account{}, _), do: :staking_account
   def type(%Staking.Pool{}, _), do: :staking_pool
   def type(%Staking.Pool.Status{}, _), do: :staking_status
