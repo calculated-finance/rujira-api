@@ -40,4 +40,15 @@ defmodule Rujira.Staking.Account do
       _ -> {:error, :parse_error}
     end
   end
+
+  def default(pool, account) do
+    {:ok,
+     %__MODULE__{
+       id: "#{pool.id}/#{account}",
+       pool: pool,
+       account: account,
+       bonded: 0,
+       pending_revenue: 0
+     }}
+  end
 end

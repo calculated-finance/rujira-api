@@ -60,7 +60,9 @@ defmodule Rujira.Staking do
   end
 
   def pool_from_id(id) do
-    {:ok, %Pool{id: id, address: id}}
+    with {:ok, pool} <- get_pool(id) do
+      {:ok, pool}
+    end
   end
 
   def account_from_id(id) do
@@ -94,6 +96,8 @@ defmodule Rujira.Staking do
   def load_account(pool, account) do
     with {:ok, res} <- query_account(pool.address, account) do
       Account.from_query(pool, res)
+    else
+      _ -> Account.default(pool, account)
     end
   end
 
