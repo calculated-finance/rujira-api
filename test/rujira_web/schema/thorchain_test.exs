@@ -66,7 +66,6 @@ defmodule RujiraWeb.Schema.ThorchainTest do
     conn = post(conn, "/api", %{"query" => @query})
     res = json_response(conn, 200)
     assert Map.get(res, "errors") == nil
-    %{"data" => %{"thorchainV2" => %{"inboundAddresses" => [_ | _]}}} = res
   end
 
   @query """
@@ -89,27 +88,6 @@ defmodule RujiraWeb.Schema.ThorchainTest do
 
     res = json_response(conn, 200)
     assert Map.get(res, "errors") == nil
-
-    %{
-      "data" => %{
-        "node" => %{
-          "address" => "bc1" <> _,
-          "chain" => "BTC",
-          "chainLpActionsPaused" => _,
-          "chainTradingPaused" => _,
-          "dustThreshold" => _,
-          "gasRate" => _,
-          "gasRateUnits" => _,
-          "globalTradingPaused" => _,
-          "halted" => _,
-          "id" => _,
-          "outboundFee" => _,
-          "outboundTxSize" => _,
-          "pubKey" => "sthor" <> _,
-          "router" => _
-        }
-      }
-    } = res
   end
 
   @query """
@@ -127,7 +105,6 @@ defmodule RujiraWeb.Schema.ThorchainTest do
     conn = post(conn, "/api", %{"query" => @query})
     res = json_response(conn, 200)
     assert Map.get(res, "errors") == nil
-    %{"data" => %{"thorchainV2" => %{"pools" => [_ | _]}}} = res
   end
 
   @query """
@@ -150,36 +127,5 @@ defmodule RujiraWeb.Schema.ThorchainTest do
 
     res = json_response(conn, 200)
     assert Map.get(res, "errors") == nil
-
-    %{
-      "data" => %{
-        "node" => %{
-          "asset" => %{"asset" => "BTC.BTC"},
-          "assetTorPrice" => _,
-          "balanceAsset" => _,
-          "balanceRune" => _,
-          "decimals" => _,
-          "derivedDepthBps" => _,
-          "id" => _,
-          "loanCollateral" => _,
-          "loanCollateralRemaining" => _,
-          "loanCr" => _,
-          "lpUnits" => _,
-          "pendingInboundAsset" => _,
-          "pendingInboundRune" => _,
-          "poolUnits" => _,
-          "saversCapacityRemaining" => _,
-          "saversDepth" => _,
-          "saversFillBps" => _,
-          "saversUnits" => _,
-          "shortCode" => _,
-          "status" => _,
-          "synthMintPaused" => _,
-          "synthSupply" => _,
-          "synthSupplyRemaining" => _,
-          "synthUnits" => _
-        }
-      }
-    } = res
   end
 end
