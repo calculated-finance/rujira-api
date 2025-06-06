@@ -3,8 +3,7 @@ defmodule RujiraWeb.Schema.TokenTest do
 
   @assets [
     "BTC-BTC",
-    "RUNE",
-    "x/ruji"
+    "x/ruji",
   ]
 
   @metadata_fragment """
