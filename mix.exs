@@ -33,7 +33,7 @@ defmodule Rujira.MixProject do
   defp deps do
     [
       {:absinthe_phoenix, "~> 2.0"},
-      {:absinthe_plug, "~> 1.4"},
+      {:absinthe_plug, "1.5.8"},
       {:absinthe_relay, "~> 1.5"},
       {:absinthe, "~> 1.7"},
       {:appsignal, "~> 2.8"},

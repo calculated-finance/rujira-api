@@ -31,3 +31,5 @@ rujira-*.tar
 config/dev.*.exs
 
 tx.json
+
+.elixir_ls/
