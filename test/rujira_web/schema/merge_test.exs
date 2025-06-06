@@ -1,6 +1,14 @@
 defmodule RujiraWeb.Schema.MergeTest do
   use RujiraWeb.ConnCase
 
+  @accounts Application.compile_env(:rujira, :accounts)
+  @config Application.compile_env(:rujira, __MODULE__)
+
+  @empty_account Keyword.fetch!(@accounts, :empty_account)
+  @populated_account Keyword.fetch!(@accounts, :populated_account)
+
+  @merge_pool Keyword.fetch!(@config, :merge_pool)
+
   @merge_status_fragment """
   fragment MergeStatusFragment on MergeStatus {
     merged
@@ -107,7 +115,7 @@ defmodule RujiraWeb.Schema.MergeTest do
 
   test "merge pool", %{conn: conn} do
     encoded_id =
-      Base.encode64("MergePool:sthor1nc5tatafv6eyq7llkr2gv50ff9e22mnf70qgjlv737ktmt4eswrqysrzhu")
+      Base.encode64("MergePool:#{@merge_pool}")
 
     conn =
       post(conn, "/api", %{
@@ -129,12 +137,23 @@ defmodule RujiraWeb.Schema.MergeTest do
   }
   #{@merge_account_fragment}
   """
-
-  test "merge account", %{conn: conn} do
+  test "merge account empty", %{conn: conn} do
     encoded_id =
-      Base.encode64(
-        "MergeAccount:sthor1nc5tatafv6eyq7llkr2gv50ff9e22mnf70qgjlv737ktmt4eswrqysrzhu/sthor1t4gsjfs8q8j3mw2e402r8vzrtaslsf5re3ktut"
-      )
+      Base.encode64("MergeAccount:#{@merge_pool}/#{@empty_account}")
+
+    conn =
+      post(conn, "/api", %{
+        "query" => @query,
+        "variables" => %{"id" => encoded_id}
+      })
+
+    res = json_response(conn, 200)
+    assert Map.get(res, "errors") == nil
+  end
+
+  test "merge account populated", %{conn: conn} do
+    encoded_id =
+      Base.encode64("MergeAccount:#{@merge_pool}/#{@populated_account}")
 
     conn =
       post(conn, "/api", %{

@@ -2,6 +2,11 @@ defmodule RujiraWeb.Schema.StakingTest do
   use RujiraWeb.ConnCase
   alias Rujira.Deployments
 
+  @accounts Application.compile_env(:rujira, :accounts)
+
+  @empty_account Keyword.fetch!(@accounts, :empty_account)
+  @populated_account Keyword.fetch!(@accounts, :populated_account)
+
   @staking_status_fragment """
   fragment StakingStatusFragment on StakingStatus {
     accountBond
@@ -181,7 +186,7 @@ defmodule RujiraWeb.Schema.StakingTest do
   #{@staking_account_fragment}
   """
 
-  test "staking account", %{conn: conn} do
+  test "staking account populated", %{conn: conn} do
     staking_pool =
       Deployments.get_target(Rujira.Staking.Pool, "ruji")
     conn =
@@ -190,7 +195,25 @@ defmodule RujiraWeb.Schema.StakingTest do
         "variables" => %{
           "id" =>
             Base.encode64(
-              "StakingAccount:#{staking_pool.address}/sthor1t4gsjfs8q8j3mw2e402r8vzrtaslsf5re3ktut"
+              "StakingAccount:#{staking_pool.address}/#{@populated_account}"
+            )
+        }
+      })
+
+    res = json_response(conn, 200)
+    assert Map.get(res, "errors") == nil
+  end
+
+  test "staking account empty", %{conn: conn} do
+    staking_pool =
+      Deployments.get_target(Rujira.Staking.Pool, "ruji")
+    conn =
+      post(conn, "/api", %{
+        "query" => @query,
+        "variables" => %{
+          "id" =>
+            Base.encode64(
+              "StakingAccount:#{staking_pool.address}/#{@empty_account}"
             )
         }
       })
@@ -227,7 +250,23 @@ defmodule RujiraWeb.Schema.StakingTest do
         "variables" => %{
           "id" =>
             Base.encode64(
-              "Layer1Account:thor:sthor1t4gsjfs8q8j3mw2e402r8vzrtaslsf5re3ktut"
+              "Layer1Account:thor:#{@populated_account}"
+            )
+        }
+      })
+
+    res = json_response(conn, 200)
+    assert Map.get(res, "errors") == nil
+  end
+
+  test "layer1 account staking empty", %{conn: conn} do
+    conn =
+      post(conn, "/api", %{
+        "query" => @query,
+        "variables" => %{
+          "id" =>
+            Base.encode64(
+              "Layer1Account:thor:#{@empty_account}"
             )
         }
       })
