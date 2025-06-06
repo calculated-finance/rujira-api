@@ -12,7 +12,7 @@ defmodule Rujira.Assets do
   @coin_regex ~r/^(\d+(?:\.\d+)?|\.\d+)\s*([a-zA-Z][a-zA-Z0-9\/:._-]{2,127})$/
 
   defmemo assets() do
-    with {:ok, %{pools: pools}} <- Thorchain.Node.stub(&Q.pools/2, %QueryPoolsRequest{}) do
+    with {:ok, %{pools: pools}} <- Thornode.query(&Q.pools/2, %QueryPoolsRequest{}) do
       Enum.map(pools, &from_string(&1.asset))
     end
   end

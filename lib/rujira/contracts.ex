@@ -43,7 +43,7 @@ defmodule Rujira.Contracts do
           {:ok, Cosmwasm.Wasm.V1.CodeInfoResponse.t()} | {:error, GRPC.RPCError.t()}
   defmemo code_info(code_id) do
     with {:ok, %{code_info: code_info}} <-
-           Thorchain.Node.stub(
+           Thornode.query(
              &Stub.code/2,
              %QueryCodeRequest{code_id: code_id}
            ) do
@@ -59,7 +59,7 @@ defmodule Rujira.Contracts do
 
   defmemo build_address(salt, creator, hash) do
     with {:ok, %{address: address}} <-
-           Thorchain.Node.stub(
+           Thornode.query(
              &Stub.build_address/2,
              %QueryBuildAddressRequest{
                code_hash: hash,
@@ -80,7 +80,7 @@ defmodule Rujira.Contracts do
           {:ok, Cosmwasm.Wasm.V1.ContractInfo.t()} | {:error, GRPC.RPCError.t()}
   defmemo info(address) do
     with {:ok, %{contract_info: contract_info}} <-
-           Thorchain.Node.stub(
+           Thornode.query(
              &Stub.contract_info/2,
              %QueryContractInfoRequest{address: address}
            ) do
@@ -97,7 +97,7 @@ defmodule Rujira.Contracts do
 
   defp codes_page(nil) do
     with {:ok, %{code_infos: code_infos, pagination: %{next_key: next_key}}} <-
-           Thorchain.Node.stub(
+           Thornode.query(
              &Stub.codes/2,
              %QueryCodesRequest{}
            ),
@@ -112,7 +112,7 @@ defmodule Rujira.Contracts do
 
   defp codes_page(key) do
     with {:ok, %{code_infos: code_infos, pagination: %{next_key: next_key}}} <-
-           Thorchain.Node.stub(
+           Thornode.query(
              &Stub.codes/2,
              %QueryCodesRequest{pagination: %PageRequest{key: key}}
            ),
@@ -133,7 +133,7 @@ defmodule Rujira.Contracts do
 
   defp by_code_page(code_id, nil) do
     with {:ok, %{contracts: contracts, pagination: %{next_key: next_key}}} <-
-           Thorchain.Node.stub(
+           Thornode.query(
              &Stub.contracts_by_code/2,
              %QueryContractsByCodeRequest{code_id: code_id}
            ),
@@ -148,7 +148,7 @@ defmodule Rujira.Contracts do
 
   defp by_code_page(code_id, key) do
     with {:ok, %{contracts: contracts, pagination: %{next_key: next_key}}} <-
-           Thorchain.Node.stub(
+           Thornode.query(
              &Stub.contracts_by_code/2,
              %QueryContractsByCodeRequest{
                code_id: code_id,
@@ -213,7 +213,7 @@ defmodule Rujira.Contracts do
   @spec query_state_raw(String.t(), binary()) ::
           {:ok, term()} | {:error, :not_found} | {:error, GRPC.RPCError.t()}
   def query_state_raw(address, query) do
-    case Thorchain.Node.stub(
+    case Thornode.query(
            &Stub.raw_contract_state/2,
            %QueryRawContractStateRequest{
              address: address,
@@ -229,7 +229,7 @@ defmodule Rujira.Contracts do
           {:ok, map()} | {:error, GRPC.RPCError.t()}
   def query_state_smart(address, query) do
     with {:ok, %{data: data}} <-
-           Thorchain.Node.stub(&Stub.smart_contract_state/2, %QuerySmartContractStateRequest{
+           Thornode.query(&Stub.smart_contract_state/2, %QuerySmartContractStateRequest{
              address: address,
              query_data: Jason.encode!(query)
            }),
@@ -249,7 +249,7 @@ defmodule Rujira.Contracts do
 
   defp query_state_all_page(address, page) do
     with {:ok, %{models: models, pagination: %{next_key: next_key}}} when next_key != "" <-
-           Thorchain.Node.stub(
+           Thornode.query(
              &Stub.all_contract_state/2,
              %QueryAllContractStateRequest{address: address, pagination: page}
            ),
@@ -277,7 +277,7 @@ defmodule Rujira.Contracts do
   def stream_state_all(address) do
     Stream.resource(
       fn ->
-        Thorchain.Node.stub(
+        Thornode.query(
           &Stub.all_contract_state/2,
           %QueryAllContractStateRequest{address: address}
         )
@@ -291,7 +291,7 @@ defmodule Rujira.Contracts do
          }}
         when next_key != "" ->
           next =
-            Thorchain.Node.stub(
+            Thornode.query(
               &Stub.all_contract_state/2,
               %QueryAllContractStateRequest{
                 address: address,

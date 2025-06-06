@@ -20,7 +20,7 @@ defmodule Rujira.Bank.Supply do
     Phoenix.PubSub.subscribe(Rujira.PubSub, "tendermint/event/NewBlock")
 
     with {:ok, %{supply: supply}} <-
-           Thorchain.Node.stub(
+           Thornode.query(
              &Stub.total_supply/2,
              %QueryTotalSupplyRequest{pagination: %PageRequest{limit: 100}}
            ) do
@@ -77,7 +77,7 @@ defmodule Rujira.Bank.Supply do
     |> Enum.flat_map(&scan_event/1)
     |> Enum.uniq()
     |> Enum.reduce(%{}, fn denom, acc ->
-      case Thorchain.Node.stub(
+      case Thornode.query(
              &Stub.supply_of/2,
              %QuerySupplyOfRequest{denom: denom}
            ) do

@@ -1,6 +1,6 @@
 defmodule Rujira.Assets.Metadata do
   alias Cosmos.Bank.V1beta1.Query.Stub
-  alias Thorchain.Node
+  alias Thornode
   alias Cosmos.Bank.V1beta1.QueryDenomMetadataRequest
   alias Cosmos.Bank.V1beta1.QueryDenomMetadataResponse
 
@@ -21,15 +21,16 @@ defmodule Rujira.Assets.Metadata do
     q = %QueryDenomMetadataRequest{denom: asset.id}
 
     with {:ok, %QueryDenomMetadataResponse{metadata: metadata}} <-
-           Node.stub(&Stub.denom_metadata/2, q) do
-      {:ok, %__MODULE__{
-        description: metadata.description,
-        display: metadata.display,
-        name: metadata.name,
-        symbol: metadata.symbol,
-        uri: metadata.uri,
-        uri_hash: metadata.uri_hash
-      }}
+           Thornode.query(&Stub.denom_metadata/2, q) do
+      {:ok,
+       %__MODULE__{
+         description: metadata.description,
+         display: metadata.display,
+         name: metadata.name,
+         symbol: metadata.symbol,
+         uri: metadata.uri,
+         uri_hash: metadata.uri_hash
+       }}
     else
       _ -> {:ok, %__MODULE__{symbol: asset.ticker}}
     end

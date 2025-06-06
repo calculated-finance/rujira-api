@@ -49,6 +49,7 @@ defmodule Rujira.MixProject do
       {:grpc, "~> 0.9"},
       {:jason, "~> 1.2"},
       {:memoize, "~> 1.4"},
+      {:mox, "~> 1.2"},
       {:phoenix, "~> 1.7.14"},
       {:phoenix_ecto, "~> 4.5"},
       {:phoenix_live_dashboard, "~> 0.8.3"},

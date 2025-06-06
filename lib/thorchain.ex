@@ -28,7 +28,7 @@ defmodule Thorchain do
   use Memoize
 
   def start_link(_) do
-    children = [__MODULE__.Listener, __MODULE__.Node, __MODULE__.Swaps, __MODULE__.Tor]
+    children = [__MODULE__.Listener, __MODULE__.Swaps, __MODULE__.Tor]
     Supervisor.start_link(children, strategy: :one_for_one)
   end
 
@@ -40,7 +40,7 @@ defmodule Thorchain do
   def network() do
     req = %QueryNetworkRequest{}
 
-    with {:ok, res} <- Thorchain.Node.stub(&Q.network/2, req) do
+    with {:ok, res} <- Thornode.query(&Q.network/2, req) do
       {:ok, res}
     end
   end
@@ -55,8 +55,7 @@ defmodule Thorchain do
           end
       }
 
-    with {:ok, res} <-
-           Thorchain.Node.stub(&Q.pool/2, req) do
+    with {:ok, res} <- Thornode.query(&Q.pool/2, req) do
       {:ok, cast_pool(res)}
     end
   end
@@ -72,7 +71,7 @@ defmodule Thorchain do
     }
 
     with {:ok, %QueryPoolsResponse{pools: pools}} <-
-           Thorchain.Node.stub(&Q.pools/2, req) do
+           Thornode.query(&Q.pools/2, req) do
       {:ok, Enum.map(pools, &cast_pool/1)}
     end
   end
@@ -88,7 +87,7 @@ defmodule Thorchain do
     req = %QueryLiquidityProviderRequest{asset: asset, address: address}
 
     with {:ok, res} <-
-           Thorchain.Node.stub(&Q.liquidity_provider/2, req) do
+           Thornode.query(&Q.liquidity_provider/2, req) do
       {:ok, cast_liquidity_provider(res)}
     end
   end
@@ -126,7 +125,7 @@ defmodule Thorchain do
 
   def total_bonds() do
     # req = %QueryNodesRequest{}
-    api = Application.get_env(:rujira, Thorchain.Node)[:api]
+    api = Application.get_env(:rujira, Thornode)[:api]
 
     client =
       Tesla.client([
@@ -136,7 +135,7 @@ defmodule Thorchain do
       ])
 
     with {:ok, %{rune_price_in_tor: price}} <- network(),
-         # {:ok, %QueryNodesResponse{nodes: nodes}} <- Thorchain.Node.stub(&Q.nodes/2, req) do
+         # {:ok, %QueryNodesResponse{nodes: nodes}} <- Thornode.query(&Q.nodes/2, req) do
          {:ok, response} <- Tesla.get(client, "/thorchain/nodes") do
       total_bonds =
         response.body
@@ -168,7 +167,7 @@ defmodule Thorchain do
     req = %QueryAsgardVaultsRequest{}
 
     with {:ok, %QueryAsgardVaultsResponse{asgard_vaults: vaults}} <-
-           Thorchain.Node.stub(&Q.asgard_vaults/2, req) do
+           Thornode.query(&Q.asgard_vaults/2, req) do
       [vault | _] = vaults
       {:ok, vault.chains}
     end
@@ -224,7 +223,7 @@ defmodule Thorchain do
             observed_tx: %{tx: tx} = observed_tx,
             finalised_height: finalised_height
           } = res} <-
-           Thorchain.Node.stub(&Q.tx/2, %QueryTxRequest{tx_id: hash}),
+           Thornode.query(&Q.tx/2, %QueryTxRequest{tx_id: hash}),
          {:ok, block} <- block(finalised_height) do
       {:ok,
        res
@@ -246,7 +245,7 @@ defmodule Thorchain do
 
   def block(height) do
     with {:ok, %QueryBlockResponse{} = block} <-
-           Thorchain.Node.stub(&Q.block/2, %QueryBlockRequest{height: to_string(height)}) do
+           Thornode.query(&Q.block/2, %QueryBlockRequest{height: to_string(height)}) do
       {:ok,
        %{
          block

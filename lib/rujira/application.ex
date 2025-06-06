@@ -10,7 +10,7 @@ defmodule Rujira.Application do
   def start(_type, _args) do
     topologies = Application.get_env(:libcluster, :topologies) || []
 
-    children = [
+    base = [
       {Cluster.Supervisor, [topologies, [name: Rujira.ClusterSupervisor]]},
       RujiraWeb.Telemetry,
       Rujira.Repo,
@@ -22,6 +22,10 @@ defmodule Rujira.Application do
       RujiraWeb.Presence,
       {Absinthe.Subscription, RujiraWeb.Endpoint},
       {Finch, name: Rujira.Finch},
+      Thornode
+    ]
+
+    app = [
       Thorchain,
       Rujira.Balances,
       Rujira.Bank,
@@ -34,12 +38,19 @@ defmodule Rujira.Application do
       Rujira.Bow
     ]
 
-    Thorchain.Node.Appsignal.attach()
+    Thornode.Appsignal.attach()
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Rujira.Supervisor]
-    Supervisor.start_link(children, opts)
+
+    Supervisor.start_link(
+      Enum.concat(
+        base,
+        if(Mix.env() == :test, do: [], else: app)
+      ),
+      opts
+    )
   end
 
   # Tell Phoenix to update the endpoint configuration

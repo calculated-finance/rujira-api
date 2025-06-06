@@ -26,18 +26,13 @@ config :logger, level: :warning
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
 
-config :rujira, Thorchain.Node,
-  websocket: "",
-  subscriptions: ["tm.event='NewBlock'"],
-  grpcs: []
-
 config :appsignal, :config,
   active: true,
   env: :test
 
 # Test against stagenet
-config :rujira, Thorchain.Node,
-  websocket: "wss://stagenet-rpc.ninerealms.com",
+config :rujira, Thornode,
+  socket: nil,
   subscriptions: ["tm.event='NewBlock'"],
   size: 5,
   grpcs: ["stagenet-grpc.ninerealms.com:443"]
