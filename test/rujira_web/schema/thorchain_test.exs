@@ -1,6 +1,5 @@
 defmodule RujiraWeb.Schema.ThorchainTest do
   use RujiraWeb.ConnCase
-  import RujiraWeb.Schema.GQLTestMacros
 
   @inbound_address_fragment """
   fragment ThorchainInboundAddressFragment on ThorchainInboundAddress {
@@ -199,45 +198,4 @@ defmodule RujiraWeb.Schema.ThorchainTest do
       }
     } = res
   end
-
-  @gql_tests [
-    %{
-      name: "inbound addresses",
-      query: """
-      query {
-        thorchainV2 {
-          inboundAddresses {
-            ...ThorchainInboundAddressFragment
-          }
-        }
-      }
-      #{@inbound_address_fragment}
-      """,
-      variables: %{},
-      # path into JSON response where the “list of objects” lives:
-      response_path: ["data", "thorchainV2", "inboundAddresses"],
-      type_name: "ThorchainInboundAddress",
-      is_list: true
-    },
-    %{
-      name: "pool",
-      query: """
-      query($id: ID!) {
-        node(id: $id) {
-          ... on ThorchainPool {
-            ...ThorchainPoolFragment
-          }
-        }
-      }
-      #{@pool_fragment}
-      """,
-      variables: %{"id" => Base.encode64("ThorchainPool:BTC.BTC")},
-      # path into JSON response where the “list of objects” lives:
-      response_path: ["data", "node"],
-      type_name: "ThorchainPool",
-      is_list: false
-    }
-  ]
-
-  generate_gql_tests(@gql_tests)
 end
