@@ -48,22 +48,6 @@ defmodule RujiraWeb.Schema.ThorchainTest do
     synthSupply
     synthSupplyRemaining
     synthUnits
-    candles(
-        after: "2025-06-05T00:00:00Z",
-        before: "2025-06-06T00:00:00Z",
-        resolution: "1"
-      ) {
-      edges {
-        node {
-          bin
-          close
-          high
-          low
-          open
-          resolution
-        }
-      }
-    }
   }
   """
 
