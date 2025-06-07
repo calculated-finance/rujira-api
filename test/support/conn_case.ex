@@ -32,6 +32,7 @@ defmodule RujiraWeb.ConnCase do
   end
 
   setup tags do
+    Rujira.CoingeckoMocks.mock_prices()
     Rujira.DataCase.setup_sandbox(tags)
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
