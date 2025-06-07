@@ -1,55 +1,7 @@
 defmodule RujiraWeb.Schema.ThorchainTest do
   use RujiraWeb.ConnCase
 
-  @inbound_address_fragment """
-  fragment ThorchainInboundAddressFragment on ThorchainInboundAddress {
-    address
-    chain
-    chainLpActionsPaused
-    chainTradingPaused
-    dustThreshold
-    gasRate
-    gasRateUnits
-    globalTradingPaused
-    halted
-    id
-    outboundFee
-    outboundTxSize
-    pubKey
-    router
-  }
-  """
-
-  @pool_fragment """
-  fragment ThorchainPoolFragment on ThorchainPool {
-    asset {
-      asset
-    }
-    assetTorPrice
-    balanceAsset
-    balanceRune
-    decimals
-    derivedDepthBps
-    id
-    loanCollateral
-    loanCollateralRemaining
-    loanCr
-    lpUnits
-    pendingInboundAsset
-    pendingInboundRune
-    poolUnits
-    saversCapacityRemaining
-    saversDepth
-    saversFillBps
-    saversUnits
-    shortCode
-    status
-    synthMintPaused
-    synthSupply
-    synthSupplyRemaining
-    synthUnits
-  }
-  """
+  import RujiraWeb.Fragments.ThorchainFragments
 
   @query """
   query {
@@ -59,7 +11,7 @@ defmodule RujiraWeb.Schema.ThorchainTest do
       }
     }
   }
-  #{@inbound_address_fragment}
+  #{get_thorchain_inbound_address_fragment()}
   """
 
   test "inbound addresses", %{conn: conn} do
@@ -76,7 +28,7 @@ defmodule RujiraWeb.Schema.ThorchainTest do
       }
     }
   }
-  #{@inbound_address_fragment}
+  #{get_thorchain_inbound_address_fragment()}
   """
 
   test "inbound address", %{conn: conn} do
@@ -98,7 +50,7 @@ defmodule RujiraWeb.Schema.ThorchainTest do
       }
     }
   }
-  #{@pool_fragment}
+  #{get_thorchain_pool_fragment()}
   """
 
   test "pools", %{conn: conn} do
@@ -115,7 +67,7 @@ defmodule RujiraWeb.Schema.ThorchainTest do
       }
     }
   }
-  #{@pool_fragment}
+  #{get_thorchain_pool_fragment()}
   """
 
   test "pool", %{conn: conn} do
