@@ -20,7 +20,8 @@ config :rujira, RujiraWeb.Endpoint,
     layout: false
   ],
   pubsub_server: Rujira.PubSub,
-  live_view: [signing_salt: "SjwK2jgU"]
+  live_view: [signing_salt: "SjwK2jgU"],
+  absinthe: [batch: [timeout: 20_000]]
 
 # Configures Elixir's Logger
 config :logger, :console,
