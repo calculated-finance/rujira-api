@@ -1,6 +1,8 @@
 defmodule RujiraWeb.Schema.MergeTest do
   use RujiraWeb.ConnCase
 
+  import RujiraWeb.Fragments.MergeFragments
+
   @accounts Application.compile_env(:rujira, :accounts)
   @config Application.compile_env(:rujira, __MODULE__)
 
@@ -9,90 +11,13 @@ defmodule RujiraWeb.Schema.MergeTest do
 
   @merge_pool Keyword.fetch!(@config, :merge_pool)
 
-  @merge_status_fragment """
-  fragment MergeStatusFragment on MergeStatus {
-    merged
-    shares
-    size
-    currentRate
-    shareValue
-    shareValueChange
-    apr
-  }
-  """
-
-  @merge_pool_fragment """
-  fragment MergePoolFragment on MergePool {
-    id
-    address
-    contract {
-      admin
-      label
-    }
-    mergeAsset {
-      asset
-    }
-    mergeSupply
-    rujiAsset {
-      asset
-    }
-    rujiAllocation
-    decayStartsAt
-    decayEndsAt
-    currentRate
-    startRate
-    status {
-      ...MergeStatusFragment
-    }
-  }
-  """
-
-  @merge_account_fragment """
-  fragment MergeAccountFragment on MergeAccount {
-    id
-    pool {
-      id
-      address
-    }
-    merged {
-      amount
-      asset {
-        asset
-      }
-    }
-    shares
-    size {
-      amount
-      asset {
-        asset
-      }
-    }
-    rate
-  }
-  """
-
-  @merge_stats_fragment """
-  fragment MergeStatsFragment on MergeStats {
-    totalSize {
-      amount
-      asset {
-        asset
-      }
-    }
-    accounts {
-      ...MergeAccountFragment
-    }
-  }
-  """
-
   @query """
   query {
     merge {
       ...MergePoolFragment
     }
   }
-  #{@merge_status_fragment}
-  #{@merge_pool_fragment}
+  #{get_merge_pool_fragment()}
   """
 
   test "merge pools", %{conn: conn} do
@@ -109,8 +34,7 @@ defmodule RujiraWeb.Schema.MergeTest do
       }
     }
   }
-  #{@merge_status_fragment}
-  #{@merge_pool_fragment}
+  #{get_merge_pool_fragment()}
   """
 
   test "merge pool", %{conn: conn} do
@@ -135,7 +59,7 @@ defmodule RujiraWeb.Schema.MergeTest do
       }
     }
   }
-  #{@merge_account_fragment}
+  #{get_merge_account_fragment()}
   """
   test "merge account empty", %{conn: conn} do
     encoded_id =
@@ -178,8 +102,7 @@ defmodule RujiraWeb.Schema.MergeTest do
       }
     }
   }
-  #{@merge_stats_fragment}
-  #{@merge_account_fragment}
+  #{get_merge_stats_fragment()}
   """
 
   test "merge stats", %{conn: conn} do
