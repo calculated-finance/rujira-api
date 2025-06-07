@@ -5,7 +5,7 @@ defmodule Rujira.Prices do
 
   def get(symbols) when is_list(symbols) do
     symbols
-    |> Task.async_stream(&{&1, get(&1)})
+    |> Task.async_stream(&{&1, get(&1)}, timeout: :infinity)
     |> Enum.reduce({:ok, %{}}, fn
       {:ok, {id, res}}, {:ok, agg} ->
         {:ok, Map.put(agg, id, res)}
