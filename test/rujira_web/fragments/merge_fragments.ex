@@ -1,7 +1,9 @@
 defmodule RujiraWeb.Fragments.MergeFragments do
   alias RujiraWeb.Fragments.AssetFragments
+  alias RujiraWeb.Fragments.DeveloperFragments
 
   @asset_fragment AssetFragments.get_asset_fragment()
+  @contract_info_fragment DeveloperFragments.get_contract_info_fragment()
 
   @merge_status_fragment """
   fragment MergeStatusFragment on MergeStatus {
@@ -20,8 +22,7 @@ defmodule RujiraWeb.Fragments.MergeFragments do
     id
     address
     contract {
-      admin
-      label
+      ...ContractInfoFragment
     }
     mergeAsset {
       ...AssetFragment
@@ -41,6 +42,7 @@ defmodule RujiraWeb.Fragments.MergeFragments do
   }
   #{@merge_status_fragment}
   #{@asset_fragment}
+  #{@contract_info_fragment}
   """
 
   @merge_account_fragment """
