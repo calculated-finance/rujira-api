@@ -34,8 +34,8 @@ defmodule Rujira.Fixtures.League do
       }
     ]
 
-    inserted_tx_rows = Leagues.insert_tx_events(tx_payloads)
-
-    Leagues.update_leagues(inserted_tx_rows)
+    tx_payloads
+    |> Leagues.insert_tx_events()
+    |> Leagues.update_leagues()
   end
 end
