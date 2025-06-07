@@ -20,8 +20,7 @@ config :rujira, RujiraWeb.Endpoint,
     layout: false
   ],
   pubsub_server: Rujira.PubSub,
-  live_view: [signing_salt: "SjwK2jgU"],
-  absinthe: [batch: [timeout: 20_000]]
+  live_view: [signing_salt: "SjwK2jgU"]
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -46,6 +45,9 @@ config :cors_plug,
 config :tesla, :adapter, {Tesla.Adapter.Finch, name: Rujira.Finch}
 
 config :memoize, cache_strategy: Rujira.CacheStrategy
+
+config :absinthe, Absinthe.Middleware.Batch,
+  timeout: 20_000
 
 network = System.get_env("NETWORK", "stagenet")
 
