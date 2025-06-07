@@ -145,6 +145,9 @@ defmodule RujiraWeb.Resolvers.Thorchain do
     end
   end
 
+  def tcy(_, _, _), do: {:ok, nil}
+
+
   def oracle(nil), do: {:ok, nil}
 
   def oracle(id) do
