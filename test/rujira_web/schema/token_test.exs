@@ -1,10 +1,24 @@
 defmodule RujiraWeb.Schema.TokenTest do
   use RujiraWeb.ConnCase
 
+  import Tesla.Mock
+
   @assets [
-    "BTC-BTC",
+    "BTC.BTC",
     "x/ruji",
+    "THOR.TCY",
+    "THOR.RUNE"
   ]
+
+  @mock_body_price %{
+    "tcy" => %{"usd" => 42.0, "usd_24h_change" => 1.23, "usd_market_cap" => 1_000_000},
+    "bitcoin" => %{"usd" => 100_000.0, "usd_24h_change" => 1.23, "usd_market_cap" => 1_000_000},
+    "rune" => %{"usd" => 100.0, "usd_24h_change" => 1.23, "usd_market_cap" => 1_000_000}
+  }
+
+  @mock_body_search_by_id %{
+    "RUNE" => %{"coins" => [%{"id" => "rune"}]}
+  }
 
   @metadata_fragment """
   fragment MetadataFragment on Metadata {
@@ -91,6 +105,26 @@ defmodule RujiraWeb.Schema.TokenTest do
   """
 
   test "assets", %{conn: conn} do
+    mock(fn %Tesla.Env{url: url} ->
+      %URI{path: path, query: query} = URI.parse(url)
+
+      case path do
+        "/api/v3/simple/price" ->
+          %Tesla.Env{status: 200, body: @mock_body_price}
+
+        "/api/v3/search" ->
+          params = URI.decode_query(query)
+
+          %Tesla.Env{
+            status: 200,
+            body: Map.get(@mock_body_search_by_id, params["query"])
+          }
+
+        _ ->
+          flunk("unexpected HTTP call to #{url}")
+      end
+    end)
+
     assets =
       @assets
       |> Enum.map(&Base.encode64("Asset:#{&1}"))

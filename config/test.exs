@@ -45,3 +45,5 @@ config :rujira, :accounts,
 
 config :rujira, RujiraWeb.Schema.MergeTest,
   merge_pool: "sthor1nc5tatafv6eyq7llkr2gv50ff9e22mnf70qgjlv737ktmt4eswrqysrzhu"
+
+config :tesla, adapter: Tesla.Mock
