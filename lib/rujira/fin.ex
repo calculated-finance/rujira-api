@@ -169,6 +169,13 @@ defmodule Rujira.Fin do
     get_pair(id)
   end
 
+  def ticker_id!(%Pair{token_base: token_base, token_quote: token_quote}) do
+    {:ok, base} = Rujira.Assets.from_denom(token_base)
+    {:ok, target} = Rujira.Assets.from_denom(token_quote)
+
+    "#{Rujira.Assets.label(base)}_#{Rujira.Assets.label(target)}"
+  end
+
   def book_from_id(id) do
     with {:ok, res} <- query_book(id, 100),
          {:ok, book} <- Book.from_query(id, res) do

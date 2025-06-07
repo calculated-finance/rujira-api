@@ -2,7 +2,7 @@ defmodule Rujira.Fin.Summary do
   alias Rujira.Fin.Trade
   import Ecto.Query
 
-  defstruct [:id, :last, :last_usd, :high, :low, :change, :volume]
+  defstruct [:id, :last, :last_usd, :high, :low, :change, :volume, :volume_base]
 
   @type t :: %__MODULE__{
           id: String.t(),
@@ -10,7 +10,8 @@ defmodule Rujira.Fin.Summary do
           high: Decimal.t(),
           low: Decimal.t(),
           change: Decimal.t(),
-          volume: non_neg_integer()
+          volume: non_neg_integer(),
+          volume_base: non_neg_integer()
         }
 
   def query() do
@@ -39,6 +40,15 @@ defmodule Rujira.Fin.Summary do
             ),
           high: max(t.rate),
           low: min(t.rate),
+          volume_base:
+            sum(
+              fragment(
+                "CASE WHEN ? = 'base' THEN ? ELSE ? END",
+                t.side,
+                t.bid,
+                t.offer
+              )
+            ),
           volume:
             sum(
               fragment(
@@ -61,7 +71,8 @@ defmodule Rujira.Fin.Summary do
         low: fragment("COALESCE(?, ?)", a.low, c.last),
         # % change = (close - open) / open
         change: fragment("COALESCE((? - ?) / NULLIF(?, 0), 0)", a.close, a.open, a.open),
-        volume: fragment("COALESCE(?, 0)::bigint", a.volume)
+        volume: fragment("COALESCE(?, 0)::bigint", a.volume),
+        volume_base: fragment("COALESCE(?, 0)::bigint", a.volume_base)
       }
     )
     |> subquery()
