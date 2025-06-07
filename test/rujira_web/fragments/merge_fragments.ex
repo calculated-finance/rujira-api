@@ -1,4 +1,8 @@
 defmodule RujiraWeb.Fragments.MergeFragments do
+  alias RujiraWeb.Fragments.AssetFragments
+
+  @asset_fragment AssetFragments.get_asset_fragment()
+
   @merge_status_fragment """
   fragment MergeStatusFragment on MergeStatus {
     merged
@@ -20,11 +24,11 @@ defmodule RujiraWeb.Fragments.MergeFragments do
       label
     }
     mergeAsset {
-      asset
+      ...AssetFragment
     }
     mergeSupply
     rujiAsset {
-      asset
+      ...AssetFragment
     }
     rujiAllocation
     decayStartsAt
@@ -36,6 +40,7 @@ defmodule RujiraWeb.Fragments.MergeFragments do
     }
   }
   #{@merge_status_fragment}
+  #{@asset_fragment}
   """
 
   @merge_account_fragment """
@@ -48,18 +53,19 @@ defmodule RujiraWeb.Fragments.MergeFragments do
     merged {
       amount
       asset {
-        asset
+        ...AssetFragment
       }
     }
     shares
     size {
       amount
       asset {
-        asset
+        ...AssetFragment
       }
     }
     rate
   }
+  #{@asset_fragment}
   """
 
   @merge_stats_fragment """
@@ -67,7 +73,7 @@ defmodule RujiraWeb.Fragments.MergeFragments do
     totalSize {
       amount
       asset {
-        asset
+        ...AssetFragment
       }
     }
     accounts {
@@ -75,6 +81,7 @@ defmodule RujiraWeb.Fragments.MergeFragments do
     }
   }
   #{@merge_account_fragment}
+  #{@asset_fragment}
   """
 
   def get_merge_status_fragment(), do: @merge_status_fragment
