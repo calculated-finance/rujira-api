@@ -7,120 +7,7 @@ defmodule RujiraWeb.Schema.StakingTest do
   @empty_account Keyword.fetch!(@accounts, :empty_account)
   @populated_account Keyword.fetch!(@accounts, :populated_account)
 
-  @staking_status_fragment """
-  fragment StakingStatusFragment on StakingStatus {
-    accountBond
-    accountRevenue
-    liquidBondShares
-    liquidBondSize
-    pendingRevenue
-  }
-  """
-
-  @revenue_converter_type_fragment """
-  fragment RevenueConverterTypeFragment on RevenueConverterType {
-    address
-    contract {
-      label
-      admin
-    }
-    executeMsg
-    limit
-  }
-  """
-
-  @revenue_converter_fragment """
-  fragment RevenueConverterFragment on RevenueConverter {
-    balances {
-      amount
-      asset {
-        asset
-      }
-    }
-    targetAssets {
-      asset
-    }
-    targetAddresses
-  }
-  """
-
-  @staking_revenue_point_fragment """
-  fragment StakingRevenuePointFragment on StakingRevenuePoint {
-    amount
-    timestamp
-  }
-  """
-
-  @staking_summary_fragment """
-  fragment StakingSummaryFragment on StakingSummary {
-    apr
-    revenue {
-      ...StakingRevenuePointFragment
-    }
-    revenue1
-    revenue7
-    revenue30
-  }
-  #{@staking_revenue_point_fragment}
-  """
-
-  @staking_pool_fragment """
-  fragment StakingPoolFragment on StakingPool {
-    id
-    address
-    contract {
-      label
-      admin
-    }
-    bondAsset {
-      asset
-    }
-    revenueAsset {
-      asset
-    }
-    revenueConverter {
-      ...RevenueConverterTypeFragment
-    }
-    status {
-      ...StakingStatusFragment
-    }
-    summary {
-      ...StakingSummaryFragment
-    }
-  }
-  #{@staking_status_fragment}
-  #{@revenue_converter_type_fragment}
-  #{@staking_summary_fragment}
-  """
-
-  @staking_account_fragment """
-  fragment StakingAccountFragment on StakingAccount {
-    id
-    pool {
-      id
-      address
-    }
-    account
-    bonded {
-      amount
-      asset {
-        asset
-      }
-    }
-    liquid {
-      amount
-      asset {
-        asset
-      }
-    }
-    pendingRevenue {
-      amount
-      asset {
-        asset
-      }
-    }
-  }
-  """
+  import RujiraWeb.Fragments.StakingFragments
 
   @query """
   query {
@@ -136,8 +23,8 @@ defmodule RujiraWeb.Schema.StakingTest do
       }
     }
   }
-  #{@staking_pool_fragment}
-  #{@revenue_converter_fragment}
+  #{get_staking_pool_fragment()}
+  #{get_revenue_converter_fragment()}
   """
 
   test "staking", %{conn: conn} do
@@ -154,7 +41,7 @@ defmodule RujiraWeb.Schema.StakingTest do
       }
     }
   }
-  #{@staking_pool_fragment}
+  #{get_staking_pool_fragment()}
   """
 
   test "staking pool", %{conn: conn} do
@@ -183,7 +70,7 @@ defmodule RujiraWeb.Schema.StakingTest do
       }
     }
   }
-  #{@staking_account_fragment}
+  #{get_staking_account_fragment()}
   """
 
   test "staking account populated", %{conn: conn} do
@@ -240,7 +127,7 @@ defmodule RujiraWeb.Schema.StakingTest do
       }
     }
   }
-  #{@staking_account_fragment}
+  #{get_staking_account_fragment()}
   """
 
   test "layer1 account staking", %{conn: conn} do
