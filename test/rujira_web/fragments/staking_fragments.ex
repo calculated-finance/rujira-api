@@ -1,9 +1,11 @@
 defmodule RujiraWeb.Fragments.StakingFragments do
   alias RujiraWeb.Fragments.AssetFragments
   alias RujiraWeb.Fragments.DeveloperFragments
+  alias RujiraWeb.Fragments.BalanceFragments
 
   @asset_fragment AssetFragments.get_asset_fragment()
   @contract_info_fragment DeveloperFragments.get_contract_info_fragment()
+  @balance_fragment BalanceFragments.get_balance_fragment()
 
   @staking_status_fragment """
   fragment StakingStatusFragment on StakingStatus {
@@ -30,10 +32,7 @@ defmodule RujiraWeb.Fragments.StakingFragments do
   @revenue_converter_fragment """
   fragment RevenueConverterFragment on RevenueConverter {
     balances {
-      amount
-      asset {
-        ...AssetFragment
-      }
+      ...BalanceFragment
     }
     targetAssets {
       ...AssetFragment
@@ -41,6 +40,7 @@ defmodule RujiraWeb.Fragments.StakingFragments do
     targetAddresses
   }
   #{@asset_fragment}
+  #{@balance_fragment}
   """
 
   @staking_revenue_point_fragment """
@@ -102,25 +102,16 @@ defmodule RujiraWeb.Fragments.StakingFragments do
     }
     account
     bonded {
-      amount
-      asset {
-        ...AssetFragment
-      }
+      ...BalanceFragment
     }
     liquid {
-      amount
-      asset {
-        ...AssetFragment
-      }
+      ...BalanceFragment
     }
     pendingRevenue {
-      amount
-      asset {
-        ...AssetFragment
-      }
+      ...BalanceFragment
     }
   }
-  #{@asset_fragment}
+  #{@balance_fragment}
   """
 
   def get_staking_status_fragment(), do: @staking_status_fragment

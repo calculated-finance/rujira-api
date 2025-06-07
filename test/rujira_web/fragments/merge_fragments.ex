@@ -1,9 +1,11 @@
 defmodule RujiraWeb.Fragments.MergeFragments do
   alias RujiraWeb.Fragments.AssetFragments
   alias RujiraWeb.Fragments.DeveloperFragments
+  alias RujiraWeb.Fragments.BalanceFragments
 
   @asset_fragment AssetFragments.get_asset_fragment()
   @contract_info_fragment DeveloperFragments.get_contract_info_fragment()
+  @balance_fragment BalanceFragments.get_balance_fragment()
 
   @merge_status_fragment """
   fragment MergeStatusFragment on MergeStatus {
@@ -53,37 +55,29 @@ defmodule RujiraWeb.Fragments.MergeFragments do
       address
     }
     merged {
-      amount
-      asset {
-        ...AssetFragment
-      }
+      ...BalanceFragment
     }
     shares
     size {
-      amount
-      asset {
-        ...AssetFragment
-      }
+      ...BalanceFragment
     }
     rate
   }
+  #{@balance_fragment}
   #{@asset_fragment}
   """
 
   @merge_stats_fragment """
   fragment MergeStatsFragment on MergeStats {
     totalSize {
-      amount
-      asset {
-        ...AssetFragment
-      }
+      ...BalanceFragment
     }
     accounts {
       ...MergeAccountFragment
     }
   }
   #{@merge_account_fragment}
-  #{@asset_fragment}
+  #{@balance_fragment}
   """
 
   def get_merge_status_fragment(), do: @merge_status_fragment

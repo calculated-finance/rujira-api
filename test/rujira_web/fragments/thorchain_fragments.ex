@@ -54,6 +54,13 @@ defmodule RujiraWeb.Fragments.ThorchainFragments do
   #{@asset_fragment}
   """
 
+  @thorchain_tcy_fragment """
+  fragment ThorchainTcyFragment on ThorchainTcy {
+    claimable
+  }
+  """
+
   def get_thorchain_inbound_address_fragment(), do: @inbound_address_fragment
   def get_thorchain_pool_fragment(), do: @pool_fragment
+  def get_thorchain_tcy_fragment(), do: @thorchain_tcy_fragment
 end
