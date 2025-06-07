@@ -1,6 +1,7 @@
 defmodule RujiraWeb.Schema.LeagueTest do
   use RujiraWeb.ConnCase
 
+  import RujiraWeb.Fragments.LeagueFragments
   import Rujira.Fixtures.League
 
   @accounts Application.compile_env(:rujira, :accounts)
@@ -8,135 +9,13 @@ defmodule RujiraWeb.Schema.LeagueTest do
   @empty_account Keyword.fetch!(@accounts, :empty_account)
   @populated_account Keyword.fetch!(@accounts, :populated_account)
 
-  @league_stats_fragment """
-  fragment LeagueStatsFragment on LeagueStats {
-    totalPoints
-    participants
-  }
-  """
-
-  @league_leaderboard_entry_fragment """
-  fragment LeagueLeaderboardEntryFragment on LeagueLeaderboardEntry {
-    rank
-    address
-    points
-    totalTx
-    rankPrevious
-    badges
-  }
-  """
-
-  @league_fragment """
-  fragment LeagueFragment on League {
-    league
-    season
-    stats {
-      ...LeagueStatsFragment
-    }
-  }
-  #{@league_stats_fragment}
-  """
-
-  @league_tx_fragment """
-  fragment LeagueTxFragment on LeagueTx {
-    height
-    txHash
-    timestamp
-    points
-    category
-  }
-  """
-
-  @league_account_fragment """
-  fragment LeagueAccountFragment on LeagueAccount {
-    id
-    league
-    season
-    address
-    points
-    totalTx
-    badges
-    rank
-    rankPrevious
-    transactions(first: 10) {
-      edges {
-        node {
-          ...LeagueTxFragment
-        }
-      }
-    }
-  }
-  #{@league_tx_fragment}
-  """
-
-  @league_stats_fragment """
-  fragment LeagueStatsFragment on LeagueStats {
-    totalPoints
-    participants
-  }
-  """
-
-  @league_leaderboard_entry_fragment """
-  fragment LeagueLeaderboardEntryFragment on LeagueLeaderboardEntry {
-    rank
-    address
-    points
-    totalTx
-    rankPrevious
-    badges
-  }
-  """
-
-  @league_fragment """
-  fragment LeagueFragment on League {
-    league
-    season
-    stats {
-      ...LeagueStatsFragment
-    }
-  }
-  #{@league_stats_fragment}
-  """
-
-  @league_tx_fragment """
-  fragment LeagueTxFragment on LeagueTx {
-    height
-    txHash
-    timestamp
-    points
-    category
-  }
-  """
-
-  @league_account_fragment """
-  fragment LeagueAccountFragment on LeagueAccount {
-    id
-    league
-    season
-    address
-    points
-    totalTx
-    badges
-    rank
-    rankPrevious
-    transactions(first: 10) {
-      edges {
-        node {
-          ...LeagueTxFragment
-        }
-      }
-    }
-  }
-  #{@league_tx_fragment}
-  """
-
   @query """
   query {
     league {
       ...LeagueFragment
     }
   }
-  #{@league_fragment}
+  #{get_league_fragment()}
   """
 
   test "leagues", %{conn: conn} do
@@ -155,7 +34,7 @@ defmodule RujiraWeb.Schema.LeagueTest do
       }
     }
   }
-  #{@league_account_fragment}
+  #{get_league_account_fragment()}
   """
 
   test "league account populated", %{conn: conn} do
@@ -198,7 +77,7 @@ defmodule RujiraWeb.Schema.LeagueTest do
       }
     }
   }
-  #{@league_leaderboard_entry_fragment}
+  #{get_league_leaderboard_entry_fragment()}
   """
 
   test "league leaderboard", %{conn: conn} do
