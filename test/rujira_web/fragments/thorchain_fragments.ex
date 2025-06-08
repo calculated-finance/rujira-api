@@ -62,6 +62,7 @@ defmodule RujiraWeb.Fragments.ThorchainFragments do
 
   @thorchain_oracle_fragment """
   fragment ThorchainOracleFragment on ThorchainOracle {
+    id
     asset {
       ...AssetFragment
     }

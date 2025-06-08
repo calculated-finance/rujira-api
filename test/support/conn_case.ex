@@ -28,10 +28,20 @@ defmodule RujiraWeb.ConnCase do
       import Plug.Conn
       import Phoenix.ConnTest
       import RujiraWeb.ConnCase
+      import Mox
+
+      setup :verify_on_exit!
     end
   end
 
   setup tags do
+    # Mox.stub(Rujira.Events.PublisherMock, :publish, fn endpoint, payload, topics ->
+    #   IO.inspect({payload, topics}, label: "Publishing")
+    #   Rujira.Events.Publisher.publish(endpoint, payload, topics)
+    #   IO.inspect("Published")
+    #   :ok
+    # end)
+
     Rujira.CoingeckoMocks.mock_prices()
     Rujira.DataCase.setup_sandbox(tags)
     {:ok, conn: Phoenix.ConnTest.build_conn()}

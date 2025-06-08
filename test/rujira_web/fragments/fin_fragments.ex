@@ -118,10 +118,6 @@ defmodule RujiraWeb.Fragments.FinFragments do
     oracleQuote {
     ...ThorchainOracleFragment
     }
-    status {
-     status
-     price
-    }
     tick
     feeTaker
     feeMaker

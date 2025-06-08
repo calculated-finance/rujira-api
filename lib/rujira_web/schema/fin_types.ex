@@ -47,8 +47,6 @@ defmodule RujiraWeb.Schema.FinTypes do
       end)
     end
 
-    field :status, non_null(:pair_status)
-
     field :tick, non_null(:bigint)
     field :fee_taker, non_null(:bigint)
     field :fee_maker, non_null(:bigint)
@@ -219,11 +217,6 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :close, non_null(:bigint)
     field :volume, non_null(:bigint)
     field :bin, non_null(:timestamp)
-  end
-
-  object :pair_status do
-    field :status, non_null(:string)
-    field :price, :bigint
   end
 
   object :fin_subscriptions do

@@ -27,15 +27,12 @@ defmodule RujiraWeb.Fragments.BalanceFragments do
       ...UtxoFragment
     }
     tcy {
-      pool
-      amount
-      asset {
-        ...AssetFragment
-      }
+      ...ThorchainTcyFragment
     }
   }
   #{@utxo_fragment}
   #{@asset_fragment}
+  #{@thorchain_tcy_fragment}
   """
 
   @balance_fragment """
