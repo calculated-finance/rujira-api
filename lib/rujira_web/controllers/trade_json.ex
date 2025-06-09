@@ -31,6 +31,7 @@ defmodule RujiraWeb.TradeJSON do
 
   def ticker(
         %Pair{
+          id: id,
           token_base: token_base,
           token_quote: token_quote,
           book: %Book{bids: bids, asks: asks}
@@ -43,6 +44,7 @@ defmodule RujiraWeb.TradeJSON do
     %{price: ask} = Enum.at(asks, 0, %{price: nil})
 
     %{
+      pair_id: id,
       ticker_id: Fin.ticker_id!(pair),
       base_currency: Assets.label(base),
       target_currency: Assets.label(target),
