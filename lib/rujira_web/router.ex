@@ -17,6 +17,7 @@ defmodule RujiraWeb.Router do
     scope "/ruji" do
       get "/total_supply", RujiraWeb.RujiController, :total_supply
       get "/circulating_supply", RujiraWeb.RujiController, :circulating_supply
+      get "/holders", RujiraWeb.RujiController, :holders
     end
 
     get "/schema/:schema", RujiraWeb.SchemaController, :show
