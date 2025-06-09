@@ -1,9 +1,7 @@
 defmodule RujiraWeb.Fragments.BalanceFragments do
   alias RujiraWeb.Fragments.AssetFragments
-  alias RujiraWeb.Fragments.ThorchainFragments
 
   @asset_fragment AssetFragments.get_asset_fragment()
-  @thorchain_tcy_fragment ThorchainFragments.get_thorchain_tcy_fragment()
 
   @utxo_fragment """
   fragment UtxoFragment on Utxo {
@@ -27,12 +25,11 @@ defmodule RujiraWeb.Fragments.BalanceFragments do
       ...UtxoFragment
     }
     tcy {
-      ...ThorchainTcyFragment
+      claimable
     }
   }
   #{@utxo_fragment}
   #{@asset_fragment}
-  #{@thorchain_tcy_fragment}
   """
 
   @balance_fragment """
@@ -45,12 +42,11 @@ defmodule RujiraWeb.Fragments.BalanceFragments do
       ...UtxoFragment
     }
     tcy {
-      ...ThorchainTcyFragment
+     claimable
     }
   }
   #{@utxo_fragment}
   #{@asset_fragment}
-  #{@thorchain_tcy_fragment}
   """
 
   def get_layer1_balance_fragment(), do: @layer1_balance_fragment
