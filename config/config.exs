@@ -51,6 +51,8 @@ config :absinthe, Absinthe.Middleware.Batch,
 
 network = System.get_env("NETWORK", "stagenet")
 
+config :rujira, :network, network
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "config.#{network}.exs"
