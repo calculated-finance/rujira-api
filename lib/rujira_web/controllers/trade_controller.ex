@@ -32,7 +32,8 @@ defmodule RujiraWeb.TradeController do
             limit,
             :desc,
             get_date(params, "from"),
-            get_date(params, "to")
+            get_date(params, "to"),
+            get_side(params)
           )
       })
     else
@@ -46,6 +47,14 @@ defmodule RujiraWeb.TradeController do
          {:ok, v} <- DateTime.from_unix(v) do
       v
     else
+      _ -> nil
+    end
+  end
+
+  defp get_side(params) do
+    case Map.get(params, "type") do
+      "buy" -> :quote
+      "sell" -> :base
       _ -> nil
     end
   end
