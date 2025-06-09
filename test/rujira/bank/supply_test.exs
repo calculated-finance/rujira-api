@@ -5,7 +5,7 @@ defmodule Rujira.Bank.SupplyTest do
 
 
   test "updates supply state" do
-    {:ok, block} = Block.load_block("balances")
+    {:ok, block} = Block.load_block("supply")
     {:noreply, state} = Rujira.Bank.Supply.handle_info(block, %{})
 
     assert state != %{}

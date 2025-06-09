@@ -4,7 +4,7 @@ defmodule Rujira.Bank.TransferTest do
   alias Rujira.Fixtures.Block
 
   test "stores transfers" do
-    {:ok, block} = Block.load_block("balances")
+    {:ok, block} = Block.load_block("transfers")
     Rujira.Bank.Transfer.handle_info(block, nil)
 
     transfers = Rujira.Repo.all(Rujira.Bank.Transfer)
