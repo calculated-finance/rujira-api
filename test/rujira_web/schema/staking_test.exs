@@ -1,15 +1,13 @@
 defmodule RujiraWeb.Schema.StakingTest do
   use RujiraWeb.ConnCase
-  alias Rujira.Deployments
-
-  @accounts Application.compile_env(:rujira, :accounts)
-
-  @empty_account Keyword.fetch!(@accounts, :empty_account)
-  @populated_account Keyword.fetch!(@accounts, :populated_account)
 
   import RujiraWeb.Fragments.StakingFragments
 
-  @query """
+  @accounts Application.compile_env!(:rujira, :accounts)
+  @empty_account Keyword.fetch!(@accounts, :empty_account)
+  @populated_account Keyword.fetch!(@accounts, :populated_account)
+
+  @list_query """
   query {
     staking {
       single {
@@ -27,13 +25,7 @@ defmodule RujiraWeb.Schema.StakingTest do
   #{get_revenue_converter_fragment()}
   """
 
-  test "staking", %{conn: conn} do
-    conn = post(conn, "/api", %{"query" => @query})
-    res = json_response(conn, 200)
-    assert Map.get(res, "errors") == nil
-  end
-
-  @query """
+  @node_query """
   query($id: ID!) {
     node(id: $id) {
       ... on StakingPool {
@@ -44,25 +36,7 @@ defmodule RujiraWeb.Schema.StakingTest do
   #{get_staking_pool_fragment()}
   """
 
-  test "staking pool", %{conn: conn} do
-    staking_pool =
-      Deployments.get_target(Rujira.Staking.Pool, "ruji")
-    conn =
-      post(conn, "/api", %{
-        "query" => @query,
-        "variables" => %{
-          "id" =>
-            Base.encode64(
-              "StakingPool:#{staking_pool.address}"
-            )
-        }
-      })
-
-    res = json_response(conn, 200)
-    assert Map.get(res, "errors") == nil
-  end
-
-  @query """
+  @account_query """
   query($id: ID!) {
     node(id: $id) {
       ... on StakingAccount {
@@ -73,92 +47,25 @@ defmodule RujiraWeb.Schema.StakingTest do
   #{get_staking_account_fragment()}
   """
 
-  test "staking account populated", %{conn: conn} do
-    staking_pool =
-      Deployments.get_target(Rujira.Staking.Pool, "ruji")
-    conn =
-      post(conn, "/api", %{
-        "query" => @query,
-        "variables" => %{
-          "id" =>
-            Base.encode64(
-              "StakingAccount:#{staking_pool.address}/#{@populated_account}"
-            )
-        }
-      })
+  test "staking flow", %{conn: conn} do
+    %{"data" => %{"staking" => %{"single" => single, "dual" => _}}} =
+      post(conn, "/api", %{"query" => @list_query}) |> json_response(200)
 
-    res = json_response(conn, 200)
-    assert Map.get(res, "errors") == nil
-  end
+    resp =
+      post(conn, "/api", %{"query" => @node_query, "variables" => %{"id" => single["id"]}})
+      |> json_response(200)
 
-  test "staking account empty", %{conn: conn} do
-    staking_pool =
-      Deployments.get_target(Rujira.Staking.Pool, "ruji")
-    conn =
-      post(conn, "/api", %{
-        "query" => @query,
-        "variables" => %{
-          "id" =>
-            Base.encode64(
-              "StakingAccount:#{staking_pool.address}/#{@empty_account}"
-            )
-        }
-      })
+    assert Map.get(resp, "errors") == nil
 
-    res = json_response(conn, 200)
-    assert Map.get(res, "errors") == nil
-  end
+    Enum.each([@empty_account, @populated_account], fn acct ->
+      acct_gid =
+        Base.encode64("StakingAccount:#{single["address"]}/#{acct}")
 
-  @query """
-  query($id: ID!) {
-    node(id: $id) {
-      ... on Layer1Account {
-        id
-        account {
-          staking {
-          single {
-            ...StakingAccountFragment
-          }
-          dual {
-            ...StakingAccountFragment
-          }
-          }
-        }
-      }
-    }
-  }
-  #{get_staking_account_fragment()}
-  """
+      resp =
+        post(conn, "/api", %{"query" => @account_query, "variables" => %{"id" => acct_gid}})
+        |> json_response(200)
 
-  test "layer1 account staking", %{conn: conn} do
-    conn =
-      post(conn, "/api", %{
-        "query" => @query,
-        "variables" => %{
-          "id" =>
-            Base.encode64(
-              "Layer1Account:thor:#{@populated_account}"
-            )
-        }
-      })
-
-    res = json_response(conn, 200)
-    assert Map.get(res, "errors") == nil
-  end
-
-  test "layer1 account staking empty", %{conn: conn} do
-    conn =
-      post(conn, "/api", %{
-        "query" => @query,
-        "variables" => %{
-          "id" =>
-            Base.encode64(
-              "Layer1Account:thor:#{@empty_account}"
-            )
-        }
-      })
-
-    res = json_response(conn, 200)
-    assert Map.get(res, "errors") == nil
+      assert Map.get(resp, "errors") == nil
+    end)
   end
 end

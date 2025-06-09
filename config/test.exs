@@ -43,7 +43,4 @@ config :rujira, :accounts,
   # mnemonic: "cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat crawl"
   populated_account: "sthor1uuds8pd92qnnq0udw0rpg0szpgcslc9ph3j6kf"
 
-config :rujira, RujiraWeb.Schema.MergeTest,
-  merge_pool: "sthor1nc5tatafv6eyq7llkr2gv50ff9e22mnf70qgjlv737ktmt4eswrqysrzhu"
-
 config :tesla, adapter: Tesla.Mock
