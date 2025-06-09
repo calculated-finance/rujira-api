@@ -254,11 +254,18 @@ defmodule Rujira.Fin do
   end
 
   @spec list_trades(String.t(), non_neg_integer(), :asc | :desc) :: [Trade.t()]
-  def list_trades(contract, limit \\ 100, sort \\ :desc) do
+  def list_trades(contract, limit \\ 100, sort \\ :desc, from \\ nil, to \\ nil) do
     contract
     |> list_trades_query(limit, sort)
+    |> filter_from(from)
+    |> filter_to(to)
     |> Repo.all()
   end
+
+  defp filter_from(q, nil), do: q
+  defp filter_from(q, v), do: where(q, [t], t.timestamp >= ^v)
+  defp filter_to(q, nil), do: q
+  defp filter_to(q, v), do: where(q, [t], t.timestamp <= ^v)
 
   def insert_trades(trades) do
     with {count, items} when is_list(items) <-

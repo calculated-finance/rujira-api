@@ -25,9 +25,28 @@ defmodule RujiraWeb.TradeController do
     with {:ok, pairs} <- Rujira.Fin.list_pairs(),
          %Pair{} = pair <- Enum.find(pairs, &(Fin.ticker_id!(&1) == ticker_id)),
          {limit, ""} <- Integer.parse(Map.get(params, "limit", "100")) do
-      render(conn, "trades.json", %{trades: Fin.list_trades(pair.address, limit, :desc)})
+      render(conn, "trades.json", %{
+        trades:
+          Fin.list_trades(
+            pair.address,
+            limit,
+            :desc,
+            get_date(params, "from"),
+            get_date(params, "to")
+          )
+      })
     else
       nil -> put_status(conn, :not_found)
+    end
+  end
+
+  defp get_date(params, key) do
+    with v when is_binary(v) <- Map.get(params, key),
+         {v, ""} <- Integer.parse(v),
+         {:ok, v} <- DateTime.from_unix(v) do
+      v
+    else
+      _ -> nil
     end
   end
 end
