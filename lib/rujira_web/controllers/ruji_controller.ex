@@ -20,7 +20,6 @@ defmodule RujiraWeb.RujiController do
         max(now - start, 0)
         |> Decimal.new()
         |> Decimal.div(duration)
-        |> then(&Decimal.sub(Decimal.new(1), &1))
         |> Decimal.mult(Decimal.new(25_500_000))
 
       json(conn, Decimal.new(74_500_000) |> Decimal.add(vested))
