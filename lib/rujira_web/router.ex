@@ -8,10 +8,15 @@ defmodule RujiraWeb.Router do
   scope "/api" do
     pipe_through :api
 
-    scope "/trade", RujiraWeb do
-      get "/tickers", TradeController, :tickers
-      get "/orderbook", TradeController, :orderbook
-      get "/historical_trades", TradeController, :trades
+    scope "/trade" do
+      get "/tickers", RujiraWeb.TradeController, :tickers
+      get "/orderbook", RujiraWeb.TradeController, :orderbook
+      get "/historical_trades", RujiraWeb.TradeController, :trades
+    end
+
+    scope "/ruji" do
+      get "/total_supply", RujiraWeb.RujiController, :total_supply
+      get "/circulating_supply", RujiraWeb.RujiController, :circulating_supply
     end
 
     get "/schema/:schema", RujiraWeb.SchemaController, :show

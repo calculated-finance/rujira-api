@@ -31,7 +31,6 @@ defmodule RujiraWeb.TradeJSON do
 
   def ticker(
         %Pair{
-          id: id,
           token_base: token_base,
           token_quote: token_quote,
           book: %Book{bids: bids, asks: asks}
