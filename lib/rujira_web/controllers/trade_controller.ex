@@ -31,8 +31,8 @@ defmodule RujiraWeb.TradeController do
             pair.address,
             limit,
             :desc,
-            get_date(params, "from"),
-            get_date(params, "to"),
+            get_date(params, "start_time"),
+            get_date(params, "end_time"),
             get_side(params)
           )
       })
@@ -44,7 +44,7 @@ defmodule RujiraWeb.TradeController do
   defp get_date(params, key) do
     with v when is_binary(v) <- Map.get(params, key),
          {v, ""} <- Integer.parse(v),
-         {:ok, v} <- DateTime.from_unix(v) do
+         {:ok, v} <- DateTime.from_unix(v, :millisecond) do
       v
     else
       _ -> nil
@@ -53,8 +53,8 @@ defmodule RujiraWeb.TradeController do
 
   defp get_side(params) do
     case Map.get(params, "type") do
-      "buy" -> :quote
-      "sell" -> :base
+      "buy" -> :base
+      "sell" -> :quote
       _ -> nil
     end
   end

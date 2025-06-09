@@ -69,7 +69,7 @@ defmodule RujiraWeb.TradeJSON do
       price: rate,
       base_volume: amount(base_amount),
       target_volume: amount(quote_amount),
-      trade_timestamp: DateTime.to_unix(timestamp),
+      trade_timestamp: DateTime.to_unix(timestamp, :millisecond),
       type: type
     }
   end
