@@ -8,6 +8,7 @@ defmodule RujiraWeb.Fragments.BowFragments do
   @balance_fragment BalanceFragments.get_balance_fragment()
   @contract_info_fragment DeveloperFragments.get_contract_info_fragment()
   @fin_book_fragment FinFragments.get_fin_book_fragment()
+  @fin_trade_fragment FinFragments.get_fin_trade_fragment()
 
   @bow_config_xyk_fragment """
   fragment BowConfigXykFragment on BowConfigXyk {
@@ -109,9 +110,40 @@ defmodule RujiraWeb.Fragments.BowFragments do
   #{@balance_fragment}
   """
 
+  @bow_pool_xyk_fragment """
+  fragment BowPoolXykFragment on BowPoolXyk {
+    address
+    contract {
+      ...ContractInfoFragment
+    }
+    config {
+      ...BowConfigXykFragment
+    }
+    state {
+      ...BowStateXykFragment
+    }
+    summary {
+      ...BowSummaryFragment
+    }
+    quotes {
+      ...FinBookFragment
+    }
+    trades {
+      ...FinTradeFragment
+    }
+  }
+  #{@bow_config_xyk_fragment}
+  #{@bow_state_xyk_fragment}
+  #{@bow_summary_fragment}
+  #{@contract_info_fragment}
+  #{@fin_book_fragment}
+  #{@fin_trade_fragment}
+  """
+
   def get_bow_config_xyk_fragment(), do: @bow_config_xyk_fragment
   def get_bow_state_xyk_fragment(), do: @bow_state_xyk_fragment
   def get_bow_summary_fragment(), do: @bow_summary_fragment
+  def get_bow_pool_xyk_fragment(), do: @bow_pool_xyk_fragment
   def get_bow_pool_fragment(), do: @bow_pool_fragment
   def get_bow_config_fragment(), do: @bow_config_fragment
   def get_bow_state_fragment(), do: @bow_state_fragment

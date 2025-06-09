@@ -114,6 +114,18 @@ defmodule RujiraWeb.Fragments.StakingFragments do
   #{@balance_fragment}
   """
 
+  @staking_accounts_fragment """
+  fragment StakingAccountsFragment on StakingAccounts {
+    single {
+      ...StakingAccountFragment
+    }
+    dual {
+      ...StakingAccountFragment
+    }
+  }
+  #{@staking_account_fragment}
+  """
+
   def get_staking_status_fragment(), do: @staking_status_fragment
   def get_revenue_converter_type_fragment(), do: @revenue_converter_type_fragment
   def get_revenue_converter_fragment(), do: @revenue_converter_fragment
@@ -121,4 +133,5 @@ defmodule RujiraWeb.Fragments.StakingFragments do
   def get_staking_summary_fragment(), do: @staking_summary_fragment
   def get_staking_pool_fragment(), do: @staking_pool_fragment
   def get_staking_account_fragment(), do: @staking_account_fragment
+  def get_staking_accounts_fragment(), do: @staking_accounts_fragment
 end

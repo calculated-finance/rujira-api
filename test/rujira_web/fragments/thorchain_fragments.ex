@@ -300,5 +300,5 @@ defmodule RujiraWeb.Fragments.ThorchainFragments do
   def get_thorchain_tx_in_fragment(), do: @tx_in_fragment
   def get_thorchain_quote_fragment(), do: @quote_fragment
   def get_thorchain_tor_candle_fragment(), do: @tor_candle_fragment
-  def get_liquidity_provider_fragment(), do: @liquidity_provider_fragment
+  def get_thorchain_liquidity_provider_fragment(), do: @liquidity_provider_fragment
 end
