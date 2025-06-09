@@ -1,14 +1,12 @@
 defmodule RujiraWeb.Schema.FinTest do
   use RujiraWeb.ConnCase
 
-  alias Rujira.Deployments
-
   import RujiraWeb.Fragments.FinFragments
   import Mox
 
   setup :verify_on_exit!
 
-  @query """
+  @list_query """
   query {
     fin {
       ...FinPairFragment
@@ -17,13 +15,7 @@ defmodule RujiraWeb.Schema.FinTest do
   #{get_fin_pair_fragment()}
   """
 
-  test "fin", %{conn: conn} do
-    conn = post(conn, "/api", %{"query" => @query})
-    res = json_response(conn, 200)
-    assert Map.get(res, "errors") == nil
-  end
-
-  @query """
+  @node_query """
   query($id: ID!) {
     node(id: $id) {
       ... on FinPair {
@@ -34,22 +26,7 @@ defmodule RujiraWeb.Schema.FinTest do
   #{get_fin_pair_fragment()}
   """
 
-  test "fin pair", %{conn: conn} do
-    fin_pair = Deployments.get_target(Rujira.Fin.Pair, "ruji-rune")
-
-    encoded_id = Base.encode64("FinPair:#{fin_pair.address}")
-
-    conn =
-      post(conn, "/api", %{
-        "query" => @query,
-        "variables" => %{"id" => encoded_id}
-      })
-
-    res = json_response(conn, 200)
-    assert Map.get(res, "errors") == nil
-  end
-
-  @query """
+  @candles_query """
   query($after: String!, $before: String!, $resolution: String!) {
     fin {
       candles(after: $after, before: $before, resolution: $resolution) {
@@ -64,25 +41,37 @@ defmodule RujiraWeb.Schema.FinTest do
   #{get_fin_candle_fragment()}
   """
 
-  test "fin candles", %{conn: conn} do
-    pair_address = Deployments.get_target(Rujira.Fin.Pair, "ruji-rune").address
+  test "fin list, node lookup and candles all work without hard-coding addresses", %{conn: conn} do
+    # 1) list
+    resp = post(conn, "/api", %{"query" => @list_query})
+    %{"data" => %{"fin" => pairs}} = json_response(resp, 200)
+    assert is_list(pairs) and pairs != []
 
-    # swallow publisher events test focuses on the query
+    # pick the first one
+    pair = hd(pairs)
+    assert pair["id"] == Base.encode64("FinPair:#{pair["address"]}")
+
+    # 2) node lookup
+    resp = post(conn, "/api", %{
+      "query"     => @node_query,
+      "variables" => %{"id" => pair["id"]}
+    })
+    res = json_response(resp, 200)
+    assert Map.get(res, "errors") == nil
+
+    # 3) candles: seed fixtures, stub swallow publish
     stub(Rujira.Events.PublisherMock, :publish, fn _, _, _ -> :ok end)
+    Rujira.Fixtures.Fin.load_trades_and_candles(pair["address"])
 
-    Rujira.Fixtures.Fin.load_trades_and_candles(pair_address)
-
-    conn =
-      post(conn, "/api", %{
-        "query" => @query,
-        "variables" => %{
-          "after" => "2025-06-01T00:00:00Z",
-          "before" => "2025-06-08T00:00:00Z",
-          "resolution" => "1h"
-        }
-      })
-
-    res = json_response(conn, 200)
+    resp = post(conn, "/api", %{
+      "query"     => @candles_query,
+      "variables" => %{
+        "after"      => "2025-06-01T00:00:00Z",
+        "before"     => "2025-06-08T00:00:00Z",
+        "resolution" => "1h"
+      }
+    })
+    res = json_response(resp, 200)
     assert Map.get(res, "errors") == nil
   end
 end
