@@ -22,17 +22,17 @@ defmodule Rujira.Application do
       RujiraWeb.Presence,
       {Absinthe.Subscription, RujiraWeb.Endpoint},
       {Finch, name: Rujira.Finch},
-      Rujira.Prices.Coingecko,
-      Thorchain
-      # Rujira.Balances,
-      # Rujira.Bank,
-      # Rujira.Chains,
-      # Rujira.Contracts,
-      # Rujira.Fin,
-      # Rujira.Merge,
-      # Rujira.Staking,
-      # Rujira.Leagues,
-      # Rujira.Bow
+      Thorchain,
+      Rujira.Balances,
+      Rujira.Bank,
+      Rujira.Chains,
+      Rujira.Contracts,
+      Rujira.Fin,
+      Rujira.Merge,
+      Rujira.Staking,
+      Rujira.Leagues,
+      Rujira.Bow,
+      Rujira.Prices.Coingecko
     ]
 
     Thorchain.Node.Appsignal.attach()
