@@ -2,7 +2,7 @@ defmodule Rujira.Prices.Coingecko do
   use Memoize
   use GenServer
 
-  @interval 1000
+  @interval 100
 
   def start_link(opts \\ []), do: GenServer.start_link(__MODULE__, opts, name: __MODULE__)
 
