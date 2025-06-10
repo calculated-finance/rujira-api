@@ -1,26 +1,9 @@
 defmodule Rujira.Bow.ListenerTest do
-  use ExUnit.Case
-  import Mox
+  use Rujira.PublisherCase
 
   alias Rujira.Fixtures.Block
 
-  setup :verify_on_exit!
-
-  defp collect_publishes(acc \\ []) do
-    receive do
-      {:published, _endpoint, _payload, _topics} = msg ->
-        collect_publishes([msg | acc])
-    after
-      0 ->
-        Enum.reverse(acc)
-    end
-  end
-
   test "Bow listener publishes account and pool update on bow deposit" do
-    stub(Rujira.Events.PublisherMock, :publish, fn endpoint, payload, topics ->
-      send(self(), {:published, endpoint, payload, topics})
-      :ok
-    end)
 
     {:ok, block} = Block.load_block("bow")
     Rujira.Bow.Listener.handle_info(block, nil)
