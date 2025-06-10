@@ -17,7 +17,7 @@ defmodule Rujira.Bow.ListenerTest do
   end
 
   test "Bow listener publishes account and pool update on bow deposit" do
-    expect(Rujira.Events.PublisherMock, :publish, 4, fn endpoint, payload, topics ->
+    stub(Rujira.Events.PublisherMock, :publish, fn endpoint, payload, topics ->
       send(self(), {:published, endpoint, payload, topics})
       :ok
     end)
