@@ -43,10 +43,10 @@ defmodule Rujira.Prices do
   def fetch("ETH-ETH"), do: tor_price("ETH.ETH")
   def fetch("VTHOR"), do: tor_price("ETH.VTHOR-0X815C23ECA83261B6EC689B60CC4A58B54BC24D8D")
 
+  # Use the batching GenServer for Coingecko requests
   def fetch(symbol) do
     with {:ok, id} <- __MODULE__.Coingecko.id(symbol),
-         {:ok, %{change: change, price: price, mcap: mcap}} <-
-           __MODULE__.Coingecko.price(id) do
+         {:ok, %{change: change, price: price, mcap: mcap}} <- __MODULE__.Coingecko.price(id) do
       {:ok,
        %Price{
          id: symbol,
@@ -56,6 +56,8 @@ defmodule Rujira.Prices do
          mcap: mcap,
          timestamp: DateTime.utc_now()
        }}
+    else
+      {:error, _} = err -> err
     end
   end
 
