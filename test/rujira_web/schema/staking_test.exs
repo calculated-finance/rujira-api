@@ -3,10 +3,6 @@ defmodule RujiraWeb.Schema.StakingTest do
 
   import RujiraWeb.Fragments.StakingFragments
 
-  @accounts Application.compile_env!(:rujira, :accounts)
-  @empty_account Keyword.fetch!(@accounts, :empty_account)
-  @populated_account Keyword.fetch!(@accounts, :populated_account)
-
   @list_query """
   query {
     staking {
@@ -47,7 +43,11 @@ defmodule RujiraWeb.Schema.StakingTest do
   #{get_staking_account_fragment()}
   """
 
-  test "staking flow", %{conn: conn} do
+  test "staking flow", %{
+    conn: conn,
+    account_empty: empty_account,
+    account_populated: populated_account
+  } do
     %{"data" => %{"staking" => %{"single" => single, "dual" => _}}} =
       post(conn, "/api", %{"query" => @list_query}) |> json_response(200)
 
@@ -57,7 +57,7 @@ defmodule RujiraWeb.Schema.StakingTest do
 
     assert Map.get(resp, "errors") == nil
 
-    Enum.each([@empty_account, @populated_account], fn acct ->
+    Enum.each([empty_account, populated_account], fn acct ->
       acct_gid =
         Base.encode64("StakingAccount:#{single["address"]}/#{acct}")
 

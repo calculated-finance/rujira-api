@@ -4,11 +4,6 @@ defmodule RujiraWeb.Schema.LeagueTest do
   import RujiraWeb.Fragments.LeagueFragments
   import Rujira.Fixtures.League
 
-  @accounts Application.compile_env(:rujira, :accounts)
-
-  @empty_account Keyword.fetch!(@accounts, :empty_account)
-  @populated_account Keyword.fetch!(@accounts, :populated_account)
-
   @query """
   query {
     league {
@@ -37,26 +32,26 @@ defmodule RujiraWeb.Schema.LeagueTest do
   #{get_league_account_fragment()}
   """
 
-  test "league account populated", %{conn: conn} do
+  test "league account populated", %{conn: conn, account_populated: populated_account} do
     load_league()
 
     conn =
       post(conn, "/api", %{
         "query" => @query,
-        "variables" => %{"id" => Base.encode64("LeagueAccount:genesis/0/#{@populated_account}")}
+        "variables" => %{"id" => Base.encode64("LeagueAccount:genesis/0/#{populated_account}")}
       })
 
     res = json_response(conn, 200)
     assert Map.get(res, "errors") == nil
   end
 
-  test "league account empty", %{conn: conn} do
+  test "league account empty", %{conn: conn, account_empty: empty_account} do
     load_league()
 
     conn =
       post(conn, "/api", %{
         "query" => @query,
-        "variables" => %{"id" => Base.encode64("LeagueAccount:genesis/0/#{@empty_account}")}
+        "variables" => %{"id" => Base.encode64("LeagueAccount:genesis/0/#{empty_account}")}
       })
 
     res = json_response(conn, 200)

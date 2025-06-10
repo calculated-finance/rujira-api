@@ -16,6 +16,7 @@ defmodule RujiraWeb.ConnCase do
   """
 
   use ExUnit.CaseTemplate
+  @accounts Application.compile_env!(:rujira, :accounts)
 
   using do
     quote do
@@ -34,6 +35,13 @@ defmodule RujiraWeb.ConnCase do
   setup tags do
     Rujira.CoingeckoMocks.mock_prices()
     Rujira.DataCase.setup_sandbox(tags)
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
+
+    empty_account = Keyword.fetch!(@accounts, :empty_account)
+    populated_account = Keyword.fetch!(@accounts, :populated_account)
+
+    {:ok,
+     conn: Phoenix.ConnTest.build_conn(),
+     account_empty: empty_account,
+     account_populated: populated_account}
   end
 end

@@ -3,10 +3,6 @@ defmodule RujiraWeb.Schema.AccountTest do
 
   import RujiraWeb.Fragments.AccountFragments
 
-  @accounts Application.compile_env(:rujira, :accounts)
-  @empty_account Keyword.fetch!(@accounts, :empty_account)
-  @populated_account Keyword.fetch!(@accounts, :populated_account)
-
   @query """
   query($id: ID!) {
     node(id: $id) {
@@ -18,8 +14,12 @@ defmodule RujiraWeb.Schema.AccountTest do
   #{get_layer1_account_fragment()}
   """
 
-  test "layer 1 account", %{conn: conn} do
-    Enum.each([@empty_account, @populated_account], fn acct ->
+  test "layer 1 account", %{
+    conn: conn,
+    account_empty: empty_account,
+    account_populated: populated_account
+  } do
+    Enum.each([empty_account, populated_account], fn acct ->
       resp =
         post(conn, "/api", %{
           "query" => @query,
@@ -30,5 +30,4 @@ defmodule RujiraWeb.Schema.AccountTest do
       assert Map.get(res, "errors") == nil
     end)
   end
-
 end

@@ -2,10 +2,6 @@ defmodule RujiraWeb.Schema.BowTest do
   use RujiraWeb.ConnCase
   import RujiraWeb.Fragments.BowFragments
 
-  @accounts Application.compile_env(:rujira, :accounts)
-  @empty_account Keyword.fetch!(@accounts, :empty_account)
-  @populated_account Keyword.fetch!(@accounts, :populated_account)
-
   @pool_query """
   query {
     bow {
@@ -42,7 +38,11 @@ defmodule RujiraWeb.Schema.BowTest do
   #{get_bow_account_fragment()}
   """
 
-  test "list, lookup and layer1-account bow flows", %{conn: conn} do
+  test "list, lookup and layer1-account bow flows", %{
+    conn: conn,
+    account_empty: account_empty,
+    account_populated: account_populated
+  } do
     # 1) fetch all pools
     conn = post(conn, "/api", %{"query" => @pool_query})
     %{"data" => %{"bow" => pools}} = json_response(conn, 200)
@@ -58,7 +58,7 @@ defmodule RujiraWeb.Schema.BowTest do
     assert Map.get(res, "errors") == nil
 
     # 3) for both empty & populated accounts, check that the account.bow list resolves
-    for acct <- [@empty_account, @populated_account] do
+    for acct <- [account_empty, account_populated] do
       layer1_id = Base.encode64("Layer1Account:thor:#{acct}")
 
       conn =

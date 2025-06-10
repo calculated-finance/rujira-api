@@ -3,12 +3,6 @@ defmodule RujiraWeb.Schema.MergeTest do
 
   import RujiraWeb.Fragments.MergeFragments
 
-  @accounts Application.compile_env(:rujira, :accounts)
-
-  @empty_account Keyword.fetch!(@accounts, :empty_account)
-  @populated_account Keyword.fetch!(@accounts, :populated_account)
-
-
   @list_query """
   query {
     merge {
@@ -40,7 +34,11 @@ defmodule RujiraWeb.Schema.MergeTest do
   #{get_merge_account_fragment()}
   """
 
-  test "merge pool list, lookup, and both empty+populated accounts", %{conn: conn} do
+  test "merge pool list, lookup, and both empty+populated accounts", %{
+    conn: conn,
+    account_empty: empty_account,
+    account_populated: populated_account
+  } do
     # 1) list all pools
     resp = post(conn, "/api", %{"query" => @list_query})
     %{"data" => %{"merge" => pools}} = json_response(resp, 200)
@@ -55,13 +53,13 @@ defmodule RujiraWeb.Schema.MergeTest do
     assert Map.get(res, "errors") == nil
 
     # 3) test both empty and populated accounts
-    Enum.each([@empty_account, @populated_account], fn acct ->
+    Enum.each([empty_account, populated_account], fn acct ->
       acc_gid =
         Base.encode64("MergeAccount:#{pool["address"]}/#{acct}")
 
       resp =
         post(conn, "/api", %{
-          "query"     => @account_query,
+          "query" => @account_query,
           "variables" => %{"id" => acc_gid}
         })
 
