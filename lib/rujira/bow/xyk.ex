@@ -167,18 +167,29 @@ defmodule Rujira.Bow.Xyk do
   end
 
   defmemo do_quote(config, state) do
-    bid = state.x |> Decimal.new() |> Decimal.mult(config.step)
-
-    ask =
-      state.k
+    bid =
+      state.x
       |> Decimal.new()
-      |> Decimal.div(Decimal.sub(Decimal.new(state.x), bid))
-      |> Decimal.sub(Decimal.new(state.y))
-      |> Decimal.mult(Decimal.add(Decimal.new(1), config.fee))
+      |> Decimal.mult(config.step)
+      |> Decimal.round()
+      |> Decimal.to_integer()
 
-    x = bid |> Decimal.round() |> Decimal.to_integer() |> then(&(state.x - &1))
-    y = ask |> Decimal.round() |> Decimal.to_integer() |> then(&(state.y + &1))
+    x = state.x + bid
+    y_cur = state.y
 
+    y_new =
+      Decimal.to_integer(Decimal.round(Decimal.div(Decimal.new(state.k), Decimal.new(x))))
+
+    ask_total = y_cur - y_new
+    y = y_cur - ask_total
+
+    fee_amount =
+      Decimal.mult(Decimal.new(ask_total), config.fee)
+      |> Decimal.round()
+      |> Decimal.to_integer()
+      |> then(&(&1 + 1))
+
+    ask = ask_total - fee_amount
     {bid, ask, %{state | x: x, y: y, k: x * y}}
   end
 
