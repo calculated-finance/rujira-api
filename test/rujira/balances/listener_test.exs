@@ -5,7 +5,7 @@ defmodule Rujira.Balances.ListenerTest do
 
   test "publishes account update" do
 
-    {:ok, block} = Block.load_block("balances")
+    {:ok, block} = Block.load_block("4539686")
     Rujira.Balances.Listener.handle_info(block, nil)
 
     collect_publishes()

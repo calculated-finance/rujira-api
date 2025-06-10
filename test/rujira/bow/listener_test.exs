@@ -5,7 +5,7 @@ defmodule Rujira.Bow.ListenerTest do
 
   test "Bow listener publishes account and pool update on bow deposit" do
 
-    {:ok, block} = Block.load_block("bow")
+    {:ok, block} = Block.load_block("4541708")
     Rujira.Bow.Listener.handle_info(block, nil)
 
     messages = collect_publishes()
