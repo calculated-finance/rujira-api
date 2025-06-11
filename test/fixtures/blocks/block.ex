@@ -12,10 +12,10 @@ defmodule Rujira.Fixtures.Block do
       iex> Rujira.Fixtures.Block.dump_block("balances", "42123")
       :ok
   """
-  @spec dump_block(name :: String.t(), height :: String.t()) :: :ok | {:error, term()}
-  def dump_block(name, height) when is_binary(name) and is_binary(height) do
+  @spec dump_block(height :: String.t()) :: :ok | {:error, term()}
+  def dump_block(height) when is_binary(height) do
     network  = Application.get_env(:rujira, :network)
-    base_name = "#{network}_#{name}"
+    base_name = "#{network}_#{height}"
     term_path = Path.join(__DIR__, base_name <> ".term")
     txt_path  = Path.join(__DIR__, base_name <> ".txt")
 
@@ -34,14 +34,14 @@ defmodule Rujira.Fixtures.Block do
   the exact same Elixir term you dumped.
 
   Example:
-      iex> {:ok, block} = Rujira.Fixtures.Block.load_block("balances")
+      iex> {:ok, block} = Rujira.Fixtures.Block.load_block("4573812")
       iex> block.header.time
       #DateTime<...>
   """
-  @spec load_block(name :: String.t()) :: {:ok, any()} | {:error, term()}
-  def load_block(name) when is_binary(name) do
+  @spec load_block(height :: String.t()) :: {:ok, any()} | {:error, term()}
+  def load_block(height) when is_binary(height) do
     network  = Application.get_env(:rujira, :network)
-    filename = "#{network}_#{name}.term"
+    filename = "#{network}_#{height}.term"
     path     = Path.join(__DIR__, filename)
 
     case File.read(path) do
