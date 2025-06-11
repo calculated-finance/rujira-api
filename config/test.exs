@@ -6,9 +6,9 @@ import Config
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
 config :rujira, Rujira.Repo,
-  username: "postgres",
-  password: "postgres",
-  hostname: "localhost",
+  username: System.get_env("POSTGRES_USER", "postgres"),
+  password: System.get_env("POSTGRES_PASSWORD", "postgres"),
+  hostname: System.get_env("POSTGRES_HOST", "localhost"),
   database: "rujira_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: System.schedulers_online() * 2
@@ -26,18 +26,21 @@ config :logger, level: :warning
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
 
-config :rujira, Thorchain.Node,
-  websocket: "",
-  subscriptions: ["tm.event='NewBlock'"],
-  grpcs: []
-
 config :appsignal, :config,
   active: true,
   env: :test
 
 # Test against stagenet
-config :rujira, Thorchain.Node,
-  websocket: "wss://stagenet-rpc.ninerealms.com",
+config :rujira, Thornode,
+  socket: nil,
   subscriptions: ["tm.event='NewBlock'"],
   size: 5,
   grpcs: ["stagenet-grpc.ninerealms.com:443"]
+
+config :rujira, :accounts,
+  # mnemonic: "dog dog dog dog dog dog dog dog dog dog dog dog dog dog dog dog dog dog dog dog dog dog dog fossil"
+  empty_account: "sthor1zf3gsk7edzwl9syyefvfhle37cjtql3585mpmq",
+  # mnemonic: "cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat crawl"
+  populated_account: "sthor1uuds8pd92qnnq0udw0rpg0szpgcslc9ph3j6kf"
+
+config :tesla, adapter: Tesla.Mock

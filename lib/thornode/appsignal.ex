@@ -1,4 +1,4 @@
-defmodule Thorchain.Node.Appsignal do
+defmodule Thornode.Appsignal do
   require Logger
 
   @tracer Application.compile_env(:appsignal, :appsignal_tracer, Appsignal.Tracer)
@@ -17,15 +17,13 @@ defmodule Thorchain.Node.Appsignal do
       case :telemetry.attach({__MODULE__, event}, event, fun, :ok) do
         :ok ->
           _ =
-            Appsignal.IntegrationLogger.debug(
-              "Thorchain.Node.Appsignal attached to #{inspect(event)}"
-            )
+            Appsignal.IntegrationLogger.debug("Thornode.Appsignal attached to #{inspect(event)}")
 
           :ok
 
         {:error, _} = error ->
           Logger.warning(
-            "Thorchain.Node.Appsignal not attached to #{inspect(event)}: #{inspect(error)}"
+            "Thornode.Appsignal not attached to #{inspect(event)}: #{inspect(error)}"
           )
 
           error

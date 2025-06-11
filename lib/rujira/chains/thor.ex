@@ -11,7 +11,7 @@ defmodule Rujira.Chains.Thor do
     req = %QueryBalanceRequest{address: address, denom: denom}
 
     with {:ok, %QueryBalanceResponse{balance: %{amount: balance}}} <-
-           Thorchain.Node.stub(&balance/2, req) do
+           Thornode.query(&balance/2, req) do
       with {:ok, asset} <- Assets.from_denom(denom) do
         {:ok, %{asset: asset, amount: balance}}
       end
@@ -22,7 +22,7 @@ defmodule Rujira.Chains.Thor do
     req = %QueryAllBalancesRequest{address: address}
 
     with {:ok, %QueryAllBalancesResponse{balances: balances}} <-
-           Thorchain.Node.stub(&all_balances/2, req) do
+           Thornode.query(&all_balances/2, req) do
       balances
       # Remove LSD, Lending shares, LP shares etc from regular balances,
       # surface them in the account/pooled account/staked lists

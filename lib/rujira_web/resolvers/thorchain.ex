@@ -33,7 +33,7 @@ defmodule RujiraWeb.Resolvers.Thorchain do
     }
 
     with {:ok, %QueryQuoteSwapResponse{} = res} <-
-           Thorchain.Node.stub(&Q.quote_swap/2, req),
+           Thornode.query(&Q.quote_swap/2, req),
          {:ok, expiry} <- DateTime.from_unix(res.expiry) do
       {:ok,
        %{res | expiry: expiry}
@@ -65,7 +65,7 @@ defmodule RujiraWeb.Resolvers.Thorchain do
 
   def inbound_addresses() do
     with {:ok, %QueryInboundAddressesResponse{inbound_addresses: inbound_addresses}} <-
-           Thorchain.Node.stub(&Q.inbound_addresses/2, %QueryInboundAddressesRequest{}) do
+           Thornode.query(&Q.inbound_addresses/2, %QueryInboundAddressesRequest{}) do
       {:ok, Enum.map(inbound_addresses, &cast_response/1)}
     end
   end
@@ -144,6 +144,9 @@ defmodule RujiraWeb.Resolvers.Thorchain do
       _ -> {:ok, nil}
     end
   end
+
+  def tcy(_, _, _), do: {:ok, nil}
+
 
   def oracle(nil), do: {:ok, nil}
 

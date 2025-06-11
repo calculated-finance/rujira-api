@@ -1,4 +1,4 @@
-defmodule Thorchain.Node.Websocket do
+defmodule Thornode.Websocket do
   use WebSockex
   require Logger
 
@@ -11,7 +11,7 @@ defmodule Thorchain.Node.Websocket do
 
     case WebSockex.start_link("#{endpoint}/websocket", __MODULE__, %{pubsub: pubsub}) do
       {:ok, pid} ->
-        for {s, idx} <- Enum.with_index(@subscriptions), do: subscribe(pid, idx, s)
+        for {s, idx} <- Enum.with_index(@subscriptions), do: do_subscribe(pid, idx, s)
         {:ok, pid}
 
       {:error, _} ->
@@ -30,11 +30,14 @@ defmodule Thorchain.Node.Websocket do
     raise "#{__MODULE__} Disconnected"
   end
 
+  def subscribe(topic) do
+    Phoenix.PubSub.subscribe(pubsub(), topic)
+  end
+
   def handle_frame({:text, msg}, state) do
     case Jason.decode(msg, keys: :atoms) do
       {:ok, %{id: id, result: %{data: %{type: t, value: v}}}} ->
         Logger.debug("#{__MODULE__} Subscription #{id} event #{t}")
-        pubsub = state[:pubsub]
 
         height =
           v
@@ -43,7 +46,7 @@ defmodule Thorchain.Node.Websocket do
           |> Map.get(:height)
 
         {:ok, block} = Thorchain.block(height)
-        Phoenix.PubSub.broadcast(pubsub, t, block)
+        Phoenix.PubSub.broadcast(pubsub(), t, block)
 
         {:ok, state}
 
@@ -62,7 +65,7 @@ defmodule Thorchain.Node.Websocket do
     {:reply, frame, state}
   end
 
-  defp subscribe(pid, id, query) do
+  defp do_subscribe(pid, id, query) do
     message =
       Jason.encode!(%{
         jsonrpc: "2.0",
@@ -74,5 +77,9 @@ defmodule Thorchain.Node.Websocket do
       })
 
     WebSockex.send_frame(pid, {:text, message})
+  end
+
+  defp pubsub() do
+    Application.get_env(:rujira, :pubsub, Rujira.PubSub)
   end
 end

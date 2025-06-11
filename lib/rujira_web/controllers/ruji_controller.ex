@@ -45,7 +45,7 @@ defmodule RujiraWeb.RujiController do
 
   defp page(nil) do
     with {:ok, %{denom_owners: denom_owners, pagination: %{next_key: next_key}}} <-
-           Thorchain.Node.stub(
+           Thornode.query(
              &denom_owners/2,
              %QueryDenomOwnersRequest{denom: @denom}
            ),
@@ -60,7 +60,7 @@ defmodule RujiraWeb.RujiController do
 
   defp page(key) do
     with {:ok, %{denom_owners: denom_owners, pagination: %{next_key: next_key}}} <-
-           Thorchain.Node.stub(
+           Thornode.query(
              &denom_owners/2,
              %QueryDenomOwnersRequest{denom: @denom, pagination: %PageRequest{key: key}}
            ),

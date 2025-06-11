@@ -35,7 +35,7 @@ defmodule Rujira.Bank.Supply do
     |> Enum.flat_map(&scan_event/1)
     |> Enum.uniq()
     |> Enum.reduce(%{}, fn denom, acc ->
-      case Thorchain.Node.stub(
+      case Thornode.query(
              &Stub.supply_of/2,
              %QuerySupplyOfRequest{denom: denom}
            ) do

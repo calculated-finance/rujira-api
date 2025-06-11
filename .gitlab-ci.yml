@@ -1,20 +1,49 @@
 stages:
-  - check
+  - test
+  - deploy
 
 variables:
   MIX_ENV: test
-
+  POSTGRES_HOST: postgres
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: "postgres"
+services:
+  - name: postgres:14
+    alias: postgres
+    
 before_script:
   - mix local.hex --force
   - mix local.rebar --force
   - mix deps.get
+  - mix ecto.create --quiet
+  - mix ecto.migrate --quiet
 
 check_warnings:
-  stage: check
+  stage: test
   image: elixir:1.17.3
   script:
-    - MIX_ENV=test mix compile --warnings-as-errors
+    - mix compile --warnings-as-errors
   only:
     - merge_requests
     - main
     - dev
+
+test:
+  stage: test
+  image: elixir:1.17.3
+  script:
+    - mix test
+  only:
+    - merge_requests
+    - main
+    - dev
+
+deploy_stagenet:
+  stage: deploy
+  image: elixir:1.17.3
+  script:
+    - git remote add gigalixir https://$GIGALIXIR_EMAIL:$GIGALIXIR_API_KEY@git.gigalixir.com/$GIGALIXIR_APP_NAME_STAGENET.git
+    - mix test && git push -f gigalixir HEAD:refs/heads/main
+  only:
+    - stage
+

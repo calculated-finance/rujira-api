@@ -1,6 +1,7 @@
 defmodule RujiraWeb.Resolvers.Staking do
   alias Rujira.Staking.Pool
   alias Absinthe.Resolution.Helpers
+  alias Rujira.Assets
 
   def node(%{address: address}, _, _) do
     Helpers.async(fn ->
@@ -78,18 +79,27 @@ defmodule RujiraWeb.Resolvers.Staking do
               liquid_bond_size: liquid_bond_size,
               pending_revenue: global_pending_revenue
             }
-          }} <- Rujira.Staking.load_pool(pool) do
-      # Contract current doesn't allocate global pending revnue to Account balance on Query,
-      # which is does on a withdrawal.
-      # Simulate distribution here: https://gitlab.com/thorchain/rujira/-/blob/main/contracts/rujira-staking/src/state.rs?ref_type=heads#L183
-      # https://gitlab.com/thorchain/rujira/-/blob/main/contracts/rujira-staking/src/state.rs?ref_type=heads#L135-139
+          }} <- Rujira.Staking.load_pool(pool),
+           {:ok, asset} <- Assets.from_denom(revenue_denom) do
+      if account_bond == 0 do
+        {:ok, %{amount: pending_revenue, asset: asset}}
+      else
+        # Contract current doesn't allocate global pending revnue to Account balance on Query,
+        # which is does on a withdrawal.
+        # Simulate distribution here: https://gitlab.com/thorchain/rujira/-/blob/main/contracts/rujira-staking/src/state.rs?ref_type=heads#L183
+        # https://gitlab.com/thorchain/rujira/-/blob/main/contracts/rujira-staking/src/state.rs?ref_type=heads#L135-139
 
-      accounts_allocation =
-        Integer.floor_div(account_bond * global_pending_revenue, account_bond + liquid_bond_size)
+        accounts_allocation =
+          Integer.floor_div(
+            account_bond * global_pending_revenue,
+            account_bond + liquid_bond_size
+          )
 
-      account_allocation = Integer.floor_div(accounts_allocation * bonded, account_bond)
+        account_allocation = Integer.floor_div(accounts_allocation * bonded, account_bond)
 
-      {:ok, %{amount: pending_revenue + account_allocation, denom: revenue_denom}}
+        {:ok,
+         %{amount: pending_revenue + account_allocation, asset: asset}}
+      end
     end
   end
 

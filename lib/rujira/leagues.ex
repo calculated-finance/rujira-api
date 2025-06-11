@@ -3,6 +3,7 @@ defmodule Rujira.Leagues do
   alias Rujira.Repo
   alias Rujira.Leagues.TxEvent
   alias Rujira.Leagues.Event
+  alias Rujira.Leagues.Account
   import Ecto.Query
 
   @multiplier 69
@@ -23,12 +24,29 @@ defmodule Rujira.Leagues do
   end
 
   def account_from_id(id) do
-    with [league, season, account] <- String.split(id, "/"),
-         {:ok, %{} = account} <- load_account(league, season, account) do
-      {:ok, Map.put(account, :id, id)}
+    [league, season, account] = String.split(id, "/")
+
+    with {:ok, %{} = account} <- load_account(league, season, account) do
+      account = Map.put(account, :id, id)
+      {:ok, struct(Account, account)}
     else
-      {:ok, nil} -> {:error, :not_found}
-      _ -> {:error, :invalid_id}
+      {:ok, nil} ->
+        {:ok,
+         %Account{
+           id: id,
+           address: account,
+           league: league,
+           season: String.to_integer(season),
+           points: 0,
+           total_tx: 0,
+           rank: nil,
+           rank_previous: nil,
+           badges: [],
+           transactions: []
+         }}
+
+      _ ->
+        {:error, :invalid_id}
     end
   end
 

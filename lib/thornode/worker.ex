@@ -1,4 +1,4 @@
-defmodule Thorchain.Node.Grpc do
+defmodule Thornode.Worker do
   require Logger
   use GenServer
 

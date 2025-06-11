@@ -17,7 +17,8 @@ defmodule RujiraWeb.Schema.TokenTypes do
           else
             _ -> {:ok, nil}
           end
-        end)
+        end,
+        timeout: 20_000)
       end)
     end
 

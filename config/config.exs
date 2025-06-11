@@ -46,7 +46,12 @@ config :tesla, :adapter, {Tesla.Adapter.Finch, name: Rujira.Finch}
 
 config :memoize, cache_strategy: Rujira.CacheStrategy
 
+config :absinthe, Absinthe.Middleware.Batch,
+  timeout: 20_000
+
 network = System.get_env("NETWORK", "stagenet")
+
+config :rujira, :network, network
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

@@ -125,7 +125,7 @@ if config_env() == :prod do
   size =
     System.get_env("NODE_GRPC_POOL_SIZE") || 5
 
-  config :rujira, Thorchain.Node,
+  config :rujira, Thornode,
     websocket: websocket,
     size: size,
     grpcs: String.split(grpcs, ",")
