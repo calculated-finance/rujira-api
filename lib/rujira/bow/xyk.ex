@@ -242,8 +242,8 @@ defmodule Rujira.Bow.Xyk do
 
   defp quote_for(:bid, config, state), do: do_quote(config, state)
 
-  defp get_price(:ask, x, y), do: Decimal.div(y, x)
-  defp get_price(:bid, x, y), do: Decimal.div(x, y)
+  defp get_price(:ask, x, y), do: Decimal.div(x, y)
+  defp get_price(:bid, x, y), do: Decimal.div(y, x)
 
   defp value(:ask, price, total) do
     total
