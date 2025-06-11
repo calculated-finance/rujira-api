@@ -10,9 +10,11 @@ defmodule Rujira.Merge do
   use GenServer
   use Memoize
 
-  @code_ids :rujira
-            |> Application.compile_env(__MODULE__)
-            |> Keyword.get(:code_ids)
+  def code_ids() do
+    :rujira
+    |> Application.get_env(__MODULE__)
+    |> Keyword.get(:code_ids)
+  end
 
   def start_link(_) do
     Supervisor.start_link([__MODULE__.Listener], strategy: :one_for_one)
@@ -29,7 +31,7 @@ defmodule Rujira.Merge do
 
   @spec list_pools(list(integer())) ::
           {:ok, list(Pool.t())} | {:error, GRPC.RPCError.t()}
-  def list_pools(code_ids \\ @code_ids) when is_list(code_ids) do
+  def list_pools(code_ids \\ code_ids()) when is_list(code_ids) do
     with {:ok, pools} <- Contracts.list(Pool, code_ids) do
       {:ok,
        ["thor.kuji", "thor.rkuji", "thor.fuzn", "thor.nstk", "thor.wink", "thor.lvn"]
