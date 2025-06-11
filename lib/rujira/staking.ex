@@ -33,6 +33,19 @@ defmodule Rujira.Staking do
   def dual(), do: nil
 
   @doc """
+  Fetches all Pools
+  """
+  @spec list_pools() ::
+          {:ok, list(Pool.t())} | {:error, GRPC.RPCError.t()}
+  def list_pools() do
+    Pool
+    |> Deployments.list_targets()
+    |> Rujira.Enum.reduce_while_ok([], fn %{module: module, address: address} ->
+      Contracts.get({module, address})
+    end)
+  end
+
+  @doc """
   Fetches the Staking Pool contract and its current config from the chain
   """
 

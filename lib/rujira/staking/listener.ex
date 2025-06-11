@@ -23,6 +23,7 @@ defmodule Rujira.Staking.Listener do
     for {a, o} <- executions do
       Logger.debug("#{__MODULE__} execution #{a}")
       Memoize.invalidate(Staking, :query_account, [a, o])
+      Memoize.invalidate(Staking, :query_pool, [a])
       Rujira.Events.publish_node(:staking_status, a)
       Rujira.Events.publish_node(:staking_account, "#{a}/#{o}")
     end
