@@ -190,7 +190,7 @@ defmodule Rujira.Bow.Xyk do
       |> then(&(&1 + 1))
 
     ask = ask_total - fee_amount
-    {bid, ask, %{state | x: x, y: y, k: x * y}}
+    {ask, bid, %{state | x: x, y: y, k: x * y}}
   end
 
   defmemo depth(config, state, threshold, value \\ 0) do
@@ -231,7 +231,7 @@ defmodule Rujira.Bow.Xyk do
     do_quotes(config, new_state, side, [entry | acc], count + 1)
   end
 
-  defp quote_for(:bid, config, state) do
+  defp quote_for(:ask, config, state) do
     # flip X↔Y, ask side does the right thing, then flip result back
     {y, x, %{x: y1, y: x1, k: k1}} =
       do_quote(config, %{x: state.y, y: state.x, k: state.k})
@@ -240,7 +240,7 @@ defmodule Rujira.Bow.Xyk do
     {y, x, %{state | x: x1, y: y1, k: k1}}
   end
 
-  defp quote_for(:ask, config, state), do: do_quote(config, state)
+  defp quote_for(:bid, config, state), do: do_quote(config, state)
 
   defp get_price(:ask, x, y), do: Decimal.div(y, x)
   defp get_price(:bid, x, y), do: Decimal.div(x, y)

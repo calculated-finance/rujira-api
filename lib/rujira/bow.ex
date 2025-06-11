@@ -146,9 +146,8 @@ defmodule Rujira.Bow do
       {:ok,
        %Book{
          id: address,
-         #  Side is inverted as it's what the orderbook needs to fulfil market trades
-         asks: Xyk.do_quotes(config, state, :bid),
-         bids: Xyk.do_quotes(config, state, :ask)
+         asks: Xyk.do_quotes(config, state, :ask),
+         bids: Xyk.do_quotes(config, state, :bid)
        }
        |> Book.populate()}
     end
