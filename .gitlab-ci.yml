@@ -25,6 +25,7 @@ check_warnings:
     - mix compile --warnings-as-errors
   only:
     - merge_requests
+    - stage
     - main
     - dev
 
@@ -35,6 +36,7 @@ test:
     - mix test
   only:
     - merge_requests
+    - stage
     - main
     - dev
 
@@ -43,7 +45,7 @@ deploy_stagenet:
   image: elixir:1.17.3
   script:
     - git remote add gigalixir https://$GIGALIXIR_EMAIL:$GIGALIXIR_API_KEY@git.gigalixir.com/$GIGALIXIR_APP_NAME_STAGENET.git
-    - mix test && git push -f gigalixir HEAD:refs/heads/main
+    - git push -f gigalixir HEAD:refs/heads/main
   only:
     - stage
 
