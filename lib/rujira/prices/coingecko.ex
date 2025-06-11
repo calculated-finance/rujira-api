@@ -111,6 +111,7 @@ defmodule Rujira.Prices.Coingecko do
     else
       nil -> {:error, "error fetching #{ids} price"}
       str when is_binary(str) -> {:error, "error fetching #{ids} price: #{str}"}
+      {:error, %{reason: reason}} -> {:error, reason}
       err -> err
     end
   end
