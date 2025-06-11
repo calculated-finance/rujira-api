@@ -27,6 +27,14 @@ defmodule RujiraWeb.Resolvers.Staking do
     end)
   end
 
+  def pools(_, _, _) do
+    Helpers.async(fn ->
+      with {:ok, pools} <- Rujira.Staking.list_pools() do
+        {:ok, pools}
+      end
+    end)
+  end
+
   def revenue(_, _, _) do
     Helpers.async(fn ->
       with {:ok, converter} <- Rujira.Revenue.get_converter(Rujira.Revenue.protocol()) do

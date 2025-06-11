@@ -16,6 +16,10 @@ defmodule RujiraWeb.Schema.StakingTypes do
       resolve(&RujiraWeb.Resolvers.Staking.dual/3)
     end
 
+    field :pools, non_null(list_of(non_null(:staking_pool))) do
+      resolve(&RujiraWeb.Resolvers.Staking.pools/3)
+    end
+
     @desc "Revenue converter that collects revenue from all apps and delivers it to the staking pools"
     field :revenue, :revenue_converter do
       resolve(&RujiraWeb.Resolvers.Staking.revenue/3)
