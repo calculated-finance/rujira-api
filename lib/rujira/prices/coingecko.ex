@@ -7,19 +7,23 @@ defmodule Rujira.Prices.Coingecko do
   def start_link(opts \\ []), do: GenServer.start_link(__MODULE__, opts, name: __MODULE__)
 
   @impl true
-  def init(_), do: {:ok, %{requests: [], calls: [], timer: nil}}
+  def init(_), do: {:ok, %{requests: [], calls: []}}
 
   @impl true
   def handle_call({:get_price, id}, from, state) do
+    Process.send_after(self(), :flush, @interval)
+
     {:noreply,
-     schedule_flush(%{
+     %{
        state
        | calls: [{id, from} | state.calls],
          requests: Enum.uniq([id | state.requests])
-     })}
+     }}
   end
 
   @impl true
+  def handle_info(:flush, %{requests: [], calls: []}), do: {:noreply, %{requests: [], calls: []}}
+
   def handle_info(:flush, state) do
     with {:ok, prices} <- prices(state.requests) do
       for {id, from} <- state.calls do
@@ -32,14 +36,8 @@ defmodule Rujira.Prices.Coingecko do
       err -> for {_, from} <- state.calls, do: GenServer.reply(from, err)
     end
 
-    {:noreply, %{requests: [], calls: [], timer: nil}}
+    {:noreply, %{requests: [], calls: []}}
   end
-
-  defp schedule_flush(%{timer: nil} = state) do
-    %{state | timer: Process.send_after(self(), :flush, @interval)}
-  end
-
-  defp schedule_flush(state), do: state
 
   def price(id) do
     case GenServer.call(__MODULE__, {:get_price, id}) do
