@@ -17,8 +17,6 @@ defmodule Rujira.PublisherCase do
       end
 
       setup tags do
-        # start coingecko gen server
-        {:ok, _pid} = Rujira.Prices.Coingecko.start_link([])
         # mock tesla responses
         Rujira.CoingeckoMocks.mock_prices()
         Rujira.DataCase.setup_sandbox(tags)

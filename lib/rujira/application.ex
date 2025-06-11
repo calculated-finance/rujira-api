@@ -22,7 +22,8 @@ defmodule Rujira.Application do
       RujiraWeb.Presence,
       {Absinthe.Subscription, RujiraWeb.Endpoint},
       {Finch, name: Rujira.Finch},
-      Thornode
+      Thornode,
+      Rujira.Prices.Coingecko
     ]
 
     app = [
@@ -35,8 +36,7 @@ defmodule Rujira.Application do
       Rujira.Merge,
       Rujira.Staking,
       Rujira.Leagues,
-      Rujira.Bow,
-      Rujira.Prices.Coingecko
+      Rujira.Bow
     ]
 
     Thornode.Appsignal.attach()
