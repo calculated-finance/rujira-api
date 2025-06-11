@@ -1,6 +1,6 @@
 defmodule Rujira.Bank.Transfer do
   use Ecto.Schema
-  use GenServer
+  use Thornode.Observer
 
   @primary_key false
   schema "bank_transfers" do
@@ -15,18 +15,8 @@ defmodule Rujira.Bank.Transfer do
     timestamps(type: :utc_datetime_usec)
   end
 
-  def start_link(_) do
-    GenServer.start_link(__MODULE__, [], name: __MODULE__)
-  end
-
   @impl true
-  def init(_) do
-    Phoenix.PubSub.subscribe(Rujira.PubSub, "tendermint/event/NewBlock")
-    {:ok, nil}
-  end
-
-  @impl true
-  def handle_info(
+  def handle_new_block(
         %{
           header: %{time: timestamp, height: height},
           txs: txs,

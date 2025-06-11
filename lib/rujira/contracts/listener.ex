@@ -1,21 +1,9 @@
 defmodule Rujira.Contracts.Listener do
-  alias Phoenix.PubSub
-  use GenServer
+  use Thornode.Observer
   require Logger
 
   @impl true
-  def init(opts) do
-    PubSub.subscribe(Rujira.PubSub, "tendermint/event/NewBlock")
-
-    {:ok, opts}
-  end
-
-  def start_link(default) do
-    GenServer.start_link(__MODULE__, default)
-  end
-
-  @impl true
-  def handle_info(%{txs: txs}, state) do
+  def handle_new_block(%{txs: txs}, state) do
     txs
     |> Enum.flat_map(fn x ->
       case x["result"]["events"] do

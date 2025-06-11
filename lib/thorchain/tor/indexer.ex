@@ -1,20 +1,9 @@
 defmodule Thorchain.Tor.Indexer do
-  alias Phoenix.PubSub
-  use GenServer
+  use Thornode.Observer
   require Logger
 
   @impl true
-  def init(opts) do
-    PubSub.subscribe(Rujira.PubSub, "tendermint/event/NewBlock")
-    {:ok, opts}
-  end
-
-  def start_link(default) do
-    GenServer.start_link(__MODULE__, default)
-  end
-
-  @impl true
-  def handle_info(%{header: %{height: height, time: time}}, state) do
+  def handle_new_block(%{header: %{height: height, time: time}}, state) do
     with {:ok, pools} <- Thorchain.pools(height),
          {:ok, time} <- DateTime.from_naive(time, "Etc/UTC") do
       pools

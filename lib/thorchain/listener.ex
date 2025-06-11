@@ -1,19 +1,9 @@
 defmodule Thorchain.Listener do
-  use GenServer
   require Logger
-
-  def start_link(_) do
-    GenServer.start_link(__MODULE__, [])
-  end
+  use Thornode.Observer
 
   @impl true
-  def init(state) do
-    Phoenix.PubSub.subscribe(Rujira.PubSub, "tendermint/event/NewBlock")
-    {:ok, state}
-  end
-
-  @impl true
-  def handle_info(%{txs: txs}, state) do
+  def handle_new_block(%{txs: txs}, state) do
     hashes =
       txs
       |> Enum.flat_map(&scan_txs/1)

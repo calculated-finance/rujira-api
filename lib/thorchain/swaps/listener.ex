@@ -1,20 +1,9 @@
 defmodule Thorchain.Swaps.Listener do
-  alias Phoenix.PubSub
-  use GenServer
+  use Thornode.Observer
   require Logger
 
   @impl true
-  def init(opts) do
-    PubSub.subscribe(Rujira.PubSub, "tendermint/event/NewBlock")
-    {:ok, opts}
-  end
-
-  def start_link(default) do
-    GenServer.start_link(__MODULE__, default)
-  end
-
-  @impl true
-  def handle_info(%{end_block_events: events}, state) do
+  def handle_new_block(%{end_block_events: events}, state) do
     scan_events(events)
 
     {:noreply, state}

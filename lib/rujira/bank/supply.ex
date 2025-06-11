@@ -1,57 +1,15 @@
 defmodule Rujira.Bank.Supply do
-  alias Rujira.Assets
   alias Cosmos.Bank.V1beta1.QuerySupplyOfResponse
   alias Cosmos.Bank.V1beta1.QuerySupplyOfRequest
-  alias Cosmos.Base.Query.V1beta1.PageRequest
-  alias Cosmos.Bank.V1beta1.QueryTotalSupplyRequest
   alias Cosmos.Bank.V1beta1.Query.Stub
 
-  use GenServer
+  use Thornode.Observer
   require Logger
 
   defstruct [:id, :balance]
 
-  def start_link(_) do
-    GenServer.start_link(__MODULE__, [], name: __MODULE__)
-  end
-
   @impl true
-  def init(_) do
-    Phoenix.PubSub.subscribe(Rujira.PubSub, "tendermint/event/NewBlock")
-
-    with {:ok, %{supply: supply}} <-
-           Thorchain.Node.stub(
-             &Stub.total_supply/2,
-             %QueryTotalSupplyRequest{pagination: %PageRequest{limit: 100}}
-           ) do
-      {:ok,
-       Enum.reduce(
-         supply,
-         %{},
-         fn v, agg ->
-           case Assets.from_denom(v.denom) do
-             {:ok, asset} ->
-               Map.put(agg, asset.id, %__MODULE__{
-                 id: asset.id,
-                 balance: %{
-                   amount: v.amount,
-                   asset: asset
-                 }
-               })
-
-             _ ->
-               agg
-           end
-         end
-       )}
-    else
-      {:error, _} ->
-        {:ok, %{}}
-    end
-  end
-
-  @impl true
-  def handle_info(
+  def handle_new_block(
         %{txs: txs, begin_block_events: begin_block_events, end_block_events: end_block_events},
         state
       ) do

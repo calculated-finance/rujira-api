@@ -1,22 +1,11 @@
 defmodule Thorchain.Swaps.Indexer do
   alias Rujira.Prices
   alias Thorchain.Swaps
-  alias Phoenix.PubSub
-  use GenServer
+  use Thornode.Observer
   require Logger
 
   @impl true
-  def init(opts) do
-    PubSub.subscribe(Rujira.PubSub, "tendermint/event/NewBlock")
-    {:ok, opts}
-  end
-
-  def start_link(default) do
-    GenServer.start_link(__MODULE__, default)
-  end
-
-  @impl true
-  def handle_info(
+  def handle_new_block(
         %{
           header: %{height: height, time: time},
           txs: _txs,
