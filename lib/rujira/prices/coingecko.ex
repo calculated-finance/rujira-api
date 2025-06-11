@@ -11,12 +11,14 @@ defmodule Rujira.Prices.Coingecko do
 
   @impl true
   def handle_call({:get_price, id}, from, state) do
+    Process.send_after(self(), :flush, @interval)
+
     {:noreply,
-     schedule_flush(%{
+     %{
        state
        | calls: [{id, from} | state.calls],
          requests: Enum.uniq([id | state.requests])
-     })}
+     }}
   end
 
   @impl true
@@ -34,12 +36,6 @@ defmodule Rujira.Prices.Coingecko do
 
     {:noreply, %{requests: [], calls: [], timer: nil}}
   end
-
-  defp schedule_flush(%{timer: nil} = state) do
-    %{state | timer: Process.send_after(self(), :flush, @interval)}
-  end
-
-  defp schedule_flush(state), do: state
 
   def price(id) do
     case GenServer.call(__MODULE__, {:get_price, id}) do
