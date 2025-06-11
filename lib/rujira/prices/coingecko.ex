@@ -65,9 +65,9 @@ defmodule Rujira.Prices.Coingecko do
   def id("TCY"), do: {:ok, "tcy"}
   def id("TGT"), do: {:ok, "thorwallet"}
   def id("THOR"), do: {:ok, "thorswap"}
-  def id("USDC"<>_), do: {:ok, "usd-coin"}
+  def id("USDC" <> _), do: {:ok, "usd-coin"}
   def id("USDP"), do: {:ok, "paxos-standard"}
-  def id("USDT"<>_), do: {:ok, "tether"}
+  def id("USDT" <> _), do: {:ok, "tether"}
   def id("WBTC"), do: {:ok, "wrapped-bitcoin"}
   def id("WINK"), do: {:ok, "winkhub"}
   def id("XDEFI"), do: {:ok, "xdefi"}
