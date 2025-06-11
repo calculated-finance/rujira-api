@@ -5,7 +5,7 @@ defmodule Rujira.Bank.TransferTest do
 
   test "stores transfers" do
     {:ok, block} = Block.load_block("4539686")
-    Rujira.Bank.Transfer.handle_info(block, nil)
+    Rujira.Bank.Transfer.handle_new_block(block, nil)
 
     transfers = Rujira.Repo.all(Rujira.Bank.Transfer)
     assert length(transfers) > 0

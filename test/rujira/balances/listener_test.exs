@@ -6,7 +6,7 @@ defmodule Rujira.Balances.ListenerTest do
   test "publishes account update" do
 
     {:ok, block} = Block.load_block("4539686")
-    Rujira.Balances.Listener.handle_info(block, nil)
+    Rujira.Balances.Listener.handle_new_block(block, nil)
 
     collect_publishes()
     |> Enum.each(fn

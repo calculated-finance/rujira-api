@@ -8,7 +8,7 @@ defmodule Rujira.Fin.ListenerTest do
     # it should publish a FinBook update
     # it should publish an Order filled update
     {:ok, block} = Block.load_block("4539686")
-    Rujira.Fin.Listener.handle_info(block, nil)
+    Rujira.Fin.Listener.handle_new_block(block, nil)
 
     messages = collect_publishes()
 
@@ -44,7 +44,7 @@ defmodule Rujira.Fin.ListenerTest do
     # 4541708 executes a Bow action on the ruji - rune xyk mm
     # it should publish a FinBook update on the ruji - rune fin pair sthor1knzcsjqu3wpgm0ausx6w0th48kvl2wvtqzmvud4hgst4ggutehlseele4r
     {:ok, block} = Block.load_block("4541708")
-    Rujira.Fin.Listener.handle_info(block, nil)
+    Rujira.Fin.Listener.handle_new_block(block, nil)
 
     messages = collect_publishes()
     assert length(messages) == 1
