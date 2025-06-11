@@ -8,6 +8,18 @@ defmodule RujiraWeb.Router do
   scope "/api" do
     pipe_through :api
 
+    scope "/trade" do
+      get "/tickers", RujiraWeb.TradeController, :tickers
+      get "/orderbook", RujiraWeb.TradeController, :orderbook
+      get "/historical_trades", RujiraWeb.TradeController, :trades
+    end
+
+    scope "/ruji" do
+      get "/total_supply", RujiraWeb.RujiController, :total_supply
+      get "/circulating_supply", RujiraWeb.RujiController, :circulating_supply
+      get "/holders", RujiraWeb.RujiController, :holders
+    end
+
     get "/schema/:schema", RujiraWeb.SchemaController, :show
 
     forward "/graphiql", Absinthe.Plug.GraphiQL,

@@ -3,7 +3,7 @@ defmodule Rujira.Leagues.Collectors.Contract do
     defstruct [:sender, :contract]
   end
 
-  use GenServer
+  use Thornode.Observer
   require Logger
   use Memoize
 
@@ -14,16 +14,8 @@ defmodule Rujira.Leagues.Collectors.Contract do
   alias Rujira.Prices
   alias Rujira.Leagues
 
-  def start_link(_), do: GenServer.start_link(__MODULE__, [])
-
   @impl true
-  def init(state) do
-    Phoenix.PubSub.subscribe(Rujira.PubSub, "tendermint/event/NewBlock")
-    {:ok, state}
-  end
-
-  @impl true
-  def handle_info(%{header: %{height: height, time: time}, txs: txs}, state) do
+  def handle_new_block(%{header: %{height: height, time: time}, txs: txs}, state) do
     for %{hash: txhash, result: %{events: events}} <- txs do
       events
       |> collect_events()

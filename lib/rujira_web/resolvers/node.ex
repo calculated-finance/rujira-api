@@ -16,12 +16,9 @@ defmodule RujiraWeb.Resolvers.Node do
   end
 
   def list(_, %{ids: ids}, _) do
-    Enum.reduce(ids, {:ok, []}, fn id, agg ->
-      with {:ok, agg} <- agg,
-           {:ok, id} <- resolve_id(id) do
-        {:ok, [id | agg]}
-      end
-    end)
+    ids
+    |> Task.async_stream(&resolve_id/1)
+    |> Rujira.Enum.reduce_while_ok([], &elem(&1, 1))
   end
 
   def type(%Accounts.Account{}, _), do: :account

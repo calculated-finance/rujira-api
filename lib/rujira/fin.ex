@@ -169,6 +169,13 @@ defmodule Rujira.Fin do
     get_pair(id)
   end
 
+  def ticker_id!(%Pair{token_base: token_base, token_quote: token_quote}) do
+    {:ok, base} = Rujira.Assets.from_denom(token_base)
+    {:ok, target} = Rujira.Assets.from_denom(token_quote)
+
+    "#{Rujira.Assets.label(base)}_#{Rujira.Assets.label(target)}"
+  end
+
   def book_from_id(id) do
     with {:ok, res} <- query_book(id, 100),
          {:ok, book} <- Book.from_query(id, res) do
@@ -247,11 +254,21 @@ defmodule Rujira.Fin do
   end
 
   @spec list_trades(String.t(), non_neg_integer(), :asc | :desc) :: [Trade.t()]
-  def list_trades(contract, limit \\ 100, sort \\ :desc) do
+  def list_trades(contract, limit \\ 100, sort \\ :desc, from \\ nil, to \\ nil, side \\ nil) do
     contract
     |> list_trades_query(limit, sort)
+    |> filter_from(from)
+    |> filter_to(to)
+    |> filter_side(side)
     |> Repo.all()
   end
+
+  defp filter_from(q, nil), do: q
+  defp filter_from(q, v), do: where(q, [t], t.timestamp >= ^v)
+  defp filter_to(q, nil), do: q
+  defp filter_to(q, v), do: where(q, [t], t.timestamp <= ^v)
+  defp filter_side(q, nil), do: q
+  defp filter_side(q, v), do: where(q, [t], t.side == ^v)
 
   def insert_trades(trades) do
     with {count, items} when is_list(items) <-

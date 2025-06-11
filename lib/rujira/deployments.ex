@@ -13,10 +13,13 @@ defmodule Rujira.Deployments do
   use Memoize
 
   @path "data/deployments"
-  @plan Application.compile_env(:rujira, __MODULE__, plan: "stagenet/v1")
-        |> Keyword.get(:plan)
 
-  def get_target(module, id, plan \\ @plan) do
+  defp plan() do
+    Application.get_env(:rujira, __MODULE__, plan: "stagenet/v1")
+    |> Keyword.get(:plan)
+  end
+
+  def get_target(module, id, plan \\ plan()) do
     %{codes: codes, targets: targets} = load_config!(plan)
 
     targets
@@ -24,20 +27,20 @@ defmodule Rujira.Deployments do
     |> Enum.find(&(&1.module === module and &1.id == id))
   end
 
-  def list_all_targets(plan \\ @plan) do
+  def list_all_targets(plan \\ plan()) do
     %{codes: codes, targets: targets} = load_config!(plan)
 
     targets
     |> Enum.flat_map(&parse_protocol(codes, &1))
   end
 
-  def list_targets(module, plan \\ @plan) do
+  def list_targets(module, plan \\ plan()) do
     plan
     |> list_all_targets()
     |> Enum.filter(&(&1.module === module))
   end
 
-  defmemo load_config!(plan \\ @plan) do
+  defmemo load_config!(plan \\ plan()) do
     %{"accounts" => accounts, "codes" => codes, "targets" => targets} =
       :rujira
       |> :code.priv_dir()
@@ -180,7 +183,7 @@ defmodule Rujira.Deployments do
 
   def build_address_salt(protocol, id), do: Base.encode16("#{protocol}:#{id}")
 
-  def to_migrate_tx(plan \\ @plan) do
+  def to_migrate_tx(plan \\ plan()) do
     %{codes: codes, targets: targets} = load_config!(plan)
 
     messages =

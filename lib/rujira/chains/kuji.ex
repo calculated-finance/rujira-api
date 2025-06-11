@@ -34,6 +34,7 @@ defmodule Rujira.Chains.Kuji do
       {:ok, balances ++ next}
     else
       {:ok, %QueryAllBalancesResponse{balances: balances}} -> {:ok, balances}
+      {:error, %{message: message}} -> {:error, message}
     end
   end
 

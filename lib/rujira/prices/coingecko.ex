@@ -1,5 +1,52 @@
 defmodule Rujira.Prices.Coingecko do
   use Memoize
+  use GenServer
+
+  @interval 100
+
+  def start_link(opts \\ []), do: GenServer.start_link(__MODULE__, opts, name: __MODULE__)
+
+  @impl true
+  def init(_), do: {:ok, %{requests: [], calls: [], timer: nil}}
+
+  @impl true
+  def handle_call({:get_price, id}, from, state) do
+    {:noreply,
+     schedule_flush(%{
+       state
+       | calls: [{id, from} | state.calls],
+         requests: Enum.uniq([id | state.requests])
+     })}
+  end
+
+  @impl true
+  def handle_info(:flush, state) do
+    with {:ok, prices} <- prices(state.requests) do
+      for {id, from} <- state.calls do
+        case Map.get(prices, id) do
+          nil -> GenServer.reply(from, {:error, "price not found for #{id}"})
+          price -> GenServer.reply(from, {:ok, price})
+        end
+      end
+    else
+      err -> for {_, from} <- state.calls, do: GenServer.reply(from, err)
+    end
+
+    {:noreply, %{requests: [], calls: [], timer: nil}}
+  end
+
+  defp schedule_flush(%{timer: nil} = state) do
+    %{state | timer: Process.send_after(self(), :flush, @interval)}
+  end
+
+  defp schedule_flush(state), do: state
+
+  def price(id) do
+    case GenServer.call(__MODULE__, {:get_price, id}) do
+      {:ok, price} -> {:ok, price}
+      {:error, _} = err -> err
+    end
+  end
 
   def id("AUTO"), do: {:error, :not_found}
   def id("BTC"), do: {:ok, "bitcoin"}
@@ -41,26 +88,6 @@ defmodule Rujira.Prices.Coingecko do
           err -> err
         end
     end)
-  end
-
-  def price(id) do
-    with {:ok, %{body: res}} <-
-           proxy("v3/simple/price", %{
-             "ids" => id,
-             "vs_currencies" => "usd",
-             "include_24hr_change" => "true",
-             "include_market_cap" => "true"
-           }),
-         %{"usd" => price, "usd_24h_change" => change, "usd_market_cap" => mcap} <-
-           Map.get(res, id) do
-      {:ok, price} = Decimal.cast(price)
-
-      {:ok, %{price: price, change: change, mcap: floor(mcap)}}
-    else
-      %{} -> {:error, "error fetching #{id} price"}
-      nil -> {:error, "error fetching #{id} price"}
-      err -> err
-    end
   end
 
   def prices(ids) do

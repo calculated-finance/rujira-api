@@ -7,22 +7,13 @@ defmodule Rujira.Leagues.Collectors.Swap do
   and inserts the resulting league events.
   """
 
-  use GenServer
+  use Thornode.Observer
   alias Rujira.Prices
   alias Rujira.Leagues
-  alias Phoenix.PubSub
   require Logger
 
-  def start_link(default), do: GenServer.start_link(__MODULE__, default)
-
   @impl true
-  def init(opts) do
-    PubSub.subscribe(Rujira.PubSub, "tendermint/event/NewBlock")
-    {:ok, opts}
-  end
-
-  @impl true
-  def handle_info(%{header: %{height: height, time: time}, end_block_events: events}, state) do
+  def handle_new_block(%{header: %{height: height, time: time}, end_block_events: events}, state) do
     events
     |> Enum.flat_map(&scan_event(&1))
     |> Enum.with_index()

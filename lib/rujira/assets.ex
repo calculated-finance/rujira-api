@@ -223,6 +223,14 @@ defmodule Rujira.Assets do
 
   def short_id(%{chain: chain, ticker: ticker}), do: "#{chain}.#{ticker}"
 
+  def label(%{chain: chain, ticker: ticker}) when ticker in ["USDC", "USDT"],
+    do: "#{ticker}.#{chain}"
+
+  def label(%{chain: chain, ticker: "ETH"}) when chain != "ETH",
+    do: "ETH.#{chain}"
+
+  def label(%{ticker: ticker}), do: ticker
+
   @doc """
   Parses a comma-separated string of coin amounts into a map of `denom => amount`.
 
