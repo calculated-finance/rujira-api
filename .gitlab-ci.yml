@@ -43,9 +43,10 @@ test:
 deploy_stagenet:
   stage: deploy
   image: elixir:1.17.3
-  script:
-    - git remote add gigalixir https://$GIGALIXIR_EMAIL:$GIGALIXIR_API_KEY@git.gigalixir.com/$GIGALIXIR_APP_NAME_STAGENET.git
-    - git push -f gigalixir HEAD:refs/heads/main
+  script:  
+    - >
+      git remote add gigalixir https://$GIGALIXIR_EMAIL:$GIGALIXIR_API_KEY@git.gigalixir.com/$GIGALIXIR_APP_NAME_STAGENET.git &&
+      git push -f gigalixir HEAD:refs/heads/main
   only:
     - stage
 
