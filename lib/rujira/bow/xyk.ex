@@ -88,7 +88,7 @@ defmodule Rujira.Bow.Xyk do
         spread = Decimal.div(Decimal.sub(high, low), mid)
 
         depth =
-          Rujira.Bow.Xyk.depth(config, state, Decimal.mult(Decimal.from_float(1.02), mid))
+          Rujira.Bow.Xyk.depth(config, state, Decimal.mult(Decimal.from_float(0.98), mid))
           |> Decimal.mult(price_y.current)
           |> Decimal.round()
           |> Decimal.to_integer()
@@ -159,9 +159,9 @@ defmodule Rujira.Bow.Xyk do
 
   def limit(config, state) do
     {bid, ask, _} = do_quote(config, state)
-    high = Decimal.div(ask, bid)
+    low = Decimal.div(ask, bid)
     {bid, ask, _} = do_quote(config, %{state | x: state.y, y: state.x})
-    low = Decimal.div(bid, ask)
+    high = Decimal.div(bid, ask)
     mid = Decimal.div(Decimal.add(high, low), Decimal.new(2))
     {low, mid, high}
   end
@@ -194,10 +194,10 @@ defmodule Rujira.Bow.Xyk do
   end
 
   defmemo depth(config, state, threshold, value \\ 0) do
-    {bid, ask, state} = do_quote(config, state)
+    {bid, ask, state} = do_quote(config, state) |> IO.inspect()
 
     case Decimal.compare(Decimal.div(ask, bid), threshold) do
-      :gt ->
+      :lt ->
         value
 
       _ ->
