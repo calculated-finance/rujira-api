@@ -194,7 +194,7 @@ defmodule Rujira.Bow.Xyk do
   end
 
   defmemo depth(config, state, threshold, value \\ 0) do
-    {bid, ask, state} = do_quote(config, state) |> IO.inspect()
+    {bid, ask, state} = do_quote(config, state)
 
     case Decimal.compare(Decimal.div(ask, bid), threshold) do
       :lt ->
