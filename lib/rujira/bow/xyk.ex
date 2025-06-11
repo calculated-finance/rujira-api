@@ -190,7 +190,7 @@ defmodule Rujira.Bow.Xyk do
       |> then(&(&1 + 1))
 
     ask = ask_total - fee_amount
-    {ask, bid, %{state | x: x, y: y, k: x * y}}
+    {bid, ask, %{state | x: x, y: y, k: x * y}}
   end
 
   defmemo depth(config, state, threshold, value \\ 0) do
