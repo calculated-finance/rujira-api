@@ -248,14 +248,14 @@ defmodule Rujira.Bow.Xyk do
   defp value(:ask, price, total) do
     total
     |> Decimal.new()
-    |> Decimal.div(price)
+    |> Decimal.mult(price)
     |> Decimal.div(Decimal.new(1_000_000_000_000))
   end
 
   defp value(:bid, price, total) do
     total
     |> Decimal.new()
-    |> Decimal.mult(price)
+    |> Decimal.div(price)
     |> Decimal.div(Decimal.new(1_000_000_000_000))
   end
 
