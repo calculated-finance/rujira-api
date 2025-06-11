@@ -7,7 +7,7 @@ defmodule Rujira.Prices.Coingecko do
   def start_link(opts \\ []), do: GenServer.start_link(__MODULE__, opts, name: __MODULE__)
 
   @impl true
-  def init(_), do: {:ok, %{requests: [], calls: [], timer: nil}}
+  def init(_), do: {:ok, %{requests: [], calls: []}}
 
   @impl true
   def handle_call({:get_price, id}, from, state) do
@@ -22,6 +22,8 @@ defmodule Rujira.Prices.Coingecko do
   end
 
   @impl true
+  def handle_info(:flush, %{requests: [], calls: []}), do: {:noreply, %{requests: [], calls: []}}
+
   def handle_info(:flush, state) do
     with {:ok, prices} <- prices(state.requests) do
       for {id, from} <- state.calls do
@@ -34,7 +36,7 @@ defmodule Rujira.Prices.Coingecko do
       err -> for {_, from} <- state.calls, do: GenServer.reply(from, err)
     end
 
-    {:noreply, %{requests: [], calls: [], timer: nil}}
+    {:noreply, %{requests: [], calls: []}}
   end
 
   def price(id) do
