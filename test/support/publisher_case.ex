@@ -16,7 +16,9 @@ defmodule Rujira.PublisherCase do
         end
       end
 
-      setup do
+      setup tags do
+        Rujira.DataCase.setup_sandbox(tags)
+
         stub(Rujira.Events.PublisherMock, :publish, fn endpoint, payload, topics ->
           send(self(), {:published, endpoint, payload, topics})
           :ok

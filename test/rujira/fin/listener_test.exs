@@ -1,0 +1,68 @@
+defmodule Rujira.Fin.ListenerTest do
+  use Rujira.PublisherCase
+
+  alias Rujira.Fixtures.Block
+
+  test "publishes Fin Book and Order updates on trade" do
+    # 4539686 executes a trade on the ruji - usdt book sthor1uywajy5vddpsvdkcztp92ymlnfwv07tu4stpprwrts4lmc6c9l0sy4s4e5
+    # it should publish a FinBook update
+    # it should publish an Order filled update
+    {:ok, block} = Block.load_block("4539686")
+    Rujira.Fin.Listener.handle_info(block, nil)
+
+    messages = collect_publishes()
+
+    assert length(messages) == 2
+
+    assert messages == [
+             {:published, RujiraWeb.Endpoint,
+              %{
+                id:
+                  Base.encode64(
+                    "FinBook:sthor1uywajy5vddpsvdkcztp92ymlnfwv07tu4stpprwrts4lmc6c9l0sy4s4e5"
+                  )
+              },
+              [
+                node:
+                  Base.encode64(
+                    "FinBook:sthor1uywajy5vddpsvdkcztp92ymlnfwv07tu4stpprwrts4lmc6c9l0sy4s4e5"
+                  )
+              ]},
+             {:published, RujiraWeb.Endpoint,
+              %{
+                price: "mm:0.885348892414736995",
+                side: "quote"
+              },
+              [
+                fin_order_filled:
+                  "sthor1uywajy5vddpsvdkcztp92ymlnfwv07tu4stpprwrts4lmc6c9l0sy4s4e5/quote/mm:0.885348892414736995"
+              ]}
+           ]
+  end
+
+  test "publishes Fin Book updates on Bow actions" do
+    # 4541708 executes a Bow action on the ruji - rune xyk mm
+    # it should publish a FinBook update on the ruji - rune fin pair sthor1knzcsjqu3wpgm0ausx6w0th48kvl2wvtqzmvud4hgst4ggutehlseele4r
+    {:ok, block} = Block.load_block("4541708")
+    Rujira.Fin.Listener.handle_info(block, nil)
+
+    messages = collect_publishes()
+    assert length(messages) == 1
+
+    assert messages == [
+             {:published, RujiraWeb.Endpoint,
+              %{
+                id:
+                  Base.encode64(
+                    "FinBook:sthor1knzcsjqu3wpgm0ausx6w0th48kvl2wvtqzmvud4hgst4ggutehlseele4r"
+                  )
+              },
+              [
+                node:
+                  Base.encode64(
+                    "FinBook:sthor1knzcsjqu3wpgm0ausx6w0th48kvl2wvtqzmvud4hgst4ggutehlseele4r"
+                  )
+              ]}
+           ]
+  end
+end
