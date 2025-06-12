@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Resolvers.Token do
+  alias Absinthe.Resolution.Helpers
   alias Rujira.Assets.Asset
   alias Rujira.Assets
 
@@ -53,9 +54,7 @@ defmodule RujiraWeb.Resolvers.Token do
     do: {:ok, chain |> String.downcase() |> String.to_existing_atom()}
 
   def metadata(%Asset{} = asset, _, _) do
-    with {:ok, metadata} <- Assets.load_metadata(asset) do
-      {:ok, metadata}
-    end
+    Helpers.async(fn -> Assets.load_metadata(asset) end)
   end
 
   def prices(_, b) do

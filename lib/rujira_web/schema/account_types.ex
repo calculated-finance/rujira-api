@@ -50,5 +50,9 @@ defmodule RujiraWeb.Schema.AccountTypes do
     field :strategies, non_null(list_of(non_null(:strategy_account))) do
       resolve(&Resolvers.Strategy.accounts/3)
     end
+
+    field :index, non_null(list_of(non_null(:index_account))) do
+      resolve(&Resolvers.Index.accounts/3)
+    end
   end
 end

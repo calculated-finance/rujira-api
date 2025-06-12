@@ -1,6 +1,7 @@
 defmodule RujiraWeb.Fragments.StrategyFragments do
   import RujiraWeb.Fragments.BowFragments
   import RujiraWeb.Fragments.ThorchainFragments
+  import RujiraWeb.Fragments.IndexFragments
 
   @strategy_account_fragment """
   fragment StrategyAccountFragment on StrategyAccount {
@@ -10,9 +11,13 @@ defmodule RujiraWeb.Fragments.StrategyFragments do
     ... on ThorchainLiquidityProvider {
       ...ThorchainLiquidityProviderFragment
     }
+    ... on IndexAccount {
+      ...IndexAccountFragment
+    }
   }
   #{get_bow_account_fragment()}
   #{get_thorchain_liquidity_provider_fragment()}
+  #{get_index_account_fragment()}
   """
 
   @strategy_fragment """
@@ -23,9 +28,13 @@ defmodule RujiraWeb.Fragments.StrategyFragments do
     ... on ThorchainPool {
       ...ThorchainPoolFragment
     }
+    ... on IndexVault {
+      ...IndexVaultFragment
+    }
   }
   #{get_bow_pool_xyk_fragment()}
   #{get_thorchain_pool_fragment()}
+  #{get_index_vault_fragment()}
   """
 
 

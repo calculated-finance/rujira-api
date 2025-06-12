@@ -38,5 +38,6 @@ defmodule Rujira.Chains.Thor do
 
   defp is_balance(%{denom: "x/staking" <> _}), do: false
   defp is_balance(%{denom: "x/bow" <> _}), do: false
+  defp is_balance(%{denom: "x/nami-index" <> _}), do: false
   defp is_balance(_), do: true
 end
