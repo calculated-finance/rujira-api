@@ -11,15 +11,15 @@ defmodule Rujira.Accounts do
     {:ok, %Account{id: id, chain: :thor, address: id}}
   end
 
-  def translate_address("0x" <> address) do
-    case Base.decode16(address, case: :mixed) do
-      {:ok, bytes} ->
-        {:ok, Bech32.encode("thor", bytes)}
+  # def translate_address("0x" <> address) do
+  #   case Base.decode16(address, case: :mixed) do
+  #     {:ok, bytes} ->
+  #       {:ok, Bech32.encode("thor", bytes)}
 
-      _ ->
-        {:error, :invalid_address}
-    end
-  end
+  #     _ ->
+  #       {:error, :invalid_address}
+  #   end
+  # end
 
   def translate_address(address) do
     case Bech32.decode(address) do

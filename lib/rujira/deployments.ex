@@ -33,7 +33,7 @@ defmodule Rujira.Deployments do
     |> Enum.find(&(&1.module === module and &1.id == id))
   end
 
-  def list_all_targets(plan \\ plan()) do
+  defmemo list_all_targets(plan \\ plan()) do
     %{codes: codes, targets: targets} = load_config!(plan)
 
     targets
@@ -44,7 +44,7 @@ defmodule Rujira.Deployments do
     end)
   end
 
-  def list_targets(module, plan \\ plan()) do
+  defmemo list_targets(module, plan \\ plan()) do
     plan
     |> list_all_targets()
     |> Enum.filter(&(&1.module === module))
