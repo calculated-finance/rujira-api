@@ -23,7 +23,7 @@ defmodule Rujira.Accounts do
 
   def translate_address(address) do
     case Bech32.decode(address) do
-      {:ok, prefix, bytes} ->
+      {:ok, _, bytes} ->
         {:ok, Bech32.encode("thor", bytes)}
 
       _ ->

@@ -24,7 +24,9 @@ defmodule Rujira.MixProject do
   end
 
   # Specifies which paths to compile per environment.
-  defp elixirc_paths(:test), do: ["lib", "test/support", "test/rujira_web/fragments", "test/fixtures"]
+  defp elixirc_paths(:test),
+    do: ["lib", "test/support", "test/rujira_web/fragments", "test/fixtures"]
+
   defp elixirc_paths(_), do: ["lib"]
 
   # Specifies your project dependencies.
@@ -38,6 +40,7 @@ defmodule Rujira.MixProject do
       {:absinthe, "~> 1.7"},
       {:appsignal, "~> 2.8"},
       {:bandit, "~> 1.5"},
+      {:bech32, "~> 1.0"},
       {:cors_plug, "~> 3.0"},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:ecto_sql, "~> 3.10"},
