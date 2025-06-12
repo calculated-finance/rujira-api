@@ -5,11 +5,9 @@ defmodule RujiraWeb.Resolvers.Account do
     {:ok, Enum.map(addresses, &%{address: &1, chain: chain})}
   end
 
-  def resolver(%{address: address, chain: :thor}, %{}, _) do
-    {:ok, %{id: Node.encode_id(:account, address), address: address, chain: :thor}}
-  end
-
   def resolver(%{address: address, chain: chain}, %{}, _) do
-    {:error, "mapping unavailble for #{address} on #{chain}"}
+    with {:ok, address} <- Rujira.Accounts.translate_address(address) do
+      {:ok, %{id: Node.encode_id(:account, address), address: address, chain: chain}}
+    end
   end
 end
