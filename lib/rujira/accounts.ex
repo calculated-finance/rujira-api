@@ -21,6 +21,9 @@ defmodule Rujira.Accounts do
   #   end
   # end
 
+  def translate_address("thor" <> _ = address), do: {:ok, address}
+  def translate_address("sthor" <> _ = address), do: {:ok, address}
+
   def translate_address(address) do
     case Bech32.decode(address) do
       {:ok, _, bytes} ->
