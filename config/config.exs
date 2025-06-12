@@ -9,20 +9,7 @@ import Config
 
 config :rujira,
   ecto_repos: [Rujira.Repo],
-  generators: [timestamp_type: :utc_datetime],
-  observers: [
-    Thorchain,
-    Rujira.Balances,
-    Rujira.Bank,
-    Rujira.Chains,
-    Rujira.Contracts,
-    Rujira.Fin,
-    Rujira.Merge,
-    Rujira.Staking,
-    Rujira.Leagues,
-    Rujira.Bow,
-    Rujira.Index
-  ]
+  generators: [timestamp_type: :utc_datetime]
 
 # Configures the endpoint
 config :rujira, RujiraWeb.Endpoint,

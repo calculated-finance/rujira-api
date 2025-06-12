@@ -1,7 +1,21 @@
 import Config
 
 # Enable dev routes for dashboard and mailbox
-config :rujira, dev_routes: true
+config :rujira,
+  dev_routes: true,
+  observers: [
+    Thorchain,
+    Rujira.Balances,
+    Rujira.Bank,
+    Rujira.Chains,
+    Rujira.Contracts,
+    Rujira.Fin,
+    Rujira.Merge,
+    Rujira.Staking,
+    Rujira.Leagues,
+    Rujira.Bow,
+    Rujira.Index
+  ]
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n", level: :debug

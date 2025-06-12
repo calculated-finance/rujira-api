@@ -51,3 +51,18 @@ config :libcluster,
       ]
     ]
   ]
+
+config :rujira,
+  observers: [
+    Thorchain,
+    Rujira.Balances,
+    Rujira.Bank,
+    Rujira.Chains,
+    Rujira.Contracts,
+    Rujira.Fin,
+    Rujira.Merge,
+    Rujira.Staking,
+    Rujira.Leagues,
+    Rujira.Bow,
+    Rujira.Index
+  ]

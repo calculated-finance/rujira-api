@@ -2,8 +2,8 @@ defmodule Thornode do
   use Supervisor
   require Logger
 
-  @pool Application.compile_env(__MODULE__, :pool, Thornode.Pool)
-  @socket Application.compile_env(__MODULE__, :socket, Thornode.Websocket)
+  @pool Thornode.Pool
+  @socket Thornode.Websocket
 
   def start_link(_opts \\ []) do
     Logger.info("Starting link ")
@@ -12,9 +12,13 @@ defmodule Thornode do
   end
 
   def init(config) do
-    Supervisor.init([{@pool, config}, {@socket, config}],
-      strategy: :one_for_one
-    )
+    case Keyword.get(config, :websocket) do
+      nil ->
+        Supervisor.init([{@pool, config}], strategy: :one_for_one)
+
+      _ ->
+        Supervisor.init([{@pool, config}, {@socket, config}], strategy: :one_for_one)
+    end
   end
 
   defdelegate subscribe(topic), to: @socket

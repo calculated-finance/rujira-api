@@ -33,10 +33,7 @@ defmodule Rujira.Application do
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Rujira.Supervisor]
 
-    Supervisor.start_link(
-      Enum.concat(base, observers),
-      opts
-    )
+    Supervisor.start_link(Enum.concat(base, observers), opts)
   end
 
   # Tell Phoenix to update the endpoint configuration

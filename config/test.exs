@@ -33,7 +33,6 @@ config :appsignal, :config,
 
 # Test against stagenet
 config :rujira, Thornode,
-  socket: nil,
   subscriptions: ["tm.event='NewBlock'"],
   size: 5,
   grpcs: ["stagenet-grpc.ninerealms.com:443"]
