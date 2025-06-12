@@ -25,6 +25,7 @@ check_warnings:
     - mix compile --warnings-as-errors
   only:
     - merge_requests
+    - develop
     - stage
     - main
     - dev
@@ -36,6 +37,7 @@ test:
     - mix test
   only:
     - merge_requests
+    - develop
     - stage
     - main
     - dev

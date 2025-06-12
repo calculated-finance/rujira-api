@@ -9,6 +9,7 @@ defmodule Rujira.Application do
   @impl true
   def start(_type, _args) do
     topologies = Application.get_env(:libcluster, :topologies) || []
+    observers = Application.get_env(:rujira, :observers) || []
 
     base = [
       {Cluster.Supervisor, [topologies, [name: Rujira.ClusterSupervisor]]},
@@ -26,20 +27,6 @@ defmodule Rujira.Application do
       Rujira.Prices.Coingecko
     ]
 
-    app = [
-      Thorchain,
-      Rujira.Balances,
-      Rujira.Bank,
-      Rujira.Chains,
-      Rujira.Contracts,
-      Rujira.Fin,
-      Rujira.Merge,
-      Rujira.Staking,
-      Rujira.Leagues,
-      Rujira.Bow,
-      Rujira.Index
-    ]
-
     Thornode.Appsignal.attach()
 
     # See https://hexdocs.pm/elixir/Supervisor.html
@@ -47,10 +34,7 @@ defmodule Rujira.Application do
     opts = [strategy: :one_for_one, name: Rujira.Supervisor]
 
     Supervisor.start_link(
-      Enum.concat(
-        base,
-        if(Mix.env() == :test, do: [], else: app)
-      ),
+      Enum.concat(base, observers),
       opts
     )
   end

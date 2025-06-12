@@ -9,7 +9,20 @@ import Config
 
 config :rujira,
   ecto_repos: [Rujira.Repo],
-  generators: [timestamp_type: :utc_datetime]
+  generators: [timestamp_type: :utc_datetime],
+  observers: [
+    Thorchain,
+    Rujira.Balances,
+    Rujira.Bank,
+    Rujira.Chains,
+    Rujira.Contracts,
+    Rujira.Fin,
+    Rujira.Merge,
+    Rujira.Staking,
+    Rujira.Leagues,
+    Rujira.Bow,
+    Rujira.Index
+  ]
 
 # Configures the endpoint
 config :rujira, RujiraWeb.Endpoint,
@@ -46,8 +59,7 @@ config :tesla, :adapter, {Tesla.Adapter.Finch, name: Rujira.Finch}
 
 config :memoize, cache_strategy: Rujira.CacheStrategy
 
-config :absinthe, Absinthe.Middleware.Batch,
-  timeout: 20_000
+config :absinthe, Absinthe.Middleware.Batch, timeout: 20_000
 
 network = System.get_env("NETWORK", "stagenet")
 
