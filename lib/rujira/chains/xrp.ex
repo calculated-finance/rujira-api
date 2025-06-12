@@ -1,9 +1,19 @@
 defmodule Rujira.Chains.Xrp do
-  use Tesla
+  def client do
+    Tesla.client(middleware())
+  end
 
-  plug Tesla.Middleware.BaseUrl, base_url()
-  plug Tesla.Middleware.Headers, [{"Content-Type", "application/json"}]
-  plug Tesla.Middleware.JSON
+  def middleware do
+    [
+      {Tesla.Middleware.BaseUrl, base_url()},
+      Tesla.Middleware.JSON,
+      {Tesla.Middleware.Headers,
+       [
+         {"apollographql-client-name", "docs-indexers-api"},
+         {"apollographql-client-version", "v1.0"}
+       ]}
+    ]
+  end
 
   def account_info(account) do
     body = %{
@@ -32,7 +42,7 @@ defmodule Rujira.Chains.Xrp do
                 }
               }
             }
-          }} <- post("/", body),
+          }} <- Tesla.post(client(), "/", body),
          {balance, ""} <- Integer.parse(balance) do
       {:ok, %{account: account, balance: balance}}
     end

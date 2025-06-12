@@ -5,21 +5,27 @@ defmodule Rujira.Chains.Utxo do
     decimals = Keyword.fetch!(opts, :decimals)
 
     quote do
-      use Tesla
-
       @asset unquote(asset)
       @chain unquote(chain)
       @decimals unquote(decimals)
 
       @api "https://gql-router.xdefi.services/graphql"
 
-      plug Tesla.Middleware.BaseUrl, @api
-      plug Tesla.Middleware.JSON
+      def client do
+        Tesla.client(middleware())
+      end
 
-      plug Tesla.Middleware.Headers, [
-        {"apollographql-client-name", "docs-indexers-api"},
-        {"apollographql-client-version", "v1.0"}
-      ]
+      def middleware do
+        [
+          {Tesla.Middleware.BaseUrl, @api},
+          Tesla.Middleware.JSON,
+          {Tesla.Middleware.Headers,
+           [
+             {"apollographql-client-name", "docs-indexers-api"},
+             {"apollographql-client-version", "v1.0"}
+           ]}
+        ]
+      end
 
       def balances(address, _assets) do
         query = """
@@ -41,7 +47,7 @@ defmodule Rujira.Chains.Utxo do
                 body: %{
                   "data" => %{@chain => %{"balances" => [%{"amount" => %{"value" => amount}}]}}
                 }
-              }} <- post("", body),
+              }} <- Tesla.post(client(), "", body),
              {amount, ""} <- Integer.parse(amount) do
           {:ok,
            [
@@ -79,7 +85,7 @@ defmodule Rujira.Chains.Utxo do
                 body: %{
                   "data" => %{@chain => %{"unspentTxOutputsV5" => utxos}}
                 }
-              }} <- post("", body) do
+              }} <- Tesla.post(client(), "", body) do
           {:ok, Enum.map(utxos, &cast_utxo/1)}
         end
       end
