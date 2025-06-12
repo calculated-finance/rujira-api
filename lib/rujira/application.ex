@@ -36,7 +36,8 @@ defmodule Rujira.Application do
       Rujira.Merge,
       Rujira.Staking,
       Rujira.Leagues,
-      Rujira.Bow
+      Rujira.Bow,
+      Rujira.Index
     ]
 
     Thornode.Appsignal.attach()

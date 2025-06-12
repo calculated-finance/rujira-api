@@ -10,6 +10,7 @@ defmodule RujiraWeb.Schema do
   import_types(RujiraWeb.Schema.ChainTypes)
   import_types(RujiraWeb.Schema.DeveloperTypes)
   import_types(RujiraWeb.Schema.FinTypes)
+  import_types(RujiraWeb.Schema.IndexTypes)
   import_types(RujiraWeb.Schema.LeaguesTypes)
   import_types(RujiraWeb.Schema.MergeTypes)
   import_types(RujiraWeb.Schema.PilotTypes)

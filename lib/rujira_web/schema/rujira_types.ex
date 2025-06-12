@@ -42,5 +42,9 @@ defmodule RujiraWeb.Schema.RujiraTypes do
       arg(:query, :string)
       resolve(&Resolvers.Strategy.list/3)
     end
+
+    field :index, non_null(list_of(non_null(:index_vault))) do
+      resolve(&Resolvers.Index.resolver/3)
+    end
   end
 end

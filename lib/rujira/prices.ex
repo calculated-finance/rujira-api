@@ -5,7 +5,7 @@ defmodule Rujira.Prices do
 
   def get(symbols) when is_list(symbols) do
     symbols
-    |> Task.async_stream(&{&1, get(&1)})
+    |> Task.async_stream(&{&1, get(&1)}, timeout: 30_000)
     |> Enum.reduce({:ok, %{}}, fn
       {:ok, {id, res}}, {:ok, agg} ->
         {:ok, Map.put(agg, id, res)}
@@ -75,7 +75,7 @@ defmodule Rujira.Prices do
     end
   end
 
-  def fin_price(id) do
+  defmemo fin_price(id), expires_in: 15_000 do
     with {:ok, pair} <- Fin.get_stable_pair(id),
          {:ok, %{book: book}} <- Fin.load_pair(pair) do
       {:ok,

@@ -6,11 +6,11 @@ defmodule RujiraWeb.Resolvers.Strategy do
     query = Map.get(args, :query)
 
     with {:ok, bow} <- Rujira.Bow.list_pools(),
-         {:ok, thorchain} <- Thorchain.pools() do
-      Enum.concat(
-        Enum.filter(bow, &bow_query(query, &1)),
-        Enum.filter(thorchain, &thorchain_query(query, &1))
-      )
+         {:ok, thorchain} <- Thorchain.pools(),
+         {:ok, index} <- Rujira.Index.load_vaults() do
+      Enum.filter(bow, &bow_query(query, &1))
+      |> Enum.concat(Enum.filter(thorchain, &thorchain_query(query, &1)))
+      |> Enum.concat(Enum.filter(index, &index_query(query, &1)))
       |> Enum.filter(&filter_type(&1, typenames))
       |> Absinthe.Relay.Connection.from_list(args)
     end
@@ -35,8 +35,21 @@ defmodule RujiraWeb.Resolvers.Strategy do
              {:ok, {:ok, %{units: 0}}} -> :skip
              {:ok, v} -> v
              other -> other
+           end),
+         {:ok, vaults} <- Rujira.Index.load_vaults(),
+         {:ok, index} <-
+           Rujira.Enum.reduce_while_ok(vaults, [], fn x ->
+             case Rujira.Index.load_account(x, address) do
+               {:ok, %{shares: 0}} -> :skip
+               other -> other
+             end
            end) do
-      {:ok, Enum.concat(bow, thorchain)}
+      accounts =
+        bow
+        |> Enum.concat(thorchain)
+        |> Enum.concat(index)
+
+      {:ok, accounts}
     end
   end
 
@@ -57,9 +70,22 @@ defmodule RujiraWeb.Resolvers.Strategy do
 
   defp thorchain_query(_, _), do: false
 
+  defp index_query(query, %{status: %{allocations: allocations}}) do
+    Enum.any?(allocations, fn %{denom: denom} ->
+      with {:ok, asset} <- Assets.from_denom(denom) do
+        Assets.query_match(query, asset, asset)
+      else
+        _ -> false
+      end
+    end)
+  end
+
   def filter_type(_, nil), do: true
   def filter_type(%Rujira.Bow.Xyk{}, list), do: Enum.member?(list, "BowPoolXyk")
 
   def filter_type(%Thorchain.Types.QueryPoolResponse{}, list),
     do: Enum.member?(list, "ThorchainPool")
+
+  def filter_type(%Rujira.Index.Vault{}, list),
+    do: Enum.member?(list, "IndexVault")
 end

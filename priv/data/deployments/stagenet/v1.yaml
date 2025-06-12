@@ -2,6 +2,9 @@ accounts:
   admin: sthor1qm7vtdca95aj7nvtrarqm3uah33nhffpnhhg3j
   creator: sthor1qm7vtdca95aj7nvtrarqm3uah33nhffpnhhg3j
   thorchain-reserve: sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4
+  nami-deployer: sthor1g2rf7x4f9jxduz7ns9syzq4g8sqkp783d3jt0g
+  nami-index-fund: sthor1g2rf7x4f9jxduz7ns9syzq4g8sqkp783d3jt0g
+  nami-dev-fund: sthor1g2rf7x4f9jxduz7ns9syzq4g8sqkp783d3jt0g
 
 codes: 
   staking: 33
@@ -9,6 +12,9 @@ codes:
   fin: 35
   bow: 36
   keiko: 61
+  index-entry-adpter: 74
+  index-fixed: 75
+  index-nav: 76
 
 targets:
   staking: 
@@ -20,6 +26,17 @@ targets:
         revenue_denom: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
         revenue_converter: 
           contract: ${targets:fin.ruji-eth-usdt}
+          msg: '{"swap": {}}'
+          min: "10000000"
+    
+    - id: nami
+      admin: ${accounts:admin}
+      creator: ${accounts:nami-deployer}
+      config:
+        bond_denom: thor.nami
+        revenue_denom: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+        revenue_converter: 
+          contract: ${targets:fin.nami-eth-usdt}
           msg: '{"swap": {}}'
           min: "10000000"
 
@@ -58,7 +75,54 @@ targets:
         target_addresses:
           - address: ${accounts:thorchain-reserve}
             weight: 1
+    
+    - id: nami-dev-fund
+      admin: ${accounts:admin}
+      creator: ${accounts:nami-deployer}
+      config:
+        executor: ${accounts:nami-deployer}
+        target_denoms:
+          - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+        target_addresses:
+          - address: ${accounts:nami-dev}
+            weight: 1
+    
+    - id: nami-index-fund
+      admin: ${accounts:admin}
+      creator: ${accounts:nami-deployer}
+      config:
+        executor: ${accounts:nami-deployer}
+        target_denoms:
+          - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+        target_addresses:
+          - address: ${accounts:nami-index-fund}
+            weight: 1
 
+    - id: nami-stakers
+      admin: ${accounts:admin}
+      creator: ${accounts:nami-deployer}
+      config:
+        executor: ${accounts:nami-deployer}
+        target_denoms:
+          - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+        target_addresses:
+          - address: ${targets:staking.nami}
+            weight: 1
+      
+    - id: nami-split
+      admin: ${accounts:admin}
+      creator: ${accounts:nami-deployer}
+      config:
+        executor: ${accounts:nami-deployer}
+        target_denoms:
+          - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+        target_addresses:
+          - address: ${targets:revenue.nami-dev-fund}
+            weight: 35
+          - address: ${targets:revenue.nami-index-fund}
+            weight: 40
+          - address: ${targets:revenue.nami-stakers}
+            weight: 25
   fin: 
     - id: btc-eth-usdt
       admin: ${accounts:admin}
@@ -293,3 +357,71 @@ targets:
           default_lp_vest_cliff: 1814400
           default_lp_vest_duration: 8640000
           minimum_liquidity_one_side: "0.1"
+
+  index-nav:
+    - id: yrune-1.0.1
+      admin: ${accounts:nami-deployer}
+      creator: ${accounts:nami-deployer}
+      config:
+        receipt:
+          description: The Yield Bearing RUNE Index (yRUNE) is a NAV index that tracks the performance of RUNE and TCY while automatically generating yield to its holders.
+          display: yRUNE
+          name: The Yield Bearing RUNE Index
+          symbol: yRUNE
+        quote_denom: rune
+        fee_collector: ${targets:revenue.nami-split}
+        fees:
+          management: "0.01"
+          performance: null
+          transaction: "0.01"
+        target_allocation:
+          - denom: rune
+            weight: "0.8"
+            swap_contract: null
+            oracle:
+              layer1:
+                chain: THOR
+                symbol: RUNE
+            slippage: "0.01"
+            threshold: "0.01"
+          - denom: tcy
+            weight: "0.2"
+            swap_contract: ${targets:fin.tcy-rune}
+            oracle:
+              layer1:
+                chain: THOR
+                symbol: TCY
+            slippage: "0.01"
+            threshold: "0.01"                        
+            
+  index-fixed:
+    - id: rji-1.0.1
+      admin: ${accounts:nami-deployer}
+      creator: ${accounts:nami-deployer}
+      config:
+        receipt:
+          description: The Rujira Index (RJI) is a fixed weight asset index that tracks the performance of assets in the Rujira Ecosystem. It consists of the biggest altcoins on the Rujira Applayer and their weights are based on their market cap.
+          display: RJI
+          name: The Rujira Index
+          symbol: RJI
+        quote_denom: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+        fee_collector: ${targets:revenue.nami-split}
+        fees:
+          management: "0.01"
+          performance: null
+          transaction: "0.01"
+        target_allocations:
+          - [thor.nami, "1000", "${targets:fin.nami-eth-usdt}"]
+          - [thor.auto, "1000", "${targets:fin.auto-eth-usdt}"]
+          - [thor.lqdy, "1000", "${targets:fin.lqdy-eth-usdt}"]
+  
+  index-entry-adpter:
+    - id: usdt-entry-adpter
+      admin: ${accounts:nami-deployer}
+      creator: ${accounts:nami-deployer}
+      config:
+        quote_denom: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+        swap_contracts:
+          - [thor.nami, "${targets:fin.nami-eth-usdt}"]
+          - [thor.auto, "${targets:fin.auto-eth-usdt}"]
+          - [thor.lqdy, "${targets:fin.lqdy-eth-usdt}"] 

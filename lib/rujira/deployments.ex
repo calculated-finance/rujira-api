@@ -10,6 +10,8 @@ defmodule Rujira.Deployments do
   alias Rujira.Fin
   alias Rujira.Staking
   alias Rujira.Contracts
+  alias Rujira.Index
+
   use Memoize
 
   @path "data/deployments"
@@ -19,11 +21,15 @@ defmodule Rujira.Deployments do
     |> Keyword.get(:plan)
   end
 
-  def get_target(module, id, plan \\ plan()) do
+  defmemo get_target(module, id, plan \\ plan()) do
     %{codes: codes, targets: targets} = load_config!(plan)
 
     targets
-    |> Enum.flat_map(&parse_protocol(codes, &1))
+    |> Task.async_stream(&parse_protocol(codes, &1))
+    |> Enum.flat_map(fn
+      {:ok, result} -> result
+      {:exit, reason} -> reason
+    end)
     |> Enum.find(&(&1.module === module and &1.id == id))
   end
 
@@ -31,7 +37,11 @@ defmodule Rujira.Deployments do
     %{codes: codes, targets: targets} = load_config!(plan)
 
     targets
-    |> Enum.flat_map(&parse_protocol(codes, &1))
+    |> Task.async_stream(&parse_protocol(codes, &1))
+    |> Enum.flat_map(fn
+      {:ok, result} -> result
+      {:exit, reason} -> reason
+    end)
   end
 
   def list_targets(module, plan \\ plan()) do
@@ -59,7 +69,12 @@ defmodule Rujira.Deployments do
   end
 
   defp parse_protocol(codes, {protocol, configs}) do
-    Enum.map(configs, &parse_contract(codes, protocol, &1))
+    configs
+    |> Task.async_stream(&parse_contract(codes, protocol, &1))
+    |> Enum.map(fn
+      {:ok, result} -> result
+      {:exit, reason} -> reason
+    end)
   end
 
   defp parse_contract(
@@ -145,6 +160,9 @@ defmodule Rujira.Deployments do
   defp to_module("revenue"), do: Revenue.Converter
   defp to_module("staking"), do: Staking.Pool
   defp to_module("keiko"), do: Ventures.Keiko
+  defp to_module("index-nav"), do: Index.Nav
+  defp to_module("index-fixed"), do: Index.Fixed
+  defp to_module("index-entry-adpter"), do: Index.EntryAdapter
 
   defp parse_ctx(map, ctx) when is_map(map) do
     map

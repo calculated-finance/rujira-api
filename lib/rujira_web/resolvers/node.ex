@@ -10,6 +10,7 @@ defmodule RujiraWeb.Resolvers.Node do
   alias Rujira.Staking
   alias Rujira.Leagues
   alias Rujira.Prices
+  alias Rujira.Index
 
   def id(%{id: encoded_id}, _) do
     resolve_id(encoded_id)
@@ -50,6 +51,8 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Thorchain.Types.QueryPoolResponse{}, _), do: :thorchain_pool
   def type(%{observed_tx: _}, _), do: :thorchain_tx_in
   def type(%Thorchain.Oracle{}, _), do: :thorchain_oracle
+  def type(%Index.Account{}, _), do: :index_account
+  def type(%Index.Vault{}, _), do: :index_vault
 
   defp resolve_id(id) do
     case Absinthe.Relay.Node.from_global_id(id, RujiraWeb.Schema) do
@@ -146,6 +149,12 @@ defmodule RujiraWeb.Resolvers.Node do
         Thorchain.tx_in(id)
 
       # ---
+
+      {:ok, %{type: :index_vault, id: id}} ->
+        Index.index_from_id(id)
+
+      {:ok, %{type: :index_account, id: id}} ->
+        Index.account_from_id(id)
 
       {:error, error} ->
         {:error, error}
