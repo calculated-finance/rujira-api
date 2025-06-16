@@ -20,7 +20,7 @@ defmodule Rujira.Leagues.Collectors.ContractTest do
         points: 91701,
         rank: 1,
         badges: ["trade"],
-        rank_previous: nil,
+        rank_previous: 1,
         total_tx: 1
       }
     ] = leaderboard
@@ -37,7 +37,7 @@ defmodule Rujira.Leagues.Collectors.ContractTest do
       points: 91701,
       total_tx: 1,
       rank: 1,
-      rank_previous: nil,
+      rank_previous: 1,
       badges: ["trade"],
       transactions: nil
     } = account

@@ -103,6 +103,12 @@ defmodule Thorchain.Swaps.Indexer do
         |> Decimal.round()
         |> Decimal.to_integer()
 
+      bps =
+        bps
+        |> Decimal.div(10_000)
+        |> Decimal.round()
+        |> Decimal.to_integer()
+
       %{
         affiliate: aff,
         affiliate_bps: bps,
