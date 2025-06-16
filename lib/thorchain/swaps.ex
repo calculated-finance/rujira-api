@@ -19,6 +19,11 @@ defmodule Thorchain.Swaps do
     |> Repo.insert()
   end
 
+  def list_swaps do
+    Swap
+    |> Repo.all()
+  end
+
   def count_swaps do
     Swap
     |> Repo.aggregate(:count)
