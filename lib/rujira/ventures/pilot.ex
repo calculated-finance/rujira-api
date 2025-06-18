@@ -40,6 +40,11 @@ defmodule Rujira.Ventures.Pilot do
       :waiting_period
     ]
 
+    @type pilot_deposit_type :: %{
+            amount: non_neg_integer(),
+            denom: String.t()
+          }
+
     @type t :: %__MODULE__{
             beneficiary: String.t(),
             bid_denom: String.t(),
@@ -47,7 +52,7 @@ defmodule Rujira.Ventures.Pilot do
             bid_threshold: non_neg_integer(),
             closes: DateTime.t(),
             contract_address: String.t(),
-            deposit: non_neg_integer(),
+            deposit: pilot_deposit_type(),
             description: String.t(),
             fee_amount: non_neg_integer(),
             max_premium: non_neg_integer(),
@@ -79,10 +84,17 @@ defmodule Rujira.Ventures.Pilot do
           },
           "raise_amount" => raise_amount
         }) do
+      deposit =
+        with %{"amount" => amount, "denom" => denom} <- deposit,
+             {amount, ""} <- Integer.parse(amount) do
+          %{amount: amount, denom: denom}
+        else
+          _ -> nil
+        end
+
       with {bid_threshold, ""} <- Integer.parse(bid_threshold),
            {fee_amount, ""} <-
              if(is_nil(fee_amount), do: {nil, ""}, else: Integer.parse(fee_amount)),
-           {deposit, ""} <- if(is_nil(deposit), do: {nil, ""}, else: Integer.parse(deposit)),
            {price, ""} <- Decimal.parse(price),
            {raise_amount, ""} <-
              if(is_nil(raise_amount), do: {nil, ""}, else: Integer.parse(raise_amount)),
