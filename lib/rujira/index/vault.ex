@@ -34,10 +34,11 @@ defmodule Rujira.Index.Vault do
             total_shares: non_neg_integer(),
             total_value: non_neg_integer(),
             allocations: list(Allocation.t()),
-            nav_change: Decimal.t() | nil
+            nav_change: Decimal.t() | nil,
+            nav_quote: Decimal.t() | nil
           }
 
-    defstruct [:nav, :total_shares, :total_value, :allocations, :nav_change]
+    defstruct [:nav, :total_shares, :total_value, :allocations, :nav_change, :nav_quote]
 
     def from_query(%{
           "nav" => nav_str,
@@ -86,12 +87,75 @@ defmodule Rujira.Index.Vault do
     end
   end
 
+  defmodule Fees do
+    defmodule Rates do
+      @type t :: %__MODULE__{
+              management: Decimal.t(),
+              performance: Decimal.t(),
+              transaction: Decimal.t()
+            }
+
+      defstruct [:management, :performance, :transaction]
+
+      def from_query(%{
+            "management" => management,
+            "performance" => performance,
+            "transaction" => transaction
+          }) do
+        {:ok,
+         %__MODULE__{
+           management: parse_rate(management),
+           performance: parse_rate(performance),
+           transaction: parse_rate(transaction)
+         }}
+      end
+
+      defp parse_rate(nil), do: Decimal.new(0)
+
+      defp parse_rate(value) do
+        case Decimal.parse(value) do
+          {decimal, ""} -> decimal
+          _ -> Decimal.new(0)
+        end
+      end
+    end
+
+    @type t :: %__MODULE__{
+            last_accrual_time: String.t(),
+            high_water_mark: Decimal.t(),
+            rates: Rates.t()
+          }
+
+    defstruct [:last_accrual_time, :high_water_mark, :rates]
+
+    def from_query(%{
+          "last_accrual_time" => last_accrual_time,
+          "high_water_mark" => high_water_mark,
+          "rates" => rates
+        }) do
+      with {high_water_mark, ""} <- Decimal.parse(high_water_mark),
+           {:ok, rates} <- Rates.from_query(rates),
+           {last_accrual_time, ""} <- Integer.parse(last_accrual_time),
+           {:ok, last_accrual_time} <- DateTime.from_unix(last_accrual_time, :nanosecond) do
+        {:ok,
+         %__MODULE__{
+           last_accrual_time: last_accrual_time,
+           high_water_mark: high_water_mark,
+           rates: rates
+         }}
+      else
+        error -> error
+      end
+    end
+  end
+
   @type t :: %__MODULE__{
           id: String.t(),
           address: String.t(),
           module: Nav | Fixed,
           config: Config.t(),
           status: Status.t() | :not_loaded,
+          fees: Fees.t() | :not_loaded,
           share_denom: String.t(),
           entry_adapter: String.t() | nil
         }
@@ -102,6 +166,7 @@ defmodule Rujira.Index.Vault do
     :module,
     :config,
     :status,
+    :fees,
     :share_denom,
     :entry_adapter
   ]
