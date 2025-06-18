@@ -6,7 +6,7 @@ defmodule RujiraWeb.Schema.IndexTest do
   @list_vaults """
   query {
     index {
-    ...IndexVaultFragment
+      ...IndexVaultFragment
     }
   }
   #{get_index_vault_fragment()}

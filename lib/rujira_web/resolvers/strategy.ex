@@ -5,6 +5,7 @@ defmodule RujiraWeb.Resolvers.Strategy do
   alias Absinthe.Relay.Connection
   alias Rujira.Assets
   alias Rujira.Bow
+  alias Rujira.Ghost
   alias Rujira.Index
   alias Rujira.Perps
   alias Rujira.Prices
@@ -21,12 +22,14 @@ defmodule RujiraWeb.Resolvers.Strategy do
          {:ok, thorchain} <- Thorchain.pools(),
          {:ok, index} <- Index.load_vaults(),
          {:ok, staking} <- Staking.list_pools(),
-         {:ok, perps} <- Perps.list_pools() do
+         {:ok, perps} <- Perps.list_pools(),
+         {:ok, ghost} <- Ghost.list_vaults() do
       Enum.filter(bow, &bow_query(query, &1))
       |> Enum.concat(Enum.filter(thorchain, &thorchain_query(query, &1)))
       |> Enum.concat(Enum.filter(index, &index_query(query, &1)))
       |> Enum.concat(Enum.filter(staking, &staking_query(query, &1)))
       |> Enum.concat(Enum.filter(perps, &perps_query(query, &1)))
+      |> Enum.concat(Enum.filter(ghost, &ghost_query(query, &1)))
       |> Enum.filter(&filter_type(&1, typenames))
       |> sort(sort_by, sort_dir)
       |> Connection.from_list(args)
@@ -86,6 +89,14 @@ defmodule RujiraWeb.Resolvers.Strategy do
     end
   end
 
+  defp ghost_query(query, %{denom: denom}) do
+    with {:ok, asset} <- Assets.from_denom(denom) do
+      Assets.matches(query, asset)
+    else
+      _ -> false
+    end
+  end
+
   defp thorchain_query(_, %{asset: %{symbol: "TCY"}}), do: false
 
   defp thorchain_query(query, %{asset: asset}) do
@@ -138,6 +149,9 @@ defmodule RujiraWeb.Resolvers.Strategy do
 
   def filter_type(%Perps.Pool{}, list),
     do: Enum.member?(list, "PerpsPool")
+
+  def filter_type(%Rujira.Ghost.Vault{}, list),
+    do: Enum.member?(list, "GhostVault")
 
   # ---- Sort By ----
 

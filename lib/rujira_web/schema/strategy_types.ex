@@ -12,7 +12,7 @@ defmodule RujiraWeb.Schema.StrategyTypes do
   alias Rujira.Bow
 
   union :strategy do
-    types([:bow_pool_xyk, :thorchain_pool, :index_vault, :staking_pool, :perps_pool])
+    types([:bow_pool_xyk, :thorchain_pool, :ghost_vault, :index_vault, :staking_pool, :perps_pool])
 
     resolve_type(fn
       %Bow.Xyk{}, _ -> :bow_pool_xyk
@@ -20,6 +20,7 @@ defmodule RujiraWeb.Schema.StrategyTypes do
       %Rujira.Index.Vault{}, _ -> :index_vault
       %Rujira.Staking.Pool{}, _ -> :staking_pool
       %Rujira.Perps.Pool{}, _ -> :perps_pool
+      %Rujira.Ghost.Vault{}, _ -> :ghost_vault
     end)
   end
 

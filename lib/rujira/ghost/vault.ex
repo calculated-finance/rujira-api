@@ -10,6 +10,26 @@ defmodule Rujira.Ghost.Vault do
             step1: Decimal.t(),
             step2: Decimal.t()
           }
+
+    def from_query(%{
+          "base_rate" => base_rate,
+          "step1" => step1,
+          "step2" => step2,
+          "target_utilization" => target_utilization
+        }) do
+      with {base_rate, ""} <- Decimal.parse(base_rate),
+           {step1, ""} <- Decimal.parse(step1),
+           {step2, ""} <- Decimal.parse(step2),
+           {target_utilization, ""} <- Decimal.parse(target_utilization) do
+        {:ok,
+         %__MODULE__{
+           base_rate: base_rate,
+           step1: step1,
+           step2: step2,
+           target_utilization: target_utilization
+         }}
+      end
+    end
   end
 
   defmodule Status do
@@ -42,15 +62,33 @@ defmodule Rujira.Ghost.Vault do
           }
   end
 
-  defstruct [:id, :denom, :interest, :registry, :status]
+  defstruct [:id, :address, :denom, :interest, :registry, :status]
 
   @type t :: %__MODULE__{
           id: String.t(),
+          address: String.t(),
           denom: String.t(),
           interest: Interest.t(),
           registry: String.t(),
-          status: Status.t()
+          status: Status.t() | :not_loaded
         }
+
+  def from_config(address, %{
+        "denom" => denom,
+        "interest" => interest,
+        "registry" => registry
+      }) do
+    with {:ok, interest} <- Interest.from_query(interest) do
+      {:ok,
+       %__MODULE__{
+         id: address,
+         address: address,
+         denom: denom,
+         interest: interest,
+         registry: registry
+       }}
+    end
+  end
 
   def init_msg(%{"denom" => denom, "registry" => registry}) do
     {:ok, asset} = Assets.from_denom(denom)
