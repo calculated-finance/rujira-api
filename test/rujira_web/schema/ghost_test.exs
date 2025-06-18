@@ -29,8 +29,9 @@ defmodule RujiraWeb.Schema.GhostTest do
   test "list, and lookup vault", %{conn: conn} do
     # 1) fetch all vaults
     conn = post(conn, "/api", %{"query" => @strategies_query})
-    %{"data" => %{"strategies" => %{"edges" => edges}}} = json_response(conn, 200)
+    %{"data" => %{"strategies" => %{"edges" => edges}}} = res = json_response(conn, 200)
     assert is_list(edges) and edges != []
+    assert Map.get(res, "errors") == nil
 
     # pick the first vault's Relay global id assert it matches the expected format
     [%{"node" => vault} | _] = edges

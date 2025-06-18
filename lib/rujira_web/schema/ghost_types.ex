@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Schema.GhostTypes do
+  alias Rujira.Ghost
   alias Rujira.Ghost.Registry
   alias Rujira.Contracts
   alias Rujira.Assets
@@ -22,7 +23,13 @@ defmodule RujiraWeb.Schema.GhostTypes do
       end)
     end
 
-    field :status, non_null(:ghost_vault_status)
+    field :status, non_null(:ghost_vault_status) do
+      resolve(fn vault, _, _ ->
+        with {:ok, %{status: status}} <- Ghost.load_vault(vault) do
+          {:ok, status}
+        end
+      end)
+    end
   end
 
   object :ghost_vault_interest do
