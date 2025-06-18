@@ -1,6 +1,6 @@
 defmodule RujiraWeb.Schema.VenturesTypes do
+  alias RujiraWeb.Resolvers.Ventures
   alias Rujira.Ventures.Pilot
-  alias Rujira.Assets
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
 
@@ -74,14 +74,7 @@ defmodule RujiraWeb.Schema.VenturesTypes do
     field :fee_maker, non_null(:bigint)
     field :fee_taker, non_null(:bigint)
     field :max_premium, non_null(:integer)
-
-    field :deposit, non_null(:balance) do
-      resolve(fn %{deposit: %{denom: denom, amount: amount}}, _, _ ->
-        with {:ok, asset} <- Assets.from_denom(denom) do
-          {:ok, %{asset: asset, amount: amount}}
-        end
-      end)
-    end
+    field :deposit, :balance, resolve: &Ventures.deposit/3
 
     field :bid_assets, non_null(list_of(non_null(:ventures_config_pilot_bid_asset))) do
       resolve(fn %{bid_denoms: bid_assets}, _, _ -> {:ok, bid_assets} end)
@@ -89,12 +82,7 @@ defmodule RujiraWeb.Schema.VenturesTypes do
   end
 
   object :ventures_config_pilot_bid_asset do
-    field :asset, non_null(:asset) do
-      resolve(fn %{denom: denom}, _, _ ->
-        Assets.from_denom(denom)
-      end)
-    end
-
+    field :asset, non_null(:asset), resolve: &Ventures.asset/3
     field :min_raise_amount, non_null(:bigint)
   end
 
@@ -118,7 +106,7 @@ defmodule RujiraWeb.Schema.VenturesTypes do
 
   object :ventures_sale_pilot do
     field :idx, non_null(:string)
-    field :deposit, :asset
+    field :deposit, :balance, resolve: &Ventures.deposit/3
     field :terms_conditions_accepted, non_null(:boolean)
     field :token, non_null(:ventures_token)
     field :tokenomics, non_null(:ventures_tokenomics)
@@ -297,12 +285,12 @@ defmodule RujiraWeb.Schema.VenturesTypes do
   end
 
   object :ventures_tokenomics_recipient_set do
-    field :amount, non_null(:integer)
+    field :amount, non_null(:string)
   end
 
   object :ventures_tokenomics_recipient_send do
     field :address, :address
-    field :amount, non_null(:integer)
+    field :amount, non_null(:string)
   end
 
   # object :ventures_tokenomics_recipient_stream do
@@ -388,14 +376,16 @@ defmodule RujiraWeb.Schema.VenturesTypes do
 
   # object :ventures_pilot_info do
   #   field :pilot, non_null(:ventures_pilot)
-  #   field :deposit, :asset
+
+  #   field :deposit, :balance do
+  #     resolve(&resolve_deposit_field/3)
+  #   end
+
   #   field :contract_address, :address
   #   field :raise_amount, :bigint
   #   field :fee_amount, :bigint
   #   field :bid_pools_snapshot, :ventures_pools_response
   # end
-
-
 
   # object :fin_info do
   #   field :contract_address, non_null(:address)
@@ -417,7 +407,7 @@ defmodule RujiraWeb.Schema.VenturesTypes do
     field :bid_threshold, non_null(:bigint)
     field :closes, non_null(:string)
     field :contract_address, :address
-    field :deposit, :bigint
+    field :deposit, :balance, resolve: &Ventures.deposit/3
     field :description, non_null(:string)
     field :fee_amount, :bigint
     field :max_premium, non_null(:integer)
@@ -428,5 +418,4 @@ defmodule RujiraWeb.Schema.VenturesTypes do
     field :url, non_null(:string)
     field :waiting_period, non_null(:integer)
   end
-
 end

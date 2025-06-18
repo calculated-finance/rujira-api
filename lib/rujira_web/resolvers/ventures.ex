@@ -1,6 +1,7 @@
 defmodule RujiraWeb.Resolvers.Ventures do
   alias Rujira.Ventures
   alias Absinthe.Relay
+  alias Rujira.Assets
 
   def resolver(_, _, _) do
     with {:ok, keiko} <- Ventures.keiko() do
@@ -80,5 +81,16 @@ defmodule RujiraWeb.Resolvers.Ventures do
         end)
       end)
     end)
+  end
+
+  def asset(%{denom: denom}, _, _), do: Assets.from_denom(denom)
+
+  def deposit(%{sale: %{deposit: deposit}}, _, _), do: do_deposit(deposit)
+  def deposit(%{deposit: deposit}, _, _), do: do_deposit(deposit)
+
+  defp do_deposit(%{denom: denom, amount: amount}) do
+    with {:ok, asset} <- Assets.from_denom(denom) do
+      {:ok, %{asset: asset, amount: amount}}
+    end
   end
 end

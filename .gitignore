@@ -33,3 +33,5 @@ config/dev.*.exs
 tx.json
 
 .elixir_ls/
+postgres_data
+docker-compose.yml
