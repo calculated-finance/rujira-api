@@ -1,0 +1,87 @@
+defmodule Rujira.Ghost.Vault do
+  alias Rujira.Assets
+
+  defmodule Interest do
+    defstruct [:target_utilization, :base_rate, :step1, :step2]
+
+    @type t :: %__MODULE__{
+            target_utilization: Decimal.t(),
+            base_rate: Decimal.t(),
+            step1: Decimal.t(),
+            step2: Decimal.t()
+          }
+  end
+
+  defmodule Status do
+    defmodule Pool do
+      defstruct [:size, :shares, :ratio]
+
+      @type t :: %__MODULE__{
+              size: non_neg_integer(),
+              shares: non_neg_integer(),
+              ratio: Decimal.t()
+            }
+    end
+
+    defstruct [
+      :last_updated,
+      :utilization_ratio,
+      :debt_rate,
+      :lend_rate,
+      :debt_pool,
+      :deposit_pool
+    ]
+
+    @type t :: %__MODULE__{
+            last_updated: DateTime.t(),
+            utilization_ratio: Decimal.t(),
+            debt_rate: Decimal.t(),
+            lend_rate: Decimal.t(),
+            debt_pool: Pool.t(),
+            deposit_pool: Pool.t()
+          }
+  end
+
+  defstruct [:id, :denom, :interest, :registry, :status]
+
+  @type t :: %__MODULE__{
+          id: String.t(),
+          denom: String.t(),
+          interest: Interest.t(),
+          registry: String.t(),
+          status: Status.t()
+        }
+
+  def init_msg(%{"denom" => denom, "registry" => registry}) do
+    {:ok, asset} = Assets.from_denom(denom)
+
+    %{
+      denom: denom,
+      registry: registry,
+      interest: %{
+        target_utilization: "0.8",
+        base_rate: "0.03",
+        step1: "0.1",
+        step2: "2"
+      },
+      receipt: %{
+        description:
+          "Transferable shares issued when depositing funds into the Rujira #{Assets.short_id(asset)}} lending pool",
+        display: "x/ghost-vault/#{denom}/rcpt",
+        name: "#{Assets.short_id(asset)}} Lend Shares",
+        symbol: "LEND-#{Assets.short_id(asset)}"
+      },
+      debt: %{
+        description:
+          "Debt shares issued when borrowing funds from the Rujira #{Assets.short_id(asset)}} lending pool",
+        display: "x/ghost-vault/#{denom}/debt",
+        name: "#{Assets.short_id(asset)}} Debt Shares",
+        symbol: "DEBT-#{Assets.short_id(asset)}"
+      }
+    }
+  end
+
+  def migrate_msg(_from, _to, _), do: %{}
+
+  def init_label(_, %{"denom" => denom}), do: "rujira-ghost-vault:#{denom}"
+end
