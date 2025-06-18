@@ -10,6 +10,8 @@ defmodule Rujira.Index do
   alias Rujira.Chains.Thor
   alias Rujira.Index.NavBin
   alias Rujira.Deployments
+  alias Rujira.Assets
+  alias Rujira.Prices
   import Ecto.Query
   alias Rujira.Repo
   use GenServer
@@ -90,9 +92,11 @@ defmodule Rujira.Index do
   @spec load_index(Vault.t()) :: {:ok, Vault.t()} | {:error, any()}
   def load_index(index) do
     with {:ok, res} <- query_status(index.address),
-         {:ok, status} <- Vault.status(res) do
-      %Vault{index | status: status}
+         {:ok, status} <- Vault.status(res),
+         {:ok, fees} <- query_fees(index.address) do
+      %Vault{index | status: status, fees: fees}
       |> add_nav_change_24h()
+      |> add_nav_quote()
       |> add_vault_entry_adapter()
       |> then(&{:ok, &1})
     end
@@ -100,6 +104,12 @@ defmodule Rujira.Index do
 
   defmemo query_status(address) do
     Contracts.query_state_smart(address, %{status: %{}})
+  end
+
+  defmemo query_fees(address) do
+    with {:ok, res} <- Contracts.query_state_smart(address, %{fees: %{}}) do
+      Vault.Fees.from_query(res)
+    end
   end
 
   @doc """
@@ -173,6 +183,7 @@ defmodule Rujira.Index do
             contract: &1.address,
             resolution: resolution,
             open: &1.status.nav,
+            tvl: &1.status.total_value,
             bin: time,
             inserted_at: now,
             updated_at: now
@@ -209,6 +220,14 @@ defmodule Rujira.Index do
     nav_change = change_24h(vault.address, vault.status.nav)
 
     %Vault{vault | status: %{vault.status | nav_change: nav_change}}
+  end
+
+  def add_nav_quote(vault) do
+    with {:ok, asset} <- Assets.from_denom(vault.config.quote_denom),
+         {:ok, %{current: price}} <- Prices.get(asset.symbol) do
+      nav_quote = Decimal.div(vault.status.nav, price)
+      %Vault{vault | status: %{vault.status | nav_quote: nav_quote}}
+    end
   end
 
   def change_24h(address, nav) do
