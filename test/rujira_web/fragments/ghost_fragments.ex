@@ -12,6 +12,25 @@ defmodule RujiraWeb.Fragments.GhostFragments do
   }
   """
 
+  @ghost_vault_status_fragment """
+  fragment GhostVaultStatusFragment on GhostVaultStatus {
+    last_updated
+    utilization_ratio
+    debt_rate
+    lend_rate
+    debt_pool {
+      size
+      shares
+      ratio
+    }
+    deposit_pool {
+      size
+      shares
+      ratio
+    }
+  }
+  """
+
   @ghost_registry_fragment """
   fragment GhostRegistryFragment on GhostRegistry {
     codeId
@@ -32,10 +51,14 @@ defmodule RujiraWeb.Fragments.GhostFragments do
     registry {
       ...GhostRegistryFragment
     }
+    status {
+      ...GhostVaultStatusFragment
+    }
   }
   #{@asset_fragment}
   #{@ghost_vault_interest_fragment}
   #{@ghost_registry_fragment}
+  #{@ghost_vault_status_fragment}
   """
 
   def get_ghost_vault_fragment(), do: @ghost_vault_fragment

@@ -41,6 +41,14 @@ defmodule Rujira.Ghost.Vault do
               shares: non_neg_integer(),
               ratio: Decimal.t()
             }
+
+      def from_query(%{"ratio" => ratio, "shares" => shares, "size" => size}) do
+        with {ratio, ""} <- Decimal.parse(ratio),
+             {shares, ""} <- Integer.parse(shares),
+             {size, ""} <- Integer.parse(size) do
+          {:ok, %__MODULE__{ratio: ratio, shares: shares, size: size}}
+        end
+      end
     end
 
     defstruct [
@@ -60,6 +68,33 @@ defmodule Rujira.Ghost.Vault do
             debt_pool: Pool.t(),
             deposit_pool: Pool.t()
           }
+
+    def from_query(%{
+          "debt_pool" => debt_pool,
+          "debt_rate" => debt_rate,
+          "deposit_pool" => deposit_pool,
+          "last_updated" => last_updated,
+          "lend_rate" => lend_rate,
+          "utilization_ratio" => utilization_ratio
+        }) do
+      with {:ok, debt_pool} <- Pool.from_query(debt_pool),
+           {debt_rate, ""} <- Decimal.parse(debt_rate),
+           {:ok, deposit_pool} <- Pool.from_query(deposit_pool),
+           {last_updated, ""} <- Integer.parse(last_updated),
+           {:ok, last_updated} <- DateTime.from_unix(last_updated, :nanosecond),
+           {lend_rate, ""} <- Decimal.parse(lend_rate),
+           {utilization_ratio, ""} <- Decimal.parse(utilization_ratio) do
+        {:ok,
+         %__MODULE__{
+           debt_pool: debt_pool,
+           debt_rate: debt_rate,
+           deposit_pool: deposit_pool,
+           last_updated: last_updated,
+           lend_rate: lend_rate,
+           utilization_ratio: utilization_ratio
+         }}
+      end
+    end
   end
 
   defstruct [:id, :address, :denom, :interest, :registry, :status]

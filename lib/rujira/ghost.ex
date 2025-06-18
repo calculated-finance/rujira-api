@@ -24,6 +24,24 @@ defmodule Rujira.Ghost do
     end)
   end
 
+  def load_vault(%Vault{address: address} = vault) do
+    with {:ok, status} <- query_vault_status(address),
+         {:ok, status} <- Vault.Status.from_query(status) do
+      {:ok, %{vault | status: status}}
+    end
+  end
+
+  def load_vault(%{address: address}) do
+    with {:ok, vault} <- get_vault(%{address: address}) do
+      load_vault(vault)
+    end
+  end
+
+  # TODO: Memoize & invalidate
+  defp query_vault_status(address) do
+    Contracts.query_state_smart(address, %{status: %{}})
+  end
+
   def get_vault(%{address: address}) do
     Contracts.get({Vault, address})
   end
