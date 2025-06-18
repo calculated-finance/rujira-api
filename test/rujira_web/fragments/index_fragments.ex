@@ -38,8 +38,21 @@ defmodule RujiraWeb.Fragments.IndexFragments do
     }
     totalValue
     navChange
+    navQuote
   }
   #{@index_allocation_fragment}
+  """
+
+  @index_fees_fragment """
+  fragment IndexFeesFragment on IndexFees {
+    lastAccrualTime
+    highWaterMark
+    rates {
+      management
+      performance
+      transaction
+    }
+  }
   """
 
   @index_nav_bin_fragment """
@@ -48,6 +61,7 @@ defmodule RujiraWeb.Fragments.IndexFragments do
     contract
     resolution
     open
+    tvl
   }
   """
 
@@ -69,11 +83,15 @@ defmodule RujiraWeb.Fragments.IndexFragments do
     shareAsset {
       ...AssetFragment
     }
+    fees {
+      ...IndexFeesFragment
+    }
   }
   #{@contract_info_fragment}
   #{@asset_fragment}
   #{@index_config_fragment}
   #{@index_status_fragment}
+  #{@index_fees_fragment}
   """
 
   @index_account_fragment """
@@ -93,6 +111,7 @@ defmodule RujiraWeb.Fragments.IndexFragments do
   def get_index_allocation_fragment(), do: @index_allocation_fragment
   def get_index_status_fragment(), do: @index_status_fragment
   def get_index_nav_bin_fragment(), do: @index_nav_bin_fragment
+  def get_index_fees_fragment(), do: @index_fees_fragment
   def get_index_account_fragment(), do: @index_account_fragment
   def get_index_vault_fragment(), do: @index_vault_fragment
 end

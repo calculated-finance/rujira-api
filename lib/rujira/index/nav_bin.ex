@@ -12,6 +12,7 @@ defmodule Rujira.Index.NavBin do
             resolution: String.t(),
             bin: DateTime.t(),
             open: Decimal.t(),
+            tvl: non_neg_integer(),
             inserted_at: DateTime.t(),
             updated_at: DateTime.t()
           }
@@ -25,6 +26,7 @@ defmodule Rujira.Index.NavBin do
       field :bin, :utc_datetime, primary_key: true
 
       field :open, :decimal
+      field :tvl, :integer
 
       timestamps(type: :utc_datetime_usec)
     end
@@ -71,7 +73,7 @@ defmodule Rujira.Index.NavBin do
     @doc false
     def changeset(candle, attrs) do
       candle
-      |> cast(attrs, [:id, :contract, :resolution, :bin, :open])
-      |> validate_required([:id, :contract, :resolution, :bin, :open])
+      |> cast(attrs, [:id, :contract, :resolution, :bin, :open, :tvl])
+      |> validate_required([:id, :contract, :resolution, :bin, :open, :tvl])
     end
 end

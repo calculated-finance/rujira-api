@@ -103,7 +103,8 @@ defmodule Rujira.Index.Fixed do
        module: __MODULE__,
        config: %Vault.Config{quote_denom: denom, fee_collector: fee_collector},
        share_denom: share_denom,
-       status: :not_loaded
+       status: :not_loaded,
+       fees: :not_loaded,
      }}
   end
 
