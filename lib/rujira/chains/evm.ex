@@ -162,7 +162,7 @@ defmodule Rujira.Chains.Evm do
   @decorate transaction_event()
   def native_balance(rpc, address) do
     with {:ok, "0x" <> hex} <-
-           Ethereumex.HttpClient.eth_get_balance(address, "latest", url: rpc) do
+           Ethereumex.HttpClient.eth_get_balance(address, "latest", url: with_key(rpc)) do
       {:ok, String.to_integer(hex, 16)}
     else
       {:error, %{"error" => %{"message" => message}}} -> {:error, message}
@@ -181,7 +181,7 @@ defmodule Rujira.Chains.Evm do
            Ethereumex.HttpClient.eth_call(
              %{data: "0x" <> abi_encoded_data, to: contract},
              "latest",
-             url: rpc
+             url: with_key(rpc)
            ),
          {:ok, decoded_balance} <- Base.decode16(balance_bytes, case: :lower),
          [balance] <- ABI.TypeDecoder.decode_raw(decoded_balance, [{:uint, 256}]) do
@@ -192,6 +192,13 @@ defmodule Rujira.Chains.Evm do
 
       _ ->
         {:error, :unknown_error}
+    end
+  end
+
+  def with_key(endpoint) do
+    case Application.get_env(:rujira, Rujira.Chains.Evm, []) |> Keyword.get(:publicnode_key) do
+      nil -> endpoint
+      key -> "#{endpoint}/#{key}"
     end
   end
 

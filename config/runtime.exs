@@ -143,4 +143,6 @@ if config_env() == :prod do
       """
 
   config :rujira, Rujira.Chains.Xrp, http: xrp_http, ws: xrp_ws
+
+  config :rujira, Rujira.Chains.Evm, publicnode_key: System.get_env("PUBLICNODE_KEY")
 end
