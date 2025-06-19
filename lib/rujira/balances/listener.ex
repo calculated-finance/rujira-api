@@ -15,7 +15,7 @@ defmodule Rujira.Balances.Listener do
       end)
       |> Enum.concat(begin_block_events)
       |> Enum.concat(end_block_events)
-      |> Enum.flat_map(&scan_event/1)
+      |> Enum.flat_map(&scan_transfer/1)
       |> Enum.uniq()
 
     for a <- addresses do
@@ -28,35 +28,11 @@ defmodule Rujira.Balances.Listener do
     {:noreply, state}
   end
 
-  defp scan_event(%{attributes: attributes, type: "transfer"}) do
-    scan_attributes(attributes)
+  defp scan_transfer(%{attributes: attrs, type: "transfer"}) do
+    recipient = Map.get(attrs, "recipient")
+    sender = Map.get(attrs, "sender")
+    [recipient, sender]
   end
 
-  defp scan_event(_), do: []
-
-  defp scan_attributes(attributes, collection \\ [])
-
-  defp scan_attributes(
-         [_, %{value: recipient, key: "recipient"}, %{value: sender, key: "sender"} | rest],
-         collection
-       ) do
-    scan_attributes(rest, [
-      recipient,
-      sender | collection
-    ])
-  end
-
-  # x/wasm doesn't emit sorted events for the transfer when a contract is instantiated.
-  defp scan_attributes(
-         [%{value: recipient, key: "recipient"}, %{value: sender, key: "sender"} | rest],
-         collection
-       ) do
-    scan_attributes(rest, [
-      recipient,
-      sender | collection
-    ])
-  end
-
-  defp scan_attributes([_ | rest], collection), do: scan_attributes(rest, collection)
-  defp scan_attributes([], collection), do: collection
+  defp scan_transfer(_), do: []
 end

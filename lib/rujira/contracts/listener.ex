@@ -5,44 +5,36 @@ defmodule Rujira.Contracts.Listener do
   @impl true
   def handle_new_block(%{txs: txs}, state) do
     txs
-    |> Enum.flat_map(fn x ->
-      case x["result"]["events"] do
-        nil -> []
-        xs when is_list(xs) -> xs
-      end
+    |> Enum.flat_map(fn
+      %{result: %{events: xs}} when is_list(xs) -> xs
+      _ -> []
     end)
-    |> scan_attributes()
+    |> Enum.flat_map(&scan_contract_event/1)
     |> Enum.uniq()
     |> Enum.map(&invalidate/1)
 
     {:noreply, state}
   end
 
-  defp scan_attributes(attributes, collection \\ [])
+  defp scan_contract_event(%{
+         type: "message",
+         attributes: attrs
+       }) do
+    action = Map.get(attrs, "action")
 
-  defp scan_attributes(
-         [
-           %{"action" => "/cosmwasm.wasm.v1.MsgStoreCode"}
-           | rest
-         ],
-         collection
-       ) do
-    scan_attributes(rest, [{Rujira.Contracts, :codes} | collection])
+    case action do
+      "/cosmwasm.wasm.v1.MsgStoreCode" ->
+        [{Rujira.Contracts, :codes}]
+
+      "/cosmwasm.wasm.v1.MsgInstantiateContract" ->
+        [{Rujira.Contracts, :by_code, [Map.get(attrs, "code_id")]}]
+
+      _ ->
+        []
+    end
   end
 
-  defp scan_attributes(
-         [
-           %{"action" => "/cosmwasm.wasm.v1.MsgInstantiateContract"} = event
-           | rest
-         ],
-         collection
-       ) do
-    code_id = Map.get(event, "code_id")
-    scan_attributes(rest, [{Rujira.Contracts, :by_code, [code_id]} | collection])
-  end
-
-  defp scan_attributes([_ | rest], collection), do: scan_attributes(rest, collection)
-  defp scan_attributes([], collection), do: collection
+  defp scan_contract_event(_), do: []
 
   defp invalidate({module, function, args}) do
     Logger.debug("#{__MODULE__} invalidating #{module}.#{function} #{Enum.join(args, ",")}")

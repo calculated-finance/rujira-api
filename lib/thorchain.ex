@@ -268,7 +268,13 @@ defmodule Thorchain do
            | attributes
          ]
        }) do
-    %{type: type, attributes: attributes}
+    # convert attributes to map to allow a more flexible access to attributes
+    map_attr =
+      Enum.reduce(attributes, %{}, fn %{key: key, value: value}, acc ->
+        Map.put(acc, key, value)
+      end)
+
+    %{type: type, attributes: map_attr}
   end
 
   defp cast_tx(%Tx{

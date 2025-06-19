@@ -14,60 +14,37 @@ defmodule Thorchain.Swaps.Indexer do
         },
         state
       ) do
-    index = 2_147_483_647
-    scan_events(height, index, time, events)
-
-    {:noreply, state}
-  end
-
-  defp scan_events(height, tx_idx, time, events) do
-    swaps = Enum.flat_map(events, &scan_event(&1))
-
-    for {swap, idx} <- Enum.with_index(swaps) do
-      swap
-      |> Map.merge(%{
+    events
+    |> Enum.flat_map(&scan_swap/1)
+    |> Enum.with_index()
+    |> Enum.map(fn {swap, idx} ->
+      Map.merge(swap, %{
         height: height,
-        tx_idx: tx_idx,
+        tx_idx: 2_147_483_647,
         idx: idx,
         timestamp: time
       })
       |> Swaps.insert_swap()
-    end
+    end)
+
+    {:noreply, state}
   end
 
-  defp scan_event(%{attributes: attributes, type: "swap"}) do
-    scan_attributes(attributes)
-  end
+  defp scan_swap(%{attributes: attrs, type: "swap"}) do
+    pool = Map.get(attrs, "pool")
+    liquidity_fee_in_rune = Map.get(attrs, "liquidity_fee_in_rune")
+    emit_asset = Map.get(attrs, "emit_asset")
+    streaming_swap_quantity = Map.get(attrs, "streaming_swap_quantity")
+    streaming_swap_count = Map.get(attrs, "streaming_swap_count")
+    id = Map.get(attrs, "id")
+    chain = Map.get(attrs, "chain")
+    from = Map.get(attrs, "from")
+    to = Map.get(attrs, "to")
+    coin = Map.get(attrs, "coin")
+    memo = Map.get(attrs, "memo")
 
-  defp scan_event(_), do: []
-
-  defp scan_attributes(attributes, collection \\ [])
-
-  defp scan_attributes(
-         [
-           %{value: pool, key: "pool"},
-           %{value: _swap_target, key: "swap_target"},
-           %{value: _swap_slip, key: "swap_slip"},
-           %{value: _liquidity_fee, key: "liquidity_fee"},
-           %{value: liquidity_fee_in_rune, key: "liquidity_fee_in_rune"},
-           %{value: emit_asset, key: "emit_asset"},
-           %{value: streaming_swap_quantity, key: "streaming_swap_quantity"},
-           %{value: streaming_swap_count, key: "streaming_swap_count"},
-           %{value: _pool_slip, key: "pool_slip"},
-           %{value: id, key: "id"},
-           %{value: chain, key: "chain"},
-           %{value: from, key: "from"},
-           %{value: to, key: "to"},
-           %{value: coin, key: "coin"},
-           %{value: memo, key: "memo"}
-           | rest
-         ],
-         collection
-       ) do
-    scan_attributes(
-      rest,
-      insert_swap(
-        collection,
+    [
+      parse_swap(
         pool,
         liquidity_fee_in_rune,
         emit_asset,
@@ -80,14 +57,10 @@ defmodule Thorchain.Swaps.Indexer do
         coin,
         memo
       )
-    )
+    ]
   end
 
-  defp scan_attributes([_ | rest], collection) do
-    scan_attributes(rest, collection)
-  end
-
-  defp scan_attributes([], collection), do: collection
+  defp scan_swap(_), do: []
 
   defp get_affiliate_data(memo, price, volume_usd) do
     with {:ok, {aff, bps}} <- Thorchain.get_affiliate(memo) do
@@ -121,8 +94,7 @@ defmodule Thorchain.Swaps.Indexer do
     end
   end
 
-  defp insert_swap(
-         collection,
+  defp parse_swap(
          pool,
          liquidity_fee_in_rune,
          emit_asset,
@@ -157,27 +129,24 @@ defmodule Thorchain.Swaps.Indexer do
         |> Decimal.round()
         |> Decimal.to_integer()
 
-      swap =
-        %{
-          pool: pool,
-          liquidity_fee_in_rune: liquidity_fee_in_rune,
-          emit_asset_asset: emit_asset_asset,
-          emit_asset_amount: emit_asset_amount,
-          streaming_swap_quantity: streaming_swap_quantity,
-          streaming_swap_count: streaming_swap_count,
-          id: id,
-          chain: chain,
-          from: from,
-          to: to,
-          coin_asset: coin_asset,
-          coin_amount: coin_amount,
-          memo: memo,
-          volume_usd: volume_usd,
-          liquidity_fee_in_usd: liquidity_fee_in_usd
-        }
-        |> Map.merge(get_affiliate_data(memo, price, volume_usd))
-
-      [swap | collection]
+      %{
+        pool: pool,
+        liquidity_fee_in_rune: liquidity_fee_in_rune,
+        emit_asset_asset: emit_asset_asset,
+        emit_asset_amount: emit_asset_amount,
+        streaming_swap_quantity: streaming_swap_quantity,
+        streaming_swap_count: streaming_swap_count,
+        id: id,
+        chain: chain,
+        from: from,
+        to: to,
+        coin_asset: coin_asset,
+        coin_amount: coin_amount,
+        memo: memo,
+        volume_usd: volume_usd,
+        liquidity_fee_in_usd: liquidity_fee_in_usd
+      }
+      |> Map.merge(get_affiliate_data(memo, price, volume_usd))
     end
   end
 

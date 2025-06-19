@@ -29,24 +29,10 @@ defmodule Rujira.Merge.Listener do
   end
 
   defp scan_event(%{attributes: attrs, type: "wasm-rujira-merge/" <> _}) do
-    scan_attributes(attrs)
+    contract = Map.get(attrs, "_contract_address")
+    account = Map.get(attrs, "account")
+    [contract, account]
   end
 
   defp scan_event(_), do: []
-
-  defp scan_attributes(attributes, collection \\ [])
-
-  defp scan_attributes(
-         [
-           %{value: contract_address, key: "_contract_address"},
-           %{value: account, key: "account"}
-           | rest
-         ],
-         collection
-       ) do
-    scan_attributes(rest, [{contract_address, account} | collection])
-  end
-
-  defp scan_attributes([_ | rest], collection), do: scan_attributes(rest, collection)
-  defp scan_attributes([], collection), do: collection
 end

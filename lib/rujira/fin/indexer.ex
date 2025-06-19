@@ -19,7 +19,7 @@ defmodule Rujira.Fin.Indexer do
 
   defp scan_events(height, txhash, tx_idx, events, time) do
     events
-    |> Enum.flat_map(&scan_event/1)
+    |> Enum.flat_map(&scan_trade/1)
     |> Enum.with_index()
     |> Enum.map(fn {trade, idx} ->
       Map.merge(trade, %{
@@ -34,36 +34,20 @@ defmodule Rujira.Fin.Indexer do
     |> Rujira.Fin.insert_trades()
   end
 
-  defp scan_event(%{attributes: attributes, type: "wasm-rujira-fin/trade"}) do
-    scan_attributes(attributes)
+  defp scan_trade(%{attributes: attributes, type: "wasm-rujira-fin/trade"}) do
+    contract_address = Map.get(attributes, "_contract_address")
+    bid = Map.get(attributes, "bid")
+    offer = Map.get(attributes, "offer")
+    price = Map.get(attributes, "price")
+    rate = Map.get(attributes, "rate")
+    side = Map.get(attributes, "side")
+
+    insert_trade(contract_address, rate, price, offer, bid, side)
   end
 
-  defp scan_event(_), do: []
+  defp scan_trade(_), do: []
 
-  defp scan_attributes(attributes, collection \\ [])
-
-  defp scan_attributes(
-         [
-           %{key: "_contract_address", value: contract_address},
-           %{key: "bid", value: bid},
-           %{key: "offer", value: offer},
-           %{key: "price", value: price},
-           %{key: "rate", value: rate},
-           %{key: "side", value: side}
-           | rest
-         ],
-         collection
-       ) do
-    scan_attributes(
-      rest,
-      insert_trade(collection, contract_address, rate, price, offer, bid, side)
-    )
-  end
-
-  defp scan_attributes([_ | rest], collection), do: scan_attributes(rest, collection)
-  defp scan_attributes([], collection), do: collection
-
-  defp insert_trade(collection, contract_address, rate, price, offer, bid, side) do
+  defp insert_trade(contract_address, rate, price, offer, bid, side) do
     with {offer, _} <- Integer.parse(offer),
          {bid, _} <- Integer.parse(bid),
          {rate, _} <- Float.parse(rate) do
@@ -77,9 +61,9 @@ defmodule Rujira.Fin.Indexer do
           side: String.to_existing_atom(side)
         }
 
-        [trade | collection]
+        [trade]
       else
-        collection
+        []
       end
     end
   end

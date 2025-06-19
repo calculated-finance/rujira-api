@@ -33,7 +33,7 @@ defmodule Rujira.Bank.Transfer do
       end)
       |> Enum.concat(begin_block_events)
       |> Enum.concat(end_block_events)
-      |> Enum.flat_map(&scan_event/1)
+      |> Enum.flat_map(&scan_transfer/1)
       |> Enum.with_index()
       |> Enum.map(fn {transfer, idx} ->
         Map.merge(transfer, %{
@@ -50,33 +50,16 @@ defmodule Rujira.Bank.Transfer do
     {:noreply, state}
   end
 
-  def scan_event(%{attributes: attributes, type: "transfer"}) do
-    scan_attributes(attributes)
+  defp scan_transfer(%{attributes: attrs, type: "transfer"}) do
+    recipient = Map.get(attrs, "recipient")
+    sender = Map.get(attrs, "sender")
+
+    Map.get(attrs, "amount")
+    |> parse_tokens()
+    |> Enum.map(&Map.merge(&1, %{recipient: recipient, sender: sender}))
   end
 
-  def scan_event(_), do: []
-
-  defp scan_attributes(attributes, collection \\ [])
-
-  defp scan_attributes(
-         [
-           %{key: "recipient", value: recipient},
-           %{key: "sender", value: sender},
-           %{key: "amount", value: amount}
-           | rest
-         ],
-         collection
-       ) do
-    entries =
-      amount
-      |> parse_tokens()
-      |> Enum.map(&Map.merge(&1, %{recipient: recipient, sender: sender}))
-
-    scan_attributes(rest, collection ++ entries)
-  end
-
-  defp scan_attributes([_ | rest], collection), do: scan_attributes(rest, collection)
-  defp scan_attributes([], collection), do: collection
+  defp scan_transfer(_), do: []
 
   defp parse_tokens(input) do
     input

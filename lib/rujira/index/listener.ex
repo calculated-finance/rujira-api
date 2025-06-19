@@ -37,12 +37,7 @@ defmodule Rujira.Index.Listener do
   end
 
   defp scan_vault(%{attributes: attrs, type: "wasm-nami-index" <> _}) do
-    map =
-      Enum.reduce(attrs, %{}, fn %{key: key, value: value}, acc -> Map.put(acc, key, value) end)
-
-    contract_address = Map.get(map, "_contract_address")
-
-    [contract_address]
+    [Map.get(attrs, "_contract_address")]
   end
 
   defp scan_vault(_), do: []
@@ -51,12 +46,9 @@ defmodule Rujira.Index.Listener do
          type: "transfer",
          attributes: attrs
        }) do
-    map =
-      Enum.reduce(attrs, %{}, fn %{key: key, value: value}, acc -> Map.put(acc, key, value) end)
-
-    amount = Map.get(map, "amount")
-    recipient = Map.get(map, "recipient")
-    sender = Map.get(map, "sender")
+    amount = Map.get(attrs, "amount")
+    recipient = Map.get(attrs, "recipient")
+    sender = Map.get(attrs, "sender")
 
     with {:ok, coins} <- Assets.parse_coins(amount) do
       coins
@@ -71,11 +63,7 @@ defmodule Rujira.Index.Listener do
          type: "sudo",
          attributes: attrs
        }) do
-    map =
-      Enum.reduce(attrs, %{}, fn %{key: key, value: value}, acc -> Map.put(acc, key, value) end)
-
-    contract_address = Map.get(map, "_contract_address")
-    [contract_address]
+    [Map.get(attrs, "_contract_address")]
   end
 
   defp scan_sudo(_), do: []
