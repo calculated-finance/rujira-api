@@ -10,1699 +10,663 @@
   },
   header: %{
     time: ~U[2025-06-09 14:11:34.330273Z],
-    height: 4541708,
-    chain_id: "thorchain-stagenet-2"
+    chain_id: "thorchain-stagenet-2",
+    height: 4541708
   },
   begin_block_events: [],
   end_block_events: [
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "spender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "47511rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "47511rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "coin_spent"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "receiver",
-          value: "sthor1gdq9qejfy33jctztqdrg5v4hvxnytmvjhduacc",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "47511rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "47511rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1gdq9qejfy33jctztqdrg5v4hvxnytmvjhduacc"
+      },
       type: "coin_received"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "recipient",
-          value: "sthor1gdq9qejfy33jctztqdrg5v4hvxnytmvjhduacc",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "47511rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "47511rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1gdq9qejfy33jctztqdrg5v4hvxnytmvjhduacc",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "transfer"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "message"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "spender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "95rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "95rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "coin_spent"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "receiver",
-          value: "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "95rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "95rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6"
+      },
       type: "coin_received"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "recipient",
-          value: "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "95rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "95rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "transfer"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "message"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "spender",
-          value: "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "95rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "95rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6"
+      },
       type: "coin_spent"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "burner",
-          value: "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "95rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "95rune",
+        "burner" => "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6",
+        "mode" => "EndBlock"
+      },
       type: "burn"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "supply",
-          value: "burn",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "denom",
-          value: "rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "95",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "reason",
-          value: "burn_system_income",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "95",
+        "denom" => "rune",
+        "mode" => "EndBlock",
+        "reason" => "burn_system_income",
+        "supply" => "burn"
+      },
       type: "mint_burn"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "spender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "95023rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "95023rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "coin_spent"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "receiver",
-          value: "sthor128a8hqnkaxyqv7qwajpggmfyudh64jl3vgk6jj",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "95023rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "95023rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor128a8hqnkaxyqv7qwajpggmfyudh64jl3vgk6jj"
+      },
       type: "coin_received"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "recipient",
-          value: "sthor128a8hqnkaxyqv7qwajpggmfyudh64jl3vgk6jj",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "95023rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "95023rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor128a8hqnkaxyqv7qwajpggmfyudh64jl3vgk6jj",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "transfer"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "message"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "receiver",
-          value: "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "186xrp/xrp",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "186xrp/xrp",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6"
+      },
       type: "coin_received"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "minter",
-          value: "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "186xrp/xrp",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "186xrp/xrp",
+        "minter" => "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6",
+        "mode" => "EndBlock"
+      },
       type: "coinbase"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "spender",
-          value: "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "186xrp/xrp",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "186xrp/xrp",
+        "mode" => "EndBlock",
+        "spender" => "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6"
+      },
       type: "coin_spent"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "receiver",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "186xrp/xrp",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "186xrp/xrp",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
       type: "coin_received"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "recipient",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "186xrp/xrp",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "186xrp/xrp",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6"
+      },
       type: "transfer"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6"
+      },
       type: "message"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "pool",
-          value: "XRP/XRP",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "id",
-          value: "0000000000000000000000000000000000000000000000000000000000000000",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "chain",
-          value: "THOR",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "from",
-          value: "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "to",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "coin",
-          value: "186 XRP/XRP",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "memo",
-          value: "THOR-SAVERS-YIELD",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "chain" => "THOR",
+        "coin" => "186 XRP/XRP",
+        "from" => "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6",
+        "id" => "0000000000000000000000000000000000000000000000000000000000000000",
+        "memo" => "THOR-SAVERS-YIELD",
+        "mode" => "EndBlock",
+        "pool" => "XRP/XRP",
+        "to" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
       type: "donate"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "spender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "1785rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "1785rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "coin_spent"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "receiver",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "1785rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "1785rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
       type: "coin_received"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "recipient",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "1785rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "1785rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "transfer"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "message"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "spender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "16913rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "16913rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "coin_spent"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "receiver",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "16913rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "16913rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
       type: "coin_received"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "recipient",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "16913rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "16913rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "transfer"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "message"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "spender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "9627rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "9627rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "coin_spent"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "receiver",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "9627rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "9627rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
       type: "coin_received"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "recipient",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "9627rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "9627rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "transfer"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "message"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "spender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "1996rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "1996rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "coin_spent"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "receiver",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "1996rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "1996rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
       type: "coin_received"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "recipient",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "1996rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "1996rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "transfer"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "message"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "spender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "140700rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "140700rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "coin_spent"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "receiver",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "140700rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "140700rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
       type: "coin_received"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "recipient",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "140700rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "140700rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "transfer"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "message"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "spender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "70906rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "70906rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "coin_spent"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "receiver",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "70906rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "70906rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
       type: "coin_received"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "recipient",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "70906rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "70906rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "transfer"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "message"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "spender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "329386rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "329386rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "coin_spent"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "receiver",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "329386rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "329386rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
       type: "coin_received"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "recipient",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "329386rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "329386rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "transfer"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "message"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "spender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "3287rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "3287rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "coin_spent"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "receiver",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "3287rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "3287rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
       type: "coin_received"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "recipient",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "3287rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "3287rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "transfer"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "message"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "spender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "71614rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "71614rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "coin_spent"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "receiver",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "71614rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "71614rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
       type: "coin_received"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "recipient",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "71614rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "71614rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "transfer"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "message"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "spender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "81103rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "81103rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "coin_spent"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "receiver",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "81103rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "81103rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
       type: "coin_received"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "recipient",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "81103rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "81103rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "transfer"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "message"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "spender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "9446rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "9446rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "coin_spent"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "receiver",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "9446rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "9446rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
       type: "coin_received"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "recipient",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "9446rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "9446rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "transfer"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "message"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "spender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "1635rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "1635rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "coin_spent"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "receiver",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "1635rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "1635rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
       type: "coin_received"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "recipient",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "1635rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "1635rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "transfer"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "message"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "spender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "3587rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "3587rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "coin_spent"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "receiver",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "3587rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "3587rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
       type: "coin_received"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "recipient",
-          value: "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "3587rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "3587rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "transfer"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "message"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "spender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "65615rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "65615rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "coin_spent"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "receiver",
-          value: "sthor17gw75axcnr8747pkanye45pnrwk7p9c3ve0wxj",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "65615rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "65615rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor17gw75axcnr8747pkanye45pnrwk7p9c3ve0wxj"
+      },
       type: "coin_received"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "recipient",
-          value: "sthor17gw75axcnr8747pkanye45pnrwk7p9c3ve0wxj",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "amount",
-          value: "65615rune",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "amount" => "65615rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor17gw75axcnr8747pkanye45pnrwk7p9c3ve0wxj",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "transfer"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "sender",
-          value: "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
       type: "message"
     },
     %{
-      attributes: [
-        %Thorchain.Types.EventKeyValuePair{
-          key: "bond_reward",
-          value: "65615",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "dev_fund_reward",
-          value: "47511",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "income_burn",
-          value: "95",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "tcy_stake_reward",
-          value: "95023",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "AVAX.AVAX",
-          value: "1785",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "BASE.CBBTC-0XCBB7C0000AB88B473B1F5AFD9EF808440EED33BF",
-          value: "16913",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "BASE.ETH",
-          value: "9627",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "BCH.BCH",
-          value: "1996",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "BSC.BNB",
-          value: "140700",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "BSC.USDT-0X55D398326F99059FF775485246999027B3197955",
-          value: "70906",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "BTC.BTC",
-          value: "329386",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "DOGE.DOGE",
-          value: "3287",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "ETH.ETH",
-          value: "71614",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "ETH.USDT-0XDAC17F958D2EE523A2206206994597C13D831EC7",
-          value: "81103",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "GAIA.ATOM",
-          value: "9446",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "LTC.LTC",
-          value: "1635",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "XRP.XRP",
-          value: "3587",
-          __unknown_fields__: []
-        },
-        %Thorchain.Types.EventKeyValuePair{
-          key: "mode",
-          value: "EndBlock",
-          __unknown_fields__: []
-        }
-      ],
+      attributes: %{
+        "AVAX.AVAX" => "1785",
+        "BASE.CBBTC-0XCBB7C0000AB88B473B1F5AFD9EF808440EED33BF" => "16913",
+        "BASE.ETH" => "9627",
+        "BCH.BCH" => "1996",
+        "BSC.BNB" => "140700",
+        "BSC.USDT-0X55D398326F99059FF775485246999027B3197955" => "70906",
+        "BTC.BTC" => "329386",
+        "DOGE.DOGE" => "3287",
+        "ETH.ETH" => "71614",
+        "ETH.USDT-0XDAC17F958D2EE523A2206206994597C13D831EC7" => "81103",
+        "GAIA.ATOM" => "9446",
+        "LTC.LTC" => "1635",
+        "XRP.XRP" => "3587",
+        "bond_reward" => "65615",
+        "dev_fund_reward" => "47511",
+        "income_burn" => "95",
+        "mode" => "EndBlock",
+        "tcy_stake_reward" => "95023"
+      },
       type: "rewards"
     }
   ],
@@ -1715,293 +679,121 @@
         log: "",
         events: [
           %{
-            attributes: [
-              %Thorchain.Types.EventKeyValuePair{
-                key: "fee",
-                value: "0rune",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "fee_payer",
-                value: "sthor1t4gsjfs8q8j3mw2e402r8vzrtaslsf5re3ktut",
-                __unknown_fields__: []
-              }
-            ],
+            attributes: %{
+              "fee" => "0rune",
+              "fee_payer" => "sthor1t4gsjfs8q8j3mw2e402r8vzrtaslsf5re3ktut"
+            },
             type: "tx"
           },
           %{
-            attributes: [
-              %Thorchain.Types.EventKeyValuePair{
-                key: "acc_seq",
-                value: "sthor1t4gsjfs8q8j3mw2e402r8vzrtaslsf5re3ktut/9",
-                __unknown_fields__: []
-              }
-            ],
+            attributes: %{
+              "acc_seq" => "sthor1t4gsjfs8q8j3mw2e402r8vzrtaslsf5re3ktut/9"
+            },
             type: "tx"
           },
           %{
-            attributes: [
-              %Thorchain.Types.EventKeyValuePair{
-                key: "signature",
-                value: "7Q9Dem14yUFXAdWIxgu9NB/zj+hr5pFmshPRt1tktJk//2NtxvpAJA6s4Rpx1hOdGHhGsgkKXQJQ829q8uyotg==",
-                __unknown_fields__: []
-              }
-            ],
+            attributes: %{
+              "signature" => "7Q9Dem14yUFXAdWIxgu9NB/zj+hr5pFmshPRt1tktJk//2NtxvpAJA6s4Rpx1hOdGHhGsgkKXQJQ829q8uyotg=="
+            },
             type: "tx"
           },
           %{
-            attributes: [
-              %Thorchain.Types.EventKeyValuePair{
-                key: "action",
-                value: "/cosmwasm.wasm.v1.MsgExecuteContract",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "sender",
-                value: "sthor1t4gsjfs8q8j3mw2e402r8vzrtaslsf5re3ktut",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "module",
-                value: "wasm",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "msg_index",
-                value: "0",
-                __unknown_fields__: []
-              }
-            ],
+            attributes: %{
+              "action" => "/cosmwasm.wasm.v1.MsgExecuteContract",
+              "module" => "wasm",
+              "msg_index" => "0",
+              "sender" => "sthor1t4gsjfs8q8j3mw2e402r8vzrtaslsf5re3ktut"
+            },
             type: "message"
           },
           %{
-            attributes: [
-              %Thorchain.Types.EventKeyValuePair{
-                key: "spender",
-                value: "sthor1t4gsjfs8q8j3mw2e402r8vzrtaslsf5re3ktut",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "amount",
-                value: "507797rune,500000x/ruji",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "msg_index",
-                value: "0",
-                __unknown_fields__: []
-              }
-            ],
+            attributes: %{
+              "amount" => "507797rune,500000x/ruji",
+              "msg_index" => "0",
+              "spender" => "sthor1t4gsjfs8q8j3mw2e402r8vzrtaslsf5re3ktut"
+            },
             type: "coin_spent"
           },
           %{
-            attributes: [
-              %Thorchain.Types.EventKeyValuePair{
-                key: "receiver",
-                value: "sthor1rh0z23g5m6nd7ja98yn7hkeuavqqpd77fxakgzz4w3635jgksy0qdetur3",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "amount",
-                value: "507797rune,500000x/ruji",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "msg_index",
-                value: "0",
-                __unknown_fields__: []
-              }
-            ],
+            attributes: %{
+              "amount" => "507797rune,500000x/ruji",
+              "msg_index" => "0",
+              "receiver" => "sthor1rh0z23g5m6nd7ja98yn7hkeuavqqpd77fxakgzz4w3635jgksy0qdetur3"
+            },
             type: "coin_received"
           },
           %{
-            attributes: [
-              %Thorchain.Types.EventKeyValuePair{
-                key: "recipient",
-                value: "sthor1rh0z23g5m6nd7ja98yn7hkeuavqqpd77fxakgzz4w3635jgksy0qdetur3",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "sender",
-                value: "sthor1t4gsjfs8q8j3mw2e402r8vzrtaslsf5re3ktut",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "amount",
-                value: "507797rune,500000x/ruji",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "msg_index",
-                value: "0",
-                __unknown_fields__: []
-              }
-            ],
+            attributes: %{
+              "amount" => "507797rune,500000x/ruji",
+              "msg_index" => "0",
+              "recipient" => "sthor1rh0z23g5m6nd7ja98yn7hkeuavqqpd77fxakgzz4w3635jgksy0qdetur3",
+              "sender" => "sthor1t4gsjfs8q8j3mw2e402r8vzrtaslsf5re3ktut"
+            },
             type: "transfer"
           },
           %{
-            attributes: [
-              %Thorchain.Types.EventKeyValuePair{
-                key: "_contract_address",
-                value: "sthor1rh0z23g5m6nd7ja98yn7hkeuavqqpd77fxakgzz4w3635jgksy0qdetur3",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "msg_index",
-                value: "0",
-                __unknown_fields__: []
-              }
-            ],
+            attributes: %{
+              "_contract_address" => "sthor1rh0z23g5m6nd7ja98yn7hkeuavqqpd77fxakgzz4w3635jgksy0qdetur3",
+              "msg_index" => "0"
+            },
             type: "execute"
           },
           %{
-            attributes: [
-              %Thorchain.Types.EventKeyValuePair{
-                key: "_contract_address",
-                value: "sthor1rh0z23g5m6nd7ja98yn7hkeuavqqpd77fxakgzz4w3635jgksy0qdetur3",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "owner",
-                value: "sthor1t4gsjfs8q8j3mw2e402r8vzrtaslsf5re3ktut",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "minted",
-                value: "503842x/bow-xyk-x/ruji-rune",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "msg_index",
-                value: "0",
-                __unknown_fields__: []
-              }
-            ],
+            attributes: %{
+              "_contract_address" => "sthor1rh0z23g5m6nd7ja98yn7hkeuavqqpd77fxakgzz4w3635jgksy0qdetur3",
+              "minted" => "503842x/bow-xyk-x/ruji-rune",
+              "msg_index" => "0",
+              "owner" => "sthor1t4gsjfs8q8j3mw2e402r8vzrtaslsf5re3ktut"
+            },
             type: "wasm-rujira-bow/deposit"
           },
           %{
-            attributes: [
-              %Thorchain.Types.EventKeyValuePair{
-                key: "receiver",
-                value: "sthor18afpdapfxxlvxcf95a3rd6p0fsw37mnfqj8aly",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "amount",
-                value: "503842x/bow-xyk-x/ruji-rune",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "msg_index",
-                value: "0",
-                __unknown_fields__: []
-              }
-            ],
+            attributes: %{
+              "amount" => "503842x/bow-xyk-x/ruji-rune",
+              "msg_index" => "0",
+              "receiver" => "sthor18afpdapfxxlvxcf95a3rd6p0fsw37mnfqj8aly"
+            },
             type: "coin_received"
           },
           %{
-            attributes: [
-              %Thorchain.Types.EventKeyValuePair{
-                key: "minter",
-                value: "sthor18afpdapfxxlvxcf95a3rd6p0fsw37mnfqj8aly",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "amount",
-                value: "503842x/bow-xyk-x/ruji-rune",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "msg_index",
-                value: "0",
-                __unknown_fields__: []
-              }
-            ],
+            attributes: %{
+              "amount" => "503842x/bow-xyk-x/ruji-rune",
+              "minter" => "sthor18afpdapfxxlvxcf95a3rd6p0fsw37mnfqj8aly",
+              "msg_index" => "0"
+            },
             type: "coinbase"
           },
           %{
-            attributes: [
-              %Thorchain.Types.EventKeyValuePair{
-                key: "spender",
-                value: "sthor18afpdapfxxlvxcf95a3rd6p0fsw37mnfqj8aly",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "amount",
-                value: "503842x/bow-xyk-x/ruji-rune",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "msg_index",
-                value: "0",
-                __unknown_fields__: []
-              }
-            ],
+            attributes: %{
+              "amount" => "503842x/bow-xyk-x/ruji-rune",
+              "msg_index" => "0",
+              "spender" => "sthor18afpdapfxxlvxcf95a3rd6p0fsw37mnfqj8aly"
+            },
             type: "coin_spent"
           },
           %{
-            attributes: [
-              %Thorchain.Types.EventKeyValuePair{
-                key: "receiver",
-                value: "sthor1t4gsjfs8q8j3mw2e402r8vzrtaslsf5re3ktut",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "amount",
-                value: "503842x/bow-xyk-x/ruji-rune",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "msg_index",
-                value: "0",
-                __unknown_fields__: []
-              }
-            ],
+            attributes: %{
+              "amount" => "503842x/bow-xyk-x/ruji-rune",
+              "msg_index" => "0",
+              "receiver" => "sthor1t4gsjfs8q8j3mw2e402r8vzrtaslsf5re3ktut"
+            },
             type: "coin_received"
           },
           %{
-            attributes: [
-              %Thorchain.Types.EventKeyValuePair{
-                key: "recipient",
-                value: "sthor1t4gsjfs8q8j3mw2e402r8vzrtaslsf5re3ktut",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "sender",
-                value: "sthor18afpdapfxxlvxcf95a3rd6p0fsw37mnfqj8aly",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "amount",
-                value: "503842x/bow-xyk-x/ruji-rune",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "msg_index",
-                value: "0",
-                __unknown_fields__: []
-              }
-            ],
+            attributes: %{
+              "amount" => "503842x/bow-xyk-x/ruji-rune",
+              "msg_index" => "0",
+              "recipient" => "sthor1t4gsjfs8q8j3mw2e402r8vzrtaslsf5re3ktut",
+              "sender" => "sthor18afpdapfxxlvxcf95a3rd6p0fsw37mnfqj8aly"
+            },
             type: "transfer"
           },
           %{
-            attributes: [
-              %Thorchain.Types.EventKeyValuePair{
-                key: "mint_to_address",
-                value: "sthor1rh0z23g5m6nd7ja98yn7hkeuavqqpd77fxakgzz4w3635jgksy0qdetur3",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "amount",
-                value: "503842x/bow-xyk-x/ruji-rune",
-                __unknown_fields__: []
-              },
-              %Thorchain.Types.EventKeyValuePair{
-                key: "msg_index",
-                value: "0",
-                __unknown_fields__: []
-              }
-            ],
+            attributes: %{
+              "amount" => "503842x/bow-xyk-x/ruji-rune",
+              "mint_to_address" => "sthor1rh0z23g5m6nd7ja98yn7hkeuavqqpd77fxakgzz4w3635jgksy0qdetur3",
+              "msg_index" => "0"
+            },
             type: "mint"
           }
         ],

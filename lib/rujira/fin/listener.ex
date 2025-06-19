@@ -20,7 +20,7 @@ defmodule Rujira.Fin.Listener do
 
     addresses =
       events
-      |> Enum.flat_map(&scan_event/1)
+      |> Enum.flat_map(&scan_fin_event/1)
       |> Enum.uniq()
       # Trades are withdrawn before retraction. Ensure we're not re-publishing an order that doens't exist
       |> Enum.reverse()
@@ -60,23 +60,15 @@ defmodule Rujira.Fin.Listener do
     end
   end
 
-  def scan_event(%{attributes: attributes, type: "wasm-rujira-fin/" <> name}) do
-    scan_attributes(attributes, name)
-  end
-
-  def scan_event(_), do: []
-
-  defp scan_attributes(
-         attributes,
-         name
-       ) do
-    map = Map.new(attributes, fn %{key: k, value: v} -> {k, v} end)
-    address = Map.get(map, "_contract_address")
-    side = Map.get(map, "side")
-    price = Map.get(map, "price")
-    owner = Map.get(map, "owner")
+  def scan_fin_event(%{attributes: attributes, type: "wasm-rujira-fin/" <> name}) do
+    address = Map.get(attributes, "_contract_address")
+    side = Map.get(attributes, "side")
+    price = Map.get(attributes, "price")
+    owner = Map.get(attributes, "owner")
     [{name, address, owner, side, price}]
   end
+
+  def scan_fin_event(_), do: []
 
   def scan_bow_event(%{attributes: attributes, type: "wasm-rujira-bow/" <> _}) do
     scan_bow_attributes(attributes)
@@ -85,9 +77,6 @@ defmodule Rujira.Fin.Listener do
   def scan_bow_event(_), do: []
 
   defp scan_bow_attributes(attributes) do
-    map = Map.new(attributes, fn %{key: k, value: v} -> {k, v} end)
-    address = Map.get(map, "_contract_address")
-
-    [address]
+    [Map.get(attributes, "_contract_address")]
   end
 end

@@ -22,13 +22,9 @@ defmodule Thorchain.Swaps.Listener do
   end
 
   defp scan_event(%{attributes: attributes, type: "swap"}) do
-    scan_attributes(attributes)
-  end
-
-  defp scan_event(_), do: []
-
-  defp scan_attributes(attributes) do
     map = Map.new(attributes, fn %{key: k, value: v} -> {k, v} end)
     [Map.get(map, "pool")]
   end
+
+  defp scan_event(_), do: []
 end

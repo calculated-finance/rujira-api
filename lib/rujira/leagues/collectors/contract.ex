@@ -48,30 +48,37 @@ defmodule Rujira.Leagues.Collectors.Contract do
          [
            %{
              type: "message",
-             attributes: [
-               %{key: "action", value: "/cosmwasm.wasm.v1.MsgExecuteContract"},
-               %{key: "sender", value: sender} | _
-             ]
+             attributes: attrs
            }
            | rest
          ],
          collection,
          ctx
        ) do
-    collect_events(rest, collection, %{ctx | sender: sender})
+    action = Map.get(attrs, "action")
+    sender = Map.get(attrs, "sender")
+
+    case action do
+      "/cosmwasm.wasm.v1.MsgExecuteContract" ->
+        collect_events(rest, collection, %{ctx | sender: sender})
+      _ ->
+        collect_events(rest, collection, ctx)
+    end
   end
 
   defp collect_events(
          [
            %{
              type: "execute",
-             attributes: [%{key: "_contract_address", value: contract} | _]
+             attributes: attrs
            }
            | rest
          ],
          collection,
          ctx
        ) do
+    contract = Map.get(attrs, "_contract_address")
+
     collect_events(rest, collection, %{ctx | contract: contract})
   end
 
@@ -79,18 +86,16 @@ defmodule Rujira.Leagues.Collectors.Contract do
          [
            %{
              type: "transfer",
-             attributes: [
-               %{key: "amount", value: amount},
-               %{key: "recipient", value: recipient},
-               %{key: "sender", value: _}
-               | _
-             ]
+             attributes: attrs
            }
            | rest
          ],
          collection,
          ctx
        ) do
+    recipient = Map.get(attrs, "recipient")
+    amount = Map.get(attrs, "amount")
+
     if Enum.member?(fee_addresses(), recipient) do
       collection =
         amount

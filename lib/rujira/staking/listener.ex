@@ -17,8 +17,8 @@ defmodule Rujira.Staking.Listener do
         _ -> []
       end)
 
-    executions = events |> Enum.flat_map(&scan_events(&1, :staking)) |> Enum.uniq()
-    transfers = events |> Enum.flat_map(&scan_events(&1, :transfers)) |> Enum.uniq()
+    executions = events |> Enum.flat_map(&scan_staking_event/1) |> Enum.uniq()
+    transfers = events |> Enum.flat_map(&scan_transfer/1) |> Enum.uniq()
 
     for {a, o} <- executions do
       Logger.debug("#{__MODULE__} execution #{a}")
@@ -41,37 +41,17 @@ defmodule Rujira.Staking.Listener do
     end
   end
 
-  def scan_events(%{attributes: attrs, type: "wasm-rujira-staking/" <> _}, :staking),
-    do: scan_executions(attrs)
-
-  def scan_events(%{attributes: attrs, type: "transfer"}, :transfers), do: scan_transfers(attrs)
-  def scan_events(_, _), do: []
-
-  defp scan_executions(attributes, collection \\ [])
-
-  defp scan_executions(
-         [
-           %{value: contract_address, key: "_contract_address"},
-           %{value: owner, key: "owner"}
-           | rest
-         ],
-         collection
-       ) do
-    scan_executions(rest, [{contract_address, owner} | collection])
+  def scan_staking_event(%{attributes: attrs, type: "wasm-rujira-staking/" <> _}) do
+    contract = Map.get(attrs, "_contract_address")
+    owner = Map.get(attrs, "owner")
+    [{contract, owner}]
   end
 
-  defp scan_executions([_ | rest], collection), do: scan_executions(rest, collection)
-  defp scan_executions([], collection), do: collection
+  def scan_staking_event(_), do: []
 
-  defp scan_transfers(attributes, collection \\ [])
-
-  defp scan_transfers(
-         [%{value: recipient, key: "recipient"} | rest],
-         collection
-       ) do
-    scan_transfers(rest, [recipient | collection])
+  def scan_transfer(%{attributes: attrs, type: "transfer"}) do
+    [Map.get(attrs, "recipient")]
   end
 
-  defp scan_transfers([_ | rest], collection), do: scan_transfers(rest, collection)
-  defp scan_transfers([], collection), do: collection
+  def scan_transfer(_), do: []
 end

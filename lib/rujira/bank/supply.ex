@@ -50,28 +50,15 @@ defmodule Rujira.Bank.Supply do
     end)
   end
 
-  def scan_event(%{attributes: attributes, type: "coinbase"}) do
-    scan_attributes(attributes)
-  end
+  def scan_event(%{attributes: attrs, type: "coinbase"}), do: scan_attributes(attrs)
 
-  def scan_event(%{attributes: attributes, type: "burn"}) do
-    scan_attributes(attributes)
-  end
+  def scan_event(%{attributes: attrs, type: "burn"}), do: scan_attributes(attrs)
 
   def scan_event(_), do: []
 
-  defp scan_attributes(attributes, collection \\ [])
+  def scan_attributes(attrs) do
+    amount = Map.get(attrs, "amount")
 
-  defp scan_attributes(
-         [
-           %{value: amount, key: "amount"}
-           | rest
-         ],
-         collection
-       ) do
-    scan_attributes(rest, [String.replace(amount, ~r/[0-9]+/, "") | collection])
+    [String.replace(amount, ~r/[0-9]+/, "")]
   end
-
-  defp scan_attributes([_ | rest], collection), do: scan_attributes(rest, collection)
-  defp scan_attributes([], collection), do: collection
 end

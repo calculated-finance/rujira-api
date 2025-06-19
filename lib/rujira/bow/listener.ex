@@ -18,7 +18,7 @@ defmodule Rujira.Bow.Listener do
         _ -> []
       end)
 
-    pools = events |> Enum.flat_map(&scan_event/1) |> Enum.uniq()
+    pools = events |> Enum.flat_map(&scan_pool/1) |> Enum.uniq()
 
     transfers =
       events
@@ -42,44 +42,21 @@ defmodule Rujira.Bow.Listener do
     end
   end
 
-  defp scan_event(%{attributes: attrs, type: "wasm-rujira-bow/" <> _}) do
-    scan_attributes(attrs)
-  end
-
-  defp scan_event(_), do: []
-
-  defp scan_attributes(attrs) do
-    attr_map = Map.new(attrs, fn %{key: k, value: v} -> {k, v} end)
-    contract = Map.get(attr_map, "_contract_address")
+  defp scan_pool(%{attributes: attrs, type: "wasm-rujira-bow/" <> _}) do
+    contract = Map.get(attrs, "_contract_address")
     [contract]
   end
 
-  # TODO: handle x/wasm events being in a different order
-  defp scan_transfer(%{
-         type: "transfer",
-         attributes: [
-           %{key: "recipient", value: recipient},
-           %{key: "sender", value: sender},
-           %{key: "amount", value: amount} | _
-         ]
-       }) do
-    with {:ok, coins} <- Assets.parse_coins(amount) do
-      coins
-      |> Enum.filter(&is_lp_coin/1)
-      |> Enum.flat_map(&merge_accounts(&1, [recipient, sender]))
-    else
-      _ -> []
-    end
-  end
+  defp scan_pool(_), do: []
 
   defp scan_transfer(%{
          type: "transfer",
-         attributes: [
-           %{key: "amount", value: amount},
-           %{key: "recipient", value: recipient},
-           %{key: "sender", value: sender} | _
-         ]
+         attributes: attrs
        }) do
+    amount = Map.get(attrs, "amount")
+    recipient = Map.get(attrs, "recipient")
+    sender = Map.get(attrs, "sender")
+
     with {:ok, coins} <- Assets.parse_coins(amount) do
       coins
       |> Enum.filter(&is_lp_coin/1)
