@@ -46,8 +46,7 @@ defmodule RujiraWeb.Resolvers.Fin do
       {:ok,
        %{
          summary
-         | last_usd:
-             price |> Decimal.mult(summary.last) |> Decimal.div(Decimal.new(1_000_000_000_000)),
+         | last_usd: Decimal.mult(price, summary.last),
            volume: %{
              asset: volume_asset,
              amount: summary.volume
