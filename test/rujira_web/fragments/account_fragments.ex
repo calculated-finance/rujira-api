@@ -19,6 +19,9 @@ defmodule RujiraWeb.Fragments.AccountFragments do
     staking {
       ...StakingAccountsFragment
     }
+    staking_v2 {
+      ...StakingAccountFragment
+    }
     strategies {
       ...StrategyAccountFragment
     }
@@ -26,6 +29,7 @@ defmodule RujiraWeb.Fragments.AccountFragments do
   #{get_bow_account_fragment()}
   #{get_fin_account_fragment()}
   #{get_staking_accounts_fragment()}
+  #{get_staking_account_fragment()}
   #{get_strategy_account_fragment()}
   """
 

@@ -44,10 +44,15 @@ defmodule Rujira.Deployments do
     end)
   end
 
+  @doc """
+  List all targets for a given module
+  Exclude targets that are still not deployed
+  """
   defmemo list_targets(module, plan \\ plan()) do
     plan
     |> list_all_targets()
     |> Enum.filter(&(&1.module === module))
+    |> Enum.filter(&(&1.contract != nil))
   end
 
   defmemo load_config!(plan \\ plan()) do
