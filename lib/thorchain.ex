@@ -346,7 +346,7 @@ defmodule Thorchain do
 
   defp finalized_events(%{result: %{events: events}}, hash) do
     Enum.filter(events, fn %{attributes: attributes} ->
-      Enum.any?(attributes, &(&1.value == hash))
+      Enum.any?(attributes, &(elem(&1, 1) == hash))
     end)
   end
 
