@@ -28,6 +28,10 @@ defmodule RujiraWeb.Schema do
   import_types(RujiraWeb.Schema.TokenTypes)
   import_types(RujiraWeb.Schema.VenturesTypes)
 
+  def middleware(middleware, _field, _) do
+    [RujiraWeb.Middleware.InstrumentResolver | middleware]
+  end
+
   query do
     field :node, :node do
       arg(:id, non_null(:id))
