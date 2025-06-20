@@ -128,6 +128,8 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :filled_fee, non_null(:bigint)
     field :type, non_null(:string)
     field :deviation, :bigint
+    @desc "The value of the order in USD as remaining value + filled value"
+    field :value_usd, non_null(:bigint)
   end
 
   @desc "Single trade executed by on a fin pair"

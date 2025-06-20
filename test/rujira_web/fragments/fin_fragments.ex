@@ -149,6 +149,7 @@ defmodule RujiraWeb.Fragments.FinFragments do
     filled
     filledValue
     filledFee
+    valueUsd
     type
     deviation
     pair {
