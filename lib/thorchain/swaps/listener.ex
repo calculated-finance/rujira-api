@@ -21,6 +21,6 @@ defmodule Thorchain.Swaps.Listener do
     end
   end
 
-  defp scan_event(%{attributes: %{"pool" => pool}, type: "swap"}), do: pool
+  defp scan_event(%{attributes: %{"pool" => pool}, type: "swap"}), do: [pool]
   defp scan_event(_), do: []
 end
