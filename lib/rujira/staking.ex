@@ -21,6 +21,7 @@ defmodule Rujira.Staking do
 
   @impl true
   def init(state) do
+    list_pools()
     {:ok, state}
   end
 

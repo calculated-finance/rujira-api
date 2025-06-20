@@ -11,10 +11,20 @@ defmodule Rujira.Deployments do
   alias Rujira.Staking
   alias Rujira.Contracts
   alias Rujira.Index
-
+  use GenServer
   use Memoize
 
   @path "data/deployments"
+
+  def start_link(state) do
+    GenServer.start_link(__MODULE__, state)
+  end
+
+  @impl true
+  def init(state) do
+    list_all_targets()
+    {:ok, state}
+  end
 
   defp plan() do
     Application.get_env(:rujira, __MODULE__, plan: "stagenet/v1")

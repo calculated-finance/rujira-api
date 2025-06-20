@@ -28,6 +28,7 @@ defmodule Rujira.Fin do
 
   @impl true
   def init(state) do
+    list_pairs()
     {:ok, state}
   end
 
