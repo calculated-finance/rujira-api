@@ -88,6 +88,8 @@ defmodule RujiraWeb.Resolvers.Ventures do
   def deposit(%{sale: %{deposit: deposit}}, _, _), do: do_deposit(deposit)
   def deposit(%{deposit: deposit}, _, _), do: do_deposit(deposit)
 
+  defp do_deposit(nil), do: {:ok, nil}
+
   defp do_deposit(%{denom: denom, amount: amount}) do
     with {:ok, asset} <- Assets.from_denom(denom) do
       {:ok, %{asset: asset, amount: amount}}
