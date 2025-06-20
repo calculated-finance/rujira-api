@@ -47,6 +47,10 @@ defmodule RujiraWeb.Schema.AccountTypes do
       resolve(&Resolvers.Staking.accounts/3)
     end
 
+    field :staking_v2, non_null(list_of(non_null(:staking_account))) do
+      resolve(&Resolvers.Staking.all_accounts/3)
+    end
+
     field :strategies, non_null(list_of(non_null(:strategy_account))) do
       resolve(&Resolvers.Strategy.accounts/3)
     end

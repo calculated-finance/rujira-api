@@ -66,6 +66,17 @@ defmodule RujiraWeb.Resolvers.Staking do
     end)
   end
 
+  def all_accounts(%{address: address}, _, _) do
+    with {:ok, pools} <- Rujira.Staking.list_pools() do
+      Rujira.Enum.reduce_while_ok(pools, [], fn x ->
+        case Rujira.Staking.load_account(x, address) do
+          {:ok, %{bonded: 0}} -> :skip
+          other -> other
+        end
+      end)
+    end
+  end
+
   def pending_revenue(
         %{bonded: bonded, pending_revenue: pending_revenue, pool: pool},
         _,
