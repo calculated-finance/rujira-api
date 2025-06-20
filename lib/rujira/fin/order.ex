@@ -86,7 +86,14 @@ defmodule Rujira.Fin.Order do
         filled_fee: filled_fee,
         type: type,
         deviation: deviation,
-        value_usd: Prices.value_usd(asset.symbol, remaining_value + filled_value)
+        value_usd:
+          case side do
+            :base ->
+              Prices.value_usd(asset.symbol, remaining_value + filled)
+
+            :quote ->
+              Prices.value_usd(asset.symbol, remaining + filled_value)
+          end
       }
     end
   end
