@@ -4,6 +4,7 @@ defmodule Thorchain do
   alias Thorchain.Types.QueryLiquidityProviderRequest
   alias Rujira.Assets
   alias Rujira.Assets.Asset
+  alias Rujira.Prices
   alias Thorchain.Common.Coin
   alias Thorchain.Common.Tx
   alias Thorchain.Swaps
@@ -93,9 +94,10 @@ defmodule Thorchain do
   end
 
   def cast_liquidity_provider(provider) do
+    asset = Assets.from_string(provider.asset)
     provider
     |> Map.put(:id, "#{provider.asset}/#{provider.rune_address}")
-    |> Map.put(:asset, Assets.from_string(provider.asset))
+    |> Map.put(:asset, asset)
     |> Map.update(:asset_address, nil, fn
       "" -> nil
       x -> x
@@ -111,6 +113,7 @@ defmodule Thorchain do
     |> Map.update(:units, "0", &String.to_integer/1)
     |> Map.update(:pending_rune, "0", &String.to_integer/1)
     |> Map.update(:pending_asset, "0", &String.to_integer/1)
+    |> Map.put(:value_usd, Prices.value_usd(asset.symbol, provider.asset_redeem_value))
   end
 
   def cast_pool(pool) do

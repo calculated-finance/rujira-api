@@ -1,5 +1,7 @@
 defmodule RujiraWeb.Resolvers.Bow do
   alias Absinthe.Resolution.Helpers
+  alias Rujira.Assets
+  alias Rujira.Prices
 
   def resolver(_, _, _) do
     Helpers.async(&Rujira.Bow.list_pools/0)
@@ -31,5 +33,15 @@ defmodule RujiraWeb.Resolvers.Bow do
          {:ok, quotes} <- Rujira.Bow.load_quotes(address) do
       {:ok, Map.put(quotes, :contract, pair.address)}
     end
+  end
+
+  def value_usd(values) do
+    Enum.reduce(values, 0, fn %{amount: amount, denom: denom}, acc ->
+      with {:ok, asset} <- Assets.from_denom(denom) do
+        acc + Prices.value_usd(asset.symbol, amount)
+      else
+        _ -> acc
+      end
+    end)
   end
 end

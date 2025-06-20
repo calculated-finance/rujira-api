@@ -136,6 +136,7 @@ defmodule RujiraWeb.Fragments.ThorchainFragments do
     assetDepositValue
     runeRedeemValue
     assetRedeemValue
+    valueUsd
   }
   #{@asset_fragment}
   """

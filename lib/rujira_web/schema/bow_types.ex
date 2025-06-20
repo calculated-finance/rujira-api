@@ -136,5 +136,11 @@ defmodule RujiraWeb.Schema.BowTypes do
         end)
       end)
     end
+
+    field :value_usd, non_null(:bigint) do
+      resolve(fn %{value_usd: value}, _, _ ->
+        RujiraWeb.Resolvers.Bow.value_usd(value)
+      end)
+    end
   end
 end

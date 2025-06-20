@@ -145,6 +145,7 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     field :asset_deposit_value, non_null(:bigint)
     field :rune_redeem_value, non_null(:bigint)
     field :asset_redeem_value, non_null(:bigint)
+    field :value_usd, non_null(:bigint)
     # field :luvi_deposit_value, 14, type: :string, json_name: "luviDepositValue"
     # field :luvi_redeem_value, 15, type: :string, json_name: "luviRedeemValue"
     # field :luvi_growth_pct, 16, type: :string, json_name: "luviGrowthPct"

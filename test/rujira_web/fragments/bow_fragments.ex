@@ -106,6 +106,7 @@ defmodule RujiraWeb.Fragments.BowFragments do
     value {
       ...BalanceFragment
     }
+    valueUsd
   }
   #{@balance_fragment}
   """

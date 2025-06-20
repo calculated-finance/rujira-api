@@ -1,4 +1,7 @@
 defmodule Rujira.Fin.Order do
+  alias Rujira.Assets
+  alias Rujira.Prices
+
   defstruct id: nil,
             pair: nil,
             owner: nil,
@@ -12,6 +15,7 @@ defmodule Rujira.Fin.Order do
             filled: 0,
             filled_value: 0,
             filled_fee: 0,
+            value_usd: 0,
             type: nil,
             deviation: nil
 
@@ -31,11 +35,12 @@ defmodule Rujira.Fin.Order do
           filled: integer(),
           filled_value: integer(),
           filled_fee: integer(),
+          value_usd: integer(),
           type: type_order,
           deviation: deviation
         }
 
-  def from_query(%{address: address, fee_taker: fee_taker}, %{
+  def from_query(%{address: address, fee_taker: fee_taker, token_quote: token_quote}, %{
         "owner" => owner,
         "side" => side,
         "price" => price,
@@ -51,7 +56,8 @@ defmodule Rujira.Fin.Order do
          {:ok, updated_at} <- DateTime.from_unix(updated_at, :nanosecond),
          {offer, ""} <- Integer.parse(offer),
          {remaining, ""} <- Integer.parse(remaining),
-         {filled, ""} <- Integer.parse(filled) do
+         {filled, ""} <- Integer.parse(filled),
+         {:ok, asset} <- Assets.from_denom(token_quote) do
       side = String.to_existing_atom(side)
 
       filled_fee =
@@ -60,6 +66,9 @@ defmodule Rujira.Fin.Order do
         |> Decimal.mult(fee_taker)
         |> Decimal.round(0, :floor)
         |> Decimal.to_integer()
+
+      remaining_value = value(remaining, rate, side)
+      filled_value = value(filled, Decimal.div(Decimal.new(1), rate), side)
 
       %__MODULE__{
         id: "#{address}/#{side}/#{price_id}/#{owner}",
@@ -71,12 +80,13 @@ defmodule Rujira.Fin.Order do
         offer: offer,
         offer_value: value(offer, rate, side),
         remaining: remaining,
-        remaining_value: value(remaining, rate, side),
+        remaining_value: remaining_value,
         filled: filled,
-        filled_value: value(filled, Decimal.div(Decimal.new(1), rate), side),
+        filled_value: filled_value,
         filled_fee: filled_fee,
         type: type,
-        deviation: deviation
+        deviation: deviation,
+        value_usd: Prices.value_usd(asset.symbol, remaining_value + filled_value)
       }
     end
   end
