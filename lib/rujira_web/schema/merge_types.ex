@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Schema.MergeTypes do
+  alias Rujira.Prices
   alias Rujira.Contracts
   alias Rujira.Assets
   use Absinthe.Schema.Notation
@@ -96,5 +97,11 @@ defmodule RujiraWeb.Schema.MergeTypes do
 
     @desc "The current conversion rate for merge token to ruji token, given current pool ownership"
     field :rate, non_null(:bigint)
+
+    field :value_usd, non_null(:bigint) do
+      resolve(fn %{size: size}, _, _ ->
+        {:ok, Prices.value_usd(@merge_denom.ticker, size)}
+      end)
+    end
   end
 end

@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Schema.BalanceTypes do
+  alias Rujira.Prices
   use Absinthe.Schema.Notation
 
   @desc "The balance of a token or coin on a layer 1 chain"
@@ -12,6 +13,12 @@ defmodule RujiraWeb.Schema.BalanceTypes do
 
     field :tcy, :thorchain_tcy do
       resolve(&RujiraWeb.Resolvers.Thorchain.tcy/3)
+    end
+
+    field :value_usd, non_null(:bigint) do
+      resolve(fn %{amount: amount, asset: %{ticker: ticker}}, _, _ ->
+        {:ok, Prices.value_usd(ticker, amount)}
+      end)
     end
   end
 
