@@ -93,11 +93,13 @@ defmodule Rujira.Prices do
     end
   end
 
-  def value_usd(symbol, amount) do
+  def value_usd(symbol, amount, decimals \\ 8) do
     with {:ok, %{current: price}} <- get(symbol) do
       amount
       |> Decimal.new()
       |> Decimal.mult(price)
+      |> Decimal.mult(Decimal.new(10 ** 8))
+      |> Decimal.div(Decimal.new(10 ** decimals))
       |> Decimal.round(0, :floor)
       |> Decimal.to_integer()
     else

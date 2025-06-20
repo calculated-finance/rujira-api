@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Schema.BalanceTypes do
+  alias Rujira.Assets
   alias Rujira.Prices
   use Absinthe.Schema.Notation
 
@@ -16,8 +17,8 @@ defmodule RujiraWeb.Schema.BalanceTypes do
     end
 
     field :value_usd, non_null(:bigint) do
-      resolve(fn %{amount: amount, asset: %{ticker: ticker}}, _, _ ->
-        {:ok, Prices.value_usd(ticker, amount)}
+      resolve(fn %{amount: amount, asset: %{ticker: ticker} = asset}, _, _ ->
+        {:ok, Prices.value_usd(ticker, amount, Assets.decimals(asset))}
       end)
     end
   end
