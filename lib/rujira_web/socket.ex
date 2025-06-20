@@ -1,8 +1,6 @@
 defmodule RujiraWeb.Socket do
   use Phoenix.Socket
 
-  channel "multisig:*", RujiraWeb.MultisigChannel
-
   use Absinthe.Phoenix.Socket,
     schema: RujiraWeb.Schema
 

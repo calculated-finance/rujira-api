@@ -19,6 +19,7 @@ defmodule Rujira.Bow do
 
   @impl true
   def init(state) do
+    list_pools()
     {:ok, state}
   end
 

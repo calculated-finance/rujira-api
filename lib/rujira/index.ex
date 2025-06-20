@@ -27,7 +27,10 @@ defmodule Rujira.Index do
   end
 
   @impl true
-  def init(state), do: {:ok, state}
+  def init(state) do
+    list_vaults()
+    {:ok, state}
+  end
 
   defp index_types(), do: [Rujira.Index.Nav, Rujira.Index.Fixed]
 
