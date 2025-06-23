@@ -1,6 +1,14 @@
 defmodule RujiraWeb.Schema.AccountTypes do
+  @moduledoc """
+  Defines GraphQL types for account-related data in the Rujira API.
+
+  This module contains the type definitions and field resolvers for account-related
+  GraphQL objects, including layer 1 account information and related fields.
+  """
+
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
+
   alias RujiraWeb.Resolvers
 
   @desc "A layer_1_account represents data about this address on the layer 1 specified"

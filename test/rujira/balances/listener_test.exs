@@ -1,12 +1,12 @@
 defmodule Rujira.Balances.ListenerTest do
   use Rujira.PublisherCase
 
+  alias Rujira.Balances.Listener
   alias Rujira.Fixtures.Block
 
   test "publishes account update" do
-
     {:ok, block} = Block.load_block("4539686")
-    Rujira.Balances.Listener.handle_new_block(block, nil)
+    Listener.handle_new_block(block, nil)
 
     collect_publishes()
     |> Enum.each(fn

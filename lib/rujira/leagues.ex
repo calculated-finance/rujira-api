@@ -1,14 +1,17 @@
 defmodule Rujira.Leagues do
+  @moduledoc """
+  Manages leagues, tracks user statistics, and maintains leaderboards for competitive rankings.
+  """
   use GenServer
-  alias Rujira.Repo
-  alias Rujira.Leagues.TxEvent
-  alias Rujira.Leagues.Event
   alias Rujira.Leagues.Account
+  alias Rujira.Leagues.Event
+  alias Rujira.Leagues.TxEvent
+  alias Rujira.Repo
   import Ecto.Query
 
   @multiplier 69
 
-  def multiplier(), do: @multiplier
+  def multiplier, do: @multiplier
 
   def start_link(_) do
     children = [__MODULE__.Collectors]
@@ -19,17 +22,18 @@ defmodule Rujira.Leagues do
   def init(state), do: {:ok, state}
 
   # For now, only genesis is loaded, later linked to the smart contracts
-  def load_leagues() do
+  def load_leagues do
     {:ok, [%{league: "genesis", season: 0}]}
   end
 
   def account_from_id(id) do
     [league, season, account] = String.split(id, "/")
 
-    with {:ok, %{} = account} <- load_account(league, season, account) do
-      account = Map.put(account, :id, id)
-      {:ok, struct(Account, account)}
-    else
+    case load_account(league, season, account) do
+      {:ok, %{} = account} ->
+        account = Map.put(account, :id, id)
+        {:ok, struct(Account, account)}
+
       {:ok, nil} ->
         {:ok,
          %Account{

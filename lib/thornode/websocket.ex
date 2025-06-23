@@ -1,4 +1,10 @@
 defmodule Thornode.Websocket do
+  @moduledoc """
+  WebSocket client for connecting to ThorNode's WebSocket endpoint.
+
+  This module handles the WebSocket connection to ThorNode for real-time
+  event notifications, such as new blocks being added to the chain.
+  """
   use WebSockex
   require Logger
 
@@ -85,7 +91,5 @@ defmodule Thornode.Websocket do
     WebSockex.send_frame(pid, {:text, message})
   end
 
-  defp pubsub() do
-    Application.get_env(:rujira, :pubsub, Rujira.PubSub)
-  end
+  defp pubsub, do: Application.get_env(:rujira, :pubsub, Rujira.PubSub)
 end

@@ -28,7 +28,10 @@ defmodule Rujira.Repo.Migrations.CreateLeagueTables do
       timestamps(type: :utc_datetime_usec)
     end
 
-    create unique_index(:league_events, [:tx_event_id, :league, :season], name: :league_events_key)
+    create unique_index(:league_events, [:tx_event_id, :league, :season],
+             name: :league_events_key
+           )
+
     create index(:league_events, [:league, :season])
     create index(:league_events, [:tx_event_id])
   end

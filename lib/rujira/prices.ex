@@ -1,21 +1,22 @@
 defmodule Rujira.Prices do
+  @moduledoc """
+  Fetches and normalizes price data from multiple sources including CoinGecko, FIN, and TOR.
+  """
   alias Rujira.Fin
   alias Rujira.Prices.Price
   use Memoize
 
   def get(symbols) when is_list(symbols) do
-    symbols
-    |> Task.async_stream(&{&1, get(&1)}, timeout: 30_000)
-    |> Enum.reduce({:ok, %{}}, fn
-      {:ok, {id, res}}, {:ok, agg} ->
-        {:ok, Map.put(agg, id, res)}
-
-      {:error, err}, _ ->
-        {:error, err}
-
-      _, {:error, err} ->
-        {:error, err}
+    Rujira.Enum.reduce_async_while_ok(symbols, fn symbol ->
+      case get(symbol) do
+        {:ok, value} -> {:ok, {symbol, value}}
+        {:error, reason} -> {:error, reason}
+      end
     end)
+    |> case do
+      {:ok, results} -> {:ok, Map.new(results)}
+      error -> error
+    end
   end
 
   defmemo get(symbol), expires_in: 15_000 do
@@ -67,9 +68,10 @@ defmodule Rujira.Prices do
   end
 
   def tor_price(id) do
-    with {:ok, price} <- Thorchain.oracle_price(id) do
-      {:ok, %Price{id: id, source: :tor, current: price, timestamp: DateTime.utc_now()}}
-    else
+    case Thorchain.oracle_price(id) do
+      {:ok, price} ->
+        {:ok, %Price{id: id, source: :tor, current: price, timestamp: DateTime.utc_now()}}
+
       _ ->
         {:ok, nil}
     end
@@ -94,16 +96,18 @@ defmodule Rujira.Prices do
   end
 
   def value_usd(symbol, amount, decimals \\ 8) do
-    with {:ok, %{current: price}} <- get(symbol) do
-      amount
-      |> Decimal.new()
-      |> Decimal.mult(price)
-      |> Decimal.mult(Decimal.new(10 ** 8))
-      |> Decimal.div(Decimal.new(10 ** decimals))
-      |> Decimal.round(0, :floor)
-      |> Decimal.to_integer()
-    else
-      _ -> 0
+    case get(symbol) do
+      {:ok, %{current: price}} ->
+        amount
+        |> Decimal.new()
+        |> Decimal.mult(price)
+        |> Decimal.mult(Decimal.new(10 ** 8))
+        |> Decimal.div(Decimal.new(10 ** decimals))
+        |> Decimal.round(0, :floor)
+        |> Decimal.to_integer()
+
+      _ ->
+        0
     end
   end
 end

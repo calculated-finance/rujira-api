@@ -1,9 +1,18 @@
 defmodule RujiraWeb.Schema.BowTypes do
-  alias Rujira.Contracts
-  alias Rujira.Assets
-  alias Rujira.Bow.Xyk
+  @moduledoc """
+  Defines GraphQL types for Bow Protocol-related data in the Rujira API.
+
+  This module contains the type definitions and field resolvers for Bow Protocol
+  GraphQL objects, including pools, positions, and related data structures.
+  """
+
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
+
+  alias Rujira.Assets
+  alias Rujira.Bow.Xyk
+  alias Rujira.Contracts
+  alias RujiraWeb.Resolvers.Bow
 
   node object(:bow_pool) do
     field :address, non_null(:string)
@@ -18,15 +27,15 @@ defmodule RujiraWeb.Schema.BowTypes do
     field :state, non_null(:bow_state)
 
     field :summary, :bow_summary do
-      resolve(&RujiraWeb.Resolvers.Bow.summary/3)
+      resolve(&Bow.summary/3)
     end
 
     field :quotes, :fin_book do
-      resolve(&RujiraWeb.Resolvers.Bow.quotes/3)
+      resolve(&Bow.quotes/3)
     end
 
     connection field :trades, node_type: :fin_trade do
-      resolve(&RujiraWeb.Resolvers.Bow.trades/3)
+      resolve(&Bow.trades/3)
     end
   end
 
@@ -43,15 +52,15 @@ defmodule RujiraWeb.Schema.BowTypes do
     field :state, non_null(:bow_state_xyk)
 
     field :summary, :bow_summary do
-      resolve(&RujiraWeb.Resolvers.Bow.summary/3)
+      resolve(&Bow.summary/3)
     end
 
     field :quotes, :fin_book do
-      resolve(&RujiraWeb.Resolvers.Bow.quotes/3)
+      resolve(&Bow.quotes/3)
     end
 
     connection field :trades, node_type: :fin_trade do
-      resolve(&RujiraWeb.Resolvers.Bow.trades/3)
+      resolve(&Bow.trades/3)
     end
   end
 
@@ -139,7 +148,7 @@ defmodule RujiraWeb.Schema.BowTypes do
 
     field :value_usd, non_null(:bigint) do
       resolve(fn %{value: value}, _, _ ->
-        {:ok, RujiraWeb.Resolvers.Bow.value_usd(value)}
+        {:ok, Bow.value_usd(value)}
       end)
     end
   end

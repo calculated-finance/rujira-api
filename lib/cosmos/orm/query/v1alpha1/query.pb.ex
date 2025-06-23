@@ -38,7 +38,7 @@ defmodule Cosmos.Orm.Query.V1alpha1.ListRequest do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  oneof :query, 0
+  oneof(:query, 0)
 
   field :message_name, 1, type: :string, json_name: "messageName"
   field :index, 2, type: :string
@@ -61,7 +61,7 @@ defmodule Cosmos.Orm.Query.V1alpha1.IndexValue do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  oneof :value, 0
+  oneof(:value, 0)
 
   field :uint, 1, type: :uint64, oneof: 0
   field :int, 2, type: :int64, oneof: 0

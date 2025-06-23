@@ -1,6 +1,14 @@
 defmodule RujiraWeb.Schema.LeaguesTypes do
+  @moduledoc """
+  Defines GraphQL types for Leagues data in the Rujira API.
+
+  This module contains the type definitions and field resolvers for Leagues
+  GraphQL objects, including leaderboards, statistics, and user rankings.
+  """
+
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
+
   alias RujiraWeb.Resolvers
 
   object :league do

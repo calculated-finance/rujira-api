@@ -1,5 +1,13 @@
 defmodule Rujira.Merge.Pool do
+  @moduledoc """
+  Defines the structure and operations for merge pools.
+  """
+
   defmodule Status do
+    @moduledoc """
+    Tracks the status and metrics of a merge pool.
+    """
+
     alias Rujira.Chains.Thor
     alias Rujira.Merge.Pool
 

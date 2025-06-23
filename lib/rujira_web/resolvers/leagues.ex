@@ -1,11 +1,11 @@
 defmodule RujiraWeb.Resolvers.Leagues do
   @moduledoc """
-  Resolver for Ruji Leagues endpoints
+  Handles GraphQL resolution for Leagues-related queries.
   """
+  alias Absinthe.Relay
   alias Absinthe.Resolution.Helpers
   alias Rujira.Leagues
   alias Rujira.Repo
-  alias Absinthe.Relay
 
   def resolver(_, _, _) do
     Helpers.async(&Leagues.load_leagues/0)
@@ -21,9 +21,7 @@ defmodule RujiraWeb.Resolvers.Leagues do
 
   def stats(%{league: league, season: season}, _, _) do
     Helpers.async(fn ->
-      with {:ok, stats} <- Leagues.stats(league, season) do
-        {:ok, stats}
-      end
+      Leagues.stats(league, season)
     end)
   end
 

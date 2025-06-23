@@ -1,4 +1,8 @@
 defmodule Rujira.Revenue.Converter do
+  @moduledoc """
+  Maps a Revenue Converter contract config from the blockchain to an internal structure.
+  """
+
   alias Cosmos.Base.V1beta1.Coin
   defstruct [:id, :address, :balances, :target_tokens, :target_addresses]
 

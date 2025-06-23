@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Schema.ThorchainTypesOld do
+  @moduledoc false
   use Absinthe.Schema.Notation
   alias Rujira.Assets
   alias RujiraWeb.Resolvers

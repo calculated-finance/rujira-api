@@ -42,7 +42,7 @@ defmodule Cosmos.Tx.Signing.V1beta1.SignatureDescriptor.Data do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  oneof :sum, 0
+  oneof(:sum, 0)
 
   field :single, 1, type: Cosmos.Tx.Signing.V1beta1.SignatureDescriptor.Data.Single, oneof: 0
   field :multi, 2, type: Cosmos.Tx.Signing.V1beta1.SignatureDescriptor.Data.Multi, oneof: 0

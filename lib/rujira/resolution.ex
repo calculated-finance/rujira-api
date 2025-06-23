@@ -1,6 +1,10 @@
 defmodule Rujira.Resolution do
+  @moduledoc """
+  Handles time resolution and date/time manipulation for the Rujira application.
+  """
+
   @resolutions ["1", "3", "5", "15", "30", "60", "120", "180", "240", "1D", "1M", "12M"]
-  def resolutions(), do: @resolutions
+  def resolutions, do: @resolutions
 
   def active(now) do
     Enum.map(@resolutions, &{&1, truncate(now, &1)})

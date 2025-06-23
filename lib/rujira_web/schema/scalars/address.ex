@@ -1,4 +1,11 @@
 defmodule RujiraWeb.Schema.Scalars.Address do
+  @moduledoc """
+  Defines a custom scalar type for blockchain addresses in GraphQL.
+
+  This module handles the validation and serialization of blockchain addresses,
+  ensuring they are properly formatted as strings. It accepts string inputs
+  representing blockchain addresses and returns them as-is, or nil for invalid values.
+  """
   use Absinthe.Schema.Notation
 
   scalar :address, description: "An address associated with a blockchain account/public key" do

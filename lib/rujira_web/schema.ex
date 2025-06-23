@@ -1,7 +1,12 @@
 defmodule RujiraWeb.Schema do
+  @moduledoc """
+  Defines the root GraphQL schema and types for the Rujira API.
+  """
+
   alias Absinthe.Relay
   use Absinthe.Schema
   use Absinthe.Relay.Schema, :modern
+
   import_types(RujiraWeb.Schema.AccountTypes)
   import_types(RujiraWeb.Schema.AnalyticsTypes)
   import_types(RujiraWeb.Schema.BalanceTypes)
@@ -33,94 +38,83 @@ defmodule RujiraWeb.Schema do
   end
 
   query do
+    @desc "Fetch a single node using its global Relay-compatible ID."
     field :node, :node do
       arg(:id, non_null(:id))
       resolve(&RujiraWeb.Resolvers.Node.id/2)
     end
 
-    @desc """
-    Fetch multiple nodes by their global unique identifiers.
-    Useful for batch fetching objects in Relay.
-    """
+    @desc "Fetch multiple nodes by their global Relay-compatible IDs. Useful for batch fetching."
     field :nodes, non_null(list_of(non_null(:node))) do
-      @desc """
-      A list of global unique identifiers of the objects to fetch.
-      Each ID must be Relay-compatible.
-      """
+      @desc "A list of Relay global IDs representing nodes to be fetched."
       arg(:ids, non_null(list_of(non_null(:id))))
-
       resolve(&RujiraWeb.Resolvers.Node.list/3)
     end
 
-    @desc "THORChain related queries"
+    @desc "Lists all supported Relay node types with their ID structure."
+    field :supported_node_types, non_null(list_of(non_null(:node_type_descriptor))) do
+      resolve(&RujiraWeb.Resolvers.Node.supported_node_types/3)
+    end
+
+    @desc "[DEPRECATED] Legacy THORChain-related queries. Use `thorchain_v2` instead."
     field :thorchain, :thorchain do
       resolve(fn _, _, _ -> {:ok, %{thorchain: %{}}} end)
     end
 
+    @desc "THORChain-related queries using the latest v2 schema."
     field :thorchain_v2, :thorchain_v2 do
       resolve(fn _, _, _ -> {:ok, %{thorchain_v2: %{}}} end)
     end
 
-    @desc "Rujira related queries"
+    @desc "Rujira-specific queries."
     field :rujira, :rujira do
       resolve(fn _, _, _ -> {:ok, %{rujira: %{}}} end)
     end
 
-    import_fields(:rujira)
-    import_fields(:developer)
-
-    @desc "Developer-related CosmWasm queries"
+    @desc "Developer-focused queries related to CosmWasm and smart contract tooling."
     field :developer, :developer do
       resolve(fn _, _, _ -> {:ok, %{developer: %{}}} end)
     end
+
+    import_fields(:rujira)
+    import_fields(:developer)
   end
 
+  @desc "Represents any Relay-compliant node object with a globally unique ID."
   interface :node do
-    @desc """
-      The globally unique identifier for this object.
-      This ID is Relay-compatible and can be used to refetch the object.
-    """
+    @desc "The Relay global identifier of this object."
     field :id, non_null(:id)
+
     resolve_type(&RujiraWeb.Resolvers.Node.type/2)
   end
 
   subscription do
-    @desc """
-    Subscribes to updates for the given Node ID
-    """
+    @desc "Subscribe to updates for a specific node by its global ID."
     field :node, :node do
       arg(:id, non_null(:id))
 
       config(fn %{id: id}, _ ->
-        {
-          :ok,
-          # Use the node ID as the context to allow absinthe to de-deduplicate updates for a given node
-          # https://hexdocs.pm/absinthe/subscriptions.html#de-duplicating-updates
-          topic: id, context_id: id
-        }
+        {:ok, topic: id, context_id: id}
       end)
 
       resolve(&RujiraWeb.Resolvers.Node.id/2)
     end
 
     @desc """
-    Subscribes to new Edges on a connection,
+    Subscribe to new edges (i.e., added nodes) in a connection.
+
+    This is useful for real-time streaming of new paginated items (e.g., new trades or transactions).
     """
-
     field :edge, :node_edge do
-      @desc """
-      The Prefix of the Edge Node, eg
-
-      base64(FinTrade:{address}/{resolution})
-      """
+      @desc "The topic prefix to subscribe to (e.g., base64(`FinTrade:{address}/{resolution}`))."
       arg(:prefix, non_null(:string))
 
       config(fn %{prefix: prefix}, _ ->
         {:ok, topic: prefix, context_id: prefix}
       end)
 
-      resolve(fn id, x, _ ->
-        with {:ok, node} <- RujiraWeb.Resolvers.Node.id(id, x) do
+      resolve(fn id, args, _ ->
+        with {:ok, node} <- RujiraWeb.Resolvers.Node.id(id, args) do
           {:ok, %{cursor: Relay.Connection.offset_to_cursor(node.id), node: node}}
         end
       end)
@@ -129,8 +123,28 @@ defmodule RujiraWeb.Schema do
     import_fields(:fin_subscriptions)
   end
 
+  @desc "A Relay-style edge object containing a node and its pagination cursor."
   object :node_edge do
     field :cursor, :string
     field :node, :node
+  end
+
+  @desc """
+  Describes a supported Relay node type and its internal ID format.
+
+  This object is used to document how to construct global Relay IDs. Each Relay ID
+  is a base64-encoded string in the format: `type:format`.
+
+  For example, the ID `Layer1Account:eth:0x123...` should be encoded to base64 and passed
+  to the `node` or `nodes` queries for resolution.
+
+  Use this information to construct valid global IDs when querying the schema.
+  """
+  object :node_type_descriptor do
+    @desc "The `type` value used in a Relay global ID, e.g. `Layer1Account` in `Layer1Account:chain:address`"
+    field :type, non_null(:string)
+
+    @desc "The internal `id` format used before encoding to base64"
+    field :format, non_null(:string)
   end
 end

@@ -1,4 +1,11 @@
 defmodule RujiraWeb.Schema.Scalars.Asset do
+  @moduledoc """
+  Defines a custom scalar type for THORChain compatible asset strings in GraphQL.
+
+  This module handles the validation and serialization of asset identifiers,
+  ensuring they conform to the THORChain asset string format requirements.
+  It accepts string inputs and returns them as-is, or nil for invalid values.
+  """
   use Absinthe.Schema.Notation
 
   scalar :asset_string, description: "A string representation of a THORChain compatible asset" do

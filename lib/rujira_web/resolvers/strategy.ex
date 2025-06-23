@@ -1,49 +1,44 @@
 defmodule RujiraWeb.Resolvers.Strategy do
+  @moduledoc """
+  Handles GraphQL queries for DeFi strategies including Bow pools, Thorchain LPs, and Index vaults.
+  """
+  alias Absinthe.Relay.Connection
   alias Rujira.Assets
+  alias Rujira.Bow
+  alias Rujira.Index
+  alias Thorchain.Types.QueryPoolResponse
 
   def list(_, args, _) do
     typenames = Map.get(args, :typenames)
     query = Map.get(args, :query)
 
-    with {:ok, bow} <- Rujira.Bow.list_pools(),
+    with {:ok, bow} <- Bow.list_pools(),
          {:ok, thorchain} <- Thorchain.pools(),
-         {:ok, index} <- Rujira.Index.load_vaults() do
+         {:ok, index} <- Index.load_vaults() do
       Enum.filter(bow, &bow_query(query, &1))
       |> Enum.concat(Enum.filter(thorchain, &thorchain_query(query, &1)))
       |> Enum.concat(Enum.filter(index, &index_query(query, &1)))
       |> Enum.filter(&filter_type(&1, typenames))
-      |> Absinthe.Relay.Connection.from_list(args)
+      |> Connection.from_list(args)
     end
   end
 
   def accounts(%{address: address}, _, _) do
-    with {:ok, pools} <- Rujira.Bow.list_pools(),
+    with {:ok, pools} <- Bow.list_pools(),
          {:ok, bow} <-
            Rujira.Enum.reduce_while_ok(pools, [], fn x ->
-             case Rujira.Bow.load_account(x, address) do
+             case Bow.load_account(x, address) do
                {:ok, %{shares: 0}} -> :skip
                other -> other
              end
            end),
          {:ok, pools} <- Thorchain.pools(),
          {:ok, thorchain} <-
-           pools
-           |> Task.async_stream(fn pool ->
-             Thorchain.liquidity_provider(pool.asset.id, address)
-           end)
-           |> Rujira.Enum.reduce_while_ok([], fn
-             {:ok, {:ok, %{units: 0}}} -> :skip
-             {:ok, v} -> v
-             other -> other
-           end),
-         {:ok, vaults} <- Rujira.Index.load_vaults(),
-         {:ok, index} <-
-           Rujira.Enum.reduce_while_ok(vaults, [], fn x ->
-             case Rujira.Index.load_account(x, address) do
-               {:ok, %{shares: 0}} -> :skip
-               other -> other
-             end
-           end) do
+           Rujira.Enum.reduce_async_while_ok(
+             pools,
+             &Thorchain.liquidity_provider(&1.asset.id, address)
+           ),
+         {:ok, index} <- Index.accounts(address) do
       accounts =
         bow
         |> Enum.concat(thorchain)
@@ -72,20 +67,19 @@ defmodule RujiraWeb.Resolvers.Strategy do
 
   defp index_query(query, %{status: %{allocations: allocations}}) do
     Enum.any?(allocations, fn %{denom: denom} ->
-      with {:ok, asset} <- Assets.from_denom(denom) do
-        Assets.query_match(query, asset, asset)
-      else
+      case Assets.from_denom(denom) do
+        {:ok, asset} -> Assets.query_match(query, asset, asset)
         _ -> false
       end
     end)
   end
 
   def filter_type(_, nil), do: true
-  def filter_type(%Rujira.Bow.Xyk{}, list), do: Enum.member?(list, "BowPoolXyk")
+  def filter_type(%Bow.Xyk{}, list), do: Enum.member?(list, "BowPoolXyk")
 
-  def filter_type(%Thorchain.Types.QueryPoolResponse{}, list),
+  def filter_type(%QueryPoolResponse{}, list),
     do: Enum.member?(list, "ThorchainPool")
 
-  def filter_type(%Rujira.Index.Vault{}, list),
+  def filter_type(%Index.Vault{}, list),
     do: Enum.member?(list, "IndexVault")
 end

@@ -1,7 +1,10 @@
 defmodule Rujira.Bank do
+  @moduledoc """
+  Manages token supply and transfer operations.
+  """
   use Supervisor
-  alias __MODULE__.Transfer
   alias __MODULE__.Supply
+  alias __MODULE__.Transfer
 
   def start_link(_) do
     children = [{Supply, %{}}, Transfer]
@@ -13,7 +16,7 @@ defmodule Rujira.Bank do
     {:ok, state}
   end
 
-  def total_supply() do
+  def total_supply do
     {:ok, GenServer.call(Supply, :get)}
   end
 

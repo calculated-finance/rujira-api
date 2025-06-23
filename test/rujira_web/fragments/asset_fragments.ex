@@ -1,4 +1,6 @@
 defmodule RujiraWeb.Fragments.AssetFragments do
+  @moduledoc false
+
   @metadata_fragment """
   fragment MetadataFragment on Metadata {
     symbol
@@ -74,10 +76,10 @@ defmodule RujiraWeb.Fragments.AssetFragments do
   #{@asset_variants_fragment}
   """
 
-  def get_asset_fragment(), do: @asset_fragment
-  def get_metadata_fragment(), do: @metadata_fragment
-  def get_price_fragment(), do: @price_fragment
-  def get_denom_fragment(), do: @denom_fragment
-  def get_asset_fragment_simple(), do: @asset_fragment_simple
-  def get_asset_variants_fragment(), do: @asset_variants_fragment
+  def get_asset_fragment, do: @asset_fragment
+  def get_metadata_fragment, do: @metadata_fragment
+  def get_price_fragment, do: @price_fragment
+  def get_denom_fragment, do: @denom_fragment
+  def get_asset_fragment_simple, do: @asset_fragment_simple
+  def get_asset_variants_fragment, do: @asset_variants_fragment
 end

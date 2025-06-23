@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Fragments.IndexFragments do
+  @moduledoc false
   alias RujiraWeb.Fragments.AssetFragments
   alias RujiraWeb.Fragments.DeveloperFragments
 
@@ -107,11 +108,11 @@ defmodule RujiraWeb.Fragments.IndexFragments do
   #{@index_vault_fragment}
   """
 
-  def get_index_config_fragment(), do: @index_config_fragment
-  def get_index_allocation_fragment(), do: @index_allocation_fragment
-  def get_index_status_fragment(), do: @index_status_fragment
-  def get_index_nav_bin_fragment(), do: @index_nav_bin_fragment
-  def get_index_fees_fragment(), do: @index_fees_fragment
-  def get_index_account_fragment(), do: @index_account_fragment
-  def get_index_vault_fragment(), do: @index_vault_fragment
+  def get_index_config_fragment, do: @index_config_fragment
+  def get_index_allocation_fragment, do: @index_allocation_fragment
+  def get_index_status_fragment, do: @index_status_fragment
+  def get_index_nav_bin_fragment, do: @index_nav_bin_fragment
+  def get_index_fees_fragment, do: @index_fees_fragment
+  def get_index_account_fragment, do: @index_account_fragment
+  def get_index_vault_fragment, do: @index_vault_fragment
 end

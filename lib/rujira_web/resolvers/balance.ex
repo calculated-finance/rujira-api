@@ -1,4 +1,7 @@
 defmodule RujiraWeb.Resolvers.Balance do
+  @moduledoc """
+  Handles GraphQL resolution for blockchain balance-related queries.
+  """
   alias Absinthe.Resolution.Helpers
 
   def resolver(%{address: address, chain: chain}, _, _) do

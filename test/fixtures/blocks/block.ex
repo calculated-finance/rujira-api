@@ -14,10 +14,10 @@ defmodule Rujira.Fixtures.Block do
   """
   @spec dump_block(height :: String.t()) :: :ok | {:error, term()}
   def dump_block(height) when is_binary(height) do
-    network  = Application.get_env(:rujira, :network)
+    network = Application.get_env(:rujira, :network)
     base_name = "#{network}_#{height}"
     term_path = Path.join(__DIR__, base_name <> ".term")
-    txt_path  = Path.join(__DIR__, base_name <> ".txt")
+    txt_path = Path.join(__DIR__, base_name <> ".txt")
 
     with {:ok, block} <- Thorchain.block(height) do
       File.mkdir_p!(Path.dirname(term_path))
@@ -40,9 +40,9 @@ defmodule Rujira.Fixtures.Block do
   """
   @spec load_block(height :: String.t()) :: {:ok, any()} | {:error, term()}
   def load_block(height) when is_binary(height) do
-    network  = Application.get_env(:rujira, :network)
+    network = Application.get_env(:rujira, :network)
     filename = "#{network}_#{height}.term"
-    path     = Path.join(__DIR__, filename)
+    path = Path.join(__DIR__, filename)
 
     case File.read(path) do
       {:ok, binary} ->

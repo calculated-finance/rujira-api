@@ -1,4 +1,10 @@
 defmodule RujiraWeb.Schema.Scalars.Timestamp do
+  @moduledoc """
+  Defines a custom scalar type for handling timestamps in GraphQL.
+
+  This module provides serialization and parsing of ISO8601 formatted datetime strings
+  to and from Elixir's `DateTime` structs, ensuring UTC timezone handling.
+  """
   use Absinthe.Schema.Notation
   alias Absinthe.Blueprint.Input
 
@@ -7,6 +13,9 @@ defmodule RujiraWeb.Schema.Scalars.Timestamp do
   timezone. The DateTime appears in a JSON response as an ISO8601 formatted
   string, including UTC timezone ("Z"). The parsed date and time string will
   be converted to UTC and any UTC offset other than 0 will be rejected.
+
+  Example:
+  "2025-06-19T15:30:00Z"
   """
   scalar :timestamp, name: "Timestamp" do
     serialize(&serialize_datetime/1)

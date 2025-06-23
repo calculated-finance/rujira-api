@@ -1,12 +1,11 @@
 defmodule Rujira.Bow.ListenerTest do
   use Rujira.PublisherCase
-
+  alias Rujira.Bow.Listener
   alias Rujira.Fixtures.Block
 
   test "Bow listener publishes account and pool update on bow deposit" do
-
     {:ok, block} = Block.load_block("4541708")
-    Rujira.Bow.Listener.handle_new_block(block, nil)
+    Listener.handle_new_block(block, nil)
 
     messages = collect_publishes()
 

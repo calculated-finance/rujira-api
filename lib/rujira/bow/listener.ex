@@ -1,4 +1,10 @@
 defmodule Rujira.Bow.Listener do
+  @moduledoc """
+  Listens for and processes Bow Protocol-related blockchain events.
+
+  Handles block transactions to detect Bow Protocol actions, updates cached data,
+  and publishes real-time updates through the events system.
+  """
   use Thornode.Observer
   require Logger
 
@@ -18,12 +24,12 @@ defmodule Rujira.Bow.Listener do
         _ -> []
       end)
 
-    pools = events |> Enum.flat_map(&scan_pool/1) |> Enum.uniq()
+    pools = events |> Enum.map(&scan_pool/1) |> Enum.reject(&is_nil/1) |> Rujira.Enum.uniq()
 
     transfers =
       events
       |> Enum.flat_map(&scan_transfer/1)
-      |> Enum.uniq()
+      |> Rujira.Enum.uniq()
 
     for pool <- pools do
       Logger.debug("#{__MODULE__} change #{pool}")
@@ -31,7 +37,7 @@ defmodule Rujira.Bow.Listener do
       Memoize.invalidate(Rujira.Bow, :query_quotes, [pool])
       Rujira.Events.publish_node(:bow_pool_xyk, pool)
 
-      # We use the FinBook on the UI to re-use thie Bok & History components from trade.
+      # We use the FinBook on the UI to re-use the Bok & History components from trade.
       # Broadcast a change to the FinBook that is scoped to the pool
       Rujira.Events.publish_node(:fin_book, pool)
     end
@@ -42,34 +48,30 @@ defmodule Rujira.Bow.Listener do
     end
   end
 
-  defp scan_pool(%{attributes: attrs, type: "wasm-rujira-bow/" <> _}) do
-    contract = Map.get(attrs, "_contract_address")
-    [contract]
-  end
+  defp scan_pool(%{attributes: %{"_contract_address" => contract}, type: "wasm-rujira-bow/" <> _}),
+    do: contract
 
-  defp scan_pool(_), do: []
+  defp scan_pool(_), do: nil
 
   defp scan_transfer(%{
          type: "transfer",
-         attributes: attrs
+         attributes: %{"amount" => amount, "recipient" => recipient, "sender" => sender}
        }) do
-    amount = Map.get(attrs, "amount")
-    recipient = Map.get(attrs, "recipient")
-    sender = Map.get(attrs, "sender")
+    case Assets.parse_coins(amount) do
+      {:ok, coins} ->
+        coins
+        |> Enum.filter(&lp_coin?/1)
+        |> Enum.flat_map(&merge_accounts(&1, [recipient, sender]))
 
-    with {:ok, coins} <- Assets.parse_coins(amount) do
-      coins
-      |> Enum.filter(&is_lp_coin/1)
-      |> Enum.flat_map(&merge_accounts(&1, [recipient, sender]))
-    else
-      _ -> []
+      _ ->
+        []
     end
   end
 
   defp scan_transfer(_), do: []
 
-  def is_lp_coin({"x/bow-" <> _, _}), do: true
-  def is_lp_coin(_), do: false
+  def lp_coin?({"x/bow-" <> _, _}), do: true
+  def lp_coin?(_), do: false
 
   def merge_accounts({denom, _}, accounts) do
     Enum.map(accounts, &{denom, &1})

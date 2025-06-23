@@ -1,11 +1,11 @@
 defmodule Rujira.Assets do
   use Memoize
+  alias __MODULE__.Asset
+  alias Rujira.Assets.Metadata
   alias Rujira.Bow
   alias Rujira.Deployments
-  alias Rujira.Assets.Metadata
-  alias Thorchain.Types.QueryPoolsRequest
   alias Thorchain.Types.Query.Stub, as: Q
-  alias __MODULE__.Asset
+  alias Thorchain.Types.QueryPoolsRequest
 
   @delimiters [".", "-", "/", "~"]
   # https://github.com/cosmos/cosmos-sdk/blob/main/types/coin.go#L871

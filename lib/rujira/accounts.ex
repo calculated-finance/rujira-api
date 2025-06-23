@@ -1,4 +1,7 @@
 defmodule Rujira.Accounts do
+  @moduledoc """
+  Handles account-related operations including address translation and account creation.
+  """
   alias Rujira.Accounts.Account
   alias Rujira.Accounts.Layer1
 

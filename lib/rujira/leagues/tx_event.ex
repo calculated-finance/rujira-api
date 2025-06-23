@@ -1,4 +1,8 @@
 defmodule Rujira.Leagues.TxEvent do
+  @moduledoc """
+  Defines the schema for transaction events in the league system.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
 

@@ -1,16 +1,24 @@
 defmodule RujiraWeb.Schema.DeveloperTypes do
+  @moduledoc """
+  Defines GraphQL types for developer tools and utilities in the Rujira API.
+
+  This module contains the type definitions and field resolvers for developer-related
+  GraphQL objects, including code management and contract utilities.
+  """
+
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
+
   alias RujiraWeb.Resolvers
 
-  @desc "A merge_pool represents the configuration about a rujira-merge contract"
+  @desc "Access to smart contract development and inspection tools"
   object :developer do
     field :codes, non_null(list_of(non_null(:code))) do
       resolve(&Resolvers.Developer.codes/3)
     end
   end
 
-  @desc "A stored wasm binary"
+  @desc "A compiled WebAssembly (WASM) binary for smart contracts"
   node object(:code) do
     field :checksum, non_null(:string)
     field :creator, non_null(:address)
@@ -20,6 +28,7 @@ defmodule RujiraWeb.Schema.DeveloperTypes do
     end
   end
 
+  @desc "An instantiated smart contract with query and state access"
   node object(:contract) do
     field :address, :address
 
@@ -27,12 +36,12 @@ defmodule RujiraWeb.Schema.DeveloperTypes do
       resolve(&Resolvers.Developer.info/3)
     end
 
-    @desc "JSON encoded response to a { config: {} } request"
     field :config, :string do
       resolve(&Resolvers.Developer.config/3)
     end
 
     field :query_smart, :string do
+      @desc "JSON-encoded query message to send to the contract"
       arg(:query, :string)
       resolve(&Resolvers.Developer.query_smart/3)
     end
@@ -42,6 +51,7 @@ defmodule RujiraWeb.Schema.DeveloperTypes do
     end
   end
 
+  @desc "Metadata and configuration for a deployed smart contract"
   object :contract_info do
     field :code_id, non_null(:integer)
     field :creator, non_null(:address)
@@ -52,12 +62,14 @@ defmodule RujiraWeb.Schema.DeveloperTypes do
     field :extension, :string
   end
 
+  @desc "Key-value pair in a contract's state storage"
   object :state_entry do
     field :key, :string
     field :key_ascii, :string
     field :value, :string
   end
 
+  @desc "Blockchain position of a transaction"
   object :tx_position do
     field :block_height, non_null(:integer)
     field :tx_index, non_null(:integer)

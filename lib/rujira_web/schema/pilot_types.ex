@@ -1,6 +1,14 @@
 defmodule RujiraWeb.Schema.PilotTypes do
+  @moduledoc """
+  Defines GraphQL types for Pilot Protocol data in the Rujira API.
+
+  This module contains the type definitions and field resolvers for Pilot Protocol
+  GraphQL objects, including pools, positions, and related data structures.
+  """
+
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
+  alias RujiraWeb.Resolvers.Pilot
 
   node object(:pilot_pool) do
     field :slot, non_null(:integer)
@@ -49,7 +57,7 @@ defmodule RujiraWeb.Schema.PilotTypes do
 
   object :pilot_account do
     connection field :bids, node_type: :pilot_bid do
-      resolve(&RujiraWeb.Resolvers.Pilot.bids/3)
+      resolve(&Pilot.bids/3)
     end
 
     # connection field :history, node_type: :pilot_account_action do

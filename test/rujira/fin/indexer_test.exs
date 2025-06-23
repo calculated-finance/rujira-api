@@ -1,6 +1,6 @@
 defmodule Rujira.Fin.IndexerTest do
   use Rujira.PublisherCase
-
+  alias Rujira.Fin.Indexer
   alias Rujira.Fixtures.Block
 
   test "indexing trades - broadcast over candle" do
@@ -9,7 +9,7 @@ defmodule Rujira.Fin.IndexerTest do
     # price: "mm:0.885348892414736995",
     # side: "quote"
     {:ok, block} = Block.load_block("4539686")
-    Rujira.Fin.Indexer.handle_new_block(block, nil)
+    Indexer.handle_new_block(block, nil)
 
     trades =
       Rujira.Fin.list_trades("sthor1uywajy5vddpsvdkcztp92ymlnfwv07tu4stpprwrts4lmc6c9l0sy4s4e5")

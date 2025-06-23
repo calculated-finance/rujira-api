@@ -1,4 +1,7 @@
 defmodule Rujira.Leagues.Event do
+  @moduledoc """
+  Defines the schema for league events and their associated points.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

@@ -1,51 +1,47 @@
 defmodule RujiraWeb.Resolvers.Staking do
-  alias Rujira.Staking.Pool
+  @moduledoc """
+  Handles GraphQL queries for the Staking module's functionality.
+  """
   alias Absinthe.Resolution.Helpers
   alias Rujira.Assets
+  alias Rujira.Enum
+  alias Rujira.Revenue
+  alias Rujira.Staking
+  alias Rujira.Staking.Pool
 
   def node(%{address: address}, _, _) do
     Helpers.async(fn ->
-      with {:ok, pool} <- Rujira.Staking.get_pool(address) do
-        {:ok, pool}
-      end
+      Staking.get_pool(address)
     end)
   end
 
   def single(_, _, _) do
     Helpers.async(fn ->
-      with {:ok, pool} <- Rujira.Staking.get_pool(Rujira.Staking.single()) do
-        {:ok, pool}
-      end
+      Staking.get_pool(Staking.single())
     end)
   end
 
   def dual(_, _, _) do
     Helpers.async(fn ->
-      with {:ok, pool} <- Rujira.Staking.get_pool(Rujira.Staking.dual()) do
-        {:ok, pool}
-      end
+      Staking.get_pool(Staking.dual())
     end)
   end
 
   def pools(_, _, _) do
     Helpers.async(fn ->
-      with {:ok, pools} <- Rujira.Staking.list_pools() do
-        {:ok, pools}
-      end
+      Staking.list_pools()
     end)
   end
 
   def revenue(_, _, _) do
     Helpers.async(fn ->
-      with {:ok, converter} <- Rujira.Revenue.get_converter(Rujira.Revenue.protocol()) do
-        {:ok, converter}
-      end
+      Revenue.get_converter(Revenue.protocol())
     end)
   end
 
   def status(%Pool{} = pool, _, _) do
     Helpers.async(fn ->
-      with {:ok, %{status: status}} <- Rujira.Staking.load_pool(pool) do
+      with {:ok, %{status: status}} <- Staking.load_pool(pool) do
         {:ok, status}
       end
     end)
@@ -57,19 +53,19 @@ defmodule RujiraWeb.Resolvers.Staking do
 
   def accounts(%{address: address}, _, _) do
     Helpers.async(fn ->
-      with {:ok, single} <- Rujira.Staking.get_pool(Rujira.Staking.single()),
-           {:ok, dual} <- Rujira.Staking.get_pool(Rujira.Staking.dual()),
-           {:ok, single} <- Rujira.Staking.load_account(single, address),
-           {:ok, dual} <- Rujira.Staking.load_account(dual, address) do
+      with {:ok, single} <- Staking.get_pool(Staking.single()),
+           {:ok, dual} <- Staking.get_pool(Staking.dual()),
+           {:ok, single} <- Staking.load_account(single, address),
+           {:ok, dual} <- Staking.load_account(dual, address) do
         {:ok, %{single: single, dual: dual}}
       end
     end)
   end
 
   def all_accounts(%{address: address}, _, _) do
-    with {:ok, pools} <- Rujira.Staking.list_pools() do
-      Rujira.Enum.reduce_while_ok(pools, [], fn x ->
-        case Rujira.Staking.load_account(x, address) do
+    with {:ok, pools} <- Staking.list_pools() do
+      Enum.reduce_while_ok(pools, [], fn x ->
+        case Staking.load_account(x, address) do
           {:ok, %{bonded: 0}} -> :skip
           other -> other
         end
@@ -90,8 +86,8 @@ defmodule RujiraWeb.Resolvers.Staking do
               liquid_bond_size: liquid_bond_size,
               pending_revenue: global_pending_revenue
             }
-          }} <- Rujira.Staking.load_pool(pool),
-           {:ok, asset} <- Assets.from_denom(revenue_denom) do
+          }} <- Staking.load_pool(pool),
+         {:ok, asset} <- Assets.from_denom(revenue_denom) do
       if account_bond == 0 do
         {:ok, %{amount: pending_revenue, asset: asset}}
       else
@@ -108,15 +104,14 @@ defmodule RujiraWeb.Resolvers.Staking do
 
         account_allocation = Integer.floor_div(accounts_allocation * bonded, account_bond)
 
-        {:ok,
-         %{amount: pending_revenue + account_allocation, asset: asset}}
+        {:ok, %{amount: pending_revenue + account_allocation, asset: asset}}
       end
     end
   end
 
   def summary(pool, _, _) do
     Helpers.async(fn ->
-      Rujira.Staking.Pool.summary(pool)
+      Pool.summary(pool)
     end)
   end
 end

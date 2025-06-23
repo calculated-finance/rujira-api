@@ -1,4 +1,7 @@
 defmodule Rujira.Staking.Account do
+  @moduledoc """
+  Parses staking account data from the blockchain into an Account struct.
+  """
   alias Rujira.Staking.Pool
 
   defstruct [

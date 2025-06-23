@@ -1,4 +1,7 @@
 defmodule Rujira.Index.Account do
+  @moduledoc """
+  Defines the structure for index account information.
+  """
   alias Rujira.Index.Vault
 
   defstruct [

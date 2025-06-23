@@ -1,4 +1,11 @@
 defmodule Rujira.Contracts.Listener do
+  @moduledoc """
+  Listens for and processes smart contract-related blockchain events.
+
+  Handles block transactions to detect contract interactions, updates cached data,
+  and publishes real-time updates through the events system.
+
+  """
   use Thornode.Observer
   require Logger
 
@@ -9,9 +16,10 @@ defmodule Rujira.Contracts.Listener do
       %{result: %{events: xs}} when is_list(xs) -> xs
       _ -> []
     end)
-    |> Enum.flat_map(&scan_contract_event/1)
-    |> Enum.uniq()
-    |> Enum.map(&invalidate/1)
+    |> Enum.map(&scan_contract_event/1)
+    |> Enum.reject(&is_nil/1)
+    |> Rujira.Enum.uniq()
+    |> Enum.each(&invalidate/1)
 
     {:noreply, state}
   end
@@ -24,17 +32,17 @@ defmodule Rujira.Contracts.Listener do
 
     case action do
       "/cosmwasm.wasm.v1.MsgStoreCode" ->
-        [{Rujira.Contracts, :codes}]
+        {Rujira.Contracts, :codes}
 
       "/cosmwasm.wasm.v1.MsgInstantiateContract" ->
-        [{Rujira.Contracts, :by_code, [Map.get(attrs, "code_id")]}]
+        {Rujira.Contracts, :by_code, [Map.get(attrs, "code_id")]}
 
       _ ->
-        []
+        nil
     end
   end
 
-  defp scan_contract_event(_), do: []
+  defp scan_contract_event(_), do: nil
 
   defp invalidate({module, function, args}) do
     Logger.debug("#{__MODULE__} invalidating #{module}.#{function} #{Enum.join(args, ",")}")

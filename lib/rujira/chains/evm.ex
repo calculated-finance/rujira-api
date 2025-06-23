@@ -1,4 +1,7 @@
 defmodule Rujira.Chains.Evm do
+  @moduledoc """
+  Implements the base EVM (Ethereum Virtual Machine) adapter.
+  """
   use Appsignal.Instrumentation.Decorators
   use Memoize
 
@@ -99,27 +102,15 @@ defmodule Rujira.Chains.Evm do
 
       @decorate transaction_event()
       def balances_of(address, assets) do
-        with {:ok, balances} <-
-               assets
-               |> Task.async_stream(fn a ->
-                 [_, contract] = String.split(a.symbol, "-")
-                 {a, balance_of(eip55(address), eip55(contract))}
-               end)
-               |> Enum.reduce({:ok, []}, fn
-                 {:ok, {asset, {:ok, balance}}}, {:ok, acc} ->
-                   {:ok, [%{asset: asset, amount: balance} | acc]}
+        Rujira.Enum.reduce_async_while_ok(assets, fn asset ->
+          [_, contract] = String.split(asset.symbol, "-")
 
-                 {:ok, {:error, %{"error" => %{"message" => message}}}}, _ ->
-                   {:error, message}
-
-                 {:ok, {:error, error}}, _ ->
-                   {:error, error}
-
-                 {:error, err}, _ ->
-                   {:error, err}
-               end) do
-          {:ok, balances}
-        end
+          case balance_of(eip55(address), eip55(contract)) do
+            {:ok, balance} -> {:ok, %{asset: asset, amount: balance}}
+            {:error, %{"error" => %{"message" => message}}} -> {:error, message}
+            {:error, error} -> {:error, error}
+          end
+        end)
       end
 
       defp handle_result(%{"address" => contract, "topics" => [_, sender, recipient | _]}) do
@@ -161,12 +152,15 @@ defmodule Rujira.Chains.Evm do
 
   @decorate transaction_event()
   def native_balance(rpc, address) do
-    with {:ok, "0x" <> hex} <-
-           Ethereumex.HttpClient.eth_get_balance(address, "latest", url: with_key(rpc)) do
-      {:ok, String.to_integer(hex, 16)}
-    else
-      {:error, %{"error" => %{"message" => message}}} -> {:error, message}
-      err -> err
+    case Ethereumex.HttpClient.eth_get_balance(address, "latest", url: with_key(rpc)) do
+      {:ok, "0x" <> hex} ->
+        {:ok, String.to_integer(hex, 16)}
+
+      {:error, %{"error" => %{"message" => message}}} ->
+        {:error, message}
+
+      err ->
+        err
     end
   end
 

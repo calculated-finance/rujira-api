@@ -1,5 +1,9 @@
 defmodule Rujira.Leagues.Collectors.Contract do
+  @moduledoc """
+  Collects and processes smart contract events for league participation tracking.
+  """
   defmodule Ctx do
+    @moduledoc false
     defstruct [:sender, :contract]
   end
 
@@ -8,11 +12,11 @@ defmodule Rujira.Leagues.Collectors.Contract do
   use Memoize
 
   alias Rujira.Assets
-  alias Rujira.Deployments.Target
-  alias Rujira.Revenue
   alias Rujira.Deployments
-  alias Rujira.Prices
+  alias Rujira.Deployments.Target
   alias Rujira.Leagues
+  alias Rujira.Prices
+  alias Rujira.Revenue
 
   @impl true
   def handle_new_block(%{header: %{height: height, time: time}, txs: txs}, state) do
@@ -48,19 +52,17 @@ defmodule Rujira.Leagues.Collectors.Contract do
          [
            %{
              type: "message",
-             attributes: attrs
+             attributes: %{"action" => action, "sender" => sender}
            }
            | rest
          ],
          collection,
          ctx
        ) do
-    action = Map.get(attrs, "action")
-    sender = Map.get(attrs, "sender")
-
     case action do
       "/cosmwasm.wasm.v1.MsgExecuteContract" ->
         collect_events(rest, collection, %{ctx | sender: sender})
+
       _ ->
         collect_events(rest, collection, ctx)
     end
@@ -70,32 +72,27 @@ defmodule Rujira.Leagues.Collectors.Contract do
          [
            %{
              type: "execute",
-             attributes: attrs
+             attributes: %{"_contract_address" => contract_address}
            }
            | rest
          ],
          collection,
          ctx
        ) do
-    contract = Map.get(attrs, "_contract_address")
-
-    collect_events(rest, collection, %{ctx | contract: contract})
+    collect_events(rest, collection, %{ctx | contract: contract_address})
   end
 
   defp collect_events(
          [
            %{
              type: "transfer",
-             attributes: attrs
+             attributes: %{"recipient" => recipient, "amount" => amount}
            }
            | rest
          ],
          collection,
          ctx
        ) do
-    recipient = Map.get(attrs, "recipient")
-    amount = Map.get(attrs, "amount")
-
     if Enum.member?(fee_addresses(), recipient) do
       collection =
         amount
@@ -114,10 +111,12 @@ defmodule Rujira.Leagues.Collectors.Contract do
   defp to_league_events(_, %{contract: nil}), do: []
 
   defp to_league_events(amount, %{contract: contract, sender: sender}) do
-    with {:ok, coins} <- Assets.parse_coins(amount) do
-      Enum.map(coins, &to_league_event(&1, sender, contract))
-    else
-      _ -> []
+    case Assets.parse_coins(amount) do
+      {:ok, coins} ->
+        Enum.map(coins, &to_league_event(&1, sender, contract))
+
+      _ ->
+        []
     end
   end
 

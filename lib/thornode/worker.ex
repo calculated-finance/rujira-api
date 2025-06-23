@@ -1,4 +1,10 @@
 defmodule Thornode.Worker do
+  @moduledoc """
+  Worker module for handling gRPC connections to ThorNode.
+
+  This GenServer manages the lifecycle of gRPC connections to ThorNode endpoints,
+  including connection pooling and failover between different endpoints.
+  """
   require Logger
   use GenServer
 

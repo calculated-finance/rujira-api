@@ -1,4 +1,11 @@
 defmodule Rujira.Fin.Indexer do
+  @moduledoc """
+  Listens for and indexes trading events from the FIN protocol.
+
+  This module implements the `Thornode.Observer` behavior to monitor and process
+  blockchain events related to trading activity, extracting and storing trade data
+  for financial analysis and reporting.
+  """
   use Thornode.Observer
   require Logger
 
@@ -19,7 +26,8 @@ defmodule Rujira.Fin.Indexer do
 
   defp scan_events(height, txhash, tx_idx, events, time) do
     events
-    |> Enum.flat_map(&scan_trade/1)
+    |> Enum.map(&scan_trade/1)
+    |> Enum.reject(&is_nil/1)
     |> Enum.with_index()
     |> Enum.map(fn {trade, idx} ->
       Map.merge(trade, %{
@@ -34,25 +42,28 @@ defmodule Rujira.Fin.Indexer do
     |> Rujira.Fin.insert_trades()
   end
 
-  defp scan_trade(%{attributes: attributes, type: "wasm-rujira-fin/trade"}) do
-    contract_address = Map.get(attributes, "_contract_address")
-    bid = Map.get(attributes, "bid")
-    offer = Map.get(attributes, "offer")
-    price = Map.get(attributes, "price")
-    rate = Map.get(attributes, "rate")
-    side = Map.get(attributes, "side")
-
+  defp scan_trade(%{
+         attributes: %{
+           "_contract_address" => contract_address,
+           "bid" => bid,
+           "offer" => offer,
+           "price" => price,
+           "rate" => rate,
+           "side" => side
+         },
+         type: "wasm-rujira-fin/trade"
+       }) do
     insert_trade(contract_address, rate, price, offer, bid, side)
   end
 
-  defp scan_trade(_), do: []
+  defp scan_trade(_), do: nil
 
   defp insert_trade(contract_address, rate, price, offer, bid, side) do
     with {offer, _} <- Integer.parse(offer),
          {bid, _} <- Integer.parse(bid),
          {rate, _} <- Float.parse(rate) do
       if offer > 100 && bid > 100 do
-        trade = %{
+        %{
           contract: contract_address,
           offer: offer,
           bid: bid,
@@ -60,10 +71,8 @@ defmodule Rujira.Fin.Indexer do
           price: price,
           side: String.to_existing_atom(side)
         }
-
-        [trade]
       else
-        []
+        nil
       end
     end
   end

@@ -1,6 +1,13 @@
 defmodule Rujira.Fin.Candle do
-  alias Rujira.Resolution
+  @moduledoc """
+  Manages and processes financial candlestick data for trading pairs.
+
+  This module implements the `GenServer` behavior to periodically generate and store
+  candlestick data at specified resolutions, maintaining OHLCV (Open, High, Low, Close, Volume)
+  data for financial analysis and charting.
+  """
   alias Rujira.Fin
+  alias Rujira.Resolution
   import Ecto.Changeset
   require Logger
   use Ecto.Schema

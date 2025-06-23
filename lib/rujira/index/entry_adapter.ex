@@ -1,4 +1,7 @@
 defmodule Rujira.Index.EntryAdapter do
+  @moduledoc """
+  Handles the configuration and initialization of index entry adapters.
+  """
   defstruct [:address, :quote_denom]
 
   def from_config(address, %{"quote_denom" => quote_denom}) do

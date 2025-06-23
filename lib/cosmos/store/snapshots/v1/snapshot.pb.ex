@@ -23,7 +23,7 @@ defmodule Cosmos.Store.Snapshots.V1.SnapshotItem do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  oneof :item, 0
+  oneof(:item, 0)
 
   field :store, 1, type: Cosmos.Store.Snapshots.V1.SnapshotStoreItem, oneof: 0
   field :iavl, 2, type: Cosmos.Store.Snapshots.V1.SnapshotIAVLItem, oneof: 0, deprecated: false

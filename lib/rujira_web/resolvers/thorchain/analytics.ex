@@ -1,6 +1,9 @@
 defmodule RujiraWeb.Resolvers.Thorchain.Analytics do
-  alias Absinthe.Resolution.Helpers
+  @moduledoc """
+  Analytics resolver
+  """
   alias Absinthe.Relay
+  alias Absinthe.Resolution.Helpers
 
   @mock_pools_snaps [
     %{
@@ -75,7 +78,7 @@ defmodule RujiraWeb.Resolvers.Thorchain.Analytics do
     end)
   end
 
-  def mock_pool() do
+  def mock_pool do
     with {:ok, date} <- DateTime.now("Etc/UTC") do
       %{
         apr: %{value: 12_345_678_901, moving_avg: 11_234_567_890},

@@ -1,4 +1,10 @@
 defmodule Thorchain.Tor do
+  @moduledoc """
+  Module for handling Thorchain TOR (Thorchain Oracle Reports) functionality.
+
+  This module provides functionality for managing TOR candles and related data
+  in the Thorchain network, including data indexing and querying.
+  """
   alias Rujira.Repo
   alias Thorchain.Tor.Candle
   import Ecto.Query
@@ -115,7 +121,7 @@ defmodule Thorchain.Tor do
     }
   end
 
-  defp candle_conflict() do
+  defp candle_conflict do
     from(c in Candle,
       update: [
         set: [

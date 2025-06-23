@@ -1,6 +1,14 @@
 defmodule RujiraWeb.Schema.StrategyTypes do
+  @moduledoc """
+  Defines GraphQL types for Strategy data in the Rujira API.
+
+  This module contains the type definitions and field resolvers for Strategy
+  GraphQL objects, including different types of investment strategies.
+  """
+
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
+
   alias Rujira.Bow
 
   union :strategy do

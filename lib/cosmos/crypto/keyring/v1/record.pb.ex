@@ -31,7 +31,7 @@ defmodule Cosmos.Crypto.Keyring.V1.Record do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  oneof :item, 0
+  oneof(:item, 0)
 
   field :name, 1, type: :string
   field :pub_key, 2, type: Google.Protobuf.Any, json_name: "pubKey"

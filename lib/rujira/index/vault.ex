@@ -1,10 +1,16 @@
 defmodule Rujira.Index.Vault do
-  alias Rujira.Index.Nav
+  @moduledoc """
+  Defines the structure and operations for index vaults.
+  """
   alias Rujira.Index.Fixed
+  alias Rujira.Index.Nav
 
   use Memoize
 
   defmodule Config do
+    @moduledoc """
+    Configuration settings for an index vault.
+    """
     @type t :: %__MODULE__{
             quote_denom: String.t(),
             fee_collector: String.t()
@@ -13,6 +19,9 @@ defmodule Rujira.Index.Vault do
   end
 
   defmodule Allocation do
+    @moduledoc """
+    Represents asset allocation within a vault.
+    """
     @type t :: %__MODULE__{
             denom: String.t(),
             target_weight: non_neg_integer(),
@@ -26,6 +35,9 @@ defmodule Rujira.Index.Vault do
   end
 
   defmodule Status do
+    @moduledoc """
+    Current status and metrics of a vault.
+    """
     alias Rujira.Index.Fixed
     alias Rujira.Index.Nav
 
@@ -88,7 +100,13 @@ defmodule Rujira.Index.Vault do
   end
 
   defmodule Fees do
+    @moduledoc """
+    Fee structure and calculations for vault operations.
+    """
     defmodule Rates do
+      @moduledoc """
+      Fee rates applied to vault operations.
+      """
       @type t :: %__MODULE__{
               management: Decimal.t(),
               performance: Decimal.t(),

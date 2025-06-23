@@ -1,4 +1,7 @@
 defmodule Rujira.Deployments.Target do
+  @moduledoc """
+  Defines a deployment target structure for tracking smart contract deployments.
+  """
   defstruct [
     :id,
     :address,

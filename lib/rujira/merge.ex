@@ -3,14 +3,15 @@ defmodule Rujira.Merge do
   Rujira Merge.
   """
 
-  alias Rujira.Merge.Account
   alias Rujira.Contracts
-  alias Rujira.Merge.Pool
   alias Rujira.Merge.Account
+  alias Rujira.Merge.Pool
+  alias Rujira.Merge.Pool.Status
+
   use GenServer
   use Memoize
 
-  def code_ids() do
+  def code_ids do
     :rujira
     |> Application.get_env(__MODULE__)
     |> Keyword.get(:code_ids)
@@ -62,9 +63,8 @@ defmodule Rujira.Merge do
           | {:error, GRPC.RPCError.t()}
           | {:error, :parse_error}
   def pool_from_id(id) do
-    with {:ok, pool} <- get_pool(id),
-         {:ok, pool} <- load_pool(pool) do
-      {:ok, pool}
+    with {:ok, pool} <- get_pool(id) do
+      load_pool(pool)
     end
   end
 
@@ -76,7 +76,7 @@ defmodule Rujira.Merge do
           {:ok, Pool.t()} | {:error, GRPC.RPCError.t()} | {:error, :parse_error}
   def load_pool(pool) do
     with {:ok, res} <- query_pool(pool.address),
-         {:ok, status} <- Rujira.Merge.Pool.Status.from_query(pool, res) do
+         {:ok, status} <- Status.from_query(pool, res) do
       {:ok, Pool.set_rate(%{pool | status: status})}
     end
   end
@@ -88,17 +88,10 @@ defmodule Rujira.Merge do
   @doc """
   Gets and Loads all pools
   """
-  @spec load_pools() :: {:ok, list(Pool.t())} | {:error, GRPC.RPCError.t()}
-  def load_pools() do
-    with {:ok, pools} <- Rujira.Merge.list_pools(),
-         {:ok, stats} <-
-           Task.async_stream(pools, &Rujira.Merge.load_pool/1)
-           |> Enum.reduce({:ok, []}, fn
-             {:ok, {:ok, pool}}, {:ok, acc} -> {:ok, [pool | acc]}
-             {:ok, {:error, error}}, _ -> {:error, error}
-             {:error, err}, _ -> {:error, err}
-           end) do
-      {:ok, stats}
+  @spec load_pools :: {:ok, list(Pool.t())} | {:error, GRPC.RPCError.t()}
+  def load_pools do
+    with {:ok, pools} <- list_pools() do
+      Rujira.Enum.reduce_async_while_ok(pools, &load_pool/1)
     end
   end
 
@@ -108,15 +101,15 @@ defmodule Rujira.Merge do
   @spec load_account(Pool.t(), String.t()) ::
           {:ok, Account.t()} | {:error, GRPC.RPCError.t()}
   def load_account(pool, account) do
-    with {:ok, {share_pool, account_shares, account_merged}} <-
-           query_account(pool.address, account) do
-      Account.from_query(pool, %{
-        "addr" => account,
-        "merged" => account_merged,
-        "shares" => account_shares,
-        "size" => Account.ownership(share_pool, account_shares)
-      })
-    else
+    case query_account(pool.address, account) do
+      {:ok, {share_pool, account_shares, account_merged}} ->
+        Account.from_query(pool, %{
+          "addr" => account,
+          "merged" => account_merged,
+          "shares" => account_shares,
+          "size" => Account.ownership(share_pool, account_shares)
+        })
+
       {:error, :not_found} ->
         Account.from_query(pool, %{
           "addr" => account,
@@ -146,24 +139,15 @@ defmodule Rujira.Merge do
   def account_from_id(id) do
     [pool, account] = String.split(id, "/")
 
-    with {:ok, pool} <- get_pool(pool),
-         {:ok, account} <- load_account(pool, account) do
-      {:ok, account}
+    with {:ok, pool} <- get_pool(pool) do
+      load_account(pool, account)
     end
   end
 
   @spec load_accounts(String.t()) :: {:ok, list(Account.t())} | {:error, GRPC.RPCError.t()}
   def load_accounts(account) do
-    with {:ok, pools} <- Rujira.Merge.list_pools(),
-         {:ok, accounts} <-
-           Task.async_stream(pools, &Rujira.Merge.load_account(&1, account), timeout: 15_000)
-           |> Enum.reduce({:ok, []}, fn
-             {:ok, {:ok, pool}}, {:ok, acc} -> {:ok, [pool | acc]}
-             {:ok, {:error, error}}, _ -> {:error, error}
-             {:error, err}, _ -> {:error, err}
-             _, {:error, err} -> {:error, err}
-           end) do
-      {:ok, accounts}
+    with {:ok, pools} <- list_pools() do
+      Rujira.Enum.reduce_async_while_ok(pools, &load_account(&1, account), timeout: 15_000)
     end
   end
 end

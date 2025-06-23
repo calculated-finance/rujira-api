@@ -1,4 +1,11 @@
 defmodule Thorchain.Swaps.Indexer do
+  @moduledoc """
+  Indexer module for tracking and processing Thorchain swaps.
+
+  This module implements the Thornode.Observer behaviour to monitor new blocks
+  and process swap events from the Thorchain network.
+  """
+
   alias Rujira.Prices
   alias Thorchain.Swaps
   use Thornode.Observer
@@ -15,9 +22,10 @@ defmodule Thorchain.Swaps.Indexer do
         state
       ) do
     events
-    |> Enum.flat_map(&scan_swap/1)
+    |> Enum.map(&scan_swap/1)
+    |> Enum.reject(&is_nil/1)
     |> Enum.with_index()
-    |> Enum.map(fn {swap, idx} ->
+    |> Enum.each(fn {swap, idx} ->
       Map.merge(swap, %{
         height: height,
         tx_idx: 2_147_483_647,
@@ -30,83 +38,85 @@ defmodule Thorchain.Swaps.Indexer do
     {:noreply, state}
   end
 
-  defp scan_swap(%{attributes: attrs, type: "swap"}) do
-    pool = Map.get(attrs, "pool")
-    liquidity_fee_in_rune = Map.get(attrs, "liquidity_fee_in_rune")
-    emit_asset = Map.get(attrs, "emit_asset")
-    streaming_swap_quantity = Map.get(attrs, "streaming_swap_quantity")
-    streaming_swap_count = Map.get(attrs, "streaming_swap_count")
-    id = Map.get(attrs, "id")
-    chain = Map.get(attrs, "chain")
-    from = Map.get(attrs, "from")
-    to = Map.get(attrs, "to")
-    coin = Map.get(attrs, "coin")
-    memo = Map.get(attrs, "memo")
-
-    [
-      parse_swap(
-        pool,
-        liquidity_fee_in_rune,
-        emit_asset,
-        streaming_swap_quantity,
-        streaming_swap_count,
-        id,
-        chain,
-        from,
-        to,
-        coin,
-        memo
-      )
-    ]
+  defp scan_swap(%{
+         attributes: %{
+           "pool" => pool,
+           "liquidity_fee_in_rune" => liquidity_fee_in_rune,
+           "emit_asset" => emit_asset,
+           "streaming_swap_quantity" => streaming_swap_quantity,
+           "streaming_swap_count" => streaming_swap_count,
+           "id" => id,
+           "chain" => chain,
+           "from" => from,
+           "to" => to,
+           "coin" => coin,
+           "memo" => memo
+         },
+         type: "swap"
+       }) do
+    parse_swap(%{
+      pool: pool,
+      liquidity_fee_in_rune: liquidity_fee_in_rune,
+      emit_asset: emit_asset,
+      streaming_swap_quantity: streaming_swap_quantity,
+      streaming_swap_count: streaming_swap_count,
+      id: id,
+      chain: chain,
+      from: from,
+      to: to,
+      coin: coin,
+      memo: memo
+    })
   end
 
-  defp scan_swap(_), do: []
+  defp scan_swap(_), do: nil
 
   defp get_affiliate_data(memo, price, volume_usd) do
-    with {:ok, {aff, bps}} <- Thorchain.get_affiliate(memo) do
-      affiliate_fee_in_usd =
-        volume_usd
-        |> Decimal.mult(bps)
-        |> Decimal.round()
-        |> Decimal.to_integer()
+    case Thorchain.get_affiliate(memo) do
+      {:ok, {aff, bps}} ->
+        affiliate_fee_in_usd =
+          volume_usd
+          |> Decimal.mult(bps)
+          |> Decimal.round()
+          |> Decimal.to_integer()
 
-      affiliate_fee_in_rune =
-        affiliate_fee_in_usd
-        |> Decimal.div(price)
-        |> Decimal.round()
-        |> Decimal.to_integer()
+        affiliate_fee_in_rune =
+          affiliate_fee_in_usd
+          |> Decimal.div(price)
+          |> Decimal.round()
+          |> Decimal.to_integer()
 
-      bps =
-        bps
-        |> Decimal.div(10_000)
-        |> Decimal.round()
-        |> Decimal.to_integer()
+        bps =
+          bps
+          |> Decimal.div(10_000)
+          |> Decimal.round()
+          |> Decimal.to_integer()
 
-      %{
-        affiliate: aff,
-        affiliate_bps: bps,
-        affiliate_fee_in_rune: affiliate_fee_in_rune,
-        affiliate_fee_in_usd: affiliate_fee_in_usd
-      }
-    else
+        %{
+          affiliate: aff,
+          affiliate_bps: bps,
+          affiliate_fee_in_rune: affiliate_fee_in_rune,
+          affiliate_fee_in_usd: affiliate_fee_in_usd
+        }
+
       _ ->
         %{}
     end
   end
 
-  defp parse_swap(
-         pool,
-         liquidity_fee_in_rune,
-         emit_asset,
-         streaming_swap_quantity,
-         streaming_swap_count,
-         id,
-         chain,
-         from,
-         to,
-         coin,
-         memo
-       ) do
+  defp parse_swap(%{
+         pool: pool,
+         liquidity_fee_in_rune: liquidity_fee_in_rune,
+         emit_asset: emit_asset,
+         streaming_swap_quantity: streaming_swap_quantity,
+         streaming_swap_count: streaming_swap_count,
+         id: id,
+         chain: chain,
+         from: from,
+         to: to,
+         coin: coin,
+         memo: memo
+       }) do
     with {:ok, %{current: price}} <- Prices.get("RUNE") do
       liquidity_fee_in_rune = String.to_integer(liquidity_fee_in_rune)
       streaming_swap_quantity = String.to_integer(streaming_swap_quantity)

@@ -1,4 +1,7 @@
 defmodule Rujira.Prices.Coingecko do
+  @moduledoc """
+  Fetches and caches cryptocurrency price data from the CoinGecko API.
+  """
   use Memoize
   use GenServer
 
@@ -17,7 +20,7 @@ defmodule Rujira.Prices.Coingecko do
      %{
        state
        | calls: [{id, from} | state.calls],
-         requests: Enum.uniq([id | state.requests])
+         requests: Rujira.Enum.uniq([id | state.requests])
      }}
   end
 
@@ -25,15 +28,17 @@ defmodule Rujira.Prices.Coingecko do
   def handle_info(:flush, %{requests: [], calls: []}), do: {:noreply, %{requests: [], calls: []}}
 
   def handle_info(:flush, state) do
-    with {:ok, prices} <- prices(state.requests) do
-      for {id, from} <- state.calls do
-        case Map.get(prices, id) do
-          nil -> GenServer.reply(from, {:error, "price not found for #{id}"})
-          price -> GenServer.reply(from, {:ok, price})
+    case prices(state.requests) do
+      {:ok, prices} ->
+        for {id, from} <- state.calls do
+          case Map.get(prices, id) do
+            nil -> GenServer.reply(from, {:error, "price not found for #{id}"})
+            price -> GenServer.reply(from, {:ok, price})
+          end
         end
-      end
-    else
-      err -> for {_, from} <- state.calls, do: GenServer.reply(from, err)
+
+      err ->
+        for {_, from} <- state.calls, do: GenServer.reply(from, err)
     end
 
     {:noreply, %{requests: [], calls: []}}
@@ -89,30 +94,37 @@ defmodule Rujira.Prices.Coingecko do
   end
 
   def prices(ids) do
-    with {:ok, %{body: %{} = res}} <-
-           proxy("v3/simple/price", %{
-             "ids" => Enum.join(ids, ","),
-             "vs_currencies" => "usd",
-             "include_24hr_change" => "true",
-             "include_market_cap" => "true"
-           }) do
-      {:ok,
-       res
-       |> Enum.map(fn
-         {k, %{"usd" => price, "usd_24h_change" => change, "usd_market_cap" => mcap}} ->
-           {:ok, price} = Decimal.cast(price)
+    case proxy("v3/simple/price", %{
+           "ids" => Enum.join(ids, ","),
+           "vs_currencies" => "usd",
+           "include_24hr_change" => "true",
+           "include_market_cap" => "true"
+         }) do
+      {:ok, %{body: %{} = res}} ->
+        {:ok,
+         res
+         |> Enum.map(fn
+           {k, %{"usd" => price, "usd_24h_change" => change, "usd_market_cap" => mcap}} ->
+             {:ok, price} = Decimal.cast(price)
 
-           {k, %{price: price, change: change, mcap: floor(mcap)}}
+             {k, %{price: price, change: change, mcap: floor(mcap)}}
 
-         {k, %{}} ->
-           {k, %{price: nil, change: nil, mcap: nil}}
-       end)
-       |> Map.new()}
-    else
-      nil -> {:error, "error fetching #{ids} price"}
-      str when is_binary(str) -> {:error, "error fetching #{ids} price: #{str}"}
-      {:error, %{reason: reason}} -> {:error, reason}
-      err -> err
+           {k, %{}} ->
+             {k, %{price: nil, change: nil, mcap: nil}}
+         end)
+         |> Map.new()}
+
+      nil ->
+        {:error, "error fetching #{ids} price"}
+
+      str when is_binary(str) ->
+        {:error, "error fetching #{ids} price: #{str}"}
+
+      {:error, %{reason: reason}} ->
+        {:error, reason}
+
+      err ->
+        err
     end
   end
 
@@ -129,7 +141,7 @@ defmodule Rujira.Prices.Coingecko do
     end
   end
 
-  defmemop proxy(path, params), expires_in: 15000 do
+  defmemop proxy(path, params), expires_in: 15_000 do
     config = Application.get_env(:rujira, __MODULE__)
 
     params = Map.put(params, "x_cg_pro_api_key", config[:cg_key])

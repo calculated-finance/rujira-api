@@ -1,4 +1,10 @@
 defmodule RujiraWeb.Resolvers.Account do
+  @moduledoc """
+  Handles GraphQL resolution for account-related queries.
+
+  Provides functions to resolve account data, including address translation
+  and chain information for both single and multiple account lookups.
+  """
   alias RujiraWeb.Resolvers.Node
 
   def resolver(%{chain: chain}, %{addresses: addresses}, _) do

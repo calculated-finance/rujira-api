@@ -1,4 +1,11 @@
 defmodule Rujira.Merge.Listener do
+  @moduledoc """
+  Listens for and processes Merge Protocol-related blockchain events.
+
+  Handles block transactions to detect Merge Protocol activities, updates cached data,
+  and publishes real-time updates through the events system.
+  """
+
   alias Rujira.Merge
   use Thornode.Observer
   require Logger
@@ -16,8 +23,9 @@ defmodule Rujira.Merge.Listener do
         %{result: %{events: xs}} when is_list(xs) -> xs
         _ -> []
       end)
-      |> Enum.flat_map(&scan_event/1)
-      |> Enum.uniq()
+      |> Enum.map(&scan_event/1)
+      |> Enum.reject(&is_nil/1)
+      |> Rujira.Enum.uniq()
 
     for {a, account} <- addresses do
       Logger.debug("#{__MODULE__} change #{a}")
@@ -28,11 +36,12 @@ defmodule Rujira.Merge.Listener do
     end
   end
 
-  defp scan_event(%{attributes: attrs, type: "wasm-rujira-merge/" <> _}) do
-    contract = Map.get(attrs, "_contract_address")
-    account = Map.get(attrs, "account")
-    [contract, account]
+  defp scan_event(%{
+         attributes: %{"_contract_address" => contract, "account" => account},
+         type: "wasm-rujira-merge/" <> _
+       }) do
+    {contract, account}
   end
 
-  defp scan_event(_), do: []
+  defp scan_event(_), do: nil
 end

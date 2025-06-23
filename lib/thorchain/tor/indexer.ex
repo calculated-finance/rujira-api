@@ -1,4 +1,10 @@
 defmodule Thorchain.Tor.Indexer do
+  @moduledoc """
+  Indexer module for processing Thorchain Asset prices.
+
+  This module implements the `Thornode.Observer` behavior to index and store
+  TOR prices from the Thorchain network.
+  """
   use Thornode.Observer
   require Logger
 

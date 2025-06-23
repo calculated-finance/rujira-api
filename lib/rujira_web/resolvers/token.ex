@@ -1,7 +1,18 @@
 defmodule RujiraWeb.Resolvers.Token do
+  @moduledoc """
+  Handles GraphQL resolution for token-related queries and type conversions.
+
+  This module provides resolver functions for working with token assets, including:
+  - Converting between different token representations (string, layer1, secured)
+  - Resolving native token denominations for different blockchains
+  - Supporting various token types including THORChain and KUJI assets
+  """
   alias Absinthe.Resolution.Helpers
-  alias Rujira.Assets.Asset
   alias Rujira.Assets
+  alias Rujira.Assets.Asset
+  alias Rujira.Chains.Gaia
+  alias Rujira.Chains.Kuji
+  alias Rujira.Chains.Noble
 
   def string(%Asset{} = asset, _, _), do: {:ok, Assets.to_string(asset)}
   def layer1(%{asset: %Asset{} = asset}, _, _), do: {:ok, Assets.to_layer1(asset)}
@@ -23,25 +34,22 @@ defmodule RujiraWeb.Resolvers.Token do
   end
 
   def native(%{asset: %Asset{chain: "KUJI", symbol: symbol}}, _, _) do
-    with {:ok, denom} <- Rujira.Chains.Kuji.to_denom(symbol) do
-      {:ok, %{denom: denom}}
-    else
+    case Kuji.to_denom(symbol) do
+      {:ok, denom} -> {:ok, %{denom: denom}}
       _ -> {:ok, nil}
     end
   end
 
   def native(%{asset: %Asset{chain: "GAIA", symbol: symbol}}, _, _) do
-    with {:ok, denom} <- Rujira.Chains.Gaia.to_denom(symbol) do
-      {:ok, %{denom: denom}}
-    else
+    case Gaia.to_denom(symbol) do
+      {:ok, denom} -> {:ok, %{denom: denom}}
       _ -> {:ok, nil}
     end
   end
 
   def native(%{asset: %Asset{chain: "NOBLE", symbol: symbol}}, _, _) do
-    with {:ok, denom} <- Rujira.Chains.Noble.to_denom(symbol) do
-      {:ok, %{denom: denom}}
-    else
+    case Noble.to_denom(symbol) do
+      {:ok, denom} -> {:ok, %{denom: denom}}
       _ -> {:ok, nil}
     end
   end
@@ -59,7 +67,7 @@ defmodule RujiraWeb.Resolvers.Token do
 
   def prices(_, b) do
     b
-    |> Enum.uniq()
+    |> Rujira.Enum.uniq()
     |> Rujira.Prices.get()
   end
 

@@ -1,4 +1,11 @@
 defmodule Thorchain.Listener do
+  @moduledoc """
+  Listens for and processes Thorchain-related blockchain events.
+
+  Handles block transactions to detect Thorchain activities, updates cached data,
+  and publishes real-time updates through the events system.
+
+  """
   require Logger
   use Thornode.Observer
 
@@ -7,7 +14,7 @@ defmodule Thorchain.Listener do
     hashes =
       txs
       |> Enum.flat_map(&scan_txs/1)
-      |> Enum.uniq()
+      |> Rujira.Enum.uniq()
 
     for a <- hashes do
       Logger.debug("#{__MODULE__} change #{a}")
@@ -21,7 +28,7 @@ defmodule Thorchain.Listener do
         _ -> []
       end)
 
-    for {pool, address} <- events |> Enum.flat_map(&scan_event/1) |> Enum.uniq() do
+    for {pool, address} <- events |> Enum.flat_map(&scan_event/1) |> Rujira.Enum.uniq() do
       Memoize.invalidate(Thorchain, :liquidity_provider, [pool, address])
 
       Rujira.Events.publish_node(:thorchain_liquidity_provider, "#{pool}/#{address}")

@@ -3,17 +3,19 @@ defmodule Rujira.Index do
   Rujira Index - unified interface for Nav and Fixed index types.
   """
 
-  alias Rujira.Index.Vault
+  alias Rujira.Assets
+  alias Rujira.Chains.Thor
+  alias Rujira.Contracts
+  alias Rujira.Deployments
   alias Rujira.Index.Account
   alias Rujira.Index.EntryAdapter
-  alias Rujira.Contracts
-  alias Rujira.Chains.Thor
   alias Rujira.Index.NavBin
-  alias Rujira.Deployments
-  alias Rujira.Assets
+  alias Rujira.Index.Vault
   alias Rujira.Prices
-  import Ecto.Query
   alias Rujira.Repo
+
+  import Ecto.Query
+
   use GenServer
   use Memoize
 
@@ -32,22 +34,17 @@ defmodule Rujira.Index do
     {:ok, state}
   end
 
-  defp index_types(), do: [Rujira.Index.Nav, Rujira.Index.Fixed]
+  defp index_types, do: [Rujira.Index.Nav, Rujira.Index.Fixed]
 
   @doc """
   List all Index Vaults
   """
 
   def list_vaults do
-    vaults =
-      index_types()
-      |> Task.async_stream(&fetch_vaults_for/1, timeout: 20_000)
-      |> Enum.reduce([], fn
-        {:ok, {:ok, vs}}, acc -> acc ++ vs
-        _, acc -> acc
-      end)
-
-    {:ok, vaults}
+    with {:ok, vaults} <-
+           Rujira.Enum.reduce_async_while_ok(index_types(), &fetch_vaults_for/1, timeout: 20_000) do
+      {:ok, List.flatten(vaults)}
+    end
   end
 
   defp fetch_vaults_for(type) do
@@ -64,12 +61,7 @@ defmodule Rujira.Index do
   @spec load_vaults() :: {:ok, list(Vault.t())} | {:error, any()}
   def load_vaults do
     with {:ok, vaults} <- list_vaults() do
-      vaults
-      |> Task.async_stream(&load_index/1, timeout: 20_000)
-      |> Enum.reduce({:ok, []}, fn
-        {:ok, {:ok, x}}, {:ok, xs} -> {:ok, [x | xs]}
-        err, _ -> err
-      end)
+      Rujira.Enum.reduce_async_while_ok(vaults, &load_index/1, timeout: 20_000)
     end
   end
 
@@ -161,6 +153,17 @@ defmodule Rujira.Index do
     end
   end
 
+  def accounts(address) do
+    with {:ok, pools} <- load_vaults() do
+      Rujira.Enum.reduce_async_while_ok(pools, fn pool ->
+        case load_account(pool, address) do
+          {:ok, %{shares: 0}} -> :skip
+          other -> other
+        end
+      end)
+    end
+  end
+
   def get_vault_id("nami-index-" <> rest) do
     case String.split(rest, "-rcpt") do
       [type_and_address, ""] ->
@@ -247,7 +250,7 @@ defmodule Rujira.Index do
     end
   end
 
-  def load_entry_adapters() do
+  def load_entry_adapters do
     EntryAdapter
     |> Deployments.list_targets()
     |> Rujira.Enum.reduce_while_ok([], fn %{module: module, address: address} ->

@@ -1,4 +1,7 @@
 defmodule Rujira.Fin.Pair do
+  @moduledoc """
+  Parses trading pair configuration data into a structured representation for the FIN protocol.
+  """
   alias Rujira.Assets
   alias Rujira.Fin.Book
 

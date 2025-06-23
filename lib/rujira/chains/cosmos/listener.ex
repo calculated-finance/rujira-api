@@ -1,4 +1,10 @@
 defmodule Rujira.Chains.Cosmos.Listener do
+  @moduledoc """
+  Listens for and processes Cosmos chain-related blockchain events.
+
+  Handles block transactions to detect Cosmos chain activities, updates cached data,
+  and publishes real-time updates through the events system.
+  """
   defmacro __using__(opts) do
     chain = Keyword.fetch!(opts, :chain)
     ws = Keyword.fetch!(opts, :ws)
@@ -64,7 +70,7 @@ defmodule Rujira.Chains.Cosmos.Listener do
       def process_events(events) do
         events
         |> Enum.flat_map(&scan_event/1)
-        |> Enum.uniq()
+        |> Rujira.Enum.uniq()
         |> Enum.each(fn address ->
           Logger.debug("#{__MODULE__} change #{address}")
           Rujira.Events.publish_node(:layer_1_account, "#{@chain}:#{address}")

@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Fragments.StrategyFragments do
+  @moduledoc false
   import RujiraWeb.Fragments.BowFragments
   import RujiraWeb.Fragments.ThorchainFragments
   import RujiraWeb.Fragments.IndexFragments
@@ -37,7 +38,6 @@ defmodule RujiraWeb.Fragments.StrategyFragments do
   #{get_index_vault_fragment()}
   """
 
-
-  def get_strategy_account_fragment(), do: @strategy_account_fragment
-  def get_strategy_fragment(), do: @strategy_fragment
+  def get_strategy_account_fragment, do: @strategy_account_fragment
+  def get_strategy_fragment, do: @strategy_fragment
 end

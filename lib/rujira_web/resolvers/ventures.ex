@@ -1,7 +1,9 @@
 defmodule RujiraWeb.Resolvers.Ventures do
-  alias Rujira.Ventures
+  @moduledoc false
+
   alias Absinthe.Relay
   alias Rujira.Assets
+  alias Rujira.Ventures
 
   def resolver(_, _, _) do
     with {:ok, keiko} <- Ventures.keiko() do
@@ -67,20 +69,24 @@ defmodule RujiraWeb.Resolvers.Ventures do
     end
   end
 
-  defp transform_tokenomics_input(tokenomics_input) do
-    update_in(tokenomics_input[:categories], fn categories ->
+  defp transform_tokenomics_input(%{categories: categories} = input) do
+    transformed_categories =
       Enum.map(categories, fn category ->
-        update_in(category[:recipients], fn recipients ->
-          Enum.map(recipients, fn recipient ->
-            if Map.has_key?(recipient, :address) && !is_nil(recipient.address) do
-              %{send: %{address: recipient.address, amount: recipient.amount}}
-            else
-              %{set: %{amount: recipient.amount}}
-            end
-          end)
-        end)
+        recipients =
+          Enum.map(category.recipients, &transform_recipient/1)
+
+        %{category | recipients: recipients}
       end)
-    end)
+
+    %{input | categories: transformed_categories}
+  end
+
+  defp transform_recipient(%{address: address, amount: amount}) when not is_nil(address) do
+    %{send: %{address: address, amount: amount}}
+  end
+
+  defp transform_recipient(%{amount: amount}) do
+    %{set: %{amount: amount}}
   end
 
   def asset(%{denom: denom}, _, _), do: Assets.from_denom(denom)

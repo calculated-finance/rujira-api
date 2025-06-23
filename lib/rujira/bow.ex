@@ -2,13 +2,15 @@ defmodule Rujira.Bow do
   @moduledoc """
   Rujira Bow - AMM pools.
   """
-
-  alias Rujira.Deployments
   alias Rujira.Bow.Account
+  alias Rujira.Bow.Xyk
   alias Rujira.Chains.Thor
   alias Rujira.Contracts
-  alias Rujira.Bow.Xyk
+  alias Rujira.Deployments
+  alias Rujira.Fin
   alias Rujira.Fin.Book
+  alias Rujira.Fin.Trade
+
   import Ecto.Query
   use Memoize
   use GenServer
@@ -27,19 +29,12 @@ defmodule Rujira.Bow do
   Fetches all Bow Pools
   """
 
-  @spec list_pools() ::
+  @spec list_pools ::
           {:ok, list(Xyk.t())} | {:error, GRPC.RPCError.t()}
-  def list_pools() do
+  def list_pools do
     __MODULE__
     |> Deployments.list_targets()
-    |> Task.async_stream(&load_pool/1, timeout: 30_000)
-    |> Enum.reduce({:ok, []}, fn
-      {:ok, {:ok, x}}, {:ok, xs} ->
-        {:ok, [x | xs]}
-
-      _, err ->
-        err
-    end)
+    |> Rujira.Enum.reduce_async_while_ok(&load_pool/1, timeout: 30_000)
   end
 
   @doc """
@@ -85,9 +80,8 @@ defmodule Rujira.Bow do
 
   def account_from_id(id) do
     with [account, denom] <- String.split(id, "/", parts: 2) do
-      with {:ok, pool} <- pool_from_share_denom(denom),
-           {:ok, account} <- load_account(pool, account) do
-        {:ok, account}
+      with {:ok, pool} <- pool_from_share_denom(denom) do
+        load_account(pool, account)
       end
     end
   end
@@ -118,21 +112,21 @@ defmodule Rujira.Bow do
   def list_trades_query(contract, limit \\ 100, sort \\ :desc) do
     with {:ok, %{address: address}} <- fin_pair(contract) do
       {:ok,
-       Rujira.Fin.Trade
+       Trade
        |> where(contract: ^address)
        |> where([t], like(t.price, "mm:%"))
-       |> Rujira.Fin.Trade.query()
+       |> Trade.query()
        |> select_merge([t], %{
          type: fragment("CASE WHEN ? = 'base' THEN 'sell' ELSE 'buy' END", t.side)
        })
-       |> Rujira.Fin.sort_trades(sort)
+       |> Fin.sort_trades(sort)
        |> limit(^limit)}
     end
   end
 
   defmemo fin_pair(contract) do
-    with {:ok, pairs} <- Rujira.Fin.list_pairs(),
-         %Rujira.Fin.Pair{} = pair <-
+    with {:ok, pairs} <- Fin.list_pairs(),
+         %Fin.Pair{} = pair <-
            Enum.find(pairs, fn %{market_maker: mm} -> mm == contract end) do
       {:ok, pair}
     else
@@ -154,7 +148,7 @@ defmodule Rujira.Bow do
     end
   end
 
-  def share_denom_map() do
+  def share_denom_map do
     case list_pools() do
       {:ok, pools} ->
         pools

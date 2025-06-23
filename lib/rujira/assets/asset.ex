@@ -1,4 +1,7 @@
 defmodule Rujira.Assets.Asset do
+  @moduledoc """
+  Defines the Asset struct for representing blockchain assets.
+  """
   defstruct [:id, :type, :chain, :symbol, :ticker]
 
   @type t :: %__MODULE__{

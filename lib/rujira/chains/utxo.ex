@@ -1,4 +1,7 @@
 defmodule Rujira.Chains.Utxo do
+  @moduledoc """
+  Implements the base UTXO adapter for Bitcoin-style blockchains.
+  """
   defmacro __using__(opts) do
     asset = Keyword.fetch!(opts, :asset)
     chain = Keyword.fetch!(opts, :chain)

@@ -1,4 +1,7 @@
 defmodule RujiraWeb.Resolvers.Chains do
+  @moduledoc """
+  Handles GraphQL resolution for blockchain network-related queries.
+  """
   def resolver(_, _, _) do
     {:ok,
      %{

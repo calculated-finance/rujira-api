@@ -1,4 +1,8 @@
 defmodule Rujira.Merge.Account do
+  @moduledoc """
+  Defines the structure and operations for merge pool accounts.
+  """
+
   alias Rujira.Merge.Pool
 
   defstruct [

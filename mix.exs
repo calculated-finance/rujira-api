@@ -65,7 +65,8 @@ defmodule Rujira.MixProject do
       {:timex, "~> 3.7.11"},
       {:websockex, "~> 0.4.3"},
       {:yaml_elixir, "~> 2.11.0"},
-      {:libcluster, "~> 3.3.3"}
+      {:libcluster, "~> 3.3.3"},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
 

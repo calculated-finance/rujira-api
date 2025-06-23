@@ -1,4 +1,5 @@
 defmodule Rujira.Analytics.Common do
+  @moduledoc false
   import Ecto.Query
 
   def shift_from_back(from, period, "1D"), do: DateTime.add(from, -period, :day)

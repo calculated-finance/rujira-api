@@ -1,7 +1,11 @@
 defmodule Rujira.Chains.Noble do
-  alias Rujira.Assets
+  @moduledoc """
+  Implements the Noble adapter for Cosmos compatibility.
+  """
   alias Cosmos.Bank.V1beta1.QueryAllBalancesRequest
   alias Cosmos.Bank.V1beta1.QueryAllBalancesResponse
+  alias Rujira.Assets
+
   import Cosmos.Bank.V1beta1.Query.Stub
 
   use Rujira.Chains.Cosmos.Listener, ws: "wss://noble-rpc.bryanlabs.net", chain: "noble"
@@ -33,7 +37,7 @@ defmodule Rujira.Chains.Noble do
     end
   end
 
-  def connection() do
+  def connection do
     cred = GRPC.Credential.new(ssl: [verify: :verify_none])
 
     GRPC.Stub.connect(@rpc, 443,

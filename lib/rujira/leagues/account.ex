@@ -1,6 +1,7 @@
 defmodule Rujira.Leagues.Account do
-
-
+  @moduledoc """
+  Defines the structure for league participant accounts and their statistics.
+  """
   @type t :: %__MODULE__{
           id: String.t(),
           league: String.t(),

@@ -3,6 +3,7 @@ defmodule Rujira.Ventures.Keiko do
   Keiko is the orchestrator contract for the various sale types created via Ventures
   """
   defmodule Bow do
+    @moduledoc false
     defstruct [:admin, :code_id]
     @type t :: %__MODULE__{admin: String.t(), code_id: non_neg_integer()}
     def from_query(%{"admin" => admin, "code_id" => code_id}) do
@@ -11,6 +12,8 @@ defmodule Rujira.Ventures.Keiko do
   end
 
   defmodule Fin do
+    @moduledoc false
+
     defstruct [:admin, :code_id, :fee_address, :fee_maker, :fee_taker]
 
     @type t :: %__MODULE__{
@@ -43,7 +46,11 @@ defmodule Rujira.Ventures.Keiko do
   end
 
   defmodule Pilot do
+    @moduledoc false
+
     defmodule Deposit do
+      @moduledoc false
+
       defstruct [:denom, :amount]
       @type t :: %__MODULE__{denom: String.t(), amount: non_neg_integer()}
 
@@ -55,6 +62,7 @@ defmodule Rujira.Ventures.Keiko do
     end
 
     defmodule BidDenom do
+      @moduledoc false
       defstruct [:denom, :min_raise_amount]
       @type t :: %__MODULE__{denom: String.t(), min_raise_amount: non_neg_integer()}
 
@@ -125,6 +133,8 @@ defmodule Rujira.Ventures.Keiko do
   end
 
   defmodule Streams do
+    @moduledoc false
+
     defstruct [:admin, :code_id]
     @type t :: %__MODULE__{admin: String.t(), code_id: non_neg_integer()}
 
@@ -134,6 +144,8 @@ defmodule Rujira.Ventures.Keiko do
   end
 
   defmodule Tokenomics do
+    @moduledoc false
+
     defstruct [:min_liquidity]
     @type t :: %__MODULE__{min_liquidity: Decimal.t()}
 

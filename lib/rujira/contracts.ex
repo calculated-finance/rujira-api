@@ -2,21 +2,22 @@ defmodule Rujira.Contracts do
   @moduledoc """
   Convenience methods for querying CosmWasm smart contracts
   """
-  alias Cosmwasm.Wasm.V1.QueryBuildAddressRequest
-  alias Cosmwasm.Wasm.V1.QueryCodeRequest
-  alias Cosmwasm.Wasm.V1.QueryRawContractStateRequest
-  alias Cosmwasm.Wasm.V1.ContractInfo
-  alias Cosmwasm.Wasm.V1.CodeInfoResponse
-  alias Cosmwasm.Wasm.V1.QueryCodesRequest
   alias Cosmos.Base.Query.V1beta1.PageRequest
+  alias Cosmwasm.Wasm.V1.CodeInfoResponse
+  alias Cosmwasm.Wasm.V1.ContractInfo
+  alias Cosmwasm.Wasm.V1.Model
   alias Cosmwasm.Wasm.V1.Query.Stub
   alias Cosmwasm.Wasm.V1.QueryAllContractStateRequest
+  alias Cosmwasm.Wasm.V1.QueryBuildAddressRequest
+  alias Cosmwasm.Wasm.V1.QueryCodeRequest
+  alias Cosmwasm.Wasm.V1.QueryCodesRequest
   alias Cosmwasm.Wasm.V1.QueryContractInfoRequest
-  alias Cosmwasm.Wasm.V1.QuerySmartContractStateRequest
   alias Cosmwasm.Wasm.V1.QueryContractsByCodeRequest
-  alias Cosmwasm.Wasm.V1.Model
+  alias Cosmwasm.Wasm.V1.QueryRawContractStateRequest
+  alias Cosmwasm.Wasm.V1.QuerySmartContractStateRequest
   alias Rujira.Contracts.Contract
   alias Rujira.Repo
+
   import Ecto.Query
   use Memoize
   use GenServer
@@ -181,9 +182,8 @@ defmodule Rujira.Contracts do
   defmemo(get({module, %__MODULE__{address: address}}), do: get({module, address}))
 
   defmemo get({module, address}) do
-    with {:ok, config} <- query_state_smart(address, %{config: %{}}),
-         {:ok, struct} <- module.from_config(address, config) do
-      {:ok, struct}
+    with {:ok, config} <- query_state_smart(address, %{config: %{}}) do
+      module.from_config(address, config)
     end
   end
 
@@ -195,14 +195,7 @@ defmodule Rujira.Contracts do
     with {:ok, contracts} <- by_codes(code_ids),
          {:ok, struct} <-
            contracts
-           |> Task.async_stream(&get({module, &1}), timeout: 30_000)
-           |> Enum.reduce({:ok, []}, fn
-             {:ok, {:ok, x}}, {:ok, xs} ->
-               {:ok, [x | xs]}
-
-             _, err ->
-               err
-           end) do
+           |> Rujira.Enum.reduce_async_while_ok(&get({module, &1}), timeout: 30_000) do
       {:ok, struct}
     else
       err ->
@@ -232,9 +225,8 @@ defmodule Rujira.Contracts do
            Thornode.query(&Stub.smart_contract_state/2, %QuerySmartContractStateRequest{
              address: address,
              query_data: Jason.encode!(query)
-           }),
-         {:ok, res} <- Jason.decode(data) do
-      {:ok, res}
+           }) do
+      Jason.decode(data)
     end
   end
 
@@ -319,20 +311,20 @@ defmodule Rujira.Contracts do
     end)
   end
 
-  @spec insert(%Contract{}) :: {:ok, %Contract{}} | {:error, Ecto.Changeset.t()}
+  @spec insert(Contract.t()) :: {:ok, Contract.t()} | {:error, Ecto.Changeset.t()}
   def insert(%Contract{} = contract), do: Repo.insert(contract)
 
   def insert_all(contracts),
     do: Repo.insert_all(Contract, contracts, on_conflict: :nothing, returning: true)
 
-  @spec by_module(module()) :: list(%Contract{})
+  @spec by_module(module()) :: list(Contract.t())
   def by_module(module) do
     Contract
     |> where([c], c.module == ^module)
     |> Repo.all()
   end
 
-  @spec by_id(String.t()) :: {:ok, %Contract{}} | {:error, :not_found}
+  @spec by_id(String.t()) :: {:ok, Contract.t()} | {:error, :not_found}
   def by_id(address) do
     contract =
       Contract
@@ -346,8 +338,8 @@ defmodule Rujira.Contracts do
     end
   end
 
-  @spec list() :: list(%Contract{})
-  def list() do
+  @spec list() :: list(Contract.t())
+  def list do
     Contract
     |> Repo.all()
   end

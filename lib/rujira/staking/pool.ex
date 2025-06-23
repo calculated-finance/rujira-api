@@ -1,9 +1,18 @@
 defmodule Rujira.Staking.Pool do
+  @moduledoc """
+  Parses and manages staking pool data from the blockchain into a Pool struct.
+
+  Handles pool configuration, status tracking, and revenue calculations.
+  """
+
   alias Rujira.Assets
   use Memoize
   import Ecto.Query
 
   defmodule Summary do
+    @moduledoc """
+    Defines the structure for a staking pool summary.
+    """
     defstruct [
       :id,
       :apr,
@@ -24,6 +33,9 @@ defmodule Rujira.Staking.Pool do
   end
 
   defmodule Status do
+    @moduledoc """
+    Defines the structure for a staking pool status.
+    """
     defstruct [
       :id,
       :account_bond,

@@ -1,4 +1,6 @@
 defmodule Rujira.Release do
+  @moduledoc "Handles database setup and migrations for the Rujira application in production."
+
   @app :rujira
 
   def create do

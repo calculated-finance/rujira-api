@@ -39,7 +39,11 @@ defmodule RujiraWeb.Schema.IndexTest do
   #{get_index_account_fragment()}
   """
 
-  test "Vaults tests", %{conn: conn, account_populated: account_populated, account_empty: account_empty} do
+  test "Vaults tests", %{
+    conn: conn,
+    account_populated: account_populated,
+    account_empty: account_empty
+  } do
     conn = post(conn, "/api", %{"query" => @list_vaults})
     %{"data" => %{"index" => vaults}} = json_response(conn, 200)
 

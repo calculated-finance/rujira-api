@@ -1,4 +1,8 @@
 defmodule Thornode.Pool do
+  @moduledoc """
+  Manages a pool of gRPC worker processes for communicating with the Thorchain node.
+  """
+
   use Supervisor
   require Logger
 

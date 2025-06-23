@@ -23,7 +23,7 @@ defmodule Cosmos.Staking.V1beta1.StakeAuthorization do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  oneof :validators, 0
+  oneof(:validators, 0)
 
   field :max_tokens, 1, type: Cosmos.Base.V1beta1.Coin, json_name: "maxTokens", deprecated: false
 

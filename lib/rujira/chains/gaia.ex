@@ -1,7 +1,11 @@
 defmodule Rujira.Chains.Gaia do
-  alias Rujira.Assets
+  @moduledoc """
+  Implements the Gaia adapter for Cosmos compatibility.
+  """
   alias Cosmos.Bank.V1beta1.QueryAllBalancesRequest
   alias Cosmos.Bank.V1beta1.QueryAllBalancesResponse
+  alias Rujira.Assets
+  alias Rujira.Chains.Gaia
   import Cosmos.Bank.V1beta1.Query.Stub
 
   use Rujira.Chains.Cosmos.Listener, ws: "wss://gaia-rpc.bryanlabs.net", chain: "gaia"
@@ -31,7 +35,7 @@ defmodule Rujira.Chains.Gaia do
          {:ok, %QueryAllBalancesResponse{balances: balances}} <- all_balances(conn, req) do
       balances =
         Enum.reduce(balances, [], fn e, agg ->
-          case Rujira.Chains.Gaia.map_coin(e) do
+          case Gaia.map_coin(e) do
             nil -> agg
             x -> [x | agg]
           end
@@ -41,7 +45,7 @@ defmodule Rujira.Chains.Gaia do
     end
   end
 
-  def connection() do
+  def connection do
     cred = GRPC.Credential.new(ssl: [verify: :verify_none])
 
     GRPC.Stub.connect(@rpc, 443,

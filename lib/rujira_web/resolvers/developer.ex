@@ -1,6 +1,10 @@
 defmodule RujiraWeb.Resolvers.Developer do
-  alias Rujira.Contracts
+  @moduledoc """
+  Handles GraphQL resolution for developer-related queries.
+  """
+
   alias Absinthe.Resolution.Helpers
+  alias Rujira.Contracts
 
   defstruct []
 
@@ -26,9 +30,8 @@ defmodule RujiraWeb.Resolvers.Developer do
 
   def config(%{address: address}, _, _) do
     Helpers.async(fn ->
-      with {:ok, config} <- Rujira.Contracts.get({__MODULE__, address}) do
-        {:ok, config}
-      else
+      case Rujira.Contracts.get({__MODULE__, address}) do
+        {:ok, config} -> {:ok, config}
         _ -> {:ok, nil}
       end
     end)
@@ -61,8 +64,7 @@ defmodule RujiraWeb.Resolvers.Developer do
   def to_ascii_string(binary) do
     binary
     |> :binary.bin_to_list()
-    |> Enum.map(&byte_to_ascii/1)
-    |> Enum.join()
+    |> Enum.map_join(&byte_to_ascii/1)
   end
 
   defp byte_to_ascii(byte) when byte in 32..126 do
