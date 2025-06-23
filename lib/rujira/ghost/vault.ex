@@ -139,14 +139,14 @@ defmodule Rujira.Ghost.Vault do
       },
       receipt: %{
         description:
-          "Transferable shares issued when depositing funds into the Rujira #{Assets.short_id(asset)}} lending pool",
+          "Transferable shares issued when depositing funds into the Rujira #{Assets.short_id(asset)} lending pool",
         display: "x/ghost-vault/#{denom}/rcpt",
         name: "#{Assets.short_id(asset)}} Lend Shares",
         symbol: "LEND-#{Assets.short_id(asset)}"
       },
       debt: %{
         description:
-          "Debt shares issued when borrowing funds from the Rujira #{Assets.short_id(asset)}} lending pool",
+          "Debt shares issued when borrowing funds from the Rujira #{Assets.short_id(asset)} lending pool",
         display: "x/ghost-vault/#{denom}/debt",
         name: "#{Assets.short_id(asset)}} Debt Shares",
         symbol: "DEBT-#{Assets.short_id(asset)}"
