@@ -106,5 +106,5 @@ defmodule Rujira.Index.Fixed do
 
   def init_msg(msg), do: msg
   def migrate_msg(_from, _to, _), do: %{}
-  def init_label(%{"receipt" => %{"symbol" => symbol}}), do: "nami-index:#{symbol}:fixed"
+  def init_label(_, %{"receipt" => %{"symbol" => symbol}}), do: "nami-index:#{symbol}:fixed"
 end

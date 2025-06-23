@@ -84,7 +84,7 @@ targets:
         target_denoms:
           - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
         target_addresses:
-          - address: ${accounts:nami-dev}
+          - address: ${accounts:nami-dev-fund}
             weight: 1
     
     - id: nami-index-fund
@@ -392,7 +392,42 @@ targets:
                 chain: THOR
                 symbol: TCY
             slippage: "0.01"
-            threshold: "0.01"                        
+            threshold: "0.01"        
+
+    - id: ytcy
+      admin: ${accounts:nami-deployer}
+      creator: ${accounts:nami-deployer}
+      config:
+        receipt:
+          description: The Yield Bearing TCY Index (yTCY) is an auto-rebalancing index designed to track the performance of both RUNE and TCY, with a strategic overweight on TCY to maximize yield potential.
+          display: yTCY
+          name: The Yield Bearing TCY Index
+          symbol: yTCY
+        quote_denom: tcy
+        fee_collector: ${accounts:nami-deployer}
+        fees:
+          management: "0.01"
+          performance: null
+          transaction: "0.01"
+        target_allocation:
+          - denom: rune
+            weight: "0.2"
+            swap_contract: ${targets:fin.tcy-rune}
+            oracle:
+              layer1:
+                chain: THOR
+                symbol: RUNE
+            slippage: "0.01"
+            threshold: "0.02"
+          - denom: tcy
+            weight: "0.8"
+            swap_contract: null
+            oracle:
+              layer1:
+                chain: THOR
+                symbol: TCY
+            slippage: "0.01"
+            threshold: "0.02"                   
             
   index-fixed:
     - id: rji-1.0.1
