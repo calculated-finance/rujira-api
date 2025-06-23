@@ -58,4 +58,33 @@ defmodule RujiraWeb.Schema.GhostTypes do
     field :shares, non_null(:bigint)
     field :ratio, non_null(:bigint)
   end
+
+  object :ghost_vault_account do
+    field :account, non_null(:address)
+    field :vault, non_null(:ghost_vault)
+
+    field :shares, non_null(:balance) do
+      resolve(fn %{shares: shares, vault: %{denom: denom}}, _, _ ->
+        with {:ok, asset} <- Assets.from_denom(denom) do
+          {:ok, %{amount: shares, asset: asset}}
+        end
+      end)
+    end
+
+    field :value, non_null(list_of(non_null(:balance))) do
+      resolve(fn %{value: value}, _, _ ->
+        Rujira.Enum.reduce_while_ok(value, [], fn %{amount: amount, denom: denom} ->
+          with {:ok, asset} <- Assets.from_denom(denom) do
+            {:ok, %{amount: amount, asset: asset}}
+          end
+        end)
+      end)
+    end
+
+    field :value_usd, non_null(:bigint) do
+      resolve(fn %{value: value}, _, _ ->
+        {:ok, RujiraWeb.Resolvers.Bow.value_usd(value)}
+      end)
+    end
+  end
 end

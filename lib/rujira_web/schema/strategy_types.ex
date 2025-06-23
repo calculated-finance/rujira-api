@@ -32,15 +32,17 @@ defmodule RujiraWeb.Schema.StrategyTypes do
       :thorchain_liquidity_provider,
       :index_account,
       :staking_account,
-      :perps_account
+      :perps_account,
+      :ghost_vault_account
     ])
 
     resolve_type(fn
       %Bow.Account{}, _ -> :bow_account
-      %Thorchain.Types.QueryLiquidityProviderResponse{}, _ -> :thorchain_liquidity_provider
+      %Rujira.Ghost.Vault.Account{}, _ -> :ghost_vault_account
       %Rujira.Index.Account{}, _ -> :index_account
       %Rujira.Staking.Account{}, _ -> :staking_account
       %Rujira.Perps.Account{}, _ -> :perps_account
+      %Thorchain.Types.QueryLiquidityProviderResponse{}, _ -> :thorchain_liquidity_provider
     end)
   end
 
