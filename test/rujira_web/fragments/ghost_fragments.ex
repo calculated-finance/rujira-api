@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Fragments.GhostFragments do
+  @moduledoc false
   alias RujiraWeb.Fragments.AssetFragments
 
   @asset_fragment AssetFragments.get_asset_fragment()
@@ -61,5 +62,5 @@ defmodule RujiraWeb.Fragments.GhostFragments do
   #{@ghost_vault_status_fragment}
   """
 
-  def get_ghost_vault_fragment(), do: @ghost_vault_fragment
+  def get_ghost_vault_fragment, do: @ghost_vault_fragment
 end

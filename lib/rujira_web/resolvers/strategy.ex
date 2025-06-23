@@ -90,10 +90,12 @@ defmodule RujiraWeb.Resolvers.Strategy do
   end
 
   defp ghost_query(query, %{denom: denom}) do
-    with {:ok, asset} <- Assets.from_denom(denom) do
-      Assets.matches(query, asset)
-    else
-      _ -> false
+    case Assets.from_denom(denom) do
+      {:ok, asset} ->
+        Assets.matches(query, asset)
+
+      _ ->
+        false
     end
   end
 

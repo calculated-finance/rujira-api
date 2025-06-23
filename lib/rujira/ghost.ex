@@ -1,8 +1,11 @@
 defmodule Rujira.Ghost do
-  alias Rujira.Deployments
-  alias Rujira.Ghost.Vault
-  alias Rujira.Ghost.Registry
+  @moduledoc """
+  Rujira Ghost - Interfaces for the Ghost borrow, lend & credit protocol
+  """
   alias Rujira.Contracts
+  alias Rujira.Deployments
+  alias Rujira.Ghost.Registry
+  alias Rujira.Ghost.Vault
 
   def registry_from_id(id) do
     Contracts.get({Registry, id})
@@ -12,7 +15,7 @@ defmodule Rujira.Ghost do
     Contracts.get({Vault, id})
   end
 
-  def list_vaults() do
+  def list_vaults do
     Deployments.list_targets(Vault)
     |> Task.async_stream(&get_vault/1, timeout: 30_000)
     |> Enum.reduce({:ok, []}, fn
