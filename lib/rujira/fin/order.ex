@@ -1,4 +1,11 @@
 defmodule Rujira.Fin.Order do
+  @moduledoc """
+  Represents and manages trading orders in the FIN protocol.
+
+  This module defines the structure and operations for handling limit and oracle-based
+  trading orders, including order creation, parsing, and value calculations.
+  """
+
   alias Rujira.Assets
   alias Rujira.Prices
 
@@ -139,13 +146,13 @@ defmodule Rujira.Fin.Order do
   end
 
   def load(pair_address, side, price, owner) do
-    with {:ok, order} <-
-           Rujira.Contracts.query_state_smart(
-             pair_address,
-             %{order: [owner, side, decode_price(price)]}
-           ) do
-      {:ok, from_query(pair_address, order)}
-    else
+    case Rujira.Contracts.query_state_smart(
+           pair_address,
+           %{order: [owner, side, decode_price(price)]}
+         ) do
+      {:ok, order} ->
+        {:ok, from_query(pair_address, order)}
+
       {:error, %GRPC.RPCError{status: 2, message: "NotFound: query wasm contract failed"}} ->
         [type | _] = String.split(price, ":")
 

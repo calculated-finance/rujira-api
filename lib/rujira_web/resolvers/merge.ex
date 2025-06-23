@@ -1,6 +1,9 @@
 defmodule RujiraWeb.Resolvers.Merge do
-  alias Rujira.Merge.Pool
+  @moduledoc """
+  Handles GraphQL resolution for Merge Protocol-related queries.
+  """
   alias Absinthe.Resolution.Helpers
+  alias Rujira.Merge.Pool
 
   def node(%{address: address}, _, _) do
     Helpers.async(fn ->

@@ -1,7 +1,13 @@
 defmodule Rujira.Bank.Supply do
-  alias Cosmos.Bank.V1beta1.QuerySupplyOfResponse
-  alias Cosmos.Bank.V1beta1.QuerySupplyOfRequest
+  @moduledoc """
+  Listens for token minting and burning events and tracks token supplies.
+
+  This module implements the `Thornode.Observer` behavior to monitor and process
+  blockchain events, maintaining an up-to-date view of token supplies across the network.
+  """
   alias Cosmos.Bank.V1beta1.Query.Stub
+  alias Cosmos.Bank.V1beta1.QuerySupplyOfRequest
+  alias Cosmos.Bank.V1beta1.QuerySupplyOfResponse
 
   use Thornode.Observer
   require Logger
@@ -33,7 +39,7 @@ defmodule Rujira.Bank.Supply do
   defp handle_events(events) do
     events
     |> Enum.flat_map(&scan_event/1)
-    |> Enum.uniq()
+    |> Rujira.Enum.uniq()
     |> Enum.reduce(%{}, fn denom, acc ->
       case Thornode.query(
              &Stub.supply_of/2,
@@ -50,15 +56,9 @@ defmodule Rujira.Bank.Supply do
     end)
   end
 
-  def scan_event(%{attributes: attrs, type: "coinbase"}), do: scan_attributes(attrs)
-
-  def scan_event(%{attributes: attrs, type: "burn"}), do: scan_attributes(attrs)
+  def scan_event(%{attributes: %{"amount" => amount}, type: type})
+      when type in ["coinbase", "burn"],
+      do: [String.replace(amount, ~r/[0-9]+/, "")]
 
   def scan_event(_), do: []
-
-  def scan_attributes(attrs) do
-    amount = Map.get(attrs, "amount")
-
-    [String.replace(amount, ~r/[0-9]+/, "")]
-  end
 end

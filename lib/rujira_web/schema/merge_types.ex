@@ -1,9 +1,18 @@
 defmodule RujiraWeb.Schema.MergeTypes do
-  alias Rujira.Prices
-  alias Rujira.Contracts
-  alias Rujira.Assets
+  @moduledoc """
+  Defines GraphQL types for Merge Protocol data in the Rujira API.
+
+  This module contains the type definitions and field resolvers for Merge Protocol
+  GraphQL objects, including merge pools, positions, and related data structures.
+  """
+
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
+
+  alias Rujira.Assets
+  alias Rujira.Contracts
+  alias Rujira.Prices
+  alias RujiraWeb.Resolvers.Merge
 
   @merge_denom Assets.from_string("THOR.RUJI")
 
@@ -40,7 +49,7 @@ defmodule RujiraWeb.Schema.MergeTypes do
     field :start_rate, non_null(:bigint)
 
     field :status, :merge_status do
-      resolve(&RujiraWeb.Resolvers.Merge.status/3)
+      resolve(&Merge.status/3)
     end
   end
 

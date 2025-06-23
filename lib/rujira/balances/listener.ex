@@ -1,4 +1,10 @@
 defmodule Rujira.Balances.Listener do
+  @moduledoc """
+  Listens for and processes balance-related blockchain events.
+
+  Handles block transactions to detect balance changes, updates cached data,
+  and publishes real-time updates through the events system.
+  """
   use Thornode.Observer
   require Logger
 
@@ -16,7 +22,7 @@ defmodule Rujira.Balances.Listener do
       |> Enum.concat(begin_block_events)
       |> Enum.concat(end_block_events)
       |> Enum.flat_map(&scan_transfer/1)
-      |> Enum.uniq()
+      |> Rujira.Enum.uniq()
 
     for a <- addresses do
       Logger.debug("#{__MODULE__} change #{a}")
@@ -28,11 +34,11 @@ defmodule Rujira.Balances.Listener do
     {:noreply, state}
   end
 
-  defp scan_transfer(%{attributes: attrs, type: "transfer"}) do
-    recipient = Map.get(attrs, "recipient")
-    sender = Map.get(attrs, "sender")
-    [recipient, sender]
-  end
+  defp scan_transfer(%{
+         attributes: %{"recipient" => recipient, "sender" => sender},
+         type: "transfer"
+       }),
+       do: [recipient, sender]
 
   defp scan_transfer(_), do: []
 end

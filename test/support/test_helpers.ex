@@ -1,4 +1,5 @@
 defmodule Rujira.TestHelpers do
+  @moduledoc false
   defmacro __using__(_) do
     caller_module = __CALLER__.module
     related_data_mock = infer_related_mock(caller_module)

@@ -60,7 +60,7 @@ defmodule Rujira.CacheStrategy do
     end
   end
 
-  def invalidate() do
+  def invalidate do
     :ets.select_delete(@ets_tab, [{{:_, {:completed, :_, :_}}, [], [true]}])
   end
 
@@ -68,7 +68,7 @@ defmodule Rujira.CacheStrategy do
     :ets.select_delete(@ets_tab, [{{key, {:completed, :_, :_}}, [], [true]}])
   end
 
-  def garbage_collect() do
+  def garbage_collect do
     expired_at = System.monotonic_time(:millisecond)
 
     :ets.select_delete(@ets_tab, [

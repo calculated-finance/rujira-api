@@ -1,9 +1,16 @@
 defmodule Rujira.Chains.Kuji do
+  @moduledoc """
+  Implements the Kujira adapter for Cosmos compatibility.
+  """
+  # Aliases
   alias Cosmos.Bank.V1beta1.QueryAllBalancesRequest
   alias Cosmos.Bank.V1beta1.QueryAllBalancesResponse
-  import Cosmos.Bank.V1beta1.Query.Stub
-  alias Rujira.Assets
   alias Cosmos.Base.Query.V1beta1.PageRequest
+  alias Rujira.Assets
+  alias Rujira.Chains.Kuji
+
+  # Imports
+  import Cosmos.Bank.V1beta1.Query.Stub
 
   @rpc "kujira-grpc.bryanlabs.net"
 
@@ -12,7 +19,7 @@ defmodule Rujira.Chains.Kuji do
          {:ok, balances} <- balances_page(conn, address) do
       balances =
         Enum.reduce(balances, [], fn e, agg ->
-          case Rujira.Chains.Kuji.map_coin(e) do
+          case Kuji.map_coin(e) do
             nil -> agg
             x -> [x | agg]
           end
@@ -38,7 +45,7 @@ defmodule Rujira.Chains.Kuji do
     end
   end
 
-  def connection() do
+  def connection do
     cred = GRPC.Credential.new(ssl: [verify: :verify_none])
 
     GRPC.Stub.connect(@rpc, 443,

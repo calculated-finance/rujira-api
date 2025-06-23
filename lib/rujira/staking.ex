@@ -3,13 +3,13 @@ defmodule Rujira.Staking do
   Rujira Staking.
   """
 
-  alias Rujira.Deployments
-  alias Rujira.Staking.Listener
-  alias Rujira.Staking.Pool.Status
-  alias Rujira.Staking.Account
-  alias Rujira.Staking.Pool
-  alias Rujira.Staking.Account
   alias Rujira.Contracts
+  alias Rujira.Deployments
+  alias Rujira.Staking.Account
+  alias Rujira.Staking.Listener
+  alias Rujira.Staking.Pool
+  alias Rujira.Staking.Pool.Status
+
   use Memoize
 
   use Supervisor
@@ -25,20 +25,19 @@ defmodule Rujira.Staking do
     {:ok, state}
   end
 
-  def single() do
+  def single do
     with %{address: address} <- Deployments.get_target(Pool, "ruji") do
       address
     end
   end
 
-  def dual(), do: nil
+  def dual, do: nil
 
   @doc """
   Fetches all Pools
   """
-  @spec list_pools() ::
-          {:ok, list(Pool.t())} | {:error, GRPC.RPCError.t()}
-  def list_pools() do
+  @spec list_pools :: {:ok, list(Pool.t())} | {:error, GRPC.RPCError.t()}
+  def list_pools do
     Pool
     |> Deployments.list_targets()
     |> Rujira.Enum.reduce_while_ok([], fn %{module: module, address: address} ->
@@ -74,17 +73,14 @@ defmodule Rujira.Staking do
   end
 
   def pool_from_id(id) do
-    with {:ok, pool} <- get_pool(id) do
-      {:ok, pool}
-    end
+    get_pool(id)
   end
 
   def account_from_id(id) do
     [pool, account] = String.split(id, "/")
 
-    with {:ok, pool} <- get_pool(pool),
-         {:ok, account} <- load_account(pool, account) do
-      {:ok, account}
+    with {:ok, pool} <- get_pool(pool) do
+      load_account(pool, account)
     end
   end
 
@@ -108,10 +104,12 @@ defmodule Rujira.Staking do
   def load_account(nil, _), do: {:ok, nil}
 
   def load_account(pool, account) do
-    with {:ok, res} <- query_account(pool.address, account) do
-      Account.from_query(pool, res)
-    else
-      _ -> Account.default(pool, account)
+    case query_account(pool.address, account) do
+      {:ok, res} ->
+        Account.from_query(pool, res)
+
+      _ ->
+        Account.default(pool, account)
     end
   end
 

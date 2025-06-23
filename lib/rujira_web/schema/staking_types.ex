@@ -1,28 +1,37 @@
 defmodule RujiraWeb.Schema.StakingTypes do
+  @moduledoc """
+  Defines GraphQL types for Staking data in the Rujira API.
+
+  This module contains the type definitions and field resolvers for Staking
+  GraphQL objects, including staking pools, positions, and reward calculations.
+  """
+
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
-  alias Rujira.Contracts
-  alias Rujira.Chains.Thor
+
   alias Rujira.Assets
+  alias Rujira.Chains.Thor
+  alias Rujira.Contracts
+  alias RujiraWeb.Resolvers.Staking
 
   object :staking do
     @desc "Staking Pool for single-sided RUJI staking"
     field :single, :staking_pool do
-      resolve(&RujiraWeb.Resolvers.Staking.single/3)
+      resolve(&Staking.single/3)
     end
 
     @desc "Staking Pool for dual RUJI-RUNE LP staking"
     field :dual, :staking_pool do
-      resolve(&RujiraWeb.Resolvers.Staking.dual/3)
+      resolve(&Staking.dual/3)
     end
 
     field :pools, non_null(list_of(non_null(:staking_pool))) do
-      resolve(&RujiraWeb.Resolvers.Staking.pools/3)
+      resolve(&Staking.pools/3)
     end
 
     @desc "Revenue converter that collects revenue from all apps and delivers it to the staking pools"
     field :revenue, :revenue_converter do
-      resolve(&RujiraWeb.Resolvers.Staking.revenue/3)
+      resolve(&Staking.revenue/3)
     end
   end
 
@@ -56,11 +65,11 @@ defmodule RujiraWeb.Schema.StakingTypes do
     end
 
     field :status, :staking_status do
-      resolve(&RujiraWeb.Resolvers.Staking.status/3)
+      resolve(&Staking.status/3)
     end
 
     field :summary, non_null(:staking_summary) do
-      resolve(&RujiraWeb.Resolvers.Staking.summary/3)
+      resolve(&Staking.summary/3)
     end
   end
 
@@ -112,7 +121,7 @@ defmodule RujiraWeb.Schema.StakingTypes do
 
     @desc "The balance of pending revenue earned and still not claimed by this account"
     field :pending_revenue, non_null(:balance) do
-      resolve(&RujiraWeb.Resolvers.Staking.pending_revenue/3)
+      resolve(&Staking.pending_revenue/3)
     end
   end
 
@@ -140,7 +149,7 @@ defmodule RujiraWeb.Schema.StakingTypes do
 
     field :contract, non_null(:contract_info) do
       resolve(fn %{address: address}, _, _ ->
-        Rujira.Contracts.info(address)
+        Contracts.info(address)
       end)
     end
 

@@ -1,45 +1,53 @@
 defmodule RujiraWeb.Schema.VenturesTypes do
-  alias RujiraWeb.Resolvers.Ventures
-  alias Rujira.Ventures.Pilot
+  @moduledoc """
+  Defines GraphQL types for Ventures data in the Rujira API.
+
+  This module contains the type definitions and field resolvers for Ventures
+  GraphQL objects, including sales, tokenomics, and related data structures.
+  """
+
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
+
+  alias Rujira.Ventures.Pilot
+  alias RujiraWeb.Resolvers.Ventures
 
   object :ventures do
     field :config, :ventures_config
 
     connection field :sales, node_type: :ventures_sale do
-      resolve(&RujiraWeb.Resolvers.Ventures.sales/3)
+      resolve(&Ventures.sales/3)
     end
 
     connection field :sales_by_owner, node_type: :ventures_sale do
       arg(:owner, non_null(:address))
-      resolve(&RujiraWeb.Resolvers.Ventures.sales_by_owner/3)
+      resolve(&Ventures.sales_by_owner/3)
     end
 
     connection field :sales_by_status, node_type: :ventures_sale do
       arg(:status, non_null(:ventures_sale_status))
-      resolve(&RujiraWeb.Resolvers.Ventures.sales_by_status/3)
+      resolve(&Ventures.sales_by_status/3)
     end
 
     field :sale_by_idx, :ventures_sale do
       arg(:idx, non_null(:string))
-      resolve(&RujiraWeb.Resolvers.Ventures.sale_by_idx/3)
+      resolve(&Ventures.sale_by_idx/3)
     end
 
     field :validate_token, :ventures_validate_token_response do
       arg(:token, non_null(:ventures_token_input))
-      resolve(&RujiraWeb.Resolvers.Ventures.validate_token/3)
+      resolve(&Ventures.validate_token/3)
     end
 
     field :validate_tokenomics, :ventures_validate_token_response do
       arg(:token, non_null(:ventures_token_input))
       arg(:tokenomics, non_null(:ventures_tokenomics_input))
-      resolve(&RujiraWeb.Resolvers.Ventures.validate_tokenomics/3)
+      resolve(&Ventures.validate_tokenomics/3)
     end
 
     field :validate_venture, :ventures_validate_token_response do
       arg(:venture, non_null(:ventures_configure_input))
-      resolve(&RujiraWeb.Resolvers.Ventures.validate_venture/3)
+      resolve(&Ventures.validate_venture/3)
     end
   end
 

@@ -1,24 +1,36 @@
 defmodule RujiraWeb.Schema.TokenTypes do
+  @moduledoc """
+  Defines GraphQL types for Token data in the Rujira API.
+
+  This module contains the type definitions and field resolvers for Token
+  GraphQL objects, including asset information and token metadata.
+  """
+
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
+  alias RujiraWeb.Resolvers.Token
 
   node object(:asset) do
-    field :asset, non_null(:asset_string), resolve: &RujiraWeb.Resolvers.Token.string/3
+    field :asset, non_null(:asset_string), resolve: &Token.string/3
     field :type, non_null(:asset_type)
-    field :chain, non_null(:chain), resolve: &RujiraWeb.Resolvers.Token.chain/3
-    field :metadata, non_null(:metadata), resolve: &RujiraWeb.Resolvers.Token.metadata/3
+    field :chain, non_null(:chain), resolve: &Token.chain/3
+    field :metadata, non_null(:metadata), resolve: &Token.metadata/3
 
     field :price, :price do
       resolve(fn %{ticker: ticker}, _, _ ->
-        batch({RujiraWeb.Resolvers.Token, :prices}, ticker, fn x ->
-          with {:ok, prices} <- x,
-               {:ok, price} <- Map.get(prices, ticker) do
-            {:ok, price}
-          else
-            _ -> {:ok, nil}
-          end
-        end,
-        timeout: 20_000)
+        batch(
+          {Token, :prices},
+          ticker,
+          fn x ->
+            with {:ok, prices} <- x,
+                 {:ok, price} <- Map.get(prices, ticker) do
+              {:ok, price}
+            else
+              _ -> {:ok, nil}
+            end
+          end,
+          timeout: 20_000
+        )
       end)
     end
 
@@ -62,11 +74,11 @@ defmodule RujiraWeb.Schema.TokenTypes do
 
   object :asset_variants do
     @desc "The THORChain layer 1 asset string (eg BTC.BTC, THOR.RUNE, GAIA.ATOM)"
-    field :layer1, :asset, resolve: &RujiraWeb.Resolvers.Token.layer1/3
+    field :layer1, :asset, resolve: &Token.layer1/3
     @desc "The THORChain secured asset string (eg BTC-BTC, GAIA-ATOM)"
-    field :secured, :asset, resolve: &RujiraWeb.Resolvers.Token.secured/3
+    field :secured, :asset, resolve: &Token.secured/3
     @desc "The Cosmos SDK x/bank token denom string (eg btc-btc, rune, uatom)"
-    field :native, :denom, resolve: &RujiraWeb.Resolvers.Token.native/3
+    field :native, :denom, resolve: &Token.native/3
   end
 
   enum :asset_type do

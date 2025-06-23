@@ -1,7 +1,8 @@
 defmodule RujiraWeb.Fragments.StakingFragments do
+  @moduledoc false
   alias RujiraWeb.Fragments.AssetFragments
-  alias RujiraWeb.Fragments.DeveloperFragments
   alias RujiraWeb.Fragments.BalanceFragments
+  alias RujiraWeb.Fragments.DeveloperFragments
 
   @asset_fragment AssetFragments.get_asset_fragment()
   @contract_info_fragment DeveloperFragments.get_contract_info_fragment()
@@ -126,12 +127,12 @@ defmodule RujiraWeb.Fragments.StakingFragments do
   #{@staking_account_fragment}
   """
 
-  def get_staking_status_fragment(), do: @staking_status_fragment
-  def get_revenue_converter_type_fragment(), do: @revenue_converter_type_fragment
-  def get_revenue_converter_fragment(), do: @revenue_converter_fragment
-  def get_staking_revenue_point_fragment(), do: @staking_revenue_point_fragment
-  def get_staking_summary_fragment(), do: @staking_summary_fragment
-  def get_staking_pool_fragment(), do: @staking_pool_fragment
-  def get_staking_account_fragment(), do: @staking_account_fragment
-  def get_staking_accounts_fragment(), do: @staking_accounts_fragment
+  def get_staking_status_fragment, do: @staking_status_fragment
+  def get_revenue_converter_type_fragment, do: @revenue_converter_type_fragment
+  def get_revenue_converter_fragment, do: @revenue_converter_fragment
+  def get_staking_revenue_point_fragment, do: @staking_revenue_point_fragment
+  def get_staking_summary_fragment, do: @staking_summary_fragment
+  def get_staking_pool_fragment, do: @staking_pool_fragment
+  def get_staking_account_fragment, do: @staking_account_fragment
+  def get_staking_accounts_fragment, do: @staking_accounts_fragment
 end

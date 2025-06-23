@@ -1,29 +1,36 @@
 defmodule Thorchain do
-  # alias Thorchain.Types.QueryNodesResponse
-  # alias Thorchain.Types.QueryNodesRequest
-  alias Thorchain.Types.QueryLiquidityProviderRequest
+  @moduledoc """
+  Main module for interacting with the Thorchain blockchain.
+
+  This module provides functionality for querying and interacting with various aspects
+  of the Thorchain network, including vaults, nodes, and liquidity providers.
+  """
+
   alias Rujira.Assets
   alias Rujira.Assets.Asset
   alias Rujira.Prices
   alias Thorchain.Common.Coin
   alias Thorchain.Common.Tx
+  alias Thorchain.Oracle
   alias Thorchain.Swaps
   alias Thorchain.Types.BlockEvent
   alias Thorchain.Types.BlockResponseHeader
   alias Thorchain.Types.BlockTxResult
   alias Thorchain.Types.Query.Stub, as: Q
+  # alias Thorchain.Types.QueryNodesRequest
+  # alias Thorchain.Types.QueryNodesResponse
   alias Thorchain.Types.QueryAsgardVaultsRequest
   alias Thorchain.Types.QueryAsgardVaultsResponse
   alias Thorchain.Types.QueryBlockRequest
   alias Thorchain.Types.QueryBlockResponse
   alias Thorchain.Types.QueryBlockTx
+  alias Thorchain.Types.QueryLiquidityProviderRequest
   alias Thorchain.Types.QueryNetworkRequest
+  alias Thorchain.Types.QueryPoolRequest
   alias Thorchain.Types.QueryPoolsRequest
   alias Thorchain.Types.QueryPoolsResponse
   alias Thorchain.Types.QueryTxRequest
   alias Thorchain.Types.QueryTxResponse
-  alias Thorchain.Types.QueryPoolRequest
-  alias Thorchain.Oracle
 
   use GenServer
   use Memoize
@@ -38,12 +45,8 @@ defmodule Thorchain do
     {:ok, state}
   end
 
-  def network() do
-    req = %QueryNetworkRequest{}
-
-    with {:ok, res} <- Thornode.query(&Q.network/2, req) do
-      {:ok, res}
-    end
+  def network do
+    Thornode.query(&Q.network/2, %QueryNetworkRequest{})
   end
 
   def pool_from_id(id) do
@@ -95,6 +98,7 @@ defmodule Thorchain do
 
   def cast_liquidity_provider(provider) do
     asset = Assets.from_string(provider.asset)
+
     provider
     |> Map.put(:id, "#{provider.asset}/#{provider.rune_address}")
     |> Map.put(:asset, asset)
@@ -126,7 +130,7 @@ defmodule Thorchain do
     |> Map.update(:asset_tor_price, nil, &Decimal.div(Decimal.new(&1), Decimal.new(100_000_000)))
   end
 
-  def total_bonds() do
+  def total_bonds do
     # req = %QueryNodesRequest{}
     api = Application.get_env(:rujira, Thornode)[:api]
 
@@ -151,7 +155,7 @@ defmodule Thorchain do
     end
   end
 
-  def tvl() do
+  def tvl do
     with {:ok, pools} <- pools() do
       tvl =
         pools
@@ -166,7 +170,7 @@ defmodule Thorchain do
     end
   end
 
-  def chains() do
+  def chains do
     req = %QueryAsgardVaultsRequest{}
 
     with {:ok, %QueryAsgardVaultsResponse{asgard_vaults: vaults}} <-
@@ -176,7 +180,7 @@ defmodule Thorchain do
     end
   end
 
-  def swaps_data() do
+  def swaps_data do
     with total_swap_volume <- Swaps.total_volume(),
          daily_swap_volume <- Swaps.total_volume(:daily),
          total_swaps <- Swaps.count_swaps(),
@@ -368,9 +372,10 @@ defmodule Thorchain do
   end
 
   defmemo oracle_price(asset) do
-    with {:ok, %{asset_tor_price: price}} <- pool_from_id(asset) do
-      {:ok, price}
-    else
+    case pool_from_id(asset) do
+      {:ok, %{asset_tor_price: price}} ->
+        {:ok, price}
+
       _ ->
         {:ok, nil}
     end

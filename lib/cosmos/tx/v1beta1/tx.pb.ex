@@ -108,7 +108,7 @@ defmodule Cosmos.Tx.V1beta1.ModeInfo do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  oneof :sum, 0
+  oneof(:sum, 0)
 
   field :single, 1, type: Cosmos.Tx.V1beta1.ModeInfo.Single, oneof: 0
   field :multi, 2, type: Cosmos.Tx.V1beta1.ModeInfo.Multi, oneof: 0

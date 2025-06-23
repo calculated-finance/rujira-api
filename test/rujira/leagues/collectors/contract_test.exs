@@ -2,6 +2,8 @@ defmodule Rujira.Leagues.Collectors.ContractTest do
   use Rujira.PublisherCase
 
   alias Rujira.Fixtures.Block
+  alias Rujira.Leagues
+  alias Rujira.Leagues.Collectors.Contract
   alias Rujira.Repo
 
   test "collects fees for leagues from contracts" do
@@ -10,14 +12,14 @@ defmodule Rujira.Leagues.Collectors.ContractTest do
     # it should update the league genesis season 0
 
     {:ok, block} = Block.load_block("4539686")
-    Rujira.Leagues.Collectors.Contract.handle_new_block(block, nil)
+    Contract.handle_new_block(block, nil)
 
-    leaderboard = Rujira.Leagues.leaderboard("genesis", 0, "", :points, :desc) |> Repo.all()
+    leaderboard = Leagues.leaderboard("genesis", 0, "", :points, :desc) |> Repo.all()
 
     [
       %{
         address: "sthor1t4gsjfs8q8j3mw2e402r8vzrtaslsf5re3ktut",
-        points: 91701,
+        points: 91_701,
         rank: 1,
         badges: ["trade"],
         rank_previous: 1,
@@ -27,14 +29,14 @@ defmodule Rujira.Leagues.Collectors.ContractTest do
 
     # league account should have 1 transaction
     {:ok, account} =
-      Rujira.Leagues.account_from_id("genesis/0/sthor1t4gsjfs8q8j3mw2e402r8vzrtaslsf5re3ktut")
+      Leagues.account_from_id("genesis/0/sthor1t4gsjfs8q8j3mw2e402r8vzrtaslsf5re3ktut")
 
     %{
       id: "genesis/0/sthor1t4gsjfs8q8j3mw2e402r8vzrtaslsf5re3ktut",
       league: "genesis",
       season: 0,
       address: "sthor1t4gsjfs8q8j3mw2e402r8vzrtaslsf5re3ktut",
-      points: 91701,
+      points: 91_701,
       total_tx: 1,
       rank: 1,
       rank_previous: 1,

@@ -1,6 +1,9 @@
 defmodule Rujira.Index.Nav do
-  alias Rujira.Index.Vault
+  @moduledoc """
+  Parses and manages Net Asset Value (NAV) calculations and allocations for index vaults.
+  """
   alias Rujira.Assets
+  alias Rujira.Index.Vault
 
   @doc """
   Parse a single allocation row of the form:
@@ -59,16 +62,7 @@ defmodule Rujira.Index.Nav do
 
   def parse_allocations(raw_allocs) do
     raw_allocs
-    |> Task.async_stream(&parse_allocation/1, timeout: 20_000)
-    |> Enum.reduce_while({:ok, []}, fn
-      {:ok, {:ok, alloc}}, {:ok, acc} -> {:cont, {:ok, [alloc | acc]}}
-      {:ok, {:error, reason}}, _ -> {:halt, {:error, reason}}
-      {:exit, reason}, _ -> {:halt, {:error, {:task_crash, reason}}}
-    end)
-    |> case do
-      {:ok, allocs} -> {:ok, Enum.reverse(allocs)}
-      error -> error
-    end
+    |> Rujira.Enum.reduce_async_while_ok(&parse_allocation/1, timeout: 20_000)
   end
 
   @doc """
@@ -86,7 +80,7 @@ defmodule Rujira.Index.Nav do
        config: %Vault.Config{quote_denom: denom, fee_collector: fee_collector},
        share_denom: share_denom,
        status: :not_loaded,
-       fees: :not_loaded,
+       fees: :not_loaded
      }}
   end
 

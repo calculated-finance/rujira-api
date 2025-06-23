@@ -1,27 +1,29 @@
 defmodule RujiraWeb.Resolvers.Fin do
-  alias Rujira.Fin.Summary
-  alias Rujira.Repo
+  @moduledoc """
+  Handles GraphQL resolution for Fin Protocol-related queries.
+  """
   alias Absinthe.Relay
+  alias Absinthe.Resolution.Helpers
   alias Rujira.Assets
   alias Rujira.Fin
-  alias Absinthe.Resolution.Helpers
+  alias Rujira.Fin.Summary
+  alias Rujira.Repo
 
   def node(%{address: address}, _, _) do
     Helpers.async(fn ->
-      with {:ok, pair} <- Rujira.Fin.get_pair(address),
-           {:ok, pair} <- Rujira.Fin.load_pair(pair) do
-        {:ok, pair}
+      with {:ok, pair} <- Rujira.Fin.get_pair(address) do
+        Rujira.Fin.load_pair(pair)
       end
     end)
   end
 
   def resolver(_, _, _) do
     Helpers.async(fn ->
-      with {:ok, pairs} <- Rujira.Fin.list_pairs() do
-        {:ok, pairs}
-      end
+      Rujira.Fin.list_pairs()
     end)
   end
+
+  def get_pair(%{pair: pair}, _, _), do: Fin.get_pair(pair)
 
   def book(%{book: :not_loaded} = pair, _, _) do
     with {:ok, %{book: book}} <- Rujira.Fin.load_pair(pair) do

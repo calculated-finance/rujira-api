@@ -1,17 +1,19 @@
 defmodule Rujira.Fin do
-  use GenServer
-  alias Rujira.Deployments
-  alias Rujira.Resolution
-  alias Rujira.Fin.Trade
   alias Rujira.Contracts
-  alias Rujira.Fin.Candle
-  alias Rujira.Fin.Pair
+  alias Rujira.Deployments
   alias Rujira.Fin.Book
+  alias Rujira.Fin.Candle
   alias Rujira.Fin.Order
+  alias Rujira.Fin.Pair
   alias Rujira.Fin.Summary
-  import Ecto.Query
+  alias Rujira.Fin.Trade
   alias Rujira.Repo
+  alias Rujira.Resolution
+
+  import Ecto.Query
   require Logger
+
+  use GenServer
   use Memoize
 
   def start_link(_) do
@@ -48,9 +50,8 @@ defmodule Rujira.Fin do
   @doc """
   Fetches all Pairs
   """
-  @spec list_pairs() ::
-          {:ok, list(Pair.t())} | {:error, GRPC.RPCError.t()}
-  def list_pairs() do
+  @spec list_pairs :: {:ok, list(Pair.t())} | {:error, GRPC.RPCError.t()}
+  def list_pairs do
     Pair
     |> Deployments.list_targets()
     |> Rujira.Enum.reduce_while_ok([], fn %{module: module, address: address} ->
@@ -99,9 +100,10 @@ defmodule Rujira.Fin do
   @spec list_orders(Pair.t(), String.t()) ::
           {:ok, list(Order.t())} | {:error, GRPC.RPCError.t()}
   def list_orders(pair, address, offset \\ 0, limit \\ 30) do
-    with {:ok, %{"orders" => orders}} <- query_orders(pair.address, address, offset, limit) do
-      {:ok, Enum.map(orders, &Order.from_query(pair, &1))}
-    else
+    case query_orders(pair.address, address, offset, limit) do
+      {:ok, %{"orders" => orders}} ->
+        {:ok, Enum.map(orders, &Order.from_query(pair, &1))}
+
       err ->
         err
     end
@@ -116,15 +118,8 @@ defmodule Rujira.Fin do
   def list_all_orders(address) do
     with {:ok, pairs} <- list_pairs(),
          {:ok, orders} <-
-           Task.async_stream(pairs, &list_orders(&1, address), timeout: 15_000)
-           |> Enum.reduce({:ok, []}, fn
-             # Flatten orders here
-             {:ok, {:ok, orders}}, {:ok, acc} -> {:ok, acc ++ orders}
-             {:ok, {:error, error}}, _ -> {:error, error}
-             {:error, err}, _ -> {:error, err}
-             _, {:error, err} -> {:error, err}
-           end) do
-      {:ok, orders}
+           Rujira.Enum.reduce_async_while_ok(pairs, &list_orders(&1, address), timeout: 15_000) do
+      {:ok, List.flatten(orders)}
     end
   end
 
@@ -178,9 +173,8 @@ defmodule Rujira.Fin do
   end
 
   def book_from_id(id) do
-    with {:ok, res} <- query_book(id, 100),
-         {:ok, book} <- Book.from_query(id, res) do
-      {:ok, book}
+    with {:ok, res} <- query_book(id, 100) do
+      Book.from_query(id, res)
     end
   end
 
@@ -195,9 +189,10 @@ defmodule Rujira.Fin do
   end
 
   def load_order(%{address: address} = pair, side, price, owner) do
-    with {:ok, order} <- query_order(address, owner, side, price) do
-      {:ok, Order.from_query(pair, order)}
-    else
+    case query_order(address, owner, side, price) do
+      {:ok, order} ->
+        {:ok, Order.from_query(pair, order)}
+
       {:error, %GRPC.RPCError{status: 2, message: "NotFound: query wasm contract failed"}} ->
         {:ok, Order.new(address, side, price, owner)}
 
@@ -223,7 +218,7 @@ defmodule Rujira.Fin do
     |> Repo.one()
   end
 
-  def get_summaries() do
+  def get_summaries do
     Summary.query()
     |> Repo.all()
   end
@@ -361,7 +356,7 @@ defmodule Rujira.Fin do
     }
   end
 
-  defp candle_conflict() do
+  defp candle_conflict do
     from(c in Candle,
       update: [
         set: [

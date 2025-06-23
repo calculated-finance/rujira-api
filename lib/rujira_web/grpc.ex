@@ -13,6 +13,19 @@ defimpl Enumerable, for: GRPC.RPCError do
 end
 
 defmodule RujiraWeb.Grpc do
+  @moduledoc """
+  Provides utilities for working with gRPC in the Rujira application.
+
+  ## Protocol Implementations
+
+  Implements the `Enumerable` protocol for `GRPC.RPCError` to enable enumeration
+  and pattern matching on gRPC error messages.
+
+  ## Helper Functions
+
+  Provides conversion functions between Elixir and gRPC data types.
+  """
+
   def to_string(int) when is_integer(int), do: Integer.to_string(int)
   def to_string(nil), do: ""
 end

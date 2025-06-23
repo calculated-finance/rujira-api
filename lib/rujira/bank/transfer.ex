@@ -1,4 +1,11 @@
 defmodule Rujira.Bank.Transfer do
+  @moduledoc """
+  Listens for token transfer events and persists them to the database.
+
+  This module implements the `Thornode.Observer` behavior to monitor and process
+  blockchain transfer events, maintaining a complete history of token transfers
+  including sender, recipient, amount, and timestamp.
+  """
   use Ecto.Schema
   use Thornode.Observer
 
@@ -50,12 +57,11 @@ defmodule Rujira.Bank.Transfer do
     {:noreply, state}
   end
 
-  defp scan_transfer(%{attributes: attrs, type: "transfer"}) do
-    recipient = Map.get(attrs, "recipient")
-    sender = Map.get(attrs, "sender")
-
-    Map.get(attrs, "amount")
-    |> parse_tokens()
+  defp scan_transfer(%{
+         attributes: %{"recipient" => recipient, "sender" => sender, "amount" => amount},
+         type: "transfer"
+       }) do
+    parse_tokens(amount)
     |> Enum.map(&Map.merge(&1, %{recipient: recipient, sender: sender}))
   end
 

@@ -1,4 +1,10 @@
 defmodule RujiraWeb.Schema.Scalars.Resolution do
+  @moduledoc """
+  Defines a custom scalar type for time interval resolutions in GraphQL.
+
+  This module handles the validation and serialization of time interval strings
+  used for data aggregation, supporting intervals from 1 minute up to 12 months.
+  """
   use Absinthe.Schema.Notation
   alias Absinthe.Blueprint.Input
 

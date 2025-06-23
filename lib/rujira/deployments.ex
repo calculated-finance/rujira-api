@@ -1,16 +1,17 @@
 defmodule Rujira.Deployments do
   @moduledoc "Migrates "
-  alias Rujira.Ventures
-  alias Rujira.Deployments.Target
   alias Cosmwasm.Wasm.V1.ContractInfo
-  alias Cosmwasm.Wasm.V1.MsgMigrateContract
   alias Cosmwasm.Wasm.V1.MsgInstantiateContract2
-  alias Rujira.Revenue
+  alias Cosmwasm.Wasm.V1.MsgMigrateContract
   alias Rujira.Bow
-  alias Rujira.Fin
-  alias Rujira.Staking
   alias Rujira.Contracts
+  alias Rujira.Deployments.Target
+  alias Rujira.Fin
   alias Rujira.Index
+  alias Rujira.Revenue
+  alias Rujira.Staking
+  alias Rujira.Ventures
+
   use GenServer
   use Memoize
 
@@ -26,32 +27,26 @@ defmodule Rujira.Deployments do
     {:ok, state}
   end
 
-  defp plan() do
+  defp plan do
     Application.get_env(:rujira, __MODULE__, plan: "stagenet/v1")
     |> Keyword.get(:plan)
   end
 
   defmemo get_target(module, id, plan \\ plan()) do
-    %{codes: codes, targets: targets} = load_config!(plan)
-
-    targets
-    |> Task.async_stream(&parse_protocol(codes, &1))
-    |> Enum.flat_map(fn
-      {:ok, result} -> result
-      {:exit, reason} -> reason
-    end)
+    list_all_targets(plan)
     |> Enum.find(&(&1.module === module and &1.id == id))
   end
 
   defmemo list_all_targets(plan \\ plan()) do
     %{codes: codes, targets: targets} = load_config!(plan)
 
-    targets
-    |> Task.async_stream(&parse_protocol(codes, &1))
-    |> Enum.flat_map(fn
-      {:ok, result} -> result
-      {:exit, reason} -> reason
-    end)
+    with {:ok, result} <-
+           Rujira.Enum.reduce_async_while_ok(
+             targets,
+             &parse_protocol(codes, &1)
+           ) do
+      List.flatten(result)
+    end
   end
 
   @doc """
@@ -61,8 +56,7 @@ defmodule Rujira.Deployments do
   defmemo list_targets(module, plan \\ plan()) do
     plan
     |> list_all_targets()
-    |> Enum.filter(&(&1.module === module))
-    |> Enum.filter(&(&1.contract != nil))
+    |> Enum.filter(&(&1.module === module and &1.contract != nil))
   end
 
   defmemo load_config!(plan \\ plan()) do
@@ -84,12 +78,13 @@ defmodule Rujira.Deployments do
   end
 
   defp parse_protocol(codes, {protocol, configs}) do
-    configs
-    |> Task.async_stream(&parse_contract(codes, protocol, &1))
-    |> Enum.map(fn
-      {:ok, result} -> result
-      {:exit, reason} -> reason
-    end)
+    with {:ok, result} <-
+           Rujira.Enum.reduce_async_while_ok(
+             configs,
+             &parse_contract(codes, protocol, &1)
+           ) do
+      result
+    end
   end
 
   defp parse_contract(

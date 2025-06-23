@@ -1,4 +1,6 @@
 defmodule RujiraWeb.Resolvers.Pilot do
+  @moduledoc false
+
   alias Absinthe.Relay
 
   def account(%{address: address}, _, _) do

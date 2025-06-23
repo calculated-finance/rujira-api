@@ -1,4 +1,6 @@
 defmodule RujiraWeb.Fragments.BalanceFragments do
+  @moduledoc false
+
   alias RujiraWeb.Fragments.AssetFragments
 
   @asset_fragment AssetFragments.get_asset_fragment()
@@ -49,6 +51,6 @@ defmodule RujiraWeb.Fragments.BalanceFragments do
   #{@asset_fragment}
   """
 
-  def get_layer1_balance_fragment(), do: @layer1_balance_fragment
-  def get_balance_fragment(), do: @balance_fragment
+  def get_layer1_balance_fragment, do: @layer1_balance_fragment
+  def get_balance_fragment, do: @balance_fragment
 end

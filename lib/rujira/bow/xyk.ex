@@ -1,4 +1,8 @@
 defmodule Rujira.Bow.Xyk do
+  @moduledoc """
+  Implements the XYK (Constant Product) automated market maker algorithm.
+  """
+
   alias Rujira.Assets
   import Ecto.Query
   use Memoize
@@ -6,6 +10,9 @@ defmodule Rujira.Bow.Xyk do
   @max_quotes 50
 
   defmodule Config do
+    @moduledoc """
+    Defines the configuration structure for an XYK liquidity pool.
+    """
     defstruct [:x, :y, :step, :min_quote, :share_denom, :fee]
 
     @type t :: %__MODULE__{
@@ -41,6 +48,9 @@ defmodule Rujira.Bow.Xyk do
   end
 
   defmodule State do
+    @moduledoc """
+    Defines the state structure for an XYK liquidity pool.
+    """
     defstruct [:id, :x, :y, :k, :shares]
 
     @type t :: %__MODULE__{
@@ -66,8 +76,12 @@ defmodule Rujira.Bow.Xyk do
   end
 
   defmodule Summary do
-    alias Rujira.Prices
+    @moduledoc """
+    Defines the summary structure for an XYK liquidity pool.
+    """
     alias Rujira.Assets
+    alias Rujira.Bow.Xyk
+    alias Rujira.Prices
     defstruct [:spread, :depth_bid, :depth_ask, :volume, :utilization]
 
     @type t :: %__MODULE__{
@@ -79,16 +93,16 @@ defmodule Rujira.Bow.Xyk do
           }
 
     def load(%{address: address, config: config, state: state}) do
-      with {:ok, volume} <- Rujira.Bow.Xyk.volume(address),
+      with {:ok, volume} <- Xyk.volume(address),
            {:ok, asset_x} <- Assets.from_denom(config.x),
            {:ok, price_x} <- Prices.get(asset_x.symbol),
            {:ok, asset_y} <- Assets.from_denom(config.y),
            {:ok, price_y} <- Prices.get(asset_y.symbol),
-           {low, mid, high} <- Rujira.Bow.Xyk.limit(config, state) do
+           {low, mid, high} <- Xyk.limit(config, state) do
         spread = Decimal.div(Decimal.sub(high, low), mid)
 
         depth =
-          Rujira.Bow.Xyk.depth(config, state, Decimal.mult(Decimal.from_float(0.98), mid))
+          Xyk.depth(config, state, Decimal.mult(Decimal.from_float(0.98), mid))
           |> Decimal.mult(price_y.current)
           |> Decimal.round()
           |> Decimal.to_integer()
@@ -114,7 +128,7 @@ defmodule Rujira.Bow.Xyk do
         utilization = Decimal.div(volume, value)
 
         {:ok,
-         %Rujira.Bow.Xyk.Summary{
+         %__MODULE__{
            spread: spread,
            depth_bid: depth,
            depth_ask: depth,

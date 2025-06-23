@@ -1,11 +1,15 @@
 defmodule RujiraWeb.Resolvers.Thorchain do
-  alias Rujira.Assets
+  @moduledoc """
+  Handles GraphQL resolution for Thorchain-related queries and operations.
+  """
   alias Absinthe.Resolution.Helpers
-  alias Thorchain.Types.QueryInboundAddressesResponse
-  alias Thorchain.Types.QueryInboundAddressesRequest
-  alias Thorchain.Types.QueryQuoteSwapResponse
-  alias Thorchain.Types.QueryQuoteSwapRequest
+  alias Rujira.Assets
   alias Thorchain.Types.Query.Stub, as: Q
+  alias Thorchain.Types.QueryInboundAddressesRequest
+  alias Thorchain.Types.QueryInboundAddressesResponse
+  alias Thorchain.Types.QueryQuoteSwapRequest
+  alias Thorchain.Types.QueryQuoteSwapResponse
+
   use Memoize
 
   def quote(_prev, %{from_asset: from_asset, to_asset: to_asset, amount: amount} = x, _res) do
@@ -63,7 +67,7 @@ defmodule RujiraWeb.Resolvers.Thorchain do
     end)
   end
 
-  def inbound_addresses() do
+  def inbound_addresses do
     with {:ok, %QueryInboundAddressesResponse{inbound_addresses: inbound_addresses}} <-
            Thornode.query(&Q.inbound_addresses/2, %QueryInboundAddressesRequest{}) do
       {:ok, Enum.map(inbound_addresses, &cast_response/1)}
@@ -81,11 +85,10 @@ defmodule RujiraWeb.Resolvers.Thorchain do
 
   def liquidity_accounts(%{address: address}, _, _) do
     with {:ok, pools} <- Thorchain.pools() do
-      pools
-      |> Task.async_stream(fn pool ->
-        Thorchain.liquidity_provider(pool.asset.id, address)
-      end)
-      |> Rujira.Enum.reduce_while_ok([], &elem(&1, 1))
+      Rujira.Enum.reduce_async_while_ok(
+        pools,
+        &Thorchain.liquidity_provider(&1.asset.id, address)
+      )
     end
   end
 
@@ -119,7 +122,7 @@ defmodule RujiraWeb.Resolvers.Thorchain do
          tvl: tvl + total_bonds,
          pools_liquidity: tvl,
          total_pool_earnings: 200_000,
-         total_transactions: 15000,
+         total_transactions: 15_000,
          total_swaps: swaps_data.total_swaps,
          daily_swap_volume: swaps_data.daily_swap_volume,
          total_swap_volume: swaps_data.total_swap_volume,
@@ -138,15 +141,13 @@ defmodule RujiraWeb.Resolvers.Thorchain do
   end
 
   def tcy(%{address: address, asset: %{id: asset}}, _, _) do
-    with {:ok, claimable} <- Thorchain.Tcy.claim(asset, address) do
-      {:ok, %{claimable: claimable}}
-    else
+    case Thorchain.Tcy.claim(asset, address) do
+      {:ok, claimable} -> {:ok, %{claimable: claimable}}
       _ -> {:ok, nil}
     end
   end
 
   def tcy(_, _, _), do: {:ok, nil}
-
 
   def oracle(nil), do: {:ok, nil}
 

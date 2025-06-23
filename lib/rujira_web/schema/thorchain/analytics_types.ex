@@ -1,8 +1,16 @@
 defmodule RujiraWeb.Schema.Thorchain.AnalyticsTypes do
+  @moduledoc """
+  Defines GraphQL types for Thorchain Analytics data in the Rujira API.
+
+  This module contains the type definitions and field resolvers for Thorchain
+  analytics, including pool metrics, volume, and performance statistics.
+  """
+
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
+
   alias Rujira.Assets
-  alias RujiraWeb.Resolvers
+  alias RujiraWeb.Resolvers.Thorchain.Analytics
 
   object :thorchain_analytics do
     field :pools, non_null(:thorchain_analytics_pools) do
@@ -24,11 +32,11 @@ defmodule RujiraWeb.Schema.Thorchain.AnalyticsTypes do
       arg(:first, :integer, default_value: 100)
       arg(:resolution, non_null(:resolution))
       arg(:period, non_null(:integer))
-      resolve(&Resolvers.Thorchain.Analytics.pools_snaps/3)
+      resolve(&Analytics.pools_snaps/3)
     end
 
     field :pools, non_null(list_of(non_null(:thorchain_analytics_pool_overview))) do
-      resolve(&Resolvers.Thorchain.Analytics.pools_overview/3)
+      resolve(&Analytics.pools_overview/3)
     end
   end
 
@@ -98,7 +106,7 @@ defmodule RujiraWeb.Schema.Thorchain.AnalyticsTypes do
       arg(:asset, non_null(:asset_string))
       @desc "Period used for Point moving averages"
       arg(:period, non_null(:integer))
-      resolve(&Resolvers.Thorchain.Analytics.pool_aggregated_data/3)
+      resolve(&Analytics.pool_aggregated_data/3)
     end
 
     connection field :snapshots, node_type: :thorchain_analytics_pool_snapshot do
@@ -109,7 +117,7 @@ defmodule RujiraWeb.Schema.Thorchain.AnalyticsTypes do
       arg(:asset, non_null(:asset_string))
       @desc "Period used for Point moving averages"
       arg(:period, non_null(:integer))
-      resolve(&Resolvers.Thorchain.Analytics.pool_snaps/3)
+      resolve(&Analytics.pool_snaps/3)
     end
   end
 

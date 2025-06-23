@@ -1,4 +1,7 @@
 defmodule Rujira.Events do
+  @moduledoc """
+  Handles publishing of GraphQL subscription events and real-time updates.
+  """
   @schema RujiraWeb.Schema
   @endpoint RujiraWeb.Endpoint
 

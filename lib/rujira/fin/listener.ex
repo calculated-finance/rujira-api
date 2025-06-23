@@ -1,6 +1,12 @@
 defmodule Rujira.Fin.Listener do
-  alias Rujira.Fin
+  @moduledoc """
+  Listens for and processes Fin Protocol-related blockchain events.
+
+  Handles block transactions to detect Fin Protocol activities, updates cached data,
+  and publishes real-time updates through the events system.
+  """
   alias Rujira.Bow
+  alias Rujira.Fin
   use Thornode.Observer
   require Logger
 
@@ -20,14 +26,16 @@ defmodule Rujira.Fin.Listener do
 
     addresses =
       events
-      |> Enum.flat_map(&scan_fin_event/1)
-      |> Enum.uniq()
+      |> Enum.map(&scan_fin_event/1)
+      |> Enum.reject(&is_nil/1)
+      |> Rujira.Enum.uniq()
       # Trades are withdrawn before retraction. Ensure we're not re-publishing an order that doens't exist
       |> Enum.reverse()
 
-    bow_addresses = events |> Enum.flat_map(&scan_bow_event/1) |> Enum.uniq()
+    bow_addresses =
+      events |> Enum.map(&scan_bow_event/1) |> Enum.reject(&is_nil/1) |> Rujira.Enum.uniq()
 
-    for address <- addresses |> Enum.map(&elem(&1, 1)) |> Enum.uniq() do
+    for address <- addresses |> Enum.map(&elem(&1, 1)) |> Rujira.Enum.uniq() do
       Memoize.invalidate(Fin, :query_book, [address, :_])
       Rujira.Events.publish_node(:fin_book, address)
     end
@@ -60,23 +68,28 @@ defmodule Rujira.Fin.Listener do
     end
   end
 
-  def scan_fin_event(%{attributes: attributes, type: "wasm-rujira-fin/" <> name}) do
-    address = Map.get(attributes, "_contract_address")
-    side = Map.get(attributes, "side")
-    price = Map.get(attributes, "price")
+  def scan_fin_event(%{
+        attributes:
+          %{
+            "_contract_address" => contract_address,
+            "side" => side,
+            "price" => price
+          } = attributes,
+        type: "wasm-rujira-fin/" <> name
+      }) do
+    # owner can be missing on trade events
     owner = Map.get(attributes, "owner")
-    [{name, address, owner, side, price}]
+    {name, contract_address, owner, side, price}
   end
 
-  def scan_fin_event(_), do: []
+  def scan_fin_event(_), do: nil
 
-  def scan_bow_event(%{attributes: attributes, type: "wasm-rujira-bow/" <> _}) do
-    scan_bow_attributes(attributes)
+  def scan_bow_event(%{
+        attributes: %{"_contract_address" => contract_address},
+        type: "wasm-rujira-bow/" <> _
+      }) do
+    contract_address
   end
 
-  def scan_bow_event(_), do: []
-
-  defp scan_bow_attributes(attributes) do
-    [Map.get(attributes, "_contract_address")]
-  end
+  def scan_bow_event(_), do: nil
 end

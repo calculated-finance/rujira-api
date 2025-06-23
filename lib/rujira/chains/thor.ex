@@ -1,10 +1,18 @@
 defmodule Rujira.Chains.Thor do
-  alias Cosmos.Bank.V1beta1.QueryBalanceResponse
-  alias Cosmos.Bank.V1beta1.QueryBalanceRequest
+  @moduledoc """
+  Implements the Thorchain adapter for Cosmos compatibility.
+  """
+  # Aliases
   alias Cosmos.Bank.V1beta1.QueryAllBalancesRequest
   alias Cosmos.Bank.V1beta1.QueryAllBalancesResponse
-  import Cosmos.Bank.V1beta1.Query.Stub
+  alias Cosmos.Bank.V1beta1.QueryBalanceRequest
+  alias Cosmos.Bank.V1beta1.QueryBalanceResponse
   alias Rujira.Assets
+
+  # Imports
+  import Cosmos.Bank.V1beta1.Query.Stub
+
+  # Uses
   use Memoize
 
   defmemo balance_of(address, denom) do
@@ -26,7 +34,7 @@ defmodule Rujira.Chains.Thor do
       balances
       # Remove LSD, Lending shares, LP shares etc from regular balances,
       # surface them in the account/pooled account/staked lists
-      |> Enum.filter(&is_balance/1)
+      |> Enum.filter(&balance?/1)
       |> Enum.reduce({:ok, []}, fn el, acc ->
         with {:ok, acc} <- acc,
              {:ok, asset} <- Assets.from_denom(el.denom) do
@@ -36,8 +44,8 @@ defmodule Rujira.Chains.Thor do
     end
   end
 
-  defp is_balance(%{denom: "x/staking" <> _}), do: false
-  defp is_balance(%{denom: "x/bow" <> _}), do: false
-  defp is_balance(%{denom: "x/nami-index" <> _}), do: false
-  defp is_balance(_), do: true
+  defp balance?(%{denom: "x/staking" <> _}), do: false
+  defp balance?(%{denom: "x/bow" <> _}), do: false
+  defp balance?(%{denom: "x/nami-index" <> _}), do: false
+  defp balance?(_), do: true
 end

@@ -1,5 +1,11 @@
 defmodule Rujira.Fin.Book do
+  @moduledoc """
+  Parses and represents a FIN.Book from blockchain data.
+  """
   defmodule Price do
+    @moduledoc """
+    Represents a price level in the order book with associated order details.
+    """
     defstruct [:price, :total, :side, :value]
 
     @type side :: :bid | :ask

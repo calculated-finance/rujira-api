@@ -14,8 +14,8 @@ defmodule Rujira.Analytics.SwapQueries do
 
   import Ecto.Query
   alias Rujira.Analytics.Common
-  alias Thorchain.Swaps.Swap
   alias Rujira.Resolution
+  alias Thorchain.Swaps.Swap
 
   # Returns a base query filtering swaps by a given time range and affiliate.
   #

@@ -2,13 +2,14 @@ defmodule Rujira.Index.ListenerTest do
   use Rujira.PublisherCase
 
   alias Rujira.Fixtures.Block
+  alias Rujira.Index.Listener
 
   test "publishes Index updates on block" do
     # 4576064 executes a deposit into the index vault yRune
     # it should publish an Index Vault update
     # it should publish an Index Account update
     {:ok, block} = Block.load_block("4576064")
-    Rujira.Index.Listener.handle_new_block(block, nil)
+    Listener.handle_new_block(block, nil)
 
     messages = collect_publishes()
 
@@ -46,7 +47,7 @@ defmodule Rujira.Index.ListenerTest do
                     "IndexAccount:sthor1g2rf7x4f9jxduz7ns9syzq4g8sqkp783d3jt0g/x/nami-index-nav-sthor1552fjtt2u6evfxwmnx0w68kh7u4fqt7e6vv0du3vj5rwggumy5jsmwzjsr-rcpt"
                   )
               ]},
-              {:published, RujiraWeb.Endpoint,
+             {:published, RujiraWeb.Endpoint,
               %{
                 id:
                   Base.encode64(
@@ -59,7 +60,7 @@ defmodule Rujira.Index.ListenerTest do
                     "IndexAccount:sthor18afpdapfxxlvxcf95a3rd6p0fsw37mnfqj8aly/x/nami-index-nav-sthor1552fjtt2u6evfxwmnx0w68kh7u4fqt7e6vv0du3vj5rwggumy5jsmwzjsr-rcpt"
                   )
               ]},
-              {:published, RujiraWeb.Endpoint,
+             {:published, RujiraWeb.Endpoint,
               %{
                 id:
                   Base.encode64(

@@ -1,4 +1,9 @@
 defmodule Thorchain.Swaps do
+  @moduledoc """
+  Module for handling Thorchain swap operations.
+
+  This module provides functionality for managing and querying base layer swaps
+  """
   alias Rujira.Repo
   alias Thorchain.Swaps.Swap
   import Ecto.Query

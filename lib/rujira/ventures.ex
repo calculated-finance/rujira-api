@@ -1,16 +1,18 @@
 defmodule Rujira.Ventures do
-  alias Rujira.Deployments
-  alias Rujira.Ventures.Pilot
-  alias Rujira.Ventures.Keiko
+  @moduledoc false
+
   alias Rujira.Contracts
+  alias Rujira.Deployments
+  alias Rujira.Ventures.Keiko
+  alias Rujira.Ventures.Pilot
 
-  def address(), do: Deployments.get_target(Keiko, "keiko").address
+  def address, do: Deployments.get_target(Keiko, "keiko").address
 
-  def keiko() do
+  def keiko do
     Contracts.get({Keiko, address()})
   end
 
-  def sales() do
+  def sales do
     with {:ok, ventures} <- Contracts.query_state_smart(address(), %{ventures: %{}}) do
       Rujira.Enum.reduce_while_ok(ventures, [], &sale_from_query/1)
     end

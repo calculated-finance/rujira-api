@@ -1,7 +1,17 @@
 defmodule RujiraWeb.Schema.BalanceTypes do
+  @moduledoc """
+  Defines GraphQL types for balance-related data in the Rujira API.
+
+  This module contains the type definitions for balance-related
+  GraphQL objects, including layer 1 balances and their associated metadata.
+  """
+
+  use Absinthe.Schema.Notation
+
   alias Rujira.Assets
   alias Rujira.Prices
-  use Absinthe.Schema.Notation
+  alias RujiraWeb.Resolvers.Balance
+  alias RujiraWeb.Resolvers.Thorchain
 
   @desc "The balance of a token or coin on a layer 1 chain"
   object :layer_1_balance do
@@ -9,11 +19,11 @@ defmodule RujiraWeb.Schema.BalanceTypes do
     field :amount, non_null(:bigint)
 
     field :utxos, list_of(non_null(:utxo)) do
-      resolve(&RujiraWeb.Resolvers.Balance.utxos/3)
+      resolve(&Balance.utxos/3)
     end
 
     field :tcy, :thorchain_tcy do
-      resolve(&RujiraWeb.Resolvers.Thorchain.tcy/3)
+      resolve(&Thorchain.tcy/3)
     end
 
     field :value_usd, non_null(:bigint) do
@@ -30,7 +40,7 @@ defmodule RujiraWeb.Schema.BalanceTypes do
     field :utxos, list_of(non_null(:utxo))
 
     field :tcy, :thorchain_tcy do
-      resolve(&RujiraWeb.Resolvers.Thorchain.tcy/3)
+      resolve(&Thorchain.tcy/3)
     end
   end
 

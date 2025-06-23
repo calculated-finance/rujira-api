@@ -1,4 +1,6 @@
 defmodule RujiraWeb.Fragments.BowFragments do
+  @moduledoc false
+
   alias RujiraWeb.Fragments.AssetFragments
   alias RujiraWeb.Fragments.BalanceFragments
   alias RujiraWeb.Fragments.DeveloperFragments
@@ -141,12 +143,12 @@ defmodule RujiraWeb.Fragments.BowFragments do
   #{@fin_trade_fragment}
   """
 
-  def get_bow_config_xyk_fragment(), do: @bow_config_xyk_fragment
-  def get_bow_state_xyk_fragment(), do: @bow_state_xyk_fragment
-  def get_bow_summary_fragment(), do: @bow_summary_fragment
-  def get_bow_pool_xyk_fragment(), do: @bow_pool_xyk_fragment
-  def get_bow_pool_fragment(), do: @bow_pool_fragment
-  def get_bow_config_fragment(), do: @bow_config_fragment
-  def get_bow_state_fragment(), do: @bow_state_fragment
-  def get_bow_account_fragment(), do: @bow_account_fragment
+  def get_bow_config_xyk_fragment, do: @bow_config_xyk_fragment
+  def get_bow_state_xyk_fragment, do: @bow_state_xyk_fragment
+  def get_bow_summary_fragment, do: @bow_summary_fragment
+  def get_bow_pool_xyk_fragment, do: @bow_pool_xyk_fragment
+  def get_bow_pool_fragment, do: @bow_pool_fragment
+  def get_bow_config_fragment, do: @bow_config_fragment
+  def get_bow_state_fragment, do: @bow_state_fragment
+  def get_bow_account_fragment, do: @bow_account_fragment
 end

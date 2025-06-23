@@ -1,4 +1,6 @@
 defmodule RujiraWeb.Fragments.AccountFragments do
+  @moduledoc false
+
   import RujiraWeb.Fragments.BowFragments
   import RujiraWeb.Fragments.FinFragments
   import RujiraWeb.Fragments.StakingFragments
@@ -53,6 +55,6 @@ defmodule RujiraWeb.Fragments.AccountFragments do
   #{get_thorchain_liquidity_provider_fragment()}
   """
 
-  def get_layer1_account_fragment(), do: @layer1_account_fragment
-  def get_account_fragment(), do: @account_fragment
+  def get_layer1_account_fragment, do: @layer1_account_fragment
+  def get_account_fragment, do: @account_fragment
 end

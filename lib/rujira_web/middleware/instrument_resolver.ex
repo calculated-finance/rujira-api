@@ -1,9 +1,18 @@
 defmodule RujiraWeb.Middleware.InstrumentResolver do
+  @moduledoc """
+  Middleware to instrument GraphQL resolvers with Appsignal spans.
+  """
   @behaviour Absinthe.Middleware
-  alias Appsignal.{Tracer, Span}
+  alias Appsignal.Span
+  alias Appsignal.Tracer
 
   defmodule CloseSpan do
+    @moduledoc """
+    Middleware to close Appsignal spans after resolver execution.
+    """
     @behaviour Absinthe.Middleware
+    alias RujiraWeb.Middleware.InstrumentResolver
+
     def call(resolution, _config) do
       case get_private(resolution, :appsignal_span) do
         nil ->
@@ -11,7 +20,7 @@ defmodule RujiraWeb.Middleware.InstrumentResolver do
 
         span ->
           Tracer.close_span(span)
-          RujiraWeb.Middleware.InstrumentResolver.put_private(resolution, :appsignal_span, nil)
+          InstrumentResolver.put_private(resolution, :appsignal_span, nil)
       end
     end
 

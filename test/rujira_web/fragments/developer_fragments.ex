@@ -1,4 +1,6 @@
 defmodule RujiraWeb.Fragments.DeveloperFragments do
+  @moduledoc false
+
   @state_entry_fragment """
   fragment StateEntryFragment on StateEntry {
     key
@@ -67,10 +69,10 @@ defmodule RujiraWeb.Fragments.DeveloperFragments do
   #{@code_fragment}
   """
 
-  def get_developer_fragment(), do: @developer_fragment
-  def get_code_fragment(), do: @code_fragment
-  def get_contract_fragment(), do: @contract_fragment
-  def get_contract_info_fragment(), do: @contract_info_fragment
-  def get_state_entry_fragment(), do: @state_entry_fragment
-  def get_tx_position_fragment(), do: @tx_position_fragment
+  def get_developer_fragment, do: @developer_fragment
+  def get_code_fragment, do: @code_fragment
+  def get_contract_fragment, do: @contract_fragment
+  def get_contract_info_fragment, do: @contract_info_fragment
+  def get_state_entry_fragment, do: @state_entry_fragment
+  def get_tx_position_fragment, do: @tx_position_fragment
 end

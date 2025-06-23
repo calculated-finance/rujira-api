@@ -1,4 +1,7 @@
 defmodule Rujira.Contracts.Contract do
+  @moduledoc """
+  Defines the Contract schema for tracking smart contract instances.
+  """
   import Ecto.Changeset
   use Ecto.Schema
 

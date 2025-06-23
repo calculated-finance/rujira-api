@@ -1,9 +1,17 @@
 defmodule RujiraWeb.Schema.IndexTypes do
-  alias Rujira.Contracts
-  alias Rujira.Assets
-  alias RujiraWeb.Resolvers
+  @moduledoc """
+  Defines GraphQL types for Index Protocol data in the Rujira API.
+
+  This module contains the type definitions and field resolvers for Index Protocol
+  GraphQL objects, including vaults, NAV calculations, and related data.
+  """
+
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
+
+  alias Rujira.Assets
+  alias Rujira.Contracts
+  alias RujiraWeb.Resolvers
 
   @desc "A index_vault represents the configuration about a rujira-index contract"
   node object(:index_vault) do

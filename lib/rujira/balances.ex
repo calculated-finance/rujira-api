@@ -1,4 +1,7 @@
 defmodule Rujira.Balances do
+  @moduledoc """
+  Handles blockchain balance queries and UTXO management.
+  """
   alias Rujira.Assets.Asset
   use GenServer
 

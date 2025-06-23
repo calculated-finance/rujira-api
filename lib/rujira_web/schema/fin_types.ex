@@ -1,9 +1,18 @@
 defmodule RujiraWeb.Schema.FinTypes do
+  @moduledoc """
+  Defines GraphQL types for Fin Protocol data in the Rujira API.
+
+  This module contains the type definitions and field resolvers for Fin Protocol
+  GraphQL objects, including trading pairs, orders, and market data.
+  """
+
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
-  alias Rujira.Contracts
-  alias Rujira.Fin
+
   alias Rujira.Assets
+  alias Rujira.Contracts
+  alias RujiraWeb.Resolvers.Fin
+  alias RujiraWeb.Resolvers.Thorchain
 
   @desc "A fin_pair represents informations about a specific rujira-fin contract"
   node object(:fin_pair) do
@@ -33,7 +42,7 @@ defmodule RujiraWeb.Schema.FinTypes do
           {:ok, nil}
 
         %{oracle_base: asset}, _, _ ->
-          RujiraWeb.Resolvers.Thorchain.oracle(asset)
+          Thorchain.oracle(asset)
       end)
     end
 
@@ -43,7 +52,7 @@ defmodule RujiraWeb.Schema.FinTypes do
           {:ok, nil}
 
         %{oracle_quote: asset}, _, _ ->
-          RujiraWeb.Resolvers.Thorchain.oracle(asset)
+          Thorchain.oracle(asset)
       end)
     end
 
@@ -51,16 +60,16 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :fee_taker, non_null(:bigint)
     field :fee_maker, non_null(:bigint)
     field :fee_address, non_null(:address)
-    field :book, non_null(:fin_book), resolve: &RujiraWeb.Resolvers.Fin.book/3
-    field :summary, :fin_summary, resolve: &RujiraWeb.Resolvers.Fin.summary/3
+    field :book, non_null(:fin_book), resolve: &Fin.book/3
+    field :summary, :fin_summary, resolve: &Fin.summary/3
 
     connection field :candles, node_type: :fin_candle, non_null: true do
       arg(:resolution, non_null(:string))
-      resolve(&RujiraWeb.Resolvers.Fin.candles/3)
+      resolve(&Fin.candles/3)
     end
 
     connection field :trades, node_type: :fin_trade, non_null: true do
-      resolve(&RujiraWeb.Resolvers.Fin.trades/3)
+      resolve(&Fin.trades/3)
     end
   end
 
@@ -77,7 +86,7 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :bids, non_null(list_of(non_null(:fin_book_entry)))
 
     field :pair, non_null(:fin_pair) do
-      resolve(&RujiraWeb.Resolvers.Fin.book_pair/3)
+      resolve(&Fin.book_pair/3)
     end
   end
 
@@ -93,20 +102,18 @@ defmodule RujiraWeb.Schema.FinTypes do
   @desc "Collections of data of an account across all the fin pairs"
   object :fin_account do
     connection field :orders, node_type: :fin_order do
-      resolve(&RujiraWeb.Resolvers.Fin.orders/3)
+      resolve(&Fin.orders/3)
     end
 
     connection field :history, node_type: :fin_account_action do
-      resolve(&RujiraWeb.Resolvers.Fin.history/3)
+      resolve(&Fin.history/3)
     end
   end
 
   @desc "Single order of an account on a fin pair"
   node object(:fin_order) do
     field :pair, non_null(:fin_pair) do
-      resolve(fn %{pair: pair}, _, _ ->
-        Fin.get_pair(pair)
-      end)
+      resolve(&Fin.book_pair/3)
     end
 
     field :owner, non_null(:address)
@@ -234,7 +241,7 @@ defmodule RujiraWeb.Schema.FinTypes do
         {:ok, topic: owner}
       end)
 
-      resolve(&RujiraWeb.Resolvers.Fin.order_edge/3)
+      resolve(&Fin.order_edge/3)
     end
 
     @desc """
@@ -251,7 +258,7 @@ defmodule RujiraWeb.Schema.FinTypes do
         {:ok, topic: "#{contract}/#{side}/#{price}"}
       end)
 
-      resolve(&RujiraWeb.Resolvers.Fin.order_edge/3)
+      resolve(&Fin.order_edge/3)
     end
   end
 end

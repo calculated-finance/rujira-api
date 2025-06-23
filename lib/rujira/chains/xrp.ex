@@ -1,4 +1,7 @@
 defmodule Rujira.Chains.Xrp do
+  @moduledoc """
+  Implements the XRP Ledger (XRP) adapter for account-based blockchain interactions.
+  """
   def client do
     Tesla.client(middleware())
   end

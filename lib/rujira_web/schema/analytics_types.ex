@@ -1,6 +1,14 @@
 defmodule RujiraWeb.Schema.AnalyticsTypes do
+  @moduledoc """
+  Defines GraphQL types for analytics data in the Rujira API.
+
+  This module contains the type definitions and field resolvers for analytics-related
+  GraphQL objects, including swap analytics and other metrics.
+  """
+
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
+
   alias Rujira.Assets
   alias RujiraWeb.Resolvers
 

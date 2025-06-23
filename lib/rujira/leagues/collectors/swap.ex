@@ -8,14 +8,15 @@ defmodule Rujira.Leagues.Collectors.Swap do
   """
 
   use Thornode.Observer
-  alias Rujira.Prices
   alias Rujira.Leagues
+  alias Rujira.Prices
   require Logger
 
   @impl true
   def handle_new_block(%{header: %{height: height, time: time}, end_block_events: events}, state) do
     events
-    |> Enum.flat_map(&scan_event/1)
+    |> Enum.map(&scan_event/1)
+    |> Enum.reject(&is_nil/1)
     |> Enum.with_index()
     |> Enum.map(fn {event, idx} ->
       Map.merge(event, %{height: height, idx: idx, timestamp: time})
@@ -26,24 +27,26 @@ defmodule Rujira.Leagues.Collectors.Swap do
     {:noreply, state}
   end
 
-  defp scan_event(%{attributes: attrs, type: "affiliate_fee"}) do
-    thorname = Map.get(attrs, "thorname")
-
+  defp scan_event(%{
+         attributes: %{
+           "thorname" => thorname,
+           "tx_id" => tx_id,
+           "memo" => memo,
+           "asset" => asset,
+           "fee_amount" => fee_amount
+         },
+         type: "affiliate_fee"
+       }) do
     case thorname do
       "rj" ->
-        tx_id = Map.get(attrs, "tx_id")
-        memo = Map.get(attrs, "memo")
-        asset = Map.get(attrs, "asset")
-        fee_amount = Map.get(attrs, "fee_amount")
-
-        [league_event(asset, memo, fee_amount, tx_id)]
+        league_event(asset, memo, fee_amount, tx_id)
 
       _ ->
-        []
+        nil
     end
   end
 
-  defp scan_event(_), do: []
+  defp scan_event(_), do: nil
 
   defp league_event(asset, memo, fee_amount, tx_id) do
     with {:ok, address} <- Thorchain.get_dest_address(memo),

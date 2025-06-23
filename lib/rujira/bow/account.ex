@@ -1,4 +1,7 @@
 defmodule Rujira.Bow.Account do
+  @moduledoc """
+  Defines the Bow account structure for liquidity pool participation.
+  """
   alias Rujira.Bow.Xyk
 
   defstruct [

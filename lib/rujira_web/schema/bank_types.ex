@@ -1,6 +1,14 @@
 defmodule RujiraWeb.Schema.BankTypes do
+  @moduledoc """
+  Defines GraphQL types for bank-related data in the Rujira API.
+
+  This module contains the type definitions and field resolvers for bank-related
+  GraphQL objects, including bank supply information and related fields.
+  """
+
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
+
   alias RujiraWeb.Resolvers
 
   @desc "A rujira represents data about rujira products"

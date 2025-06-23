@@ -1,4 +1,7 @@
 defmodule Rujira.Fin.Summary do
+  @moduledoc """
+  Calculates and provides trading statistics including price, volume, and market data.
+  """
   alias Rujira.Fin.Trade
   import Ecto.Query
 
@@ -14,7 +17,7 @@ defmodule Rujira.Fin.Summary do
           volume_base: non_neg_integer()
         }
 
-  def query() do
+  def query do
     contracts =
       from(t in Trade,
         distinct: t.contract,

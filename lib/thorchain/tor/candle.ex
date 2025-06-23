@@ -1,4 +1,10 @@
 defmodule Thorchain.Tor.Candle do
+  @moduledoc """
+  Defines the schema and behavior for Thorchain TOR candles.
+
+  This module handles the storage and updating of TOR candle data, which represents
+  price movements of assets over time. It uses a GenServer for periodic updates.
+  """
   alias Rujira.Resolution
   import Ecto.Changeset
   require Logger

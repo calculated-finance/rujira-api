@@ -1,5 +1,8 @@
 defmodule Rujira.Ventures.Pilot do
+  @moduledoc false
   defmodule Bow do
+    @moduledoc false
+
     defstruct []
 
     def from_config(nil), do: {:ok, nil}
@@ -10,6 +13,8 @@ defmodule Rujira.Ventures.Pilot do
   end
 
   defmodule Fin do
+    @moduledoc false
+
     defstruct []
 
     def from_config(nil), do: {:ok, nil}
@@ -20,6 +25,8 @@ defmodule Rujira.Ventures.Pilot do
   end
 
   defmodule Sale do
+    @moduledoc false
+
     defstruct [
       :beneficiary,
       :bid_denom,
@@ -126,6 +133,8 @@ defmodule Rujira.Ventures.Pilot do
   end
 
   defmodule Token do
+    @moduledoc false
+
     defstruct [
       :type,
       :admin,
@@ -182,8 +191,14 @@ defmodule Rujira.Ventures.Pilot do
   end
 
   defmodule Tokenomics do
+    @moduledoc false
+
     defmodule Category do
+      @moduledoc false
+
       defmodule Recipient do
+        @moduledoc false
+
         defstruct [:type, :address, :amount]
 
         @type t :: %__MODULE__{
@@ -315,10 +330,10 @@ defmodule Rujira.Ventures.Pilot do
   end
 
   defp safe_string_to_atom(str) when is_binary(str) do
-    try do
+    if String.to_existing_atom(str) do
       {:ok, String.to_existing_atom(str)}
-    rescue
-      ArgumentError -> {:error, :invalid_status_atom}
+    else
+      {:error, :invalid_status_atom}
     end
   end
 

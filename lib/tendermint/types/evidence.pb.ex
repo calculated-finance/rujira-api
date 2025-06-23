@@ -3,7 +3,7 @@ defmodule Tendermint.Types.Evidence do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  oneof :sum, 0
+  oneof(:sum, 0)
 
   field :duplicate_vote_evidence, 1,
     type: Tendermint.Types.DuplicateVoteEvidence,

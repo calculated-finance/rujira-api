@@ -1,4 +1,5 @@
 defmodule RujiraWeb.Fragments.ThorchainFragments do
+  @moduledoc false
   alias RujiraWeb.Fragments.AssetFragments
   alias RujiraWeb.Fragments.BalanceFragments
 
@@ -288,18 +289,18 @@ defmodule RujiraWeb.Fragments.ThorchainFragments do
   #{@asset_fragment}
   """
 
-  def get_thorchain_inbound_address_fragment(), do: @inbound_address_fragment
-  def get_thorchain_pool_fragment(), do: @pool_fragment
-  def get_thorchain_tcy_fragment(), do: @thorchain_tcy_fragment
-  def get_thorchain_oracle_fragment(), do: @thorchain_oracle_fragment
-  def get_thorchain_block_fragment(), do: @block_fragment
-  def get_thorchain_block_tx_fragment(), do: @block_tx_fragment
-  def get_thorchain_block_tx_result_fragment(), do: @block_tx_result_fragment
-  def get_thorchain_block_id_fragment(), do: @block_id_fragment
-  def get_thorchain_layer1_tx_fragment(), do: @layer1_tx_fragment
-  def get_thorchain_tx_id_fragment(), do: @tx_id_fragment
-  def get_thorchain_tx_in_fragment(), do: @tx_in_fragment
-  def get_thorchain_quote_fragment(), do: @quote_fragment
-  def get_thorchain_tor_candle_fragment(), do: @tor_candle_fragment
-  def get_thorchain_liquidity_provider_fragment(), do: @liquidity_provider_fragment
+  def get_thorchain_inbound_address_fragment, do: @inbound_address_fragment
+  def get_thorchain_pool_fragment, do: @pool_fragment
+  def get_thorchain_tcy_fragment, do: @thorchain_tcy_fragment
+  def get_thorchain_oracle_fragment, do: @thorchain_oracle_fragment
+  def get_thorchain_block_fragment, do: @block_fragment
+  def get_thorchain_block_tx_fragment, do: @block_tx_fragment
+  def get_thorchain_block_tx_result_fragment, do: @block_tx_result_fragment
+  def get_thorchain_block_id_fragment, do: @block_id_fragment
+  def get_thorchain_layer1_tx_fragment, do: @layer1_tx_fragment
+  def get_thorchain_tx_id_fragment, do: @tx_id_fragment
+  def get_thorchain_tx_in_fragment, do: @tx_in_fragment
+  def get_thorchain_quote_fragment, do: @quote_fragment
+  def get_thorchain_tor_candle_fragment, do: @tor_candle_fragment
+  def get_thorchain_liquidity_provider_fragment, do: @liquidity_provider_fragment
 end

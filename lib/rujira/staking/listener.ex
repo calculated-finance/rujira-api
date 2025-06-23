@@ -1,4 +1,11 @@
 defmodule Rujira.Staking.Listener do
+  @moduledoc """
+  Listens for and processes staking-related blockchain events.
+
+  Handles block transactions to detect staking events, updates cached data,
+  and publishes real-time updates through the events system.
+  """
+
   alias Rujira.Staking
   use Thornode.Observer
   require Logger
@@ -17,8 +24,11 @@ defmodule Rujira.Staking.Listener do
         _ -> []
       end)
 
-    executions = events |> Enum.flat_map(&scan_staking_event/1) |> Enum.uniq()
-    transfers = events |> Enum.flat_map(&scan_transfer/1) |> Enum.uniq()
+    executions =
+      events |> Enum.map(&scan_staking_event/1) |> Enum.reject(&is_nil/1) |> Rujira.Enum.uniq()
+
+    transfers =
+      events |> Enum.map(&scan_transfer/1) |> Enum.reject(&is_nil/1) |> Rujira.Enum.uniq()
 
     for {a, o} <- executions do
       Logger.debug("#{__MODULE__} execution #{a}")
@@ -41,17 +51,18 @@ defmodule Rujira.Staking.Listener do
     end
   end
 
-  def scan_staking_event(%{attributes: attrs, type: "wasm-rujira-staking/" <> _}) do
-    contract = Map.get(attrs, "_contract_address")
-    owner = Map.get(attrs, "owner")
-    [{contract, owner}]
+  def scan_staking_event(%{
+        attributes: %{"_contract_address" => contract, "owner" => owner},
+        type: "wasm-rujira-staking/" <> _
+      }) do
+    {contract, owner}
   end
 
-  def scan_staking_event(_), do: []
+  def scan_staking_event(_), do: nil
 
-  def scan_transfer(%{attributes: attrs, type: "transfer"}) do
-    [Map.get(attrs, "recipient")]
+  def scan_transfer(%{attributes: %{"recipient" => recipient}, type: "transfer"}) do
+    recipient
   end
 
-  def scan_transfer(_), do: []
+  def scan_transfer(_), do: nil
 end

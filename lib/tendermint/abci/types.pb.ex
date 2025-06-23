@@ -68,7 +68,7 @@ defmodule Tendermint.Abci.Request do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  oneof :value, 0
+  oneof(:value, 0)
 
   field :echo, 1, type: Tendermint.Abci.RequestEcho, oneof: 0
   field :flush, 2, type: Tendermint.Abci.RequestFlush, oneof: 0
@@ -319,7 +319,7 @@ defmodule Tendermint.Abci.Response do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  oneof :value, 0
+  oneof(:value, 0)
 
   field :exception, 1, type: Tendermint.Abci.ResponseException, oneof: 0
   field :echo, 2, type: Tendermint.Abci.ResponseEcho, oneof: 0

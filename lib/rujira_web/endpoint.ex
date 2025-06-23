@@ -1,4 +1,10 @@
 defmodule RujiraWeb.Endpoint do
+  @moduledoc """
+  Phoenix Endpoint for the Rujira web application.
+
+  This module defines the web interface for the Rujira API, including HTTP request handling,
+  WebSocket connections, and request/response pipeline configuration.
+  """
   use Phoenix.Endpoint, otp_app: :rujira
   use Absinthe.Phoenix.Endpoint
 

@@ -1,8 +1,10 @@
 defmodule RujiraWeb.Fragments.FinFragments do
+  @moduledoc false
+
   alias RujiraWeb.Fragments.AssetFragments
+  alias RujiraWeb.Fragments.BalanceFragments
   alias RujiraWeb.Fragments.DeveloperFragments
   alias RujiraWeb.Fragments.ThorchainFragments
-  alias RujiraWeb.Fragments.BalanceFragments
 
   @asset_fragment AssetFragments.get_asset_fragment()
   @contract_info_fragment DeveloperFragments.get_contract_info_fragment()
@@ -203,14 +205,14 @@ defmodule RujiraWeb.Fragments.FinFragments do
   #{@fin_account_action_fragment}
   """
 
-  def get_fin_book_entry_fragment(), do: @fin_book_entry_fragment
-  def get_fin_book_fragment(), do: @fin_book_fragment
-  def get_fin_order_fragment(), do: @fin_order_fragment
-  def get_fin_trade_fragment(), do: @fin_trade_fragment
-  def get_fin_candle_fragment(), do: @fin_candle_fragment
-  def get_fin_summary_fragment(), do: @fin_summary_fragment
-  def get_fin_pair_summary_fragment(), do: @fin_pair_summary_fragment
-  def get_fin_pair_fragment(), do: @fin_pair_fragment
-  def get_fin_account_action_fragment(), do: @fin_account_action_fragment
-  def get_fin_account_fragment(), do: @fin_account_fragment
+  def get_fin_book_entry_fragment, do: @fin_book_entry_fragment
+  def get_fin_book_fragment, do: @fin_book_fragment
+  def get_fin_order_fragment, do: @fin_order_fragment
+  def get_fin_trade_fragment, do: @fin_trade_fragment
+  def get_fin_candle_fragment, do: @fin_candle_fragment
+  def get_fin_summary_fragment, do: @fin_summary_fragment
+  def get_fin_pair_summary_fragment, do: @fin_pair_summary_fragment
+  def get_fin_pair_fragment, do: @fin_pair_fragment
+  def get_fin_account_action_fragment, do: @fin_account_action_fragment
+  def get_fin_account_fragment, do: @fin_account_fragment
 end

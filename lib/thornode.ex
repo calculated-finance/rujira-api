@@ -1,4 +1,10 @@
 defmodule Thornode do
+  @moduledoc """
+  Main module for interacting with the Thornode.
+
+  This module provides functionality for connecting to and querying the Thornode API,
+  managing connection pools, and handling WebSocket connections for real-time updates.
+  """
   use Supervisor
   require Logger
 

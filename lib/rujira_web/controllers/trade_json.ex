@@ -1,10 +1,10 @@
 defmodule RujiraWeb.TradeJSON do
-  alias Rujira.Fin.Trade
+  alias Rujira.Assets
   alias Rujira.Fin
   alias Rujira.Fin.Book
   alias Rujira.Fin.Book.Price
-  alias Rujira.Assets
   alias Rujira.Fin.Pair
+  alias Rujira.Fin.Trade
 
   def render("tickers.json", %{pairs: pairs, summaries: summaries}) do
     for(pair <- pairs, do: ticker(pair, Enum.find(summaries, %{}, &(&1.id == pair.id))))

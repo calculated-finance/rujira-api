@@ -1,4 +1,7 @@
 defmodule Rujira.Index.Fixed do
+  @moduledoc """
+  Parses and manages fixed-weight index allocations and their Net Asset Value (NAV) calculations.
+  """
   alias Rujira.Index.Vault
   alias Rujira.Prices
 
@@ -44,16 +47,9 @@ defmodule Rujira.Index.Fixed do
   # {:ok, list_of_allocations} or the first error encountered.
   def parse_allocations(list, shares) do
     list
-    |> Task.async_stream(fn item -> parse_allocation(item, shares) end, timeout: 20_000)
-    |> Enum.reduce_while({:ok, []}, fn
-      {:ok, {:ok, alloc}}, {:ok, acc} -> {:cont, {:ok, [alloc | acc]}}
-      {:ok, {:error, reason}}, _ -> {:halt, {:error, reason}}
-      {:exit, reason}, _ -> {:halt, {:error, {:task_crash, reason}}}
-    end)
-    |> case do
-      {:ok, allocs} -> {:ok, Enum.reverse(allocs)}
-      error -> error
-    end
+    |> Rujira.Enum.reduce_async_while_ok(fn item -> parse_allocation(item, shares) end,
+      timeout: 20_000
+    )
   end
 
   def assign_current_weights(allocs) do
@@ -104,7 +100,7 @@ defmodule Rujira.Index.Fixed do
        config: %Vault.Config{quote_denom: denom, fee_collector: fee_collector},
        share_denom: share_denom,
        status: :not_loaded,
-       fees: :not_loaded,
+       fees: :not_loaded
      }}
   end
 

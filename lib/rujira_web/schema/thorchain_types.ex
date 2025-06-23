@@ -1,8 +1,16 @@
 defmodule RujiraWeb.Schema.ThorchainTypes do
+  @moduledoc """
+  Defines GraphQL types for Thorchain data in the Rujira API.
+
+  This module contains the type definitions and field resolvers for Thorchain
+  GraphQL objects, including network data, pools, and liquidity providers.
+  """
+
   use Absinthe.Schema.Notation
+  use Absinthe.Relay.Schema.Notation, :modern
+
   alias Rujira.Assets
   alias RujiraWeb.Resolvers
-  use Absinthe.Relay.Schema.Notation, :modern
 
   object :thorchain_v2 do
     field :inbound_addresses, non_null(list_of(non_null(:thorchain_inbound_address))) do
