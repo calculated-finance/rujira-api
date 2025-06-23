@@ -13,6 +13,7 @@ defmodule Rujira.Index do
   alias Rujira.Index.Vault
   alias Rujira.Prices
   alias Rujira.Repo
+  alias Rujira.Resolution
 
   import Ecto.Query
 
@@ -237,7 +238,8 @@ defmodule Rujira.Index do
   end
 
   def change_24h(address, nav) do
-    nav_24h_ago = query_nav_bin_at(address, "1D", DateTime.add(DateTime.utc_now(), -1, :day))
+    today = Resolution.truncate(DateTime.utc_now(), "1D")
+    nav_24h_ago = query_nav_bin_at(address, "1D", DateTime.add(today, -1, :day))
 
     case nav_24h_ago do
       nil ->
