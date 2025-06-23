@@ -1,7 +1,13 @@
 defmodule Rujira.Ghost.Vault do
+  @moduledoc """
+  Defines the structure of a Ghost lending vault
+  """
   alias Rujira.Assets
 
   defmodule Interest do
+    @moduledoc """
+    Defines structure of the interest model applies to vault deposits and borrows
+    """
     defstruct [:target_utilization, :base_rate, :step1, :step2]
 
     @type t :: %__MODULE__{
@@ -33,7 +39,13 @@ defmodule Rujira.Ghost.Vault do
   end
 
   defmodule Status do
+    @moduledoc """
+    Defines structure of a lending vault status
+    """
     defmodule Pool do
+      @moduledoc """
+      Defines structure of a lending vault share pool
+      """
       defstruct [:size, :shares, :ratio]
 
       @type t :: %__MODULE__{

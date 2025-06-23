@@ -1,10 +1,17 @@
 defmodule RujiraWeb.Schema.GhostTypes do
+  @moduledoc """
+  Defines GraphQL types for Ghost Protocol-related data in the Rujira API.
+
+  This module contains the type definitions and field resolvers for Ghost Protocol
+  GraphQL objects, including vaults, accounts, and related data structures.
+  """
+
+  alias Rujira.Assets
+  alias Rujira.Contracts
   alias Rujira.Ghost
   alias Rujira.Ghost.Registry
-  alias Rujira.Contracts
-  alias Rujira.Assets
-  use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
+  use Absinthe.Schema.Notation
 
   node object(:ghost_vault) do
     field :address, non_null(:address)

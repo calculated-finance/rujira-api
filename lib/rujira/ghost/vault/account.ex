@@ -1,4 +1,7 @@
 defmodule Rujira.Ghost.Vault.Account do
+  @moduledoc """
+  Defines structure of a user's deposit into a Ghost lending vault
+  """
   alias Rujira.Ghost.Vault
   defstruct [:id, :account, :vault, :shares, :value]
 

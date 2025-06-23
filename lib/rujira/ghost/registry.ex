@@ -1,4 +1,7 @@
 defmodule Rujira.Ghost.Registry do
+  @moduledoc """
+  Defines the structure of the central Ghost Registry contract
+  """
   defstruct [:id, :checksum, :code_id]
 
   @type t :: %__MODULE__{
