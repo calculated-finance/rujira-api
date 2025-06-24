@@ -24,10 +24,9 @@ defmodule Rujira.Balances.Listener do
       |> Enum.flat_map(&scan_transfer/1)
       |> Rujira.Enum.uniq()
 
-    for a <- addresses do
+    for {a, denom} <- addresses do
       Logger.debug("#{__MODULE__} change #{a}")
-      # TODO: extract specific denoms
-      Memoize.invalidate(Rujira.Chains.Thor, :balance_of, [a, :_])
+      Memoize.invalidate(Rujira.Chains.Thor, :balance_of, [a, denom])
       Rujira.Events.publish_node(:layer_1_account, "thor:#{a}")
     end
 
@@ -35,10 +34,14 @@ defmodule Rujira.Balances.Listener do
   end
 
   defp scan_transfer(%{
-         attributes: %{"recipient" => recipient, "sender" => sender},
+         attributes: %{"recipient" => recipient, "sender" => sender, "amount" => amount},
          type: "transfer"
-       }),
-       do: [recipient, sender]
+       }) do
+    amount
+    |> String.split(",")
+    |> Enum.map(&String.replace(&1, ~r/^[0-9]+/, ""))
+    |> Enum.flat_map(&[{recipient, &1}, {sender, &1}])
+  end
 
   defp scan_transfer(_), do: []
 end
