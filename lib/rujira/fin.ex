@@ -1,4 +1,5 @@
 defmodule Rujira.Fin do
+  alias Rujira.Assets
   alias Rujira.Contracts
   alias Rujira.Deployments
   alias Rujira.Fin.Book
@@ -171,8 +172,44 @@ defmodule Rujira.Fin do
     |> Repo.all()
   end
 
-  def pair_from_id(id) do
-    get_pair(id)
+  def pair_from_id("sthor" <> _ = address), do: get_pair(address)
+  def pair_from_id("thor" <> _ = address), do: get_pair(address)
+
+  def pair_from_id(assets) do
+    with {:ok, pair} <- lookup_pair(assets) do
+      {:ok, %{pair | id: assets}}
+    end
+  end
+
+  defp lookup_pair(assets) do
+    with [b, q] <- String.split(assets, "/") |> IO.inspect(),
+         {:ok, pairs} <- list_pairs(),
+         %Pair{} = pair <-
+           Enum.find(
+             pairs,
+             &(Assets.eq_denom(asset_from_id(b), &1.token_base) and
+                 Assets.eq_denom(asset_from_id(q), &1.token_quote))
+           )
+           |> IO.inspect() do
+      {:ok, pair}
+    else
+      nil -> {:error, :not_found}
+      _ -> {:error, :invalid_id}
+    end
+  end
+
+  # TODO: Move these into shorthand asset notation ijn Assets
+  defp asset_from_id("RUJI"), do: Assets.from_string("THOR.RUJI")
+  defp asset_from_id("RUNE"), do: Assets.from_string("THOR.RUNE")
+  defp asset_from_id("TCY"), do: Assets.from_string("THOR.TCY")
+  defp asset_from_id("BNB"), do: Assets.from_string("BSC.BNB")
+  defp asset_from_id("ATOM"), do: Assets.from_string("GAIA.ATOM")
+
+  defp asset_from_id(str) do
+    case String.split(str, ".") do
+      [symbol] -> Assets.from_string("#{symbol}.#{symbol}")
+      [symbol, ticker] -> Assets.from_string("#{symbol}.#{ticker}")
+    end
   end
 
   def ticker_id!(%Pair{token_base: token_base, token_quote: token_quote}) do

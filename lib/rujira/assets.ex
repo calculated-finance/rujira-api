@@ -221,6 +221,13 @@ defmodule Rujira.Assets do
     end
   end
 
+  def eq_denom(%Asset{} = a, denom) do
+    case from_denom(denom) do
+      {:ok, asset} -> a == asset
+      _ -> false
+    end
+  end
+
   def short_id(%{chain: chain, ticker: ticker}), do: "#{chain}.#{ticker}"
 
   def label(%{chain: chain, ticker: ticker}) when ticker in ["USDC", "USDT"],
