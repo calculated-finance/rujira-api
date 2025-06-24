@@ -187,10 +187,9 @@ defmodule Rujira.Fin do
          %Pair{} = pair <-
            Enum.find(
              pairs,
-             &(Assets.eq_denom(asset_from_id(b), &1.token_base) and
-                 Assets.eq_denom(asset_from_id(q), &1.token_quote))
-           )
-           |> IO.inspect() do
+             &(Assets.eq_denom(Assets.from_id(b), &1.token_base) and
+                 Assets.eq_denom(Assets.from_id(q), &1.token_quote))
+           ) do
       {:ok, pair}
     else
       nil -> {:error, :not_found}
@@ -199,18 +198,6 @@ defmodule Rujira.Fin do
   end
 
   # TODO: Move these into shorthand asset notation ijn Assets
-  defp asset_from_id("RUJI"), do: Assets.from_string("THOR.RUJI")
-  defp asset_from_id("RUNE"), do: Assets.from_string("THOR.RUNE")
-  defp asset_from_id("TCY"), do: Assets.from_string("THOR.TCY")
-  defp asset_from_id("BNB"), do: Assets.from_string("BSC.BNB")
-  defp asset_from_id("ATOM"), do: Assets.from_string("GAIA.ATOM")
-
-  defp asset_from_id(str) do
-    case String.split(str, ".") do
-      [symbol] -> Assets.from_string("#{symbol}.#{symbol}")
-      [symbol, ticker] -> Assets.from_string("#{symbol}.#{ticker}")
-    end
-  end
 
   def ticker_id!(%Pair{token_base: token_base, token_quote: token_quote}) do
     {:ok, base} = Rujira.Assets.from_denom(token_base)
