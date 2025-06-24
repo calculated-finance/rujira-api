@@ -162,28 +162,31 @@ defmodule Rujira.Bow.Xyk do
         config: %{"strategy" => %{"xyk" => q}},
         status: status
       }) do
-    %{
-      strategy: %{
-        xyk: %{x: x, y: y, step: step, min_quote: min_quote, fee: fee}
-      },
-      metadata: %{display: denom}
-    } = init_msg(q)
-
-    {:ok,
-     %__MODULE__{
-       id: address,
-       address: address,
-       config: %Config{
-         x: x,
-         y: y,
-         step: step,
-         share_denom: denom,
-         min_quote: min_quote,
-         fee: fee
-       },
-       state: State.from_target(address),
-       deployment_status: status
-     }}
+    with %{
+           strategy: %{
+             xyk: %{x: x, y: y, step: step, min_quote: min_quote, fee: fee}
+           },
+           metadata: %{display: denom}
+         } <- init_msg(q),
+         {step, ""} <- Decimal.parse(step),
+         {fee, ""} <- Decimal.parse(fee),
+         {min_quote, ""} <- Integer.parse(min_quote) do
+      {:ok,
+       %__MODULE__{
+         id: address,
+         address: address,
+         config: %Config{
+           x: x,
+           y: y,
+           step: step,
+           share_denom: denom,
+           min_quote: min_quote,
+           fee: fee
+         },
+         state: State.from_target(address),
+         deployment_status: status
+       }}
+    end
   end
 
   def from_query(address, [config, state]) do

@@ -36,7 +36,12 @@ defmodule RujiraWeb.Resolvers.Strategy do
          {:ok, thorchain} <-
            Rujira.Enum.reduce_async_while_ok(
              pools,
-             &Thorchain.liquidity_provider(&1.asset.id, address)
+             fn x ->
+               case Thorchain.liquidity_provider(x.asset.id, address) do
+                 {:ok, %{units: 0}} -> :skip
+                 other -> other
+               end
+             end
            ),
          {:ok, index} <- Index.accounts(address) do
       accounts =
