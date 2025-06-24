@@ -117,7 +117,11 @@ defmodule Thorchain do
     |> Map.update(:units, "0", &String.to_integer/1)
     |> Map.update(:pending_rune, "0", &String.to_integer/1)
     |> Map.update(:pending_asset, "0", &String.to_integer/1)
-    |> Map.put(:value_usd, Prices.value_usd(asset.symbol, provider.asset_redeem_value))
+    |> Map.put(
+      :value_usd,
+      Prices.value_usd(asset.symbol, provider.asset_redeem_value) +
+        Prices.value_usd("RUNE", provider.rune_redeem_value)
+    )
   end
 
   def cast_pool(pool) do
