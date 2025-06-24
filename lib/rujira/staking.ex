@@ -40,9 +40,16 @@ defmodule Rujira.Staking do
   def list_pools do
     Pool
     |> Deployments.list_targets()
-    |> Rujira.Enum.reduce_while_ok([], fn %{module: module, address: address} ->
-      Contracts.get({module, address})
-    end)
+    |> Rujira.Enum.reduce_while_ok(
+      [],
+      fn
+        %{status: :preview} ->
+          :skip
+
+        %{module: module, address: address} ->
+          Contracts.get({module, address})
+      end
+    )
   end
 
   @doc """

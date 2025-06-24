@@ -17,7 +17,7 @@ defmodule RujiraWeb.Schema.IndexTypes do
   node object(:index_vault) do
     field :address, non_null(:string)
 
-    field :contract, non_null(:contract_info) do
+    field :contract, :contract_info do
       resolve(fn %{address: address}, _, _ ->
         Contracts.info(address)
       end)
@@ -50,6 +50,8 @@ defmodule RujiraWeb.Schema.IndexTypes do
       arg(:resolution, non_null(:resolution))
       resolve(&Resolvers.Index.nav_bins/3)
     end
+
+    field :deployment_status, non_null(:deployment_target_status)
   end
 
   connection(node_type: :index_nav_bin)

@@ -145,6 +145,16 @@ targets:
         market_maker: ${targets:bow.bnb-eth-usdt}
         fee_address: ${targets:revenue.single}
 
+    - id: btc-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - btc-btc
+          - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+        market_maker: ${targets:bow.btc-eth-usdc}
+        fee_address: ${targets:revenue.split}
+
     - id: eth-eth-usdt
       admin: ${accounts:admin}
       creator: ${accounts:creator}
@@ -155,7 +165,16 @@ targets:
         market_maker: ${targets:bow.eth-eth-usdt}
         fee_address: ${targets:revenue.single}
 
-    - id: bsc-usdc-eth-usdt
+    - id: eth-usdt-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+          - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+        fee_address: ${targets:revenue.split}
+
+    - id: bsc-usdt-eth-usdt
       admin: ${accounts:admin}
       creator: ${accounts:creator}
       config:
@@ -252,7 +271,16 @@ targets:
           xyk: 
             x: bsc-bnb
             y: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
-        
+  
+    - id: btc-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        strategy: 
+          xyk: 
+            x: btc-btc
+            y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+
     - id: eth-eth-usdt
       admin: ${accounts:admin}
       creator: ${accounts:creator}

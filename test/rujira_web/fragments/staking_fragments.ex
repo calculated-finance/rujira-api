@@ -86,6 +86,7 @@ defmodule RujiraWeb.Fragments.StakingFragments do
     summary {
       ...StakingSummaryFragment
     }
+    deploymentStatus
   }
   #{@staking_status_fragment}
   #{@revenue_converter_type_fragment}

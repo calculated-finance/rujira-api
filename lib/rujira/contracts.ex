@@ -15,10 +15,8 @@ defmodule Rujira.Contracts do
   alias Cosmwasm.Wasm.V1.QueryContractsByCodeRequest
   alias Cosmwasm.Wasm.V1.QueryRawContractStateRequest
   alias Cosmwasm.Wasm.V1.QuerySmartContractStateRequest
-  alias Rujira.Contracts.Contract
-  alias Rujira.Repo
+  alias Rujira.Deployments
 
-  import Ecto.Query
   use Memoize
   use GenServer
 
@@ -182,8 +180,26 @@ defmodule Rujira.Contracts do
   defmemo(get({module, %__MODULE__{address: address}}), do: get({module, address}))
 
   defmemo get({module, address}) do
-    with {:ok, config} <- query_state_smart(address, %{config: %{}}) do
-      module.from_config(address, config)
+    case query_state_smart(address, %{config: %{}}) do
+      {:ok, config} ->
+        module.from_config(address, config)
+
+      {:error,
+       %GRPC.RPCError{
+         status: 2,
+         message: "codespace wasm code 22: no such contract: address " <> _
+       }} ->
+        from_target({module, address})
+
+      err ->
+        err
+    end
+  end
+
+  def from_target({module, address}) do
+    case Enum.find(Deployments.list_all_targets(), &(&1.address == address)) do
+      nil -> {:error, :not_found}
+      x -> module.from_target(x)
     end
   end
 
@@ -309,42 +325,5 @@ defmodule Rujira.Contracts do
     Enum.reduce(models, init, fn %Model{} = model, agg ->
       Map.put(agg, model.key, Jason.decode!(model.value))
     end)
-  end
-
-  @spec insert(Contract.t()) :: {:ok, Contract.t()} | {:error, Ecto.Changeset.t()}
-  def insert(%Contract{} = contract), do: Repo.insert(contract)
-
-  def insert_all(contracts),
-    do: Repo.insert_all(Contract, contracts, on_conflict: :nothing, returning: true)
-
-  @spec by_module(module()) :: list(Contract.t())
-  def by_module(module) do
-    Contract
-    |> where([c], c.module == ^module)
-    |> Repo.all()
-  end
-
-  @spec by_id(String.t()) :: {:ok, Contract.t()} | {:error, :not_found}
-  def by_id(address) do
-    contract =
-      Contract
-      |> where([c], c.address == ^address)
-      |> Repo.one()
-
-    if contract do
-      {:ok, contract}
-    else
-      {:error, :not_found}
-    end
-  end
-
-  @spec list() :: list(Contract.t())
-  def list do
-    Contract
-    |> Repo.all()
-  end
-
-  def insert_info_all(contract_infos) do
-    Repo.insert_all("contract_infos", contract_infos, on_conflict: :nothing, returning: true)
   end
 end

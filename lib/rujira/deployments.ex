@@ -17,6 +17,8 @@ defmodule Rujira.Deployments do
 
   @path "data/deployments"
 
+  def version, do: plan()
+
   def start_link(state) do
     GenServer.start_link(__MODULE__, state)
   end
@@ -51,12 +53,11 @@ defmodule Rujira.Deployments do
 
   @doc """
   List all targets for a given module
-  Exclude targets that are still not deployed
   """
   defmemo list_targets(module, plan \\ plan()) do
     plan
     |> list_all_targets()
-    |> Enum.filter(&(&1.module === module and &1.contract != nil))
+    |> Enum.filter(&(&1.module === module))
   end
 
   defmemo load_config!(plan \\ plan()) do
@@ -118,7 +119,12 @@ defmodule Rujira.Deployments do
       protocol: protocol,
       module: to_module(protocol),
       config: config,
-      contract: contract
+      contract: contract,
+      status:
+        case contract do
+          nil -> :preview
+          _ -> :live
+        end
     }
   end
 

@@ -4,7 +4,11 @@ defmodule RujiraWeb.Schema do
   """
 
   alias Absinthe.Relay
+  alias RujiraWeb.Resolvers.Deployment
+  alias RujiraWeb.Resolvers.Node
+
   use Absinthe.Schema
+
   use Absinthe.Relay.Schema, :modern
 
   import_types(RujiraWeb.Schema.AccountTypes)
@@ -13,6 +17,7 @@ defmodule RujiraWeb.Schema do
   import_types(RujiraWeb.Schema.BankTypes)
   import_types(RujiraWeb.Schema.BowTypes)
   import_types(RujiraWeb.Schema.ChainTypes)
+  import_types(RujiraWeb.Schema.DeploymentTypes)
   import_types(RujiraWeb.Schema.DeveloperTypes)
   import_types(RujiraWeb.Schema.FinTypes)
   import_types(RujiraWeb.Schema.IndexTypes)
@@ -41,19 +46,19 @@ defmodule RujiraWeb.Schema do
     @desc "Fetch a single node using its global Relay-compatible ID."
     field :node, :node do
       arg(:id, non_null(:id))
-      resolve(&RujiraWeb.Resolvers.Node.id/2)
+      resolve(&Node.id/2)
     end
 
     @desc "Fetch multiple nodes by their global Relay-compatible IDs. Useful for batch fetching."
     field :nodes, non_null(list_of(non_null(:node))) do
       @desc "A list of Relay global IDs representing nodes to be fetched."
       arg(:ids, non_null(list_of(non_null(:id))))
-      resolve(&RujiraWeb.Resolvers.Node.list/3)
+      resolve(&Node.list/3)
     end
 
     @desc "Lists all supported Relay node types with their ID structure."
     field :supported_node_types, non_null(list_of(non_null(:node_type_descriptor))) do
-      resolve(&RujiraWeb.Resolvers.Node.supported_node_types/3)
+      resolve(&Node.supported_node_types/3)
     end
 
     @desc "[DEPRECATED] Legacy THORChain-related queries. Use `thorchain_v2` instead."
@@ -72,6 +77,11 @@ defmodule RujiraWeb.Schema do
     end
 
     @desc "Developer-focused queries related to CosmWasm and smart contract tooling."
+    field :deployment, :deployment do
+      resolve(&Deployment.resolver/3)
+    end
+
+    @desc "Developer-focused queries related to CosmWasm and smart contract tooling."
     field :developer, :developer do
       resolve(fn _, _, _ -> {:ok, %{developer: %{}}} end)
     end
@@ -85,7 +95,7 @@ defmodule RujiraWeb.Schema do
     @desc "The Relay global identifier of this object."
     field :id, non_null(:id)
 
-    resolve_type(&RujiraWeb.Resolvers.Node.type/2)
+    resolve_type(&Node.type/2)
   end
 
   subscription do
@@ -97,7 +107,7 @@ defmodule RujiraWeb.Schema do
         {:ok, topic: id, context_id: id}
       end)
 
-      resolve(&RujiraWeb.Resolvers.Node.id/2)
+      resolve(&Node.id/2)
     end
 
     @desc """
@@ -114,7 +124,7 @@ defmodule RujiraWeb.Schema do
       end)
 
       resolve(fn id, args, _ ->
-        with {:ok, node} <- RujiraWeb.Resolvers.Node.id(id, args) do
+        with {:ok, node} <- Node.id(id, args) do
           {:ok, %{cursor: Relay.Connection.offset_to_cursor(node.id), node: node}}
         end
       end)

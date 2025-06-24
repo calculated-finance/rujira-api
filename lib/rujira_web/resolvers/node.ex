@@ -55,7 +55,6 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Accounts.Layer1{}, _), do: :layer_1_account
   def type(%Assets.Asset{}, _), do: :asset
   def type(%Bank.Supply{}, _), do: :bank_supply
-  def type(%Contracts.Contract{}, _), do: :contract
 
   # Bow Protocol
   def type(%Bow.Account{}, _), do: :bow_account

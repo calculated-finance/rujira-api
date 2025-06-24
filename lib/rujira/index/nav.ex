@@ -80,7 +80,8 @@ defmodule Rujira.Index.Nav do
        config: %Vault.Config{quote_denom: denom, fee_collector: fee_collector},
        share_denom: share_denom,
        status: :not_loaded,
-       fees: :not_loaded
+       fees: :not_loaded,
+       deployment_status: :live
      }}
   end
 

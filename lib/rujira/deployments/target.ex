@@ -12,6 +12,9 @@ defmodule Rujira.Deployments.Target do
     :protocol,
     :module,
     :config,
-    :contract
+    :contract,
+    :status
   ]
+
+  @type status :: :live | :pending
 end
