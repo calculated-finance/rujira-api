@@ -34,6 +34,7 @@ defmodule RujiraWeb.Resolvers.Fin do
   def book(%{address: address, book: book}, _, _), do: {:ok, Map.put(book, :contract, address)}
 
   def book_pair(%{contract: contract}, _, _), do: Rujira.Fin.get_pair(contract)
+  def book_pair(%{pair: contract}, _, _), do: Rujira.Fin.get_pair(contract)
 
   def trades(%{address: address}, args, _) do
     address
