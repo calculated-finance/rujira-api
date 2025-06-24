@@ -60,14 +60,15 @@ targets:
             weight: 1
 
   fin: 
-    - id: tcy-rune
+    - id: atom-eth-usdc
       admin: ${accounts:admin}
       creator: ${accounts:creator}
       config:
         denoms: 
-          - tcy
-          - rune
-        fee_address: ${targets:revenue.single}
+          - gaia-atom
+          - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+        fee_address: ${targets:revenue.split}
+        market_maker: ${targets:bow.atom-eth-usdc}
 
     - id: auto-eth-usdc
       admin: ${accounts:admin}
@@ -77,6 +78,174 @@ targets:
           - thor.auto
           - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
         market_maker: ${targets:bow.auto-eth-usdc}
+        fee_address: ${targets:revenue.split}
+
+    - id: avax-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - avax-avax
+          - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+        fee_address: ${targets:revenue.split}
+        market_maker: ${targets:bow.avax-eth-usdc}
+
+    - id: avax-usdc-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - avax-usdc-0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e
+          - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+        fee_address: ${targets:revenue.split}
+
+    - id: avax-usdt-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - avax-usdt-0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7
+          - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+        fee_address: ${targets:revenue.split}
+
+    - id: base-cbbtc-btc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - base-cbbtc-0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf
+          - btc-btc
+        fee_address: ${targets:revenue.split}
+
+    - id: base-eth-eth
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - base-eth
+          - eth-eth
+        fee_address: ${targets:revenue.split}
+
+    - id: base-usdc-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - base-usdc-0x833589fcd6edb6e08f4c7c32d4f71b54bda02913
+          - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+        fee_address: ${targets:revenue.split}
+
+    - id: bch-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - bch-bch
+          - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+        fee_address: ${targets:revenue.split}
+        market_maker: ${targets:bow.bch-eth-usdc}
+
+    - id: bnb-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - bsc-bnb
+          - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+        fee_address: ${targets:revenue.split}
+        market_maker: ${targets:bow.bnb-eth-usdc}
+
+    - id: bsc-usdc-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - bsc-usdc-0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d
+          - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+        fee_address: ${targets:revenue.split}
+
+    - id: bsc-usdt-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - bsc-usdt-0x55d398326f99059ff775485246999027b3197955
+          - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+        fee_address: ${targets:revenue.split}
+
+    - id: btc-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - btc-btc
+          - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+        market_maker: ${targets:bow.btc-eth-usdc}
+        fee_address: ${targets:revenue.split}
+
+    - id: doge-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - doge-doge
+          - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+        fee_address: ${targets:revenue.split}
+        market_maker: ${targets:bow.doge-eth-usdc}
+
+    - id: eth-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - eth-eth
+          - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+        market_maker: ${targets:bow.eth-eth-usdc}
+        fee_address: ${targets:revenue.split}
+
+    - id: eth-dai-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - eth-dai-0x6b175474e89094c44da98b954eedeac495271d0f
+          - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+        fee_address: ${targets:revenue.split}
+
+    - id: eth-gusd-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - eth-gusd-0x056fd409e1d7a124bd7017459dfea2f387b6d5cd
+          - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+        fee_address: ${targets:revenue.split}
+
+    - id: eth-usdp-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - eth-usdp-0x8e870d67f660d95d5be530380d0ec0bd388289e1
+          - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+        fee_address: ${targets:revenue.split}
+
+    - id: eth-usdt-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+          - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+        fee_address: ${targets:revenue.split}
+
+    - id: eth-wbtc-btc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - eth-wbtc-0x2260fac5e5542a773aa44fbcfedf7c193bc2c599
+          - btc-btc
         fee_address: ${targets:revenue.split}
 
     - id: lqdy-btc
@@ -100,6 +269,16 @@ targets:
         market_maker: ${targets:bow.lqdy-eth-usdc}
         fee_address: ${targets:revenue.split}
 
+    - id: ltc-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - ltc-ltc
+          - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+        fee_address: ${targets:revenue.split}
+        market_maker: ${targets:bow.ltc-eth-usdc}
+
     - id: nami-eth-usdc
       admin: ${accounts:admin}
       creator: ${accounts:creator}
@@ -120,7 +299,25 @@ targets:
         market_maker: ${targets:bow.ruji-eth-usdc}
         fee_address: ${targets:revenue.split}
 
+    - id: tcy-rune
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        denoms: 
+          - tcy
+          - rune
+        fee_address: ${targets:revenue.single}
+        
   bow: 
+    - id: atom-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        strategy: 
+          xyk: 
+            x: gaia-atom
+            y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+
     - id: auto-eth-usdc
       admin: ${accounts:admin}
       creator: ${accounts:creator}
@@ -129,6 +326,62 @@ targets:
           xyk: 
             x: thor.auto
             y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+
+    - id: avax-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        strategy: 
+          xyk: 
+            x: avax-avax
+            y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+
+    - id: btc-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        strategy: 
+          xyk: 
+            x: btc-btc
+            y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+
+
+    - id: bch-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        strategy: 
+          xyk: 
+            x: bch-bch
+            y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+
+    - id: bnb-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        strategy: 
+          xyk: 
+            x: bsc-bnb
+            y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+
+    - id: doge-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        strategy: 
+          xyk: 
+            x: doge-doge
+            y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+
+    - id: eth-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        strategy: 
+          xyk: 
+            x: eth-eth
+            y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+
 
     - id: lqdy-btc
       admin: ${accounts:admin}
@@ -147,6 +400,16 @@ targets:
           xyk: 
             x: thor.lqdy
             y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+    
+    - id: ltc-eth-usdc
+      admin: ${accounts:admin}
+      creator: ${accounts:creator}
+      config:
+        strategy: 
+          xyk: 
+            x: ltc-ltc
+            y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+
 
     - id: nami-eth-usdc
       admin: ${accounts:admin}
