@@ -64,6 +64,8 @@ defmodule RujiraWeb.Schema.BowTypes do
     connection field :trades, node_type: :fin_trade do
       resolve(&Bow.trades/3)
     end
+
+    field :deployment_status, non_null(:deployment_target_status)
   end
 
   union :bow_config do

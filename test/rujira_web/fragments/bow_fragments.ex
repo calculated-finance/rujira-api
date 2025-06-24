@@ -135,6 +135,7 @@ defmodule RujiraWeb.Fragments.BowFragments do
     trades {
       ...FinTradeFragment
     }
+    deploymentStatus
   }
   #{@bow_config_xyk_fragment}
   #{@bow_state_xyk_fragment}
