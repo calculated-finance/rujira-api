@@ -63,6 +63,15 @@ defmodule RujiraWeb.Schema.FinTest do
     res = json_response(resp, 200)
     assert Map.get(res, "errors") == nil
 
+    resp =
+      post(conn, "/api", %{
+        "query" => @node_query,
+        "variables" => %{"id" => Base.encode64("FinPair:RUJI/RUNE")}
+      })
+
+    res = json_response(resp, 200)
+    assert Map.get(res, "errors") == nil
+
     # 3) candles: seed fixtures, stub swallow publish
     stub(Rujira.Events.PublisherMock, :publish, fn _, _, _ -> :ok end)
     Fin.load_trades_and_candles(pair["address"])

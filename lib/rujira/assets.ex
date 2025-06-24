@@ -39,17 +39,24 @@ defmodule Rujira.Assets do
     }
   end
 
-  def from_id("RUJI"), do: from_string("THOR.RUJI")
-  def from_id("RUNE"), do: from_string("THOR.RUNE")
-  def from_id("TCY"), do: from_string("THOR.TCY")
-  def from_id("BNB"), do: from_string("BSC.BNB")
-  def from_id("ATOM"), do: from_string("GAIA.ATOM")
+  @doc """
+  Used when refereinging pairs and tokens shorthand in IDs
+  """
+  def from_shortcode("RUJI"), do: from_string("THOR.RUJI")
+  def from_shortcode("RUNE"), do: from_string("THOR.RUNE")
+  def from_shortcode("TCY"), do: from_string("THOR.TCY")
+  def from_shortcode("BNB"), do: from_string("BSC.BNB")
+  def from_shortcode("ATOM"), do: from_string("GAIA.ATOM")
 
-  def from_id(str) do
+  def from_shortcode(str) do
     case String.split(str, ~r/\.\-/) do
       [symbol] -> from_string("#{symbol}.#{symbol}")
       [symbol, ticker] -> from_string("#{symbol}.#{ticker}")
     end
+  end
+
+  def from_id(id) do
+    {:ok, from_string(id)}
   end
 
   def to_string(%Asset{id: id}), do: id

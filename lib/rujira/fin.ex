@@ -182,13 +182,13 @@ defmodule Rujira.Fin do
   end
 
   defp lookup_pair(assets) do
-    with [b, q] <- String.split(assets, "/") |> IO.inspect(),
+    with [b, q] <- String.split(assets, "/"),
          {:ok, pairs} <- list_pairs(),
          %Pair{} = pair <-
            Enum.find(
              pairs,
-             &(Assets.eq_denom(Assets.from_id(b), &1.token_base) and
-                 Assets.eq_denom(Assets.from_id(q), &1.token_quote))
+             &(Assets.eq_denom(Assets.from_shortcode(b), &1.token_base) and
+                 Assets.eq_denom(Assets.from_shortcode(q), &1.token_quote))
            ) do
       {:ok, pair}
     else
