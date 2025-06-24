@@ -41,6 +41,8 @@ defmodule RujiraWeb.Resolvers.Fin do
     |> Relay.Connection.from_query(&Repo.all/1, args)
   end
 
+  def summary(%{status: :preview}, _, _), do: {:ok, nil}
+
   def summary(%{address: address, token_quote: token_quote}, _, _) do
     with %Summary{} = summary <- Rujira.Fin.get_summary(address),
          {:ok, volume_asset} <- Assets.from_denom(token_quote),

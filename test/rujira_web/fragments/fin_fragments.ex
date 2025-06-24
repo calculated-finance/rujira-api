@@ -130,6 +130,7 @@ defmodule RujiraWeb.Fragments.FinFragments do
     summary {
       ...FinSummaryFragment
     }
+    deploymentStatus
   }
   #{@fin_book_fragment}
   #{@fin_summary_fragment}

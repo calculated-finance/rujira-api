@@ -4,6 +4,7 @@ defmodule Rujira.Bow.Xyk do
   """
 
   alias Rujira.Assets
+  alias Rujira.Deployments.Target
   import Ecto.Query
   use Memoize
 
@@ -72,6 +73,10 @@ defmodule Rujira.Bow.Xyk do
            {shares, ""} <- Integer.parse(shares) do
         {:ok, %__MODULE__{id: address, x: x, y: y, k: k, shares: shares}}
       end
+    end
+
+    def from_target(address) do
+      %__MODULE__{id: address, x: 0, y: 0, k: 0, shares: 0}
     end
   end
 
@@ -142,19 +147,56 @@ defmodule Rujira.Bow.Xyk do
     end
   end
 
-  defstruct [:id, :address, :config, :state]
+  defstruct [:id, :address, :config, :state, :deployment_status]
 
   @type t :: %__MODULE__{
           id: String.t(),
           address: String.t(),
           config: Config.t(),
-          state: State.t()
+          state: State.t(),
+          deployment_status: Target.status()
         }
+
+  def from_target(%Target{
+        address: address,
+        config: %{"strategy" => %{"xyk" => q}},
+        status: status
+      }) do
+    %{
+      strategy: %{
+        xyk: %{x: x, y: y, step: step, min_quote: min_quote, fee: fee}
+      },
+      metadata: %{display: denom}
+    } = init_msg(q)
+
+    {:ok,
+     %__MODULE__{
+       id: address,
+       address: address,
+       config: %Config{
+         x: x,
+         y: y,
+         step: step,
+         share_denom: denom,
+         min_quote: min_quote,
+         fee: fee
+       },
+       state: State.from_target(address),
+       deployment_status: status
+     }}
+  end
 
   def from_query(address, [config, state]) do
     with {:ok, config} <- Config.from_query(config),
          {:ok, state} <- State.from_query(address, state) do
-      {:ok, %__MODULE__{id: address, address: address, config: config, state: state}}
+      {:ok,
+       %__MODULE__{
+         id: address,
+         address: address,
+         config: config,
+         state: state,
+         deployment_status: :live
+       }}
     end
   end
 

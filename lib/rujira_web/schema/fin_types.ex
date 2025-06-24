@@ -18,7 +18,7 @@ defmodule RujiraWeb.Schema.FinTypes do
   node object(:fin_pair) do
     field :address, non_null(:address)
 
-    field :contract, non_null(:contract_info) do
+    field :contract, :contract_info do
       resolve(fn %{address: address}, _, _ ->
         Contracts.info(address)
       end)
@@ -62,6 +62,7 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :fee_address, non_null(:address)
     field :book, non_null(:fin_book), resolve: &Fin.book/3
     field :summary, :fin_summary, resolve: &Fin.summary/3
+    field :deployment_status, non_null(:deployment_target_status)
 
     connection field :candles, node_type: :fin_candle, non_null: true do
       arg(:resolution, non_null(:string))

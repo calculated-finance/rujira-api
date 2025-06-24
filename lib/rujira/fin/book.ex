@@ -70,6 +70,12 @@ defmodule Rujira.Fin.Book do
      |> populate()}
   end
 
+  def empty(address) do
+    %__MODULE__{id: address, bids: [], asks: []}
+  end
+
+  def from_target(address), do: empty(address)
+
   def populate(%__MODULE__{asks: [ask | _], bids: [bid | _]} = book) do
     center = ask.price |> Decimal.add(bid.price) |> Decimal.div(Decimal.new(2))
 

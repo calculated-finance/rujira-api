@@ -41,10 +41,11 @@ defmodule Rujira.Bow do
   Fetches the Merge Pool contract and its current config from the chain
   """
 
+  def load_pool(%{status: :preview} = target), do: Xyk.from_target(target)
+
   def load_pool(%{address: address}) do
-    case query_pool(address) do
-      {:ok, %{"xyk" => xyk}} -> Xyk.from_query(address, xyk)
-      {:error, err} -> {:error, err}
+    with {:ok, %{"xyk" => xyk}} <- query_pool(address) do
+      Xyk.from_query(address, xyk)
     end
   end
 
@@ -53,7 +54,10 @@ defmodule Rujira.Bow do
   end
 
   def pool_from_id(id) do
-    load_pool(%{address: id})
+    case load_pool(%{address: id}) do
+      {:ok, pool} -> {:ok, pool}
+      _ -> Contracts.from_target({Xyk, id})
+    end
   end
 
   @doc """
@@ -87,6 +91,7 @@ defmodule Rujira.Bow do
   end
 
   def share_value(_, %Xyk{state: %{shares: 0}}), do: []
+  def share_value(_, %Xyk{state: nil}), do: []
 
   def share_value(shares, %Xyk{config: config, state: %{x: x, y: y, shares: supply}}) do
     ratio = Decimal.div(Decimal.new(shares), Decimal.new(supply))

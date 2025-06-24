@@ -175,7 +175,8 @@ defmodule Rujira.Index.Vault do
           status: Status.t() | :not_loaded,
           fees: Fees.t() | :not_loaded,
           share_denom: String.t(),
-          entry_adapter: String.t() | nil
+          entry_adapter: String.t() | nil,
+          deployment_status: Target.status()
         }
 
   defstruct [
@@ -186,7 +187,8 @@ defmodule Rujira.Index.Vault do
     :status,
     :fees,
     :share_denom,
-    :entry_adapter
+    :entry_adapter,
+    :deployment_status
   ]
 
   defmemo status(res), expires_in: 60_000 do

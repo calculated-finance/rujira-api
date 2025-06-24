@@ -87,6 +87,7 @@ defmodule RujiraWeb.Fragments.IndexFragments do
     fees {
       ...IndexFeesFragment
     }
+    deploymentStatus
   }
   #{@contract_info_fragment}
   #{@asset_fragment}

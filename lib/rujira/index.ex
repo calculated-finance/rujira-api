@@ -51,8 +51,12 @@ defmodule Rujira.Index do
   defp fetch_vaults_for(type) do
     type
     |> Deployments.list_targets()
-    |> Rujira.Enum.reduce_while_ok([], fn %{module: m, address: a} ->
-      Contracts.get({m, a})
+    |> Rujira.Enum.reduce_while_ok([], fn
+      %{status: :preview} ->
+        :skip
+
+      %{module: m, address: a} ->
+        Contracts.get({m, a})
     end)
   end
 

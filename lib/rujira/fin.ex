@@ -54,8 +54,12 @@ defmodule Rujira.Fin do
   def list_pairs do
     Pair
     |> Deployments.list_targets()
-    |> Rujira.Enum.reduce_while_ok([], fn %{module: module, address: address} ->
-      Contracts.get({module, address})
+    |> Rujira.Enum.reduce_while_ok([], fn
+      %{status: :preview} = target ->
+        Pair.from_target(target)
+
+      %{module: module, address: address} ->
+        Contracts.get({module, address})
     end)
   end
 
@@ -80,13 +84,16 @@ defmodule Rujira.Fin do
   """
   @spec load_pair(Pair.t(), integer()) ::
           {:ok, Pair.t()} | {:error, GRPC.RPCError.t()}
-  def load_pair(pair, limit \\ 100) do
+  def load_pair(pair, limit \\ 100)
+
+  def load_pair(%{deployment_status: :preview} = pair, _) do
+    {:ok, %{pair | book: Book.empty(pair.address)}}
+  end
+
+  def load_pair(pair, limit) do
     with {:ok, res} <- query_book(pair.address, limit),
          {:ok, book} <- Book.from_query(pair.address, res) do
       {:ok, %{pair | book: book}}
-    else
-      err ->
-        err
     end
   end
 
@@ -99,7 +106,10 @@ defmodule Rujira.Fin do
   """
   @spec list_orders(Pair.t(), String.t()) ::
           {:ok, list(Order.t())} | {:error, GRPC.RPCError.t()}
-  def list_orders(pair, address, offset \\ 0, limit \\ 30) do
+  def list_orders(pair, address, offset \\ 0, limit \\ 30)
+  def list_orders(%{deployment_status: :preview}, _, _, _), do: {:ok, []}
+
+  def list_orders(pair, address, offset, limit) do
     case query_orders(pair.address, address, offset, limit) do
       {:ok, %{"orders" => orders}} ->
         {:ok, Enum.map(orders, &Order.from_query(pair, &1))}
@@ -173,8 +183,12 @@ defmodule Rujira.Fin do
   end
 
   def book_from_id(id) do
-    with {:ok, res} <- query_book(id, 100) do
-      Book.from_query(id, res)
+    case query_book(id, 100) do
+      {:ok, res} ->
+        Book.from_query(id, res)
+
+      _ ->
+        Contracts.from_target({Book, id})
     end
   end
 

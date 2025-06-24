@@ -3,6 +3,7 @@ defmodule Rujira.Fin.Pair do
   Parses trading pair configuration data into a structured representation for the FIN protocol.
   """
   alias Rujira.Assets
+  alias Rujira.Deployments.Target
   alias Rujira.Fin.Book
 
   defstruct [
@@ -19,7 +20,8 @@ defmodule Rujira.Fin.Pair do
     :fee_address,
     :book,
     :history,
-    :summary
+    :summary,
+    :deployment_status
   ]
 
   @type t :: %__MODULE__{
@@ -34,7 +36,8 @@ defmodule Rujira.Fin.Pair do
           fee_taker: Decimal.t(),
           fee_maker: Decimal.t(),
           fee_address: String.t(),
-          book: :not_loaded | Book.t()
+          book: :not_loaded | Book.t(),
+          deployment_status: Target.status()
         }
 
   @spec from_config(String.t(), map()) :: :error | {:ok, __MODULE__.t()}
@@ -64,12 +67,49 @@ defmodule Rujira.Fin.Pair do
          fee_taker: fee_taker,
          fee_maker: fee_maker,
          fee_address: fee_address,
-         book: :not_loaded
+         book: :not_loaded,
+         deployment_status: :live
        }}
     end
   end
 
-  def get_asset(%{"chain" => chain, "symbol" => symbol}) do
+  def from_target(%Target{address: address, config: config, status: status}) do
+    with %{
+           denoms: denoms,
+           oracles: oracles,
+           market_maker: market_maker,
+           tick: tick,
+           fee_taker: fee_taker,
+           fee_maker: fee_maker,
+           fee_address: fee_address
+         } <- init_msg(config),
+         {fee_taker, ""} <- Decimal.parse(fee_taker),
+         {fee_maker, ""} <- Decimal.parse(fee_maker),
+         {:ok, oracle_base} <- get_asset(Enum.at(oracles || [], 0)),
+         {:ok, oracle_quote} <- get_asset(Enum.at(oracles || [], 1)) do
+      {:ok,
+       %__MODULE__{
+         id: address,
+         address: address,
+         market_maker: market_maker,
+         token_base: Enum.at(denoms, 0),
+         token_quote: Enum.at(denoms, 1),
+         oracle_base: oracle_base,
+         oracle_quote: oracle_quote,
+         tick: tick,
+         fee_taker: fee_taker,
+         fee_maker: fee_maker,
+         fee_address: fee_address,
+         book: :not_loaded,
+         deployment_status: status
+       }}
+    end
+  end
+
+  def get_asset(%{"chain" => chain, "symbol" => symbol}),
+    do: get_asset(%{chain: chain, symbol: symbol})
+
+  def get_asset(%{chain: chain, symbol: symbol}) do
     {:ok, String.upcase(chain) <> "." <> symbol}
   end
 

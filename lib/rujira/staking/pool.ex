@@ -6,8 +6,9 @@ defmodule Rujira.Staking.Pool do
   """
 
   alias Rujira.Assets
-  use Memoize
+  alias Rujira.Deployments.Target
   import Ecto.Query
+  use Memoize
 
   defmodule Summary do
     @moduledoc """
@@ -88,7 +89,8 @@ defmodule Rujira.Staking.Pool do
     :bond_denom,
     :revenue_denom,
     :revenue_converter,
-    :status
+    :status,
+    :deployment_status
   ]
 
   @type revenue_converter_t :: {String.t(), binary(), integer()}
@@ -99,7 +101,8 @@ defmodule Rujira.Staking.Pool do
           bond_denom: String.t(),
           revenue_denom: String.t(),
           revenue_converter: revenue_converter_t(),
-          status: :not_loaded | Status.t()
+          status: :not_loaded | Status.t(),
+          deployment_status: Target.status()
         }
 
   @spec from_config(String.t(), map()) :: {:ok, __MODULE__.t()}
@@ -115,7 +118,8 @@ defmodule Rujira.Staking.Pool do
        bond_denom: bond_denom,
        revenue_denom: revenue_denom,
        revenue_converter: revenue_converter,
-       status: :not_loaded
+       status: :not_loaded,
+       deployment_status: :live
      }}
   end
 
@@ -194,13 +198,28 @@ defmodule Rujira.Staking.Pool do
     end)
   end
 
+  def from_target(%Target{
+        address: address,
+        config: %{
+          "bond_denom" => bond_denom,
+          "revenue_converter" => %{"contract" => contract, "min" => min, "msg" => msg},
+          "revenue_denom" => revenue_denom
+        },
+        status: status
+      }) do
+    with {:ok, pool} <-
+           from_config(address, %{
+             "bond_denom" => bond_denom,
+             "revenue_converter" => [contract, Base.encode64(msg), min],
+             "revenue_denom" => revenue_denom
+           }) do
+      {:ok, %{pool | deployment_status: status}}
+    end
+  end
+
   def init_msg(%{
         "bond_denom" => bond_denom,
-        "revenue_converter" => %{
-          "contract" => contract,
-          "msg" => msg,
-          "min" => min
-        },
+        "revenue_converter" => %{"contract" => contract, "msg" => msg, "min" => min},
         "revenue_denom" => revenue_denom
       }) do
     {:ok, asset} = Assets.from_denom(bond_denom)

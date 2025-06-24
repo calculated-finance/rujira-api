@@ -17,7 +17,7 @@ defmodule RujiraWeb.Schema.BowTypes do
   node object(:bow_pool) do
     field :address, non_null(:string)
 
-    field :contract, non_null(:contract_info) do
+    field :contract, :contract_info do
       resolve(fn %{address: address}, _, _ ->
         Contracts.info(address)
       end)
@@ -37,12 +37,14 @@ defmodule RujiraWeb.Schema.BowTypes do
     connection field :trades, node_type: :fin_trade do
       resolve(&Bow.trades/3)
     end
+
+    field :deployment_status, non_null(:deployment_target_status)
   end
 
   node object(:bow_pool_xyk) do
     field :address, non_null(:string)
 
-    field :contract, non_null(:contract_info) do
+    field :contract, :contract_info do
       resolve(fn %{address: address}, _, _ ->
         Contracts.info(address)
       end)

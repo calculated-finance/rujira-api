@@ -86,6 +86,7 @@ defmodule RujiraWeb.Fragments.BowFragments do
     quotes {
       ...FinBookFragment
     }
+    deploymentStatus
   }
   #{@bow_config_fragment}
   #{@bow_state_fragment}
