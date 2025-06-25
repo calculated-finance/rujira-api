@@ -21,13 +21,12 @@ defmodule RujiraWeb.Schema.TokenTypes do
         batch(
           {Token, :prices},
           ticker,
-          fn x ->
-            with {:ok, prices} <- x,
-                 {:ok, price} <- Map.get(prices, ticker) do
-              {:ok, price}
-            else
-              _ -> {:ok, nil}
-            end
+          fn
+            {:ok, prices} ->
+              {:ok, Map.get(prices, ticker)}
+
+            _ ->
+              {:ok, nil}
           end,
           timeout: 20_000
         )
