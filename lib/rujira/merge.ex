@@ -37,6 +37,7 @@ defmodule Rujira.Merge do
     with {:ok, pools} <- Contracts.list(Pool, code_ids) do
       {:ok,
        ["thor.kuji", "thor.rkuji", "thor.fuzn", "thor.nstk", "thor.wink", "thor.lvn"]
+       |> Enum.reverse()
        |> Enum.reduce([], fn denom, acc ->
          case Enum.find(pools, fn x -> x.merge_denom == denom end) do
            nil -> acc
