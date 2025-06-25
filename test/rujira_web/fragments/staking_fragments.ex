@@ -109,9 +109,16 @@ defmodule RujiraWeb.Fragments.StakingFragments do
     liquid {
       ...BalanceFragment
     }
+    liquidSize {
+      ...BalanceFragment
+    }
+    liquidShares {
+      ...BalanceFragment
+    }
     pendingRevenue {
       ...BalanceFragment
     }
+    valueUsd
   }
   #{@balance_fragment}
   """

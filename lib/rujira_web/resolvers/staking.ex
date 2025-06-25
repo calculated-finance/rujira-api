@@ -5,6 +5,7 @@ defmodule RujiraWeb.Resolvers.Staking do
   alias Absinthe.Resolution.Helpers
   alias Rujira.Assets
   alias Rujira.Enum
+  alias Rujira.Prices
   alias Rujira.Revenue
   alias Rujira.Staking
   alias Rujira.Staking.Pool
@@ -73,39 +74,21 @@ defmodule RujiraWeb.Resolvers.Staking do
     end
   end
 
-  def pending_revenue(
-        %{bonded: bonded, pending_revenue: pending_revenue, pool: pool},
+  def value_usd(
+        %{
+          pending_revenue: pending_revenue,
+          liquid_size: liquid_size,
+          bonded: bonded,
+          pool: %{bond_denom: bond_denom, revenue_denom: revenue_denom}
+        },
         _,
         _
       ) do
-    with {:ok,
-          %{
-            revenue_denom: revenue_denom,
-            status: %{
-              account_bond: account_bond,
-              liquid_bond_size: liquid_bond_size,
-              pending_revenue: global_pending_revenue
-            }
-          }} <- Staking.load_pool(pool),
-         {:ok, asset} <- Assets.from_denom(revenue_denom) do
-      if account_bond == 0 do
-        {:ok, %{amount: pending_revenue, asset: asset}}
-      else
-        # Contract current doesn't allocate global pending revnue to Account balance on Query,
-        # which is does on a withdrawal.
-        # Simulate distribution here: https://gitlab.com/thorchain/rujira/-/blob/main/contracts/rujira-staking/src/state.rs?ref_type=heads#L183
-        # https://gitlab.com/thorchain/rujira/-/blob/main/contracts/rujira-staking/src/state.rs?ref_type=heads#L135-139
-
-        accounts_allocation =
-          Integer.floor_div(
-            account_bond * global_pending_revenue,
-            account_bond + liquid_bond_size
-          )
-
-        account_allocation = Integer.floor_div(accounts_allocation * bonded, account_bond)
-
-        {:ok, %{amount: pending_revenue + account_allocation, asset: asset}}
-      end
+    with {:ok, bond_asset} <- Assets.from_denom(bond_denom),
+         {:ok, revenue_asset} <- Assets.from_denom(revenue_denom) do
+      {:ok,
+       Prices.value_usd(bond_asset.ticker, bonded + liquid_size) +
+         Prices.value_usd(revenue_asset.ticker, pending_revenue)}
     end
   end
 

@@ -197,8 +197,6 @@ defmodule Rujira.Fin do
     end
   end
 
-  # TODO: Move these into shorthand asset notation ijn Assets
-
   def ticker_id!(%Pair{token_base: token_base, token_quote: token_quote}) do
     {:ok, base} = Rujira.Assets.from_denom(token_base)
     {:ok, target} = Rujira.Assets.from_denom(token_quote)

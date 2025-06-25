@@ -147,6 +147,10 @@ defmodule Rujira.Assets do
 
   This will only convert
   """
+  def from_denom("x/ruji") do
+    {:ok, %Asset{id: "THOR.RUJI", type: :native, chain: "THOR", symbol: "RUJI", ticker: "RUJI"}}
+  end
+
   def from_denom("rune") do
     {:ok, %Asset{id: "THOR.RUNE", type: :native, chain: "THOR", symbol: "RUNE", ticker: "RUNE"}}
   end
@@ -162,15 +166,17 @@ defmodule Rujira.Assets do
      %Asset{id: "THOR.#{symbol}", type: :native, chain: "THOR", symbol: symbol, ticker: symbol}}
   end
 
-  def from_denom("x/staking-x/" <> id = denom) do
-    {:ok,
-     %Asset{
-       id: denom,
-       type: :native,
-       chain: "THOR",
-       symbol: "s" <> String.upcase(id),
-       ticker: "s" <> String.upcase(id)
-     }}
+  def from_denom("x/staking-" <> id = denom) do
+    with {:ok, staked} <- from_denom(id) do
+      {:ok,
+       %Asset{
+         id: denom,
+         type: :native,
+         chain: "THOR",
+         symbol: "s" <> staked.symbol,
+         ticker: "s" <> staked.ticker
+       }}
+    end
   end
 
   def from_denom("x/bow-xyk-" <> id = denom) do
@@ -194,17 +200,6 @@ defmodule Rujira.Assets do
     else
       _ -> {:error, :invalid_denom_string}
     end
-  end
-
-  def from_denom("x/ruji") do
-    {:ok,
-     %Asset{
-       id: "THOR.RUJI",
-       type: :native,
-       chain: "THOR",
-       symbol: "RUJI",
-       ticker: "RUJI"
-     }}
   end
 
   def from_denom("x/" <> id = denom) do
