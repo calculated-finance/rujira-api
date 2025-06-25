@@ -2,6 +2,8 @@ defmodule Rujira.Staking.Account do
   @moduledoc """
   Parses staking account data from the blockchain into an Account struct.
   """
+  alias Rujira.Chains.Thor
+  alias Rujira.Staking
   alias Rujira.Staking.Pool
 
   defstruct [
@@ -9,7 +11,9 @@ defmodule Rujira.Staking.Account do
     :pool,
     :account,
     :bonded,
-    :pending_revenue
+    :pending_revenue,
+    :liquid_shares,
+    :liquid_size
   ]
 
   @type t :: %__MODULE__{
@@ -17,7 +21,9 @@ defmodule Rujira.Staking.Account do
           pool: Pool.t(),
           account: String.t(),
           bonded: integer(),
-          pending_revenue: integer()
+          liquid_shares: non_neg_integer(),
+          liquid_size: non_neg_integer(),
+          pending_revenue: non_neg_integer()
         }
 
   @spec from_query(Pool.t(), map()) :: {:ok, __MODULE__.t()} | {:error, :parse_error}
@@ -29,15 +35,27 @@ defmodule Rujira.Staking.Account do
           "pending_revenue" => pending_revenue
         }
       ) do
-    with {bonded, ""} <- Integer.parse(bonded),
-         {pending_revenue, ""} <- Integer.parse(pending_revenue) do
+    with {:ok,
+          %{
+            receipt_denom: receipt_denom,
+            status: %{
+              liquid_bond_size: liquid_bond_size,
+              liquid_bond_shares: liquid_bond_shares
+            }
+          } = pool} <- Staking.load_pool(pool),
+         {bonded, ""} <- Integer.parse(bonded),
+         {pending_revenue, ""} <- Integer.parse(pending_revenue),
+         {:ok, balance} <- Thor.balance_of(address, receipt_denom),
+         {liquid_shares, ""} <- Integer.parse(balance.amount) do
       {:ok,
        %__MODULE__{
-         id: "#{pool.id}/#{address}",
+         id: "#{address}/#{pool.bond_denom}",
          pool: pool,
          account: address,
          bonded: bonded,
-         pending_revenue: pending_revenue
+         pending_revenue: pending_revenue + unallocated_revenue(pool, bonded),
+         liquid_shares: liquid_shares,
+         liquid_size: floor(liquid_shares * liquid_bond_size / liquid_bond_shares)
        }}
     else
       _ -> {:error, :parse_error}
@@ -47,11 +65,38 @@ defmodule Rujira.Staking.Account do
   def default(pool, account) do
     {:ok,
      %__MODULE__{
-       id: "#{pool.id}/#{account}",
+       id: "#{account}/#{pool.bond_denom}",
        pool: pool,
        account: account,
        bonded: 0,
-       pending_revenue: 0
+       pending_revenue: 0,
+       liquid_shares: 0,
+       liquid_size: 0
      }}
+  end
+
+  # Contract current doesn't allocate global pending revnue to Account balance on Query,
+  # which is does on a withdrawal.
+  # Simulate distribution here: https://gitlab.com/thorchain/rujira/-/blob/main/contracts/rujira-staking/src/state.rs?ref_type=heads#L183
+  # https://gitlab.com/thorchain/rujira/-/blob/main/contracts/rujira-staking/src/state.rs?ref_type=heads#L135-139
+  defp unallocated_revenue(_, 0), do: 0
+
+  defp unallocated_revenue(
+         %{
+           status: %{
+             account_bond: account_bond,
+             liquid_bond_size: liquid_bond_size,
+             pending_revenue: global_pending_revenue
+           }
+         },
+         bonded
+       ) do
+    Integer.floor_div(
+      Integer.floor_div(
+        account_bond * global_pending_revenue,
+        account_bond + liquid_bond_size
+      ) * bonded,
+      account_bond
+    )
   end
 end

@@ -164,7 +164,6 @@ defmodule Rujira.Deployments do
       admin: admin,
       code_id: to_string(code_id),
       msg: module.init_msg(config),
-      # TODO: update once any of the targets need funds on init
       funds: [],
       label: module.init_label(id, config),
       salt: Base.encode64(Base.decode16!(salt))
