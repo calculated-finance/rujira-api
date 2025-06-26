@@ -38,16 +38,27 @@ defmodule Rujira.Staking.Listener do
       Rujira.Events.publish_node(:staking_account, "#{a}/#{o}")
     end
 
-    for a <- transfers do
-      Logger.debug("#{__MODULE__} transfer #{a}")
-      Memoize.invalidate(Staking, :query_account, [a, :_])
+    for {addr, denom} <- transfers do
+      case denom do
+        # We catch staking events above, so this is only concerned with balance transfers
+        # va MsgSend etc, which will only affect an account
+        # No need to invalidate, query_account only queries the account-based staking, .
+        # not the liquid staking
+        "x/staking-" <> id ->
+          Rujira.Events.publish_node(:staking_account, "#{addr}/#{id}")
 
-      # We can indiscriminately publish all transfer events over the :staking_summary
-      # subscription.
-      # Most will be ignored unless the specific subscription is requested
-
-      # TODO: Broadcast the same for transfers of `x/staking-` prefixed tokens
-      Rujira.Events.publish_node(:staking_summary, a)
+        # These are potentialyl sends to the staking contract which affect pending rewards and liquid stqaked value.
+        # Invalidate and publish all, as invalidations & events published will only hit active subscriptions etc.
+        # And so it's cheaper than looking up the contract address each time
+        _ ->
+          Memoize.invalidate(Staking, :query_account, [addr, :_])
+          Memoize.invalidate(Staking, :query_pool, [addr])
+          Rujira.Events.publish_node(:staking_summary, addr)
+          Rujira.Events.publish_node(:staking_status, addr)
+          # We can't do this one - it's the trade-off keying the accoubt by receipt token;
+          # we'd have to look the bond_denom up by addr
+          # Rujira.Events.publish_node(:staking_account, "#{a}/#{o}")
+      end
     end
   end
 
@@ -60,9 +71,15 @@ defmodule Rujira.Staking.Listener do
 
   def scan_staking_event(_), do: nil
 
-  def scan_transfer(%{attributes: %{"recipient" => recipient}, type: "transfer"}) do
-    recipient
+  defp scan_transfer(%{
+         attributes: %{"recipient" => recipient, "sender" => sender, "amount" => amount},
+         type: "transfer"
+       }) do
+    amount
+    |> String.split(",")
+    |> Enum.map(&String.replace(&1, ~r/^[0-9]+/, ""))
+    |> Enum.flat_map(&[{recipient, &1}, {sender, &1}])
   end
 
-  def scan_transfer(_), do: nil
+  defp scan_transfer(_), do: nil
 end

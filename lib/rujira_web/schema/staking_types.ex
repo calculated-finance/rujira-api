@@ -10,7 +10,6 @@ defmodule RujiraWeb.Schema.StakingTypes do
   use Absinthe.Relay.Schema.Notation, :modern
 
   alias Rujira.Assets
-  alias Rujira.Chains.Thor
   alias Rujira.Contracts
   alias RujiraWeb.Resolvers.Staking
 
@@ -116,14 +115,45 @@ defmodule RujiraWeb.Schema.StakingTypes do
 
     @desc "The balance of liquid staked token that is held by the account"
     field :liquid, non_null(:balance) do
-      resolve(fn %{account: address, pool: %{bond_denom: bond_denom}}, _, _ ->
-        Thor.balance_of(address, "x/staking-#{bond_denom}")
+      resolve(fn %{liquid_shares: liquid_shares, pool: %{receipt_denom: receipt_denom}}, _, _ ->
+        with {:ok, asset} <- Assets.from_denom(receipt_denom) do
+          {:ok, %{amount: liquid_shares, asset: asset}}
+        end
+      end)
+    end
+
+    @desc "The balance of liquid staked token that is held by the account"
+    field :liquid_shares, non_null(:balance) do
+      resolve(fn %{liquid_shares: liquid_shares, pool: %{receipt_denom: receipt_denom}}, _, _ ->
+        with {:ok, asset} <- Assets.from_denom(receipt_denom) do
+          {:ok, %{amount: liquid_shares, asset: asset}}
+        end
+      end)
+    end
+
+    @desc "The value of liquid staked token that is held by the account, denominated in the bond token"
+    field :liquid_size, non_null(:balance) do
+      resolve(fn %{liquid_size: liquid_size, pool: %{bond_denom: bond_denom}}, _, _ ->
+        with {:ok, asset} <- Assets.from_denom(bond_denom) do
+          {:ok, %{amount: liquid_size, asset: asset}}
+        end
       end)
     end
 
     @desc "The balance of pending revenue earned and still not claimed by this account"
     field :pending_revenue, non_null(:balance) do
-      resolve(&Staking.pending_revenue/3)
+      resolve(fn %{pending_revenue: pending_revenue, pool: %{revenue_denom: revenue_denom}},
+                 _,
+                 _ ->
+        with {:ok, asset} <- Assets.from_denom(revenue_denom) do
+          {:ok, %{amount: pending_revenue, asset: asset}}
+        end
+      end)
+    end
+
+    @desc "The total USD value of liquid tokens, bonded tokens, and pending rewards"
+    field :value_usd, non_null(:bigint) do
+      resolve(&Staking.value_usd/3)
     end
   end
 

@@ -59,7 +59,9 @@ defmodule RujiraWeb.Schema.StakingTest do
 
     Enum.each([empty_account, populated_account], fn acct ->
       acct_gid =
-        Base.encode64("StakingAccount:#{single["address"]}/#{acct}")
+        Base.encode64(
+          "StakingAccount:#{acct}/#{single["bondAsset"]["variants"]["native"]["denom"]}"
+        )
 
       resp =
         post(conn, "/api", %{"query" => @account_query, "variables" => %{"id" => acct_gid}})
