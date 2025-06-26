@@ -7,13 +7,13 @@ defmodule Rujira.Index.Nav do
 
   @doc """
   Parse a single allocation row of the form:
-    [denom, balance_str, _unused, target_weight_str]
+    %{"denom" => denom, "balance" => balance_str, "weight" => weight_str}
 
   Returns `{:ok, %Vault.Allocation{…}}` or `{:error, {:invalid_allocation, denom}}`.
   """
-  def parse_allocation([denom, balance_str, _unused, target_weight_str]) do
+  def parse_allocation(%{"denom" => denom, "balance" => balance_str, "weight" => weight_str}) do
     with {balance, ""} <- Integer.parse(balance_str),
-         {target_weight, ""} <- Decimal.parse(target_weight_str),
+         {weight, ""} <- Decimal.parse(weight_str),
          {:ok, asset} <- Assets.from_denom(denom),
          {:ok, price} <- Thorchain.oracle_price(asset.id) do
       value =
@@ -27,7 +27,7 @@ defmodule Rujira.Index.Nav do
          denom: denom,
          balance: balance,
          value: value,
-         target_weight: target_weight,
+         target_weight: weight,
          price: price
        }}
     else
