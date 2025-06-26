@@ -45,7 +45,7 @@ defmodule RujiraWeb.Schema do
   query do
     @desc "Fetch a single node using its global Relay-compatible ID."
     field :node, :node do
-      arg(:id, non_null(:id))
+      arg(:id, :id)
       resolve(&Node.id/2)
     end
 
