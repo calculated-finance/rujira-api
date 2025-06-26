@@ -38,6 +38,8 @@ defmodule RujiraWeb.Resolvers.Node do
     resolve_id(encoded_id)
   end
 
+  def id(_, _), do: {:ok, nil}
+
   @doc """
   Resolves multiple nodes by their global IDs in parallel.
 
