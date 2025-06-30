@@ -7,7 +7,6 @@ defmodule Rujira.Staking.Pool do
 
   alias Rujira.Assets
   alias Rujira.Deployments.Target
-  import Ecto.Query
   use Memoize
 
   defmodule Summary do
