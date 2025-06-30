@@ -87,14 +87,17 @@ defmodule Rujira.Fin do
           {:ok, Pair.t()} | {:error, GRPC.RPCError.t()}
   def load_pair(pair, limit \\ 100)
 
-  def load_pair(%{deployment_status: :preview} = pair, _) do
-    {:ok, %{pair | book: Book.empty(pair.address)}}
+  def load_pair(%{deployment_status: :preview} = pair, limit) do
+    with {:ok, book} <- Book.from_pools(pair, limit) do
+      {:ok, %{pair | book: pair.address |> Book.empty() |> Book.merge(book)}}
+    end
   end
 
   def load_pair(pair, limit) do
     with {:ok, res} <- query_book(pair.address, limit),
-         {:ok, book} <- Book.from_query(pair.address, res) do
-      {:ok, %{pair | book: book}}
+         {:ok, a} <- Book.from_query(pair.address, res),
+         {:ok, b} <- Book.from_pools(pair, limit) do
+      {:ok, %{pair | book: Book.merge(a, b)}}
     end
   end
 
@@ -187,8 +190,14 @@ defmodule Rujira.Fin do
          %Pair{} = pair <-
            Enum.find(
              pairs,
-             &(Assets.eq_denom(Assets.from_shortcode(b), &1.token_base) and
-                 Assets.eq_denom(Assets.from_shortcode(q), &1.token_quote))
+             &(Assets.eq_denom(
+                 Assets.from_shortcode(b),
+                 &1.token_base
+               ) and
+                 Assets.eq_denom(
+                   Assets.from_shortcode(q),
+                   &1.token_quote
+                 ))
            ) do
       {:ok, pair}
     else

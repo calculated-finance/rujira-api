@@ -49,7 +49,7 @@ defmodule Rujira.Assets do
   def from_shortcode("ATOM"), do: from_string("GAIA.ATOM")
 
   def from_shortcode(str) do
-    case String.split(str, ~r/\.\-/) do
+    case String.split(str, ~r/[\.\-]/) do
       [symbol] -> from_string("#{symbol}.#{symbol}")
       [symbol, ticker] -> from_string("#{symbol}.#{ticker}")
     end
@@ -234,7 +234,7 @@ defmodule Rujira.Assets do
 
   def eq_denom(%Asset{} = a, denom) do
     case from_denom(denom) do
-      {:ok, asset} -> a == asset
+      {:ok, asset} -> a.chain == asset.chain and a.ticker == asset.ticker
       _ -> false
     end
   end

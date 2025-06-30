@@ -131,6 +131,8 @@ defmodule Thorchain do
     |> Map.put(:lp_units, Map.get(pool, :LP_units))
     |> Map.update(:derived_depth_bps, "0", &String.to_integer/1)
     |> Map.update(:savers_fill_bps, "0", &String.to_integer/1)
+    |> Map.update(:balance_asset, "0", &String.to_integer/1)
+    |> Map.update(:balance_rune, "0", &String.to_integer/1)
     |> Map.update(:asset_tor_price, nil, &Decimal.div(Decimal.new(&1), Decimal.new(100_000_000)))
   end
 

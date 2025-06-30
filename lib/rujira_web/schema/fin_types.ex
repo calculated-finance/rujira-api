@@ -98,6 +98,10 @@ defmodule RujiraWeb.Schema.FinTypes do
     field :side, non_null(:string)
     @desc "Value of the entry, calculated as total * price or total / price based on side."
     field :value, non_null(:bigint)
+
+    @desc "A representation of the liquidity available in the THORChain pools"
+    field :virtual_total, non_null(:bigint)
+    field :virtual_value, non_null(:bigint)
   end
 
   @desc "Collections of data of an account across all the fin pairs"
