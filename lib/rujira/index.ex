@@ -241,7 +241,7 @@ defmodule Rujira.Index do
     end
   end
 
-  def change_24h(address, nav) do
+  def change_24h(address, current_nav) do
     today = Resolution.truncate(DateTime.utc_now(), "1D")
     nav_24h_ago = query_nav_bin_at(address, "1D", DateTime.add(today, -1, :day))
 
@@ -250,8 +250,8 @@ defmodule Rujira.Index do
         nil
 
       _ ->
-        Decimal.new(nav_24h_ago.open)
-        |> Decimal.sub(nav)
+        Decimal.new(current_nav)
+        |> Decimal.sub(nav_24h_ago.open)
         |> Decimal.div(nav_24h_ago.open)
     end
   end
