@@ -15,23 +15,7 @@ defmodule RujiraWeb.Schema.TokenTypes do
     field :type, non_null(:asset_type)
     field :chain, non_null(:chain), resolve: &Token.chain/3
     field :metadata, non_null(:metadata), resolve: &Token.metadata/3
-
-    field :price, :price do
-      resolve(fn %{ticker: ticker}, _, _ ->
-        batch(
-          {Token, :prices},
-          ticker,
-          fn
-            {:ok, prices} ->
-              {:ok, Map.get(prices, ticker)}
-
-            _ ->
-              {:ok, nil}
-          end,
-          timeout: 20_000
-        )
-      end)
-    end
+    field :price, :price, resolve: &Token.price/3
 
     @desc "Explicit Layer 1 and Secured variants of a Layer 1 asset"
     field :variants, non_null(:asset_variants) do

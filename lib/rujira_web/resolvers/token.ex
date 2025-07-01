@@ -65,10 +65,8 @@ defmodule RujiraWeb.Resolvers.Token do
     Helpers.async(fn -> Assets.load_metadata(asset) end)
   end
 
-  def prices(_, b) do
-    b
-    |> Rujira.Enum.uniq()
-    |> Rujira.Prices.get()
+  def price(%Asset{ticker: ticker}, _, _) do
+    Helpers.async(fn -> Rujira.Prices.get(ticker) end)
   end
 
   def quote(%{request: %{to_asset: asset}, expected_amount_out: amount}, _, _) do
