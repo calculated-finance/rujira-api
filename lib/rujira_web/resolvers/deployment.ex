@@ -7,7 +7,7 @@ defmodule RujiraWeb.Resolvers.Deployment do
   def resolver(_, _, _) do
     {:ok,
      %{
-       version: Deployments.version(),
+       network: Deployments.network(),
        targets:
          Deployments.list_all_targets()
          |> Enum.map(fn

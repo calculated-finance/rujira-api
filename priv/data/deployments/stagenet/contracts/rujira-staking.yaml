@@ -1,0 +1,23 @@
+code: 33
+
+targets:
+  - id: ruji
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      bond_denom: x/ruji
+      revenue_denom: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+      revenue_converter:
+        contract: ${targets:rujira-fin.ruji-eth-usdt}
+        msg: '{"swap": {}}'
+        min: '10000000'
+  - id: nami
+    admin: ${accounts:admin}
+    creator: ${accounts:nami-deployer}
+    config:
+      bond_denom: thor.nami
+      revenue_denom: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+      revenue_converter:
+        contract: ${targets:rujira-fin.nami-eth-usdt}
+        msg: '{"swap": {}}'
+        min: '10000000'

@@ -1,0 +1,79 @@
+code: 34
+
+targets:
+  - id: single
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      executor: ${accounts:admin}
+    target_denoms:
+    - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+    target_addresses:
+    - address: ${targets:rujira-staking.ruji}
+      weight: 1
+  - id: split
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      executor: ${accounts:admin}
+    target_denoms:
+    - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+    target_addresses:
+    - address: ${targets:rujira-staking.ruji}
+      weight: 1
+    - address: ${targets:rujira-revenue.base}
+      weight: 1
+  - id: base
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      executor: ${accounts:admin}
+      target_denoms:
+      - rune
+      target_addresses:
+      - address: ${accounts:thorchain-reserve}
+        weight: 1
+  - id: nami-dev-fund
+    admin: ${accounts:admin}
+    creator: ${accounts:nami-deployer}
+    config:
+      executor: ${accounts:nami-deployer}
+      target_denoms:
+      - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+      target_addresses:
+      - address: ${accounts:nami-dev-fund}
+        weight: 1
+  - id: nami-index-fund
+    admin: ${accounts:admin}
+    creator: ${accounts:nami-deployer}
+    config:
+      executor: ${accounts:nami-deployer}
+      target_denoms:
+      - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+      target_addresses:
+      - address: ${accounts:nami-index-fund}
+        weight: 1
+  - id: nami-stakers
+    admin: ${accounts:admin}
+    creator: ${accounts:nami-deployer}
+    config:
+      executor: ${accounts:nami-deployer}
+      target_denoms:
+      - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+      target_addresses:
+      - address: ${targets:rujira-staking.nami}
+        weight: 1
+  - id: nami-split
+    admin: ${accounts:admin}
+    creator: ${accounts:nami-deployer}
+    config:
+      executor: ${accounts:nami-deployer}
+      target_denoms:
+      - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+      target_addresses:
+      - address: ${targets:rujira-revenue.nami-dev-fund}
+        weight: 35
+      - address: ${targets:rujira-revenue.nami-index-fund}
+        weight: 40
+      - address: ${targets:rujira-revenue.nami-stakers}
+        weight: 25

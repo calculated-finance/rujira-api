@@ -37,6 +37,8 @@ config :rujira, Thornode,
   size: 5,
   grpcs: ["stagenet-grpc.ninerealms.com:443"]
 
+config :rujira, :network, "stagenet"
+
 config :rujira, :accounts,
   # mnemonic: "dog dog dog dog dog dog dog dog dog dog dog dog dog dog dog dog dog dog dog dog dog dog dog fossil"
   empty_account: "sthor1zf3gsk7edzwl9syyefvfhle37cjtql3585mpmq",

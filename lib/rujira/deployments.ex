@@ -17,8 +17,6 @@ defmodule Rujira.Deployments do
 
   @path "data/deployments"
 
-  def version, do: plan()
-
   def start_link(state) do
     GenServer.start_link(__MODULE__, state)
   end
@@ -29,18 +27,15 @@ defmodule Rujira.Deployments do
     {:ok, state}
   end
 
-  defp plan do
-    Application.get_env(:rujira, __MODULE__, plan: "stagenet/v1")
-    |> Keyword.get(:plan)
-  end
+  def network, do: Application.get_env(:rujira, :network, "stagenet")
 
-  defmemo get_target(module, id, plan \\ plan()) do
-    list_all_targets(plan)
+  defmemo get_target(module, id, network \\ network()) do
+    list_all_targets(network)
     |> Enum.find(&(&1.module === module and &1.id == id))
   end
 
-  defmemo list_all_targets(plan \\ plan()) do
-    %{codes: codes, targets: targets} = load_config!(plan)
+  defmemo list_all_targets(network \\ network()) do
+    %{codes: codes, targets: targets} = load_config!(network)
 
     with {:ok, result} <-
            Rujira.Enum.reduce_async_while_ok(
@@ -54,27 +49,46 @@ defmodule Rujira.Deployments do
   @doc """
   List all targets for a given module
   """
-  defmemo list_targets(module, plan \\ plan()) do
-    plan
+  defmemo list_targets(module, network \\ network()) do
+    network
     |> list_all_targets()
     |> Enum.filter(&(&1.module === module))
   end
 
-  defmemo load_config!(plan \\ plan()) do
-    %{"accounts" => accounts, "codes" => codes, "targets" => targets} =
+  defmemo load_config!(network \\ network()) do
+    deploy_dir =
       :rujira
       |> :code.priv_dir()
       |> Path.join(@path)
-      |> Path.join("#{plan}.yaml")
-      |> File.read!()
-      |> YamlElixir.read_from_string!()
+      |> Path.join(network)
+
+    yaml_files =
+      deploy_dir
+      |> Path.join("contracts")
+      |> File.ls!()
+
+    {codes, targets} =
+      Enum.reduce(yaml_files, {%{}, %{}}, fn file, {codes_acc, targets_acc} ->
+        key = String.replace_suffix(file, ".yaml", "")
+        full_path = deploy_dir |> Path.join("contracts") |> Path.join(file)
+
+        %{"code" => code_id, "targets" => targets_list} = YamlElixir.read_from_file!(full_path)
+        {Map.put(codes_acc, key, code_id), Map.put(targets_acc, key, targets_list)}
+      end)
+
+    # Load accounts.yaml separately
+    accounts =
+      deploy_dir
+      |> Path.join("accounts.yaml")
+      |> YamlElixir.read_from_file!()
+      |> Map.fetch!("accounts")
 
     # Do accounts first, so they're available for contract interpolation
-    %{accounts: accounts} = parse_ctx(%{accounts: accounts}, %{})
+    %{accounts: parsed_accounts} = parse_ctx(%{accounts: accounts}, %{})
 
     parse_ctx(
-      %{accounts: accounts, codes: codes, targets: targets},
-      %{accounts: accounts, codes: codes, targets: targets}
+      %{accounts: parsed_accounts, codes: codes, targets: targets},
+      %{accounts: parsed_accounts, codes: codes, targets: targets}
     )
   end
 
@@ -170,14 +184,14 @@ defmodule Rujira.Deployments do
     }
   end
 
-  defp to_module("bow"), do: Bow
-  defp to_module("fin"), do: Fin.Pair
-  defp to_module("revenue"), do: Revenue.Converter
-  defp to_module("staking"), do: Staking.Pool
-  defp to_module("keiko"), do: Ventures.Keiko
-  defp to_module("index-nav"), do: Index.Nav
-  defp to_module("index-fixed"), do: Index.Fixed
-  defp to_module("index-entry-adpter"), do: Index.EntryAdapter
+  defp to_module("rujira-bow"), do: Bow
+  defp to_module("rujira-fin"), do: Fin.Pair
+  defp to_module("rujira-revenue"), do: Revenue.Converter
+  defp to_module("rujira-staking"), do: Staking.Pool
+  defp to_module("rujira-keiko"), do: Ventures.Keiko
+  defp to_module("nami-index-nav"), do: Index.Nav
+  defp to_module("nami-index-fixed"), do: Index.Fixed
+  defp to_module("nami-index-entry-adpter"), do: Index.EntryAdapter
 
   defp parse_ctx(map, ctx) when is_map(map) do
     map
@@ -214,10 +228,13 @@ defmodule Rujira.Deployments do
   def parse_arg("env:" <> id, _), do: System.get_env(id)
   def parse_arg(x, _), do: x
 
+  # Deployment straucture was updated, retain old format for backwards compatibility
+  def build_address_salt("rujira-" <> protocol, id), do: Base.encode16("#{protocol}:#{id}")
+  def build_address_salt("nami-" <> protocol, id), do: Base.encode16("#{protocol}:#{id}")
   def build_address_salt(protocol, id), do: Base.encode16("#{protocol}:#{id}")
 
-  def to_migrate_tx(plan \\ plan()) do
-    %{codes: codes, targets: targets} = load_config!(plan)
+  def to_migrate_tx(network \\ network()) do
+    %{codes: codes, targets: targets} = load_config!(network)
 
     messages =
       targets

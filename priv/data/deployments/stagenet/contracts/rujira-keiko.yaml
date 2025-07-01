@@ -1,0 +1,44 @@
+code: 61
+
+targets:
+  - id: keiko
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    address: sthor1s32thdr7l646hn7edezjqawmkfs0mssy7kxn9sx6pvtj530ltkrqy27vjy
+    config:
+      bow:
+        admin: ${accounts:admin}
+        code_id: 36
+        default_step: '0.0001'
+        default_min_quote: '10000'
+        fee: '0.003'
+      fin:
+        admin: ${accounts:admin}
+        code_id: 35
+        fee_address: ${targets:rujira-revenue.split}
+        fee_maker: '0.00075'
+        fee_taker: '0.0015'
+      pilot:
+        admin: ${accounts:admin}
+        bid_denoms:
+        - decimals: 8
+          denom: rune
+          min_raise_amount: '100000000'
+          symbol: RUNE
+        code_id: 60
+        deposit:
+          amount: '100000000'
+          denom: rune
+        fee_address: ${targets:rujira-revenue.split}
+        fee_maker: '0.00075'
+        fee_taker: '0.0015'
+        max_premium: 30
+      streams:
+        admin: ${accounts:admin}
+        code_id: 57
+      token:
+        default_admin: ${accounts:admin}
+      tokenomics:
+        default_lp_vest_cliff: 1814400
+        default_lp_vest_duration: 8640000
+        minimum_liquidity_one_side: '0.1'

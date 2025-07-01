@@ -8,7 +8,7 @@ defmodule RujiraWeb.Schema.DeploymentTypes do
 
   @desc "The currently configured deployment for all contracts"
   object :deployment do
-    field :version, non_null(:string)
+    field :network, non_null(:string)
     field :targets, non_null(list_of(non_null(:deployment_target)))
   end
 

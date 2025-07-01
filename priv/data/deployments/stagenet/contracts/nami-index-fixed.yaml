@@ -1,0 +1,31 @@
+code: 75
+
+targets:
+  - id: rji-1.0.1
+    admin: ${accounts:nami-deployer}
+    creator: ${accounts:nami-deployer}
+    config:
+      receipt:
+        description: The Rujira Index (RJI) is a fixed weight asset index that tracks
+          the performance of assets in the Rujira Ecosystem. It consists of the biggest
+          altcoins on the Rujira Applayer and their weights are based on their market
+          cap.
+        display: RJI
+        name: The Rujira Index
+        symbol: RJI
+      quote_denom: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+      fee_collector: ${targets:rujira-revenue.nami-split}
+      fees:
+        management: '0.01'
+        performance: null
+        transaction: '0.01'
+      target_allocations:
+      - - thor.nami
+        - '1000'
+        - ${targets:rujira-fin.nami-eth-usdt}
+      - - thor.auto
+        - '1000'
+        - ${targets:rujira-fin.auto-eth-usdt}
+      - - thor.lqdy
+        - '1000'
+        - ${targets:rujira-fin.lqdy-eth-usdt}

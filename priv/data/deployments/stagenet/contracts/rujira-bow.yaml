@@ -1,0 +1,83 @@
+code: 36
+
+targets:
+  - id: btc-eth-usdt
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy:
+        xyk:
+          x: btc-btc
+          y: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+  - id: bnb-eth-usdt
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy:
+        xyk:
+          x: bsc-bnb
+          y: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+  - id: btc-eth-usdc
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy:
+        xyk:
+          x: btc-btc
+          y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+  - id: eth-eth-usdt
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy:
+        xyk:
+          x: eth-eth
+          y: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+  - id: ruji-rune
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy:
+        xyk:
+          x: x/ruji
+          y: rune
+  - id: ruji-eth-usdt
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy:
+        xyk:
+          x: x/ruji
+          y: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+  - id: auto-eth-usdt
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy:
+        xyk:
+          x: thor.auto
+          y: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+  - id: lqdy-btc
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy:
+        xyk:
+          x: thor.lqdy
+          y: btc-btc
+  - id: lqdy-eth-usdt
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy:
+        xyk:
+          x: thor.lqdy
+          y: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+  - id: nami-eth-usdt
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy:
+        xyk:
+          x: thor.nami
+          y: eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7

@@ -1,0 +1,13 @@
+code: 7
+
+targets:
+  - id: ruji
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      bond_denom: x/ruji
+      revenue_denom: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+      revenue_converter: 
+        contract: ${targets:rujira-fin.ruji-eth-usdc}
+        msg: '{"swap": {}}'
+        min: "10000000"

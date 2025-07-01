@@ -1,0 +1,122 @@
+code: 5
+
+targets:
+  - id: atom-eth-usdc
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy: 
+        xyk: 
+          x: gaia-atom
+          y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+
+  - id: auto-eth-usdc
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy: 
+        xyk: 
+          x: thor.auto
+          y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+
+  - id: avax-eth-usdc
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy: 
+        xyk: 
+          x: avax-avax
+          y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+
+  - id: btc-eth-usdc
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy: 
+        xyk: 
+          x: btc-btc
+          y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+
+
+  - id: bch-eth-usdc
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy: 
+        xyk: 
+          x: bch-bch
+          y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+
+  - id: bnb-eth-usdc
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy: 
+        xyk: 
+          x: bsc-bnb
+          y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+
+  - id: doge-eth-usdc
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy: 
+        xyk: 
+          x: doge-doge
+          y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+
+  - id: eth-eth-usdc
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy: 
+        xyk: 
+          x: eth-eth
+          y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+
+
+  - id: lqdy-btc
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy: 
+        xyk: 
+          x: thor.lqdy
+          y: btc-btc
+
+  - id: lqdy-eth-usdc
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy: 
+        xyk: 
+          x: thor.lqdy
+          y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+  
+  - id: ltc-eth-usdc
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy: 
+        xyk: 
+          x: ltc-ltc
+          y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+
+
+  - id: nami-eth-usdc
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy: 
+        xyk: 
+          x: thor.nami
+          y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+
+  - id: ruji-eth-usdc
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy: 
+        xyk: 
+          x: x/ruji
+          y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48

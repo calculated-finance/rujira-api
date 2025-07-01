@@ -1,0 +1,118 @@
+code: 35
+
+targets:
+  - id: btc-eth-usdt
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      tick: 8
+      denoms:
+      - btc-btc
+      - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+      market_maker: ${targets:rujira-bow.btc-eth-usdt}
+      fee_address: ${targets:rujira-revenue.single}
+  - id: bnb-eth-usdt
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      denoms:
+      - bsc-bnb
+      - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+      market_maker: ${targets:rujira-bow.bnb-eth-usdt}
+      fee_address: ${targets:rujira-revenue.single}
+  - id: btc-eth-usdc
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      denoms:
+      - btc-btc
+      - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+      market_maker: ${targets:rujira-bow.btc-eth-usdc}
+      fee_address: ${targets:rujira-revenue.split}
+  - id: eth-eth-usdt
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      denoms:
+      - eth-eth
+      - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+      market_maker: ${targets:rujira-bow.eth-eth-usdt}
+      fee_address: ${targets:rujira-revenue.single}
+  - id: eth-usdt-eth-usdc
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      denoms:
+      - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+      - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+      fee_address: ${targets:rujira-revenue.split}
+  - id: bsc-usdt-eth-usdt
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      denoms:
+      - bsc-usdt-0x55d398326f99059ff775485246999027b3197955
+      - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+      fee_address: ${targets:rujira-revenue.single}
+  - id: ruji-rune
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      denoms:
+      - x/ruji
+      - rune
+      market_maker: ${targets:rujira-bow.ruji-rune}
+      fee_address: ${targets:rujira-revenue.single}
+  - id: ruji-eth-usdt
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      denoms:
+      - x/ruji
+      - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+      market_maker: ${targets:rujira-bow.ruji-eth-usdt}
+      fee_address: ${targets:rujira-revenue.single}
+  - id: tcy-rune
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      denoms:
+      - tcy
+      - rune
+      fee_address: ${targets:rujira-revenue.single}
+  - id: auto-eth-usdt
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      denoms:
+      - thor.auto
+      - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+      market_maker: ${targets:rujira-bow.auto-eth-usdt}
+      fee_address: ${targets:rujira-revenue.split}
+  - id: lqdy-btc
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      denoms:
+      - thor.lqdy
+      - btc-btc
+      market_maker: ${targets:rujira-bow.lqdy-btc}
+      fee_address: ${targets:rujira-revenue.split}
+  - id: lqdy-eth-usdt
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      denoms:
+      - thor.lqdy
+      - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+      market_maker: ${targets:rujira-bow.lqdy-eth-usdt}
+      fee_address: ${targets:rujira-revenue.split}
+  - id: nami-eth-usdt
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      denoms:
+      - thor.nami
+      - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+      market_maker: ${targets:rujira-bow.nami-eth-usdt}
+      fee_address: ${targets:rujira-revenue.split}
