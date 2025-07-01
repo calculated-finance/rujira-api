@@ -4,7 +4,6 @@ defmodule RujiraWeb.Resolvers.Staking do
   """
   alias Absinthe.Resolution.Helpers
   alias Rujira.Assets
-  alias Rujira.Enum
   alias Rujira.Prices
   alias Rujira.Revenue
   alias Rujira.Staking
@@ -65,7 +64,7 @@ defmodule RujiraWeb.Resolvers.Staking do
 
   def all_accounts(%{address: address}, _, _) do
     with {:ok, pools} <- Staking.list_pools() do
-      Enum.reduce_while_ok(pools, [], fn x ->
+      Rujira.Enum.reduce_while_ok(pools, [], fn x ->
         case Staking.load_account(x, address) do
           {:ok, %{bonded: 0}} -> :skip
           other -> other
@@ -95,6 +94,12 @@ defmodule RujiraWeb.Resolvers.Staking do
   def summary(pool, _, _) do
     Helpers.async(fn ->
       Pool.summary(pool)
+    end)
+  end
+
+  def pending_balances(_, _, _) do
+    Helpers.async(fn ->
+      {:ok, Staking.converter_balances()}
     end)
   end
 end

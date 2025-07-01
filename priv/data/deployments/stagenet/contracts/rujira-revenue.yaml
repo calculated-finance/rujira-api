@@ -6,23 +6,23 @@ targets:
     creator: ${accounts:creator}
     config:
       executor: ${accounts:admin}
-    target_denoms:
-    - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
-    target_addresses:
-    - address: ${targets:rujira-staking.ruji}
-      weight: 1
+      target_denoms:
+      - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+      target_addresses:
+      - address: ${targets:rujira-staking.ruji}
+        weight: 1
   - id: split
     admin: ${accounts:admin}
     creator: ${accounts:creator}
     config:
       executor: ${accounts:admin}
-    target_denoms:
-    - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
-    target_addresses:
-    - address: ${targets:rujira-staking.ruji}
-      weight: 1
-    - address: ${targets:rujira-revenue.base}
-      weight: 1
+      target_denoms:
+      - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
+      target_addresses:
+      - address: ${targets:rujira-staking.ruji}
+        weight: 1
+      - address: ${targets:rujira-revenue.base}
+        weight: 1
   - id: base
     admin: ${accounts:admin}
     creator: ${accounts:creator}

@@ -32,6 +32,10 @@ defmodule RujiraWeb.Schema.StakingTypes do
     field :revenue, :revenue_converter do
       resolve(&Staking.revenue/3)
     end
+
+    @desc "The token balances on revenue converter contracts that feed the staking contracts"
+    field :pending_balances, non_null(list_of(non_null(:balance))),
+      resolve: &Staking.pending_balances/3
   end
 
   @desc "A staking_pool represents the configuration about a rujira-staking contract"

@@ -3,6 +3,7 @@ defmodule Rujira.Staking do
   Rujira Staking.
   """
 
+  alias Rujira.Chains.Thor
   alias Rujira.Contracts
   alias Rujira.Deployments
   alias Rujira.Staking.Account
@@ -147,5 +148,38 @@ defmodule Rujira.Staking do
 
   defmemop query_account(contract, address) do
     Contracts.query_state_smart(contract, %{account: %{addr: address}})
+  end
+
+  @doc """
+  Fetches the balances of the revenue converter contracts that feed the staking contracts,
+  and converts them to the allocation due based on the weight of the target address.
+  """
+  def converter_balances() do
+    Rujira.Revenue.Converter
+    |> Deployments.list_targets()
+    |> Enum.filter(fn %{config: %{"target_addresses" => targets}} ->
+      Enum.any?(targets, &(&1["address"] == single()))
+    end)
+    |> Enum.reduce([], &collect_converter_balance/2)
+  end
+
+  defp collect_converter_balance(
+         %{address: address, config: %{"target_addresses" => target_addresses}},
+         agg
+       ) do
+    weight =
+      Enum.find(target_addresses, &(&1["address"] == single()))["weight"] /
+        Enum.reduce(target_addresses, 0, fn x, acc -> acc + x["weight"] end)
+
+    case Thor.balances(address, nil) do
+      # TODO: Flatten list for dual staking
+      {:ok, balance} ->
+        balance
+        |> Enum.map(&%{&1 | amount: round(&1.amount * weight)})
+        |> Enum.concat(agg)
+
+      _ ->
+        agg
+    end
   end
 end

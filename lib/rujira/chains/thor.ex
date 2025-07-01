@@ -37,8 +37,9 @@ defmodule Rujira.Chains.Thor do
       |> Enum.filter(&balance?/1)
       |> Enum.reduce({:ok, []}, fn el, acc ->
         with {:ok, acc} <- acc,
-             {:ok, asset} <- Assets.from_denom(el.denom) do
-          {:ok, [%{asset: asset, amount: el.amount} | acc]}
+             {:ok, asset} <- Assets.from_denom(el.denom),
+             {amount, ""} <- Integer.parse(el.amount) do
+          {:ok, [%{asset: asset, amount: amount} | acc]}
         end
       end)
     end
