@@ -3,6 +3,7 @@ defmodule Rujira.Staking do
   Rujira Staking.
   """
 
+  alias Rujira.Balances
   alias Rujira.Chains.Thor
   alias Rujira.Contracts
   alias Rujira.Deployments
@@ -181,5 +182,6 @@ defmodule Rujira.Staking do
       _ ->
         agg
     end
+    |> Balances.flatten()
   end
 end

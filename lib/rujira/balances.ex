@@ -37,4 +37,21 @@ defmodule Rujira.Balances do
       end
     end
   end
+
+  def flatten(list) do
+    list
+    |> Enum.reduce({[], MapSet.new()}, fn %{amount: amount, asset: asset}, {acc, seen} ->
+      if MapSet.member?(seen, asset) do
+        # Asset already seen - update the existing entry
+        {Enum.map(acc, fn
+           %{asset: ^asset} = item -> %{item | amount: item.amount + amount}
+           item -> item
+         end), seen}
+      else
+        # First time seeing this asset - add to accumulator and mark as seen
+        {acc ++ [%{amount: amount, asset: asset}], MapSet.put(seen, asset)}
+      end
+    end)
+    |> elem(0)
+  end
 end
