@@ -28,6 +28,15 @@ targets:
           x: avax-avax
           y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
 
+  - id: btc-eth
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy: 
+        xyk: 
+          x: btc-btc
+          y: eth-eth
+
   - id: btc-eth-usdc
     admin: ${accounts:admin}
     creator: ${accounts:creator}

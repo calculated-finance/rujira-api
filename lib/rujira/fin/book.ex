@@ -126,20 +126,37 @@ defmodule Rujira.Fin.Book do
     |> populate()
   end
 
+  def from_pools(%{address: address, oracle_base: "THOR.RUNE", oracle_quote: oracle_quote}, limit)
+      when is_binary(oracle_quote) do
+    case Thorchain.pool_from_id(oracle_quote) do
+      {:ok, %{balance_asset: balance_asset, balance_rune: balance_rune}} ->
+        {:ok,
+         %__MODULE__{
+           id: address,
+           bids: from_pool({balance_rune, balance_asset}, :bid, limit),
+           asks: from_pool({balance_asset, balance_rune}, :ask, limit)
+         }
+         |> populate()}
+
+      _ ->
+        {:ok, empty(address)}
+    end
+  end
+
   def from_pools(%{address: address, oracle_base: oracle_base, oracle_quote: oracle_quote}, limit)
       when is_binary(oracle_base) and is_binary(oracle_quote) do
-    with {:ok, pool_base} <- Thorchain.pool_from_id(oracle_base),
-         {:ok, pool_quote} <- Thorchain.pool_from_id(oracle_quote) do
-      {x, y} = merge_pools(pool_base, pool_quote)
+    case {Thorchain.pool_from_id(oracle_base), Thorchain.pool_from_id(oracle_quote)} do
+      {{:ok, pool_base}, {:ok, pool_quote}} ->
+        {x, y} = merge_pools(pool_base, pool_quote)
 
-      {:ok,
-       %__MODULE__{
-         id: address,
-         bids: from_pool({x, y}, :bid, limit),
-         asks: from_pool({y, x}, :ask, limit)
-       }
-       |> populate()}
-    else
+        {:ok,
+         %__MODULE__{
+           id: address,
+           bids: from_pool({x, y}, :bid, limit),
+           asks: from_pool({y, x}, :ask, limit)
+         }
+         |> populate()}
+
       _ ->
         {:ok, empty(address)}
     end

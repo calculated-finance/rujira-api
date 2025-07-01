@@ -114,6 +114,16 @@ targets:
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
       fee_address: ${targets:rujira-revenue.split}
 
+  - id: btc-eth
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      denoms: 
+        - btc-btc
+        - eth-eth
+      market_maker: ${targets:rujira-bow.btc-eth}
+      fee_address: ${targets:rujira-revenue.split}
+
   - id: btc-eth-usdc
     admin: ${accounts:admin}
     creator: ${accounts:creator}
@@ -238,6 +248,15 @@ targets:
         - x/ruji
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
       market_maker: ${targets:rujira-bow.ruji-eth-usdc}
+      fee_address: ${targets:rujira-revenue.split}
+
+  - id: rune-eth-usdc
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      denoms: 
+        - rune
+        - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
       fee_address: ${targets:rujira-revenue.split}
 
   - id: tcy-rune
