@@ -154,7 +154,7 @@ defmodule Rujira.Staking do
   Fetches the balances of the revenue converter contracts that feed the staking contracts,
   and converts them to the allocation due based on the weight of the target address.
   """
-  def converter_balances() do
+  def converter_balances do
     Rujira.Revenue.Converter
     |> Deployments.list_targets()
     |> Enum.filter(fn %{config: %{"target_addresses" => targets}} ->
