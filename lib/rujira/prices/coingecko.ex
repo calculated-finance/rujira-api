@@ -95,7 +95,7 @@ defmodule Rujira.Prices.Coingecko do
 
   def prices(ids) do
     case proxy("v3/simple/price", %{
-           "ids" => Enum.join(ids, ","),
+           "ids" => Enum.join(Enum.uniq(ids), ","),
            "vs_currencies" => "usd",
            "include_24hr_change" => "true",
            "include_market_cap" => "true"
