@@ -42,6 +42,12 @@ defmodule RujiraWeb.Schema.BalanceTypes do
     field :tcy, :thorchain_tcy do
       resolve(&Thorchain.tcy/3)
     end
+
+    field :value_usd, non_null(:bigint) do
+      resolve(fn %{amount: amount, asset: %{ticker: ticker} = asset}, _, _ ->
+        {:ok, Prices.value_usd(ticker, amount, Assets.decimals(asset))}
+      end)
+    end
   end
 
   object :utxo do
