@@ -58,6 +58,7 @@ defmodule Rujira.Prices do
          timestamp: DateTime.utc_now()
        }}
     else
+      {:error, "no coingecko id" <> _} -> {:ok, nil}
       {:error, _} = err -> err
     end
   end
