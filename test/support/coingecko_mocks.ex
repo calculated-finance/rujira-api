@@ -4,12 +4,19 @@ defmodule Rujira.CoingeckoMocks do
   import ExUnit.Assertions
 
   @mock_body_price %{
+    "kujira" => %{"usd" => 42.0, "usd_24h_change" => 1.23, "usd_market_cap" => 1_000_000},
     "tcy" => %{"usd" => 42.0, "usd_24h_change" => 1.23, "usd_market_cap" => 1_000_000},
     "bitcoin" => %{"usd" => 100_000.0, "usd_24h_change" => 1.23, "usd_market_cap" => 1_000_000},
     "thorchain" => %{"usd" => 100.0, "usd_24h_change" => 1.23, "usd_market_cap" => 1_000_000},
     "nami-protocol" => %{"usd" => 100.0, "usd_24h_change" => 1.23, "usd_market_cap" => 1_000_000},
     "mantadao" => %{"usd" => 100.0, "usd_24h_change" => 1.23, "usd_market_cap" => 1_000_000},
     "usd-coin" => %{"usd" => 1.0, "usd_24h_change" => 1.23, "usd_market_cap" => 1_000_000},
+    "binance-peg-xrp" => %{"usd" => 1.0, "usd_24h_change" => 1.23, "usd_market_cap" => 1_000_000},
+    "binance-peg-litecoin" => %{
+      "usd" => 1.0,
+      "usd_24h_change" => 1.23,
+      "usd_market_cap" => 1_000_000
+    },
     "bifrost-bridged-bnb-bifrost" => %{
       "usd" => 230,
       "usd_24h_change" => 1.23,
