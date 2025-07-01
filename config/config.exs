@@ -38,7 +38,8 @@ config :cors_plug,
     ~r/https:\/\/rujira-ui-main-git-[a-z]+-rujira\.vercel\.app/,
     "https://rujira.network",
     ~r/^exp:\/\/.*/,
-    ~r/^https?:\/\/([a-z0-9-]+\.)?namifi\.app$/
+    ~r/^https?:\/\/([a-z0-9-]+\.)?namifi\.app$/,
+    ~r/^wails:\/\/wails\.localhost:\d+$/
   ],
   max_age: 86400,
   methods: ["GET", "POST"]
