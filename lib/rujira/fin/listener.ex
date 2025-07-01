@@ -11,8 +11,15 @@ defmodule Rujira.Fin.Listener do
   require Logger
 
   @impl true
-  def handle_new_block(%{txs: txs}, state) do
+  def handle_new_block(%{txs: txs, end_block_events: end_block_events}, state) do
     scan_txs(txs)
+
+    end_block_events
+    |> Enum.map(&scan_end_block_event/1)
+    |> Enum.filter(&is_binary/1)
+    |> Rujira.Enum.uniq()
+    |> broadcast_swaps()
+
     {:noreply, state}
   end
 
@@ -84,6 +91,9 @@ defmodule Rujira.Fin.Listener do
 
   def scan_fin_event(_), do: nil
 
+  def scan_end_block_event(%{attributes: %{"pool" => pool}, type: "swap"}), do: pool
+  def scan_end_block_event(_), do: nil
+
   def scan_bow_event(%{
         attributes: %{"_contract_address" => contract_address},
         type: "wasm-rujira-bow/" <> _
@@ -92,4 +102,16 @@ defmodule Rujira.Fin.Listener do
   end
 
   def scan_bow_event(_), do: nil
+
+  defp broadcast_swaps(pools) when is_list(pools), do: Enum.each(pools, &broadcast_swap/1)
+
+  defp broadcast_swap(pool) do
+    with {:ok, pools} <- Rujira.Fin.list_pairs() do
+      pools
+      |> Enum.filter(&(&1.oracle_base == pool or &1.oracle_quote == pool))
+      |> Enum.each(fn %{address: address} ->
+        Rujira.Events.publish_node(:fin_book, address)
+      end)
+    end
+  end
 end

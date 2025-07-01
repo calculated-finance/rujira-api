@@ -214,12 +214,9 @@ defmodule Rujira.Fin do
   end
 
   def book_from_id(id) do
-    case query_book(id, 100) do
-      {:ok, res} ->
-        Book.from_query(id, res)
-
-      _ ->
-        Contracts.from_target({Book, id})
+    with {:ok, res} <- get_pair(id),
+         {:ok, %{book: book}} <- load_pair(res, 100) do
+      {:ok, book}
     end
   end
 
