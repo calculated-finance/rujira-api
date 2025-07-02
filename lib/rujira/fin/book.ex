@@ -36,6 +36,9 @@ defmodule Rujira.Fin.Book do
       end
     end
 
+    def from_swap(0, _, _), do: :error
+    def from_swap(_, 0, _), do: :error
+
     def from_swap(bid, ask, side) do
       ask = round(ask * (1 - 0.0015))
 
@@ -45,14 +48,15 @@ defmodule Rujira.Fin.Book do
           :ask -> Decimal.div(Decimal.new(bid), Decimal.new(ask))
         end
 
-      %__MODULE__{
-        price: price,
-        side: side,
-        total: 0,
-        value: 0,
-        virtual_total: ask,
-        virtual_value: Price.value(side, price, ask)
-      }
+      {:ok,
+       %__MODULE__{
+         price: price,
+         side: side,
+         total: 0,
+         value: 0,
+         virtual_total: ask,
+         virtual_value: Price.value(side, price, ask)
+       }}
     end
 
     def value(:ask, price, total) do
@@ -180,7 +184,10 @@ defmodule Rujira.Fin.Book do
   end
 
   defp to_discrete({bid, %{emit_assets: ask}}, {{bid_total, ask_total}, orders}, side) do
-    {{bid, ask}, [Price.from_swap(bid - bid_total, ask - ask_total, side) | orders]}
+    case Price.from_swap(bid - bid_total, ask - ask_total, side) do
+      {:ok, price} -> {{bid, ask}, [price | orders]}
+      _ -> {{bid, ask}, orders}
+    end
   end
 
   defp merge_pools(b, q) when b.balance_rune > q.balance_rune do
