@@ -84,8 +84,8 @@ defmodule Rujira.Fin.Listener do
           } = attributes,
         type: "wasm-rujira-fin/" <> name
       }) do
-    # owner can be missing on trade events
-    owner = Map.get(attributes, "owner")
+    # Where we can't know the owner (eg on trade events), we have to invalidate all
+    owner = Map.get(attributes, "owner", :_)
     {name, contract_address, owner, side, price}
   end
 

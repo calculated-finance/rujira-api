@@ -173,7 +173,6 @@ defmodule Rujira.Staking do
         Enum.reduce(target_addresses, 0, fn x, acc -> acc + x["weight"] end)
 
     case Thor.balances(address, nil) do
-      # TODO: Flatten list for dual staking
       {:ok, balance} ->
         balance
         |> Enum.map(&%{&1 | amount: round(&1.amount * weight)})
