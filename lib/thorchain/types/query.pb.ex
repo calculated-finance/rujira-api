@@ -312,6 +312,12 @@ defmodule Thorchain.Types.Query.Service do
     Thorchain.Types.QueryUpgradeVotesRequest,
     Thorchain.Types.QueryUpgradeVotesResponse
   )
+
+  rpc(
+    :OraclePrice,
+    Thorchain.Types.QueryOraclePriceRequest,
+    Thorchain.Types.QueryOraclePriceResponse
+  )
 end
 
 defmodule Thorchain.Types.Query.Stub do

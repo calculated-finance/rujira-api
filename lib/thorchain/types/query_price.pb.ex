@@ -1,4 +1,4 @@
-defmodule Thorchain.Oracle.QueryOraclePriceRequest do
+defmodule Thorchain.Types.QueryOraclePriceRequest do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
@@ -7,15 +7,15 @@ defmodule Thorchain.Oracle.QueryOraclePriceRequest do
   field :symbol, 2, type: :string
 end
 
-defmodule Thorchain.Oracle.QueryOraclePriceResponse do
+defmodule Thorchain.Types.QueryOraclePriceResponse do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
 
-  field :price, 1, type: Thorchain.Oracle.OraclePrice
+  field :price, 1, type: Thorchain.Types.OraclePrice
 end
 
-defmodule Thorchain.Oracle.OraclePrice do
+defmodule Thorchain.Types.OraclePrice do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.13.0"
