@@ -147,6 +147,23 @@ defmodule Rujira.Fin.Book do
     end
   end
 
+  def from_pools(%{address: address, oracle_base: oracle_base, oracle_quote: "THOR.RUNE"}, limit)
+      when is_binary(oracle_base) do
+    case Thorchain.pool_from_id(oracle_base) do
+      {:ok, %{balance_asset: balance_asset, balance_rune: balance_rune}} ->
+        {:ok,
+         %__MODULE__{
+           id: address,
+           bids: from_pool({balance_asset, balance_rune}, :bid, limit),
+           asks: from_pool({balance_rune, balance_asset}, :ask, limit)
+         }
+         |> populate()}
+
+      _ ->
+        {:ok, empty(address)}
+    end
+  end
+
   def from_pools(%{address: address, oracle_base: oracle_base, oracle_quote: oracle_quote}, limit)
       when is_binary(oracle_base) and is_binary(oracle_quote) do
     case {Thorchain.pool_from_id(oracle_base), Thorchain.pool_from_id(oracle_quote)} do
