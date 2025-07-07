@@ -2,8 +2,8 @@ defmodule Rujira.Chains.Base do
   @moduledoc """
   Implements the Base adapter for EVM compatibility.
   """
-  @rpc "https://base-rpc.publicnode.com"
-  @ws "wss://base-rpc.publicnode.com"
+  @rpc "https://base-mainnet.g.alchemy.com/v2/"
+  @ws "wss://base-mainnet.g.alchemy.com/v2/"
 
   use Rujira.Chains.Evm,
     rpc: @rpc,

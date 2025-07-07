@@ -26,10 +26,14 @@ defmodule Rujira.Chains.Evm do
       @ws unquote(ws)
       @transfer "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
 
-      def start_link(_) do
-        Logger.info("#{__MODULE__} Starting node websocket: #{@ws}")
+      defp api_key, do: Application.get_env(:rujira, Rujira.Chains.Evm)[:alchemy_key]
+      defp rpc, do: @rpc <> api_key()
+      defp ws, do: @ws <> api_key()
 
-        case WebSockex.start_link(@ws, __MODULE__, %{}) do
+      def start_link(_) do
+        Logger.info("#{__MODULE__} Starting node websocket: #{ws()}")
+
+        case WebSockex.start_link(ws(), __MODULE__, %{}) do
           {:ok, pid} ->
             message =
               Jason.encode!(%{
@@ -54,7 +58,7 @@ defmodule Rujira.Chains.Evm do
             {:ok, pid}
 
           {:error, _} ->
-            Logger.error("#{__MODULE__} Error connecting to websocket #{@ws}")
+            Logger.error("#{__MODULE__} Error connecting to websocket #{ws()}")
             :ignore
         end
       end
@@ -85,19 +89,19 @@ defmodule Rujira.Chains.Evm do
       end
 
       def native_balance(address) do
-        native_balance(@rpc, address)
+        native_balance(rpc(), address)
       end
 
       defmemo do_native_balance(address) do
-        native_balance(@rpc, eip55(address))
+        native_balance(rpc(), eip55(address))
       end
 
       def balance_of(address, asset) do
-        balance_of(@rpc, eip55(address), eip55(asset))
+        balance_of(rpc(), eip55(address), eip55(asset))
       end
 
       defmemo do_balance_of(address, asset) do
-        balance_of(@rpc, address, asset)
+        balance_of(rpc(), address, asset)
       end
 
       @decorate transaction_event()
