@@ -43,11 +43,6 @@ defmodule RujiraWeb.Schema.RujiraTypes do
       resolve(&Resolvers.Ventures.resolver/3)
     end
 
-    @desc "Shows current supply and bank module data for Rujira tokens"
-    field :bank, non_null(:bank) do
-      resolve(&Resolvers.Bank.resolver/3)
-    end
-
     @desc "Provides analytics, performance metrics, and aggregated insights"
     field :analytics, non_null(:analytics) do
       resolve(fn _, _, _ -> {:ok, %{}} end)

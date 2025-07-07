@@ -14,7 +14,6 @@ defmodule RujiraWeb.Schema do
   import_types(RujiraWeb.Schema.AccountTypes)
   import_types(RujiraWeb.Schema.AnalyticsTypes)
   import_types(RujiraWeb.Schema.BalanceTypes)
-  import_types(RujiraWeb.Schema.BankTypes)
   import_types(RujiraWeb.Schema.BowTypes)
   import_types(RujiraWeb.Schema.ChainTypes)
   import_types(RujiraWeb.Schema.DeploymentTypes)

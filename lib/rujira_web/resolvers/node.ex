@@ -12,7 +12,6 @@ defmodule RujiraWeb.Resolvers.Node do
   # Core Modules
   alias Rujira.Accounts
   alias Rujira.Assets
-  alias Rujira.Bank
   alias Rujira.Contracts
   alias Rujira.Prices
 
@@ -56,7 +55,6 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Accounts.Account{}, _), do: :account
   def type(%Accounts.Layer1{}, _), do: :layer_1_account
   def type(%Assets.Asset{}, _), do: :asset
-  def type(%Bank.Supply{}, _), do: :bank_supply
 
   # Bow Protocol
   def type(%Bow.Account{}, _), do: :bow_account
@@ -131,9 +129,8 @@ defmodule RujiraWeb.Resolvers.Node do
   defp resolve_id({:ok, %{type: :fin_order, id: id}}), do: Fin.order_from_id(id)
   defp resolve_id({:ok, %{type: :fin_trade, id: id}}), do: Fin.trade_from_id(id)
 
-  # --- Prices & Bank ---
+  # --- Prices  ---
   defp resolve_id({:ok, %{type: :price, id: id}}), do: Prices.price_from_id(id)
-  defp resolve_id({:ok, %{type: :bank_supply, id: id}}), do: Bank.supply(id)
 
   # --- Staking ---
   defp resolve_id({:ok, %{type: :staking_pool, id: id}}), do: Staking.pool_from_id(id)

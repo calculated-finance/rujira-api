@@ -6,7 +6,6 @@ config :rujira,
   observers: [
     Thorchain,
     Rujira.Balances,
-    Rujira.Bank,
     Rujira.Chains,
     Rujira.Contracts,
     Rujira.Fin,
