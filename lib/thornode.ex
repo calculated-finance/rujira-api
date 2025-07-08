@@ -10,6 +10,7 @@ defmodule Thornode do
 
   @pool Thornode.Pool
   @socket Thornode.Websocket
+  @backfill Thornode.Backfill
 
   def start_link(_opts \\ []) do
     Logger.info("Starting link ")
@@ -20,10 +21,10 @@ defmodule Thornode do
   def init(config) do
     case Keyword.get(config, :websocket) do
       nil ->
-        Supervisor.init([{@pool, config}], strategy: :one_for_one)
+        Supervisor.init([{@pool, config}, @backfill], strategy: :one_for_one)
 
       _ ->
-        Supervisor.init([{@pool, config}, {@socket, config}], strategy: :one_for_one)
+        Supervisor.init([{@pool, config}, {@socket, config}, @backfill], strategy: :one_for_one)
     end
   end
 

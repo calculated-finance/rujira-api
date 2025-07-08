@@ -2,11 +2,13 @@ defmodule Thornode.Websocket do
   @moduledoc """
   WebSocket client for connecting to ThorNode's WebSocket endpoint.
 
-  This module handles the WebSocket connection to ThorNode for real-time
-  event notifications, such as new blocks being added to the chain.
+  Integrates with Thornode.Sessions to track block-processing sessions.
+  Uses 'broadcast first, then checkpoint' for at-least-once delivery semantics.
   """
   use WebSockex
   require Logger
+
+  alias Thornode.Sessions
 
   @subscriptions ["tm.event='NewBlock'"]
 
@@ -15,14 +17,16 @@ defmodule Thornode.Websocket do
     pubsub = Keyword.get(config, :pubsub)
     Logger.info("#{__MODULE__} Starting node websocket: #{endpoint}")
 
-    case WebSockex.start_link("#{endpoint}/websocket", __MODULE__, %{pubsub: pubsub}) do
+    case WebSockex.start_link("#{endpoint}/websocket", __MODULE__, %{
+           pubsub: pubsub,
+           session_started: false
+         }) do
       {:ok, pid} ->
         for {s, idx} <- Enum.with_index(@subscriptions), do: do_subscribe(pid, idx, s)
         {:ok, pid}
 
       {:error, _} ->
         Logger.error("#{__MODULE__} Error connecting to websocket #{endpoint}")
-        # Ignore for now
         :ignore
     end
   end
@@ -45,17 +49,19 @@ defmodule Thornode.Websocket do
   def handle_frame({:text, msg}, state) do
     with {:ok, %{id: id, result: %{data: %{type: t, value: v}}}} <-
            Jason.decode(msg, keys: :atoms),
-         {:ok, block} <-
-           Thorchain.block(
-             v
-             |> Map.get(:block)
-             |> Map.get(:header)
-             |> Map.get(:height)
-           ) do
+         height <- get_height(v),
+         {:ok, block} <- Thorchain.block(height) do
       Logger.debug("#{__MODULE__} Subscription #{id} event #{t}")
+
+      # Move previous :current session into :backfill with the new starting height
+      backfill(height, state)
+
+      # Always broadcast the block first
+      # This ensures that the block is processed by any subscribers before the checkpoint is updated
       Phoenix.PubSub.broadcast(pubsub(), t, block)
 
-      {:ok, state}
+      # Now start or update session
+      update_session(height, state)
     else
       {:ok, %{id: id, jsonrpc: "2.0", result: %{}}} ->
         Logger.info("#{__MODULE__} Subscription #{id} successful")
@@ -92,4 +98,38 @@ defmodule Thornode.Websocket do
   end
 
   defp pubsub, do: Application.get_env(:rujira, :pubsub, Rujira.PubSub)
+
+  defp get_height(v) do
+    v
+    |> Map.get(:block)
+    |> Map.get(:header)
+    |> Map.get(:height)
+  end
+
+  defp backfill(height, %{session_started: false}), do: Sessions.start_backfill(height)
+  defp backfill(_, %{session_started: true}), do: :ok
+
+  defp update_session(height, %{session_started: false} = state) do
+    case Sessions.start(height) do
+      {:ok, _session} ->
+        Logger.info("#{__MODULE__} Started new session at block #{height}")
+        {:ok, %{state | session_started: true}}
+
+      {:error, changeset} ->
+        Logger.error("#{__MODULE__} Failed to start session: #{inspect(changeset)}")
+        {:ok, state}
+    end
+  end
+
+  defp update_session(height, %{session_started: true} = state) do
+    case Sessions.update_checkpoint(height) do
+      {:ok, _session} ->
+        {:ok, state}
+
+      {:error, changeset} ->
+        Logger.error("#{__MODULE__} Failed to update session checkpoint: #{inspect(changeset)}")
+
+        {:ok, state}
+    end
+  end
 end
