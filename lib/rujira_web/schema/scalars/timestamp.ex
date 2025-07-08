@@ -43,4 +43,10 @@ defmodule RujiraWeb.Schema.Scalars.Timestamp do
   end
 
   defp serialize_datetime(%DateTime{} = value), do: DateTime.to_iso8601(value)
+
+  defp serialize_datetime(%Google.Protobuf.Timestamp{} = value) do
+    with {:ok, ts} <- DateTime.from_unix!(value.seconds) do
+      DateTime.to_iso8601(ts)
+    end
+  end
 end

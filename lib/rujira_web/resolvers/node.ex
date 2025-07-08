@@ -28,6 +28,9 @@ defmodule RujiraWeb.Resolvers.Node do
   # Web & Resolvers
   alias RujiraWeb.Resolvers
 
+  # Chain Modules
+  alias Rujira.Chains.Cosmos
+
   # ===== Public API =====
 
   @doc """
@@ -97,6 +100,9 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Thorchain.Types.QueryPoolResponse{}, _), do: :thorchain_pool
   def type(%{observed_tx: _}, _), do: :thorchain_tx_in
   def type(%Thorchain.Oracle{}, _), do: :thorchain_oracle
+
+  # Chain Modules
+  def type(%Rujira.Chains.Cosmos{}, _), do: :cosmos_account
 
   # ===== ID Resolution =====
   # Resolves GraphQL global IDs to their associated Elixir domain entities
@@ -177,6 +183,10 @@ defmodule RujiraWeb.Resolvers.Node do
 
   defp resolve_id({:ok, %{type: :index_account, id: id}}),
     do: Index.account_from_id(id)
+
+  # --- Chain Modules ---
+  defp resolve_id({:ok, %{type: :cosmos_account, id: id}}),
+    do: Cosmos.account_from_id(id)
 
   # --- Fallback Error Case ---
   defp resolve_id({:error, error}), do: {:error, error}

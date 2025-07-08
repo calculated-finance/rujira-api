@@ -44,7 +44,9 @@ defmodule Rujira.CoingeckoMocks do
       "usd_24h_change" => 1.23,
       "usd_market_cap" => 1_000_000
     },
-    "tether" => %{"usd" => 1.0, "usd_24h_change" => 1.23, "usd_market_cap" => 1_000_000}
+    "tether" => %{"usd" => 1.0, "usd_24h_change" => 1.23, "usd_market_cap" => 1_000_000},
+    "luna-wormhole" => %{"usd" => 1.0, "usd_24h_change" => 1.23, "usd_market_cap" => 1_000_000},
+    "luna-by-virtuals" => %{"usd" => 1.0, "usd_24h_change" => 1.23, "usd_market_cap" => 1_000_000}
   }
 
   # fetch from https://api.coingecko.com/api/v3/coins/list

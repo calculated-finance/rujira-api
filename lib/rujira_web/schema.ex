@@ -36,6 +36,7 @@ defmodule RujiraWeb.Schema do
   import_types(RujiraWeb.Schema.ThorchainTypesOld)
   import_types(RujiraWeb.Schema.TokenTypes)
   import_types(RujiraWeb.Schema.VenturesTypes)
+  import_types(RujiraWeb.Schema.CosmosTypes)
 
   def middleware(middleware, _field, _) do
     [RujiraWeb.Middleware.InstrumentResolver | middleware]
