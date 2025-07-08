@@ -48,26 +48,36 @@ defmodule Thornode.Backfill do
        when from < to do
     Logger.info("[Backfill] Session: backfilling blocks #{from + 1} to #{to}")
 
-    _ =
-      Enum.reduce_while((from + 1)..to, session, fn height, session_acc ->
-        case backfill_block(session_acc, height) do
-          {:ok, session_acc} ->
-            {:cont, session_acc}
+    case Enum.reduce_while(to..(from + 1), session, &backfill_height/2) do
+      {:helt, height} ->
+        Sessions.complete_backfill(session, height)
 
-          {:error, reason} ->
-            Logger.error("[Backfill] Failed at block #{height}: #{inspect(reason)}")
-            {:halt, session_acc}
-        end
-      end)
+        Logger.info(
+          "[Backfill] Session backfill partially completed from #{height} to #{from + 1}"
+        )
 
-    Sessions.complete_backfill(session, to)
-    Logger.info("[Backfill] Session backfill completed up to #{to}")
+      _ ->
+        Sessions.complete_backfill(session, to)
+        Logger.info("[Backfill] Session backfill completed back from #{to} to #{from + 1}")
+    end
+
     :ok
   end
 
   defp backfill_session(%Session{checkpoint_height: from, restart_height: to}) when from == to do
     Logger.info("[Backfill] Nothing to backfill for this session (from == to)")
     :ok
+  end
+
+  defp backfill_height(height, session_acc) do
+    case backfill_block(session_acc, height) do
+      {:ok, session_acc} ->
+        {:cont, session_acc}
+
+      {:error, reason} ->
+        Logger.error("[Backfill] Failed at block #{height}: #{inspect(reason)}")
+        {:halt, height}
+    end
   end
 
   defp backfill_block(session, height) do
