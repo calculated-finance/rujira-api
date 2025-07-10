@@ -21,3 +21,14 @@ targets:
         contract: ${targets:rujira-fin.nami-eth-usdt}
         msg: '{"swap": {}}'
         min: '10000000'
+  - id: tcy
+    address: sthor1z7ejlk5wk2pxh9nfwjzkkdnrq4p2f5rjcpudltv0gh282dwfz6nquvxt53
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config: 
+      bond_denom: tcy
+      revenue_denom: rune
+      revenue_converter:
+        contract: ${targets:rujira-fin.tcy-rune}
+        msg: '{"swap": {}}'
+        min: '10000000'
