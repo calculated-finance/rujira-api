@@ -17,7 +17,9 @@ defmodule Rujira.Events do
   end
 
   def publish(payload, topics) do
-    publisher().publish(@endpoint, payload, topics)
+    Task.start(fn ->
+      publisher().publish(@endpoint, payload, topics)
+    end)
   end
 
   defp publisher do

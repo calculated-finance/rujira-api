@@ -11,8 +11,7 @@ defmodule Rujira.Fin.ListenerTest do
     {:ok, block} = Block.load_block("4539686")
     Listener.handle_new_block(block, nil)
 
-    messages = collect_publishes()
-
+    messages = wait_for_publishes(2)
     assert length(messages) == 2
 
     assert messages == [
@@ -48,7 +47,7 @@ defmodule Rujira.Fin.ListenerTest do
     {:ok, block} = Block.load_block("4541708")
     Listener.handle_new_block(block, nil)
 
-    messages = collect_publishes()
+    messages = wait_for_publishes(1)
     assert length(messages) == 1
 
     assert messages == [
@@ -73,7 +72,7 @@ defmodule Rujira.Fin.ListenerTest do
     {:ok, block} = Block.load_block("4574056")
     Listener.handle_new_block(block, nil)
 
-    messages = collect_publishes()
+    messages = wait_for_publishes(2)
     assert length(messages) == 2
 
     assert messages == [
@@ -105,7 +104,7 @@ defmodule Rujira.Fin.ListenerTest do
     {:ok, block} = Block.load_block("4574088")
     Listener.handle_new_block(block, nil)
 
-    filled_messages = collect_publishes()
+    filled_messages = wait_for_publishes(2)
     assert length(filled_messages) == 2
 
     assert filled_messages == [
