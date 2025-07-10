@@ -116,6 +116,12 @@ if config_env() == :prod do
       environment variable NODE_WEBSOCKET is missing.
       """
 
+  websockets =
+    System.get_env("NODE_WEBSOCKETS") ||
+      raise """
+      environment variable NODE_WEBSOCKETS is missing.
+      """
+
   grpcs =
     System.get_env("NODE_GRPCS") ||
       raise """
@@ -128,7 +134,8 @@ if config_env() == :prod do
   config :rujira, Thornode,
     websocket: websocket,
     size: size,
-    grpcs: String.split(grpcs, ",")
+    grpcs: String.split(grpcs, ","),
+    websockets: String.split(websockets, ",")
 
   xrp_http =
     System.get_env("XRP_HTTP") ||
