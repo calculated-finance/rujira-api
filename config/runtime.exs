@@ -110,12 +110,6 @@ if config_env() == :prod do
     push_api_key: System.fetch_env!("APPSIGNAL_PUSH_API_KEY"),
     env: System.fetch_env!("APPSIGNAL_APP_ENV")
 
-  websocket =
-    System.get_env("NODE_WEBSOCKET") ||
-      raise """
-      environment variable NODE_WEBSOCKET is missing.
-      """
-
   websockets =
     System.get_env("NODE_WEBSOCKETS") ||
       raise """
@@ -132,7 +126,6 @@ if config_env() == :prod do
     System.get_env("NODE_GRPC_POOL_SIZE") || 5
 
   config :rujira, Thornode,
-    websocket: websocket,
     size: size,
     grpcs: String.split(grpcs, ","),
     websockets: String.split(websockets, ",")
