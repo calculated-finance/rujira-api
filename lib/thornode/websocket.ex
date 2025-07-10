@@ -25,9 +25,9 @@ defmodule Thornode.Websocket do
         for {s, idx} <- Enum.with_index(@subscriptions), do: do_subscribe(pid, idx, s)
         {:ok, pid}
 
-      {:error, _} ->
+      {:error, reason} ->
         Logger.error("#{__MODULE__} Error connecting to websocket #{endpoint}")
-        :ignore
+        {:error, reason}
     end
   end
 
