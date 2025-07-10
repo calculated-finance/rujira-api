@@ -42,7 +42,7 @@ defmodule RujiraWeb.Resolvers.Staking do
   def status(%Pool{} = pool, _, _) do
     Helpers.async(fn ->
       with {:ok, %{status: status}} <- Staking.load_pool(pool) do
-        {:ok, status}
+        {:ok, Map.put(status, :bond_denom, pool.bond_denom)}
       end
     end)
   end
@@ -75,19 +75,15 @@ defmodule RujiraWeb.Resolvers.Staking do
 
   def value_usd(
         %{
-          pending_revenue: pending_revenue,
-          liquid_size: liquid_size,
-          bonded: bonded,
-          pool: %{bond_denom: bond_denom, revenue_denom: revenue_denom}
+          bond_denom: bond_denom,
+          account_bond: account_bond,
+          liquid_bond_size: liquid_bond_size
         },
         _,
         _
       ) do
-    with {:ok, bond_asset} <- Assets.from_denom(bond_denom),
-         {:ok, revenue_asset} <- Assets.from_denom(revenue_denom) do
-      {:ok,
-       Prices.value_usd(bond_asset.ticker, bonded + liquid_size) +
-         Prices.value_usd(revenue_asset.ticker, pending_revenue)}
+    with {:ok, bond_asset} <- Assets.from_denom(bond_denom) do
+      {:ok, Prices.value_usd(bond_asset.ticker, account_bond + liquid_bond_size)}
     end
   end
 

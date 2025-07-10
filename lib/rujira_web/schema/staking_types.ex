@@ -96,6 +96,10 @@ defmodule RujiraWeb.Schema.StakingTypes do
     field :liquid_bond_size, non_null(:bigint)
     @desc "The amount of [revenue_denom] pending distribution"
     field :pending_revenue, non_null(:bigint)
+
+    field :value_usd, non_null(:bigint) do
+      resolve(&Staking.value_usd/3)
+    end
   end
 
   object :staking_accounts do
