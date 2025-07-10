@@ -45,8 +45,8 @@ defmodule Rujira.Staking do
     |> Rujira.Enum.reduce_while_ok(
       [],
       fn
-        %{status: :preview} ->
-          :skip
+        %{status: :preview} = target ->
+          Pool.from_target(target)
 
         %{module: module, address: address} ->
           Contracts.get({module, address})

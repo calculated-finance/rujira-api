@@ -39,6 +39,10 @@ defmodule RujiraWeb.Resolvers.Staking do
     end)
   end
 
+  def status(%Pool{deployment_status: :preview}, _, _) do
+    {:ok, nil}
+  end
+
   def status(%Pool{} = pool, _, _) do
     Helpers.async(fn ->
       with {:ok, %{status: status}} <- Staking.load_pool(pool) do

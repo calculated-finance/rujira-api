@@ -11,6 +11,16 @@ targets:
         contract: ${targets:rujira-fin.ruji-eth-usdt}
         msg: '{"swap": {}}'
         min: '10000000'
+  - id: ruji-rune
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config: 
+      bond_denom: x/lp-x/ruji-rune
+      revenue_denom: ruji
+      revenue_converter:
+        contract: ${targets:rujira-bow.ruji-rune}
+        msg: '{"deposit": {}}'
+        min: '10000000'
   - id: nami
     admin: ${accounts:admin}
     creator: ${accounts:nami-deployer}
