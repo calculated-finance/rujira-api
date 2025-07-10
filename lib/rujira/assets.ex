@@ -294,10 +294,10 @@ defmodule Rujira.Assets do
     end
   end
 
-  defp matches(nil, _target), do: true
-  defp matches("*", _target), do: true
+  def matches(nil, _target), do: true
+  def matches("*", _target), do: true
 
-  defp matches(query, target) do
+  def matches(query, target) do
     target
     |> String.downcase()
     |> String.contains?(String.downcase(query))

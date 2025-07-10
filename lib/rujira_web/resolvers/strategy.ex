@@ -6,6 +6,7 @@ defmodule RujiraWeb.Resolvers.Strategy do
   alias Rujira.Assets
   alias Rujira.Bow
   alias Rujira.Index
+  alias Rujira.Staking
   alias Thorchain.Types.QueryPoolResponse
 
   def list(_, args, _) do
@@ -14,10 +15,12 @@ defmodule RujiraWeb.Resolvers.Strategy do
 
     with {:ok, bow} <- Bow.list_pools(),
          {:ok, thorchain} <- Thorchain.pools(),
-         {:ok, index} <- Index.load_vaults() do
+         {:ok, index} <- Index.load_vaults(),
+         {:ok, staking} <- Staking.list_pools() do
       Enum.filter(bow, &bow_query(query, &1))
       |> Enum.concat(Enum.filter(thorchain, &thorchain_query(query, &1)))
       |> Enum.concat(Enum.filter(index, &index_query(query, &1)))
+      |> Enum.concat(Enum.filter(staking, &staking_query(query, &1)))
       |> Enum.filter(&filter_type(&1, typenames))
       |> Connection.from_list(args)
     end
@@ -43,11 +46,23 @@ defmodule RujiraWeb.Resolvers.Strategy do
                end
              end
            ),
-         {:ok, index} <- Index.accounts(address) do
+         {:ok, index} <- Index.accounts(address),
+         {:ok, pools} <- Staking.list_pools(),
+         {:ok, staking} <-
+           Rujira.Enum.reduce_async_while_ok(
+             pools,
+             fn x ->
+               case Staking.load_account(x, address) do
+                 {:ok, %{bonded: 0, liquid_shares: 0}} -> :skip
+                 other -> other
+               end
+             end
+           ) do
       accounts =
         bow
         |> Enum.concat(thorchain)
         |> Enum.concat(index)
+        |> Enum.concat(staking)
 
       {:ok, accounts}
     end
@@ -79,6 +94,16 @@ defmodule RujiraWeb.Resolvers.Strategy do
     end)
   end
 
+  defp staking_query(query, %{bond_denom: denom}) do
+    case Assets.from_denom(denom) do
+      {:ok, asset} ->
+        Assets.matches(query, asset)
+
+      _ ->
+        false
+    end
+  end
+
   def filter_type(_, nil), do: true
   def filter_type(%Bow.Xyk{}, list), do: Enum.member?(list, "BowPoolXyk")
 
@@ -87,4 +112,7 @@ defmodule RujiraWeb.Resolvers.Strategy do
 
   def filter_type(%Index.Vault{}, list),
     do: Enum.member?(list, "IndexVault")
+
+  def filter_type(%Staking.Pool{}, list),
+    do: Enum.member?(list, "StakingPool")
 end

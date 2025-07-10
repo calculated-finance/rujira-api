@@ -12,24 +12,26 @@ defmodule RujiraWeb.Schema.StrategyTypes do
   alias Rujira.Bow
 
   union :strategy do
-    types([:bow_pool_xyk, :thorchain_pool, :index_vault])
+    types([:bow_pool_xyk, :thorchain_pool, :index_vault, :staking_pool])
 
     resolve_type(fn
       %Bow.Xyk{}, _ -> :bow_pool_xyk
       %Thorchain.Types.QueryPoolResponse{}, _ -> :thorchain_pool
       %Rujira.Index.Vault{}, _ -> :index_vault
+      %Rujira.Staking.Pool{}, _ -> :staking_pool
     end)
   end
 
   connection(node_type: :strategy)
 
   union :strategy_account do
-    types([:bow_account, :thorchain_liquidity_provider, :index_account])
+    types([:bow_account, :thorchain_liquidity_provider, :index_account, :staking_account])
 
     resolve_type(fn
       %Bow.Account{}, _ -> :bow_account
       %Thorchain.Types.QueryLiquidityProviderResponse{}, _ -> :thorchain_liquidity_provider
       %Rujira.Index.Account{}, _ -> :index_account
+      %Rujira.Staking.Account{}, _ -> :staking_account
     end)
   end
 
