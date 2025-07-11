@@ -297,11 +297,13 @@ defmodule Rujira.Assets do
   def matches(nil, _target), do: true
   def matches("*", _target), do: true
 
-  def matches(query, target) do
+  def matches(query, target) when is_binary(target) do
     target
     |> String.downcase()
     |> String.contains?(String.downcase(query))
   end
+
+  def matches(_query, _target), do: false
 
   defp parse_query_parts(nil), do: []
   defp parse_query_parts(""), do: []
