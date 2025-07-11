@@ -87,15 +87,11 @@ defmodule Thorchain.Tor do
   end
 
   def update_candles(prices) do
-    IO.inspect("start", label: DateTime.utc_now())
-
     entries =
       Enum.flat_map(prices, fn {asset, price, timestamp} ->
         Rujira.Resolution.active(timestamp)
         |> Enum.map(&to_candle(asset, price, &1))
       end)
-
-    IO.inspect("entries", label: DateTime.utc_now())
 
     Repo.insert_all(
       Candle,
@@ -106,14 +102,10 @@ defmodule Thorchain.Tor do
     )
     |> broadcast_candles()
 
-    IO.inspect("done", label: DateTime.utc_now())
-
     # publish the Thorchain pool for each asset after the candles are inserted
     for {asset, _price, _timestamp} <- prices do
       Rujira.Events.publish_node(:thorchain_pool, asset)
     end
-
-    IO.inspect("finish", label: DateTime.utc_now())
   end
 
   defp to_candle(asset, price, {resolution, bin}) do
@@ -148,8 +140,6 @@ defmodule Thorchain.Tor do
   end
 
   defp broadcast_candles({_count, candles}) do
-    IO.inspect("broadcast", label: DateTime.utc_now())
-
     for c <- candles do
       Logger.debug("#{__MODULE__} broadcast candle #{c.id}")
       Rujira.Events.publish_edge(:thorchain_tor_candle, "#{c.asset}/#{c.resolution}", c.id)
