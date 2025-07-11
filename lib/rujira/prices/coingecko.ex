@@ -45,7 +45,7 @@ defmodule Rujira.Prices.Coingecko do
   end
 
   def price(id) do
-    case GenServer.call(__MODULE__, {:get_price, id}) do
+    case GenServer.call(__MODULE__, {:get_price, id}, 10_000) do
       {:ok, price} -> {:ok, price}
       {:error, _} = err -> err
     end
