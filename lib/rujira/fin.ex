@@ -143,18 +143,18 @@ defmodule Rujira.Fin do
 
   @spec candle_from_id(any()) :: {:error, :not_found} | {:ok, Candle.t()}
   def candle_from_id(id) do
-    [asset, resolution, bin] = String.split(id, "/")
+    [contract, resolution, bin] = String.split(id, "/")
 
-    case get_candle(asset, resolution, bin) do
+    case get_candle(contract, resolution, bin) do
       nil -> {:error, :not_found}
       candle -> {:ok, candle}
     end
   end
 
   @spec get_candle(String.t(), String.t(), String.t()) :: Candle.t() | nil
-  def get_candle(asset, resolution, bin) do
+  def get_candle(contract, resolution, bin) do
     Candle
-    |> where(asset: ^asset, resolution: ^resolution, bin: ^bin)
+    |> where(contract: ^contract, resolution: ^resolution, bin: ^bin)
     |> Repo.one()
   end
 
