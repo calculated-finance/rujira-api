@@ -7,33 +7,43 @@ defmodule Thorchain.Swaps.Indexer do
   """
 
   alias Rujira.Prices
+  alias Thorchain.Affiliates
   alias Thorchain.Swaps
   use Thornode.Observer
   require Logger
 
   @impl true
-  def handle_new_block(
-        %{
-          header: %{height: height, time: time},
-          txs: _txs,
-          begin_block_events: _begin_events,
-          end_block_events: events
-        },
-        state
-      ) do
-    events
-    |> Enum.map(&scan_swap/1)
-    |> Enum.reject(&is_nil/1)
-    |> Enum.with_index()
-    |> Enum.each(fn {swap, idx} ->
-      Map.merge(swap, %{
-        height: height,
-        tx_idx: 2_147_483_647,
-        idx: idx,
-        timestamp: time
-      })
-      |> Swaps.insert_swap()
-    end)
+  def handle_new_block(%{header: %{height: height, time: time}, end_block_events: events}, state) do
+    {swaps, affiliates} =
+      events
+      |> Enum.map(&scan_swap/1)
+      |> Enum.reject(&is_nil/1)
+      |> Enum.with_index()
+      |> Enum.map(fn {{swap, affs}, idx} ->
+        swap =
+          swap
+          |> Map.merge(%{
+            height: height,
+            tx_idx: 2_147_483_647,
+            idx: idx,
+            timestamp: time
+          })
+
+        affs =
+          Enum.map(affs, fn aff ->
+            Map.merge(aff, %{
+              height: height,
+              tx_idx: 2_147_483_647,
+              idx: idx
+            })
+          end)
+
+        {swap, affs}
+      end)
+      |> Enum.unzip()
+
+    Enum.each(swaps, &Swaps.insert_swap/1)
+    Affiliates.insert_all(List.flatten(affiliates))
 
     {:noreply, state}
   end
@@ -72,35 +82,37 @@ defmodule Thorchain.Swaps.Indexer do
   defp scan_swap(_), do: nil
 
   defp get_affiliate_data(memo, price, volume_usd) do
-    case Thorchain.get_affiliate(memo) do
-      {:ok, {aff, bps}} ->
-        affiliate_fee_in_usd =
-          volume_usd
-          |> Decimal.mult(bps)
-          |> Decimal.round()
-          |> Decimal.to_integer()
+    case Thorchain.Affiliates.get_affiliate(memo) do
+      {:ok, affiliates} ->
+        Enum.map(affiliates, fn {aff, bps} ->
+          affiliate_fee_in_usd =
+            volume_usd
+            |> Decimal.mult(bps)
+            |> Decimal.round()
+            |> Decimal.to_integer()
 
-        affiliate_fee_in_rune =
-          affiliate_fee_in_usd
-          |> Decimal.div(price)
-          |> Decimal.round()
-          |> Decimal.to_integer()
+          affiliate_fee_in_rune =
+            affiliate_fee_in_usd
+            |> Decimal.div(price)
+            |> Decimal.round()
+            |> Decimal.to_integer()
 
-        bps =
-          bps
-          |> Decimal.div(10_000)
-          |> Decimal.round()
-          |> Decimal.to_integer()
+          raw_bps =
+            bps
+            |> Decimal.mult(Decimal.new(10_000))
+            |> Decimal.round()
+            |> Decimal.to_integer()
 
-        %{
-          affiliate: aff,
-          affiliate_bps: bps,
-          affiliate_fee_in_rune: affiliate_fee_in_rune,
-          affiliate_fee_in_usd: affiliate_fee_in_usd
-        }
+          %{
+            affiliate: aff,
+            affiliate_bps: raw_bps,
+            affiliate_fee_in_rune: affiliate_fee_in_rune,
+            affiliate_fee_in_usd: affiliate_fee_in_usd
+          }
+        end)
 
       _ ->
-        %{}
+        []
     end
   end
 
@@ -139,24 +151,26 @@ defmodule Thorchain.Swaps.Indexer do
         |> Decimal.round()
         |> Decimal.to_integer()
 
-      %{
-        pool: pool,
-        liquidity_fee_in_rune: liquidity_fee_in_rune,
-        emit_asset_asset: emit_asset_asset,
-        emit_asset_amount: emit_asset_amount,
-        streaming_swap_quantity: streaming_swap_quantity,
-        streaming_swap_count: streaming_swap_count,
-        id: id,
-        chain: chain,
-        from: from,
-        to: to,
-        coin_asset: coin_asset,
-        coin_amount: coin_amount,
-        memo: memo,
-        volume_usd: volume_usd,
-        liquidity_fee_in_usd: liquidity_fee_in_usd
+      {
+        %{
+          pool: pool,
+          liquidity_fee_in_rune: liquidity_fee_in_rune,
+          emit_asset_asset: emit_asset_asset,
+          emit_asset_amount: emit_asset_amount,
+          streaming_swap_quantity: streaming_swap_quantity,
+          streaming_swap_count: streaming_swap_count,
+          id: id,
+          chain: chain,
+          from: from,
+          to: to,
+          coin_asset: coin_asset,
+          coin_amount: coin_amount,
+          memo: memo,
+          volume_usd: volume_usd,
+          liquidity_fee_in_usd: liquidity_fee_in_usd
+        },
+        get_affiliate_data(memo, price, volume_usd)
       }
-      |> Map.merge(get_affiliate_data(memo, price, volume_usd))
     end
   end
 

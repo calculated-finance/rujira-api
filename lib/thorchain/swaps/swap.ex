@@ -32,10 +32,6 @@ defmodule Thorchain.Swaps.Swap do
     field :timestamp, :utc_datetime_usec
 
     field :volume_usd, :integer
-    field :affiliate, :string
-    field :affiliate_bps, :integer
-    field :affiliate_fee_in_rune, :integer
-    field :affiliate_fee_in_usd, :integer
 
     timestamps(type: :utc_datetime_usec)
   end
@@ -61,11 +57,7 @@ defmodule Thorchain.Swaps.Swap do
       :coin_amount,
       :memo,
       :timestamp,
-      :volume_usd,
-      :affiliate,
-      :affiliate_bps,
-      :affiliate_fee_in_rune,
-      :affiliate_fee_in_usd
+      :volume_usd
     ])
     |> validate_required([
       :height,

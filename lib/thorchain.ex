@@ -203,22 +203,6 @@ defmodule Thorchain do
     end
   end
 
-  @spec get_affiliate(binary()) :: :error | {:error, :no_affiliate} | {:ok, {any(), Decimal.t()}}
-  def get_affiliate(memo) do
-    parts = String.split(memo, ":")
-
-    if length(parts) >= 6 do
-      affiliate_id = Enum.at(parts, 4) |> String.split("/") |> Enum.at(0)
-      affiliate_bp = Enum.at(parts, 5) |> String.split("/") |> Enum.at(0)
-
-      with {:ok, bps} <- Decimal.cast(affiliate_bp) do
-        {:ok, {affiliate_id, Decimal.div(bps, Decimal.new(10_000))}}
-      end
-    else
-      {:error, :no_affiliate}
-    end
-  end
-
   def get_dest_address(memo) do
     parts = String.split(memo, ":")
 

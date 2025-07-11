@@ -2,7 +2,9 @@ defmodule Thorchain.Swaps.IndexerTest do
   use Rujira.PublisherCase
 
   alias Rujira.Fixtures.Block
+  alias Rujira.Repo
   alias Thorchain.Swaps
+  alias Thorchain.Swaps.Affiliate
   alias Thorchain.Swaps.Indexer
 
   test "indexing thorchain swaps with affiliate" do
@@ -14,9 +16,11 @@ defmodule Thorchain.Swaps.IndexerTest do
     swaps =
       Swaps.list_swaps()
 
+    affiliates = Repo.all(Affiliate)
+
     assert length(swaps) == 5
 
-    [swap | _] = Enum.reverse(swaps)
-    assert swap.affiliate == "rj"
+    [affiliate | _] = Enum.reverse(affiliates)
+    assert affiliate.affiliate == "rj"
   end
 end

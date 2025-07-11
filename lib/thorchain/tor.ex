@@ -85,22 +85,24 @@ defmodule Thorchain.Tor do
   end
 
   def update_candles(prices) do
-    for {asset, price, timestamp} <- prices do
-      entries =
-        timestamp
-        |> Rujira.Resolution.active()
+    entries =
+      Enum.flat_map(prices, fn {asset, price, timestamp} ->
+        Rujira.Resolution.active(timestamp)
         |> Enum.map(&to_candle(asset, price, &1))
+      end)
 
+    Repo.insert_all(
+      Candle,
+      entries,
+      on_conflict: candle_conflict(),
+      conflict_target: [:asset, :resolution, :bin],
+      returning: true
+    )
+    |> broadcast_candles()
+
+    # publish the Thorchain pool for each asset after the candles are inserted
+    for {asset, _price, _timestamp} <- prices do
       Rujira.Events.publish_node(:thorchain_pool, asset)
-
-      Candle
-      |> Repo.insert_all(
-        entries,
-        on_conflict: candle_conflict(),
-        conflict_target: [:asset, :resolution, :bin],
-        returning: true
-      )
-      |> broadcast_candles()
     end
   end
 
