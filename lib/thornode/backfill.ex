@@ -83,7 +83,7 @@ defmodule Thornode.Backfill do
   defp backfill_block(session, height) do
     case Thorchain.block(height) do
       {:ok, block} ->
-        Phoenix.PubSub.broadcast(pubsub(), "tm.event='NewBlock'", block)
+        Phoenix.PubSub.broadcast(pubsub(), "tendermint/event/NewBlock", block)
         Logger.info("[Backfill] Backfilled block #{height}")
 
         # Update backfill height this is used in case of crashing to resume backfilling from the last height
