@@ -106,6 +106,11 @@ defmodule Rujira.Fin.Listener do
   defp broadcast_swaps(pools) when is_list(pools), do: Enum.each(pools, &broadcast_swap/1)
 
   defp broadcast_swap(pool) do
+    Memoize.invalidate(Thorchain, :oracle_price, ["THOR.RUNE"])
+    Memoize.invalidate(Thorchain, :oracle_price, [pool])
+    Rujira.Events.publish_node(:thorchain_oracle, "THOR.RUNE")
+    Rujira.Events.publish_node(:thorchain_oracle, pool)
+
     with {:ok, pools} <- Rujira.Fin.list_pairs() do
       pools
       |> Enum.filter(&(&1.oracle_base == pool or &1.oracle_quote == pool))
