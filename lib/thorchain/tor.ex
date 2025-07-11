@@ -26,16 +26,18 @@ defmodule Thorchain.Tor do
 
   @spec candle_from_id(any()) :: {:error, :not_found} | {:ok, Candle.t()}
   def candle_from_id(id) do
-    case get_candle(id) do
+    [asset, resolution, bin] = String.split(id, "/")
+
+    case get_candle(asset, resolution, bin) do
       nil -> {:error, :not_found}
       candle -> {:ok, candle}
     end
   end
 
-  @spec get_candle(String.t()) :: Candle.t() | nil
-  def get_candle(id) do
+  @spec get_candle(String.t(), String.t(), String.t()) :: Candle.t() | nil
+  def get_candle(asset, resolution, bin) do
     Candle
-    |> where(id: ^id)
+    |> where(asset: ^asset, resolution: ^resolution, bin: ^bin)
     |> Repo.one()
   end
 
