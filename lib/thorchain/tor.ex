@@ -85,9 +85,6 @@ defmodule Thorchain.Tor do
   end
 
   def update_candles(prices) do
-    Memoize.invalidate(Thorchain, :oracle_price, ["THOR.RUNE"])
-    Rujira.Events.publish_node(:thorchain_oracle, "THOR.RUNE")
-
     entries =
       Enum.flat_map(prices, fn {asset, price, timestamp} ->
         Rujira.Resolution.active(timestamp)
@@ -105,8 +102,6 @@ defmodule Thorchain.Tor do
 
     # publish the Thorchain pool for each asset after the candles are inserted
     for {asset, _price, _timestamp} <- prices do
-      Memoize.invalidate(Thorchain, :oracle_price, [asset])
-      Rujira.Events.publish_node(:thorchain_oracle, asset)
       Rujira.Events.publish_node(:thorchain_pool, asset)
     end
   end
