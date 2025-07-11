@@ -147,7 +147,7 @@ defmodule Rujira.Prices.Coingecko do
     params = Map.put(params, "x_cg_pro_api_key", config[:cg_key])
     uri = %URI{path: "https://pro-api.coingecko.com/api/#{path}", query: URI.encode_query(params)}
 
-    [Tesla.Middleware.JSON]
+    [Tesla.Middleware.JSON, {Tesla.Middleware.Timeout, timeout: 10_000}]
     |> Tesla.client()
     |> Tesla.get(URI.to_string(uri))
   end
