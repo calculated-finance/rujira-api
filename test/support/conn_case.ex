@@ -33,8 +33,9 @@ defmodule RujiraWeb.ConnCase do
   end
 
   setup tags do
-    # mock tesla responses
+    alias Rujira.Prices.Coingecko
     Rujira.CoingeckoMocks.mock_prices()
+    {:ok, _pid} = Coingecko.start_link()
     # setup sandbox
     Rujira.DataCase.setup_sandbox(tags)
 
