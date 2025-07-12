@@ -34,7 +34,10 @@ defmodule Rujira.Prices.Coingecko do
     "thorstarter",
     "yearn-finance",
     "thorchain",
-    "mantadao"
+    "mantadao",
+    "base-baboon",
+    "unstake-fi",
+    "fuzion"
   ]
 
   def start_link(opts \\ []), do: GenServer.start_link(__MODULE__, opts, name: __MODULE__)
@@ -48,7 +51,7 @@ defmodule Rujira.Prices.Coingecko do
   @impl true
   def handle_call({:get_price, id}, _, %{prices: prices} = state) do
     case Map.get(prices, id) do
-      nil -> {:reply, {:error, "price not found for #{id}"}, state}
+      nil -> {:reply, {:ok, nil}, state}
       price -> {:reply, {:ok, price}, state}
     end
   end
