@@ -175,7 +175,12 @@ defmodule Rujira.Prices.Coingecko do
   defmemop ids() do
     with {:ok, pools} <- Thorchain.pools(),
          {:ok, ids} <-
-           Rujira.Enum.reduce_async_while_ok(pools, fn %{asset: asset} -> id(asset.symbol) end) do
+           Rujira.Enum.reduce_async_while_ok(pools, fn %{asset: asset} ->
+             case id(asset.symbol) do
+               {:error, _} -> :skip
+               v -> v
+             end
+           end) do
       ids
       |> Enum.concat(@ids)
       |> Enum.uniq()

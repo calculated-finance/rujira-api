@@ -60,6 +60,7 @@ defmodule Rujira.Prices do
     else
       {:error, "no coingecko id" <> _} -> {:ok, nil}
       {:error, _} = err -> err
+      {:ok, nil} -> {:ok, nil}
     end
   end
 
