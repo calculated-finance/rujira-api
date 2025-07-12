@@ -4,44 +4,71 @@ defmodule Rujira.Prices.Coingecko do
   """
   use Memoize
   use GenServer
+  require Logger
 
-  @interval 100
+  @interval 60_000
+
+  @ids [
+    "bitcoin",
+    "kujira",
+    "aave",
+    "dai",
+    "defipulse-index",
+    "chainflip",
+    "shapeshift-fox-token",
+    "gemini-dollar",
+    "chainlink",
+    "ripple-usd",
+    "nami-protocol",
+    "craze",
+    "havven",
+    "tcy",
+    "thorwallet",
+    "thorswap",
+    "usd-coin",
+    "paxos-standard",
+    "tether",
+    "wrapped-bitcoin",
+    "winkhub",
+    "xdefi",
+    "thorstarter",
+    "yearn-finance",
+    "thorchain",
+    "mantadao"
+  ]
 
   def start_link(opts \\ []), do: GenServer.start_link(__MODULE__, opts, name: __MODULE__)
 
   @impl true
-  def init(_), do: {:ok, %{requests: [], calls: []}}
-
-  @impl true
-  def handle_call({:get_price, id}, from, state) do
-    Process.send_after(self(), :flush, @interval)
-
-    {:noreply,
-     %{
-       state
-       | calls: [{id, from} | state.calls],
-         requests: Rujira.Enum.uniq([id | state.requests])
-     }}
+  def init(_) do
+    send(self(), :fetch)
+    {:ok, %{prices: %{}}}
   end
 
   @impl true
-  def handle_info(:flush, %{requests: [], calls: []}), do: {:noreply, %{requests: [], calls: []}}
-
-  def handle_info(:flush, state) do
-    case prices(state.requests) do
-      {:ok, prices} ->
-        for {id, from} <- state.calls do
-          case Map.get(prices, id) do
-            nil -> GenServer.reply(from, {:error, "price not found for #{id}"})
-            price -> GenServer.reply(from, {:ok, price})
-          end
-        end
-
-      err ->
-        for {_, from} <- state.calls, do: GenServer.reply(from, err)
+  def handle_call({:get_price, id}, _, %{prices: prices} = state) do
+    case Map.get(prices, id) do
+      nil -> {:reply, {:error, "price not found for #{id}"}, state}
+      price -> {:reply, {:ok, price}, state}
     end
+  end
 
-    {:noreply, %{requests: [], calls: []}}
+  @impl true
+  def handle_info(:fetch, state) do
+    prices =
+      case prices(ids()) do
+        {:ok, prices} -> prices
+        _ -> state.prices
+      end
+
+    Process.send_after(self(), :fetch, @interval)
+    {:noreply, %{state | prices: prices}}
+  end
+
+  @impl true
+  def handle_info(msg, state) do
+    Logger.warning("Unhandled message in Coingecko GenServer: #{inspect(msg)}")
+    {:noreply, state}
   end
 
   def price(id) do
@@ -78,6 +105,7 @@ defmodule Rujira.Prices.Coingecko do
   def id("XDEFI"), do: {:ok, "xdefi"}
   def id("XRUNE"), do: {:ok, "thorstarter"}
   def id("YFI"), do: {:ok, "yearn-finance"}
+  def id("CBBTC" <> _), do: {:ok, "coinbase-wrapped-btc"}
   def id(symbol), do: lookup_id(symbol)
 
   def ids(symbols) do
@@ -138,6 +166,16 @@ defmodule Rujira.Prices.Coingecko do
 
       err ->
         err
+    end
+  end
+
+  defmemop ids() do
+    with {:ok, pools} <- Thorchain.pools(),
+         {:ok, ids} <-
+           Rujira.Enum.reduce_async_while_ok(pools, fn %{asset: asset} -> id(asset.symbol) end) do
+      ids
+      |> Enum.concat(@ids)
+      |> Enum.uniq()
     end
   end
 

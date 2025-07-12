@@ -33,6 +33,7 @@ defmodule Rujira.Prices do
   def fetch("RUJI"), do: fin_price("x/ruji")
   def fetch("AUTO"), do: fin_price("thor.auto")
   def fetch("LQDY"), do: fetch("MNTA")
+  def fetch("NAMI"), do: fin_price("thor.nami")
 
   # For Asset ID notitation, we can explicitly request
   def fetch("THOR.RUNE"), do: fetch("RUNE")
