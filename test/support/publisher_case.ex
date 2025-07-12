@@ -42,12 +42,9 @@ defmodule Rujira.PublisherCase do
       end
 
       setup tags do
-        alias Rujira.Prices.Coingecko
         # mock tesla responses
         Rujira.CoingeckoMocks.mock_prices()
-        {:ok, _pid} = Coingecko.start_link()
         Rujira.DataCase.setup_sandbox(tags)
-
         test_pid = self()
 
         stub(Rujira.Events.PublisherMock, :publish, fn endpoint, payload, topics ->

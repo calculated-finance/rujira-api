@@ -33,9 +33,7 @@ defmodule RujiraWeb.ConnCase do
   end
 
   setup tags do
-    alias Rujira.Prices.Coingecko
     Rujira.CoingeckoMocks.mock_prices()
-    {:ok, _pid} = Coingecko.start_link()
     # setup sandbox
     Rujira.DataCase.setup_sandbox(tags)
 

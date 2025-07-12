@@ -23,15 +23,9 @@ defmodule Rujira.Application do
       RujiraWeb.Presence,
       {Absinthe.Subscription, RujiraWeb.Endpoint},
       {Finch, name: Rujira.Finch},
-      Thornode
+      Thornode,
+      Rujira.Prices.Coingecko
     ]
-
-    base =
-      if Mix.env() != :test do
-        Enum.concat(base, [Rujira.Prices.Coingecko])
-      else
-        base
-      end
 
     Thornode.Appsignal.attach()
 
