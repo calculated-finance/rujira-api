@@ -30,7 +30,6 @@ defmodule Rujira.Prices do
     end
   end
 
-  def fetch("RUJI"), do: fin_price("x/ruji")
   def fetch("AUTO"), do: fin_price("thor.auto")
   def fetch("LQDY"), do: fetch("MNTA")
   def fetch("NAMI"), do: fin_price("thor.nami")
