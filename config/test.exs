@@ -45,4 +45,6 @@ config :rujira, :accounts,
   # mnemonic: "cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat cat crawl"
   populated_account: "sthor1uuds8pd92qnnq0udw0rpg0szpgcslc9ph3j6kf"
 
+config :rujira, Rujira.Prices, coingecko_adapter: Rujira.CoingeckoMocks
+
 config :tesla, adapter: Tesla.Mock

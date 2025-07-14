@@ -6,6 +6,7 @@ defmodule Rujira.TestHelpers do
 
     quote do
       setup do
+        Rujira.CoingeckoMocks.mock_prices()
         Application.put_env(:rujira, :grpc_mock_data_module, unquote(related_data_mock))
 
         {:ok, channel} =

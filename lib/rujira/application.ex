@@ -24,7 +24,7 @@ defmodule Rujira.Application do
       {Absinthe.Subscription, RujiraWeb.Endpoint},
       {Finch, name: Rujira.Finch},
       Thornode,
-      Rujira.Prices.Coingecko
+      Rujira.Prices
     ]
 
     Thornode.Appsignal.attach()

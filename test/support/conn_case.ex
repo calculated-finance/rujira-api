@@ -35,7 +35,6 @@ defmodule RujiraWeb.ConnCase do
   setup tags do
     # setup sandbox
     Rujira.DataCase.setup_sandbox(tags)
-    Rujira.CoingeckoMocks.mock_prices()
 
     empty_account = Keyword.fetch!(@accounts, :empty_account)
     populated_account = Keyword.fetch!(@accounts, :populated_account)

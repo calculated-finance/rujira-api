@@ -5,6 +5,21 @@ defmodule Rujira.Prices do
   alias Rujira.Fin
   alias Rujira.Prices.Price
   use Memoize
+  use Supervisor
+
+  def start_link(opts \\ []) do
+    Supervisor.start_link(__MODULE__, opts, name: __MODULE__)
+  end
+
+  def init(_) do
+    Supervisor.init([coingecko_adapter()], strategy: :one_for_one)
+  end
+
+  def coingecko_adapter do
+    :rujira
+    |> Application.get_env(__MODULE__, [])
+    |> Keyword.get(:coingecko_adapter, __MODULE__.Coingecko)
+  end
 
   def get(symbols) when is_list(symbols) do
     Rujira.Enum.reduce_async_while_ok(symbols, fn symbol ->
@@ -46,8 +61,8 @@ defmodule Rujira.Prices do
 
   # Use the batching GenServer for Coingecko requests
   def fetch(symbol) do
-    with {:ok, id} <- __MODULE__.Coingecko.id(symbol),
-         {:ok, %{change: change, price: price, mcap: mcap}} <- __MODULE__.Coingecko.price(id) do
+    with {:ok, id} <- coingecko_adapter().id(symbol),
+         {:ok, %{change: change, price: price, mcap: mcap}} <- coingecko_adapter().price(id) do
       {:ok,
        %Price{
          id: symbol,
