@@ -46,7 +46,12 @@ config :cors_plug,
 
 config :tesla, :adapter, {Tesla.Adapter.Finch, name: Rujira.Finch}
 
-config :memoize, cache_strategy: Rujira.CacheStrategy
+config :memoize,
+  cache_strategy: Memoize.CacheStrategy.Eviction
+
+config :memoize, Memoize.CacheStrategy.Eviction,
+  min_threshold: 64 * 1024 * 1024,
+  max_threshold: 128 * 1024 * 1024
 
 config :absinthe, Absinthe.Middleware.Batch, timeout: 20_000
 
