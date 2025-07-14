@@ -38,13 +38,19 @@ defmodule Thorchain.Affiliates do
     parse_affiliate_parts(parts)
   end
 
-  defp parse_affiliate_parts([_a, _b, _c, _d, affiliates_str, bps_str | _]) do
+  defp parse_affiliate_parts([_a, _b, _c, _d, affiliates_str, bps_str]) do
+    parse_affiliate(affiliates_str, bps_str)
+  end
+
+  defp parse_affiliate_parts(_), do: {:ok, []}
+
+  def parse_affiliate(affiliates_str, bps_str) do
     affiliates = parse_list(affiliates_str)
     bps = parse_list(bps_str)
 
     cond do
       affiliates == [] or bps == [] ->
-        {:error, :no_affiliate}
+        {:ok, []}
 
       length(affiliates) == length(bps) ->
         zip_and_cast(affiliates, bps)
@@ -56,8 +62,6 @@ defmodule Thorchain.Affiliates do
         :error
     end
   end
-
-  defp parse_affiliate_parts(_), do: {:error, :no_affiliate}
 
   defp parse_list(""), do: []
   defp parse_list(str), do: String.split(str, "/")

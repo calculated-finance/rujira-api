@@ -12,15 +12,10 @@ defmodule Thorchain do
   alias Thorchain.Common.Coin
   alias Thorchain.Common.Tx
   alias Thorchain.Oracle
-  alias Thorchain.Swaps
   alias Thorchain.Types.BlockEvent
   alias Thorchain.Types.BlockResponseHeader
   alias Thorchain.Types.BlockTxResult
   alias Thorchain.Types.Query.Stub, as: Q
-  # alias Thorchain.Types.QueryNodesRequest
-  # alias Thorchain.Types.QueryNodesResponse
-  alias Thorchain.Types.QueryAsgardVaultsRequest
-  alias Thorchain.Types.QueryAsgardVaultsResponse
   alias Thorchain.Types.QueryBlockRequest
   alias Thorchain.Types.QueryBlockResponse
   alias Thorchain.Types.QueryBlockTx
@@ -36,7 +31,7 @@ defmodule Thorchain do
   use Memoize
 
   def start_link(_) do
-    children = [__MODULE__.Listener, __MODULE__.Swaps, __MODULE__.Tor]
+    children = [__MODULE__.Listener, __MODULE__.Tor]
     Supervisor.start_link(children, strategy: :one_for_one)
   end
 
@@ -134,73 +129,6 @@ defmodule Thorchain do
     |> Map.update(:balance_asset, "0", &String.to_integer/1)
     |> Map.update(:balance_rune, "0", &String.to_integer/1)
     |> Map.update(:asset_tor_price, nil, &Decimal.div(Decimal.new(&1), Decimal.new(100_000_000)))
-  end
-
-  def total_bonds do
-    # req = %QueryNodesRequest{}
-    api = Application.get_env(:rujira, Thornode)[:api]
-
-    client =
-      Tesla.client([
-        {Tesla.Middleware.BaseUrl, api},
-        Tesla.Middleware.JSON,
-        {Tesla.Middleware.Headers, [{"Content-Type", "application/json"}]}
-      ])
-
-    with {:ok, %{rune_price_in_tor: price}} <- network(),
-         # {:ok, %QueryNodesResponse{nodes: nodes}} <- Thornode.query(&Q.nodes/2, req) do
-         {:ok, response} <- Tesla.get(client, "/thorchain/nodes") do
-      total_bonds =
-        response.body
-        |> Enum.reduce(0, fn node, acc ->
-          bond = String.to_integer(Map.get(node, "total_bond", "0"))
-          acc + bond
-        end)
-
-      {:ok, Rujira.Prices.normalize(total_bonds * String.to_integer(price), 16)}
-    end
-  end
-
-  def tvl do
-    with {:ok, pools} <- pools() do
-      tvl =
-        pools
-        |> Enum.reduce(0, fn pool, acc ->
-          balance_asset = String.to_integer(Map.get(pool, :balance_asset))
-          asset_tor_price = String.to_integer(Map.get(pool, :asset_tor_price))
-          tvl = balance_asset * asset_tor_price * 2
-          acc + tvl
-        end)
-
-      {:ok, Rujira.Prices.normalize(tvl, 16)}
-    end
-  end
-
-  def chains do
-    req = %QueryAsgardVaultsRequest{}
-
-    with {:ok, %QueryAsgardVaultsResponse{asgard_vaults: vaults}} <-
-           Thornode.query(&Q.asgard_vaults/2, req) do
-      [vault | _] = vaults
-      {:ok, vault.chains}
-    end
-  end
-
-  def swaps_data do
-    with total_swap_volume <- Swaps.total_volume(),
-         daily_swap_volume <- Swaps.total_volume(:daily),
-         total_swaps <- Swaps.count_swaps(),
-         affiliate_transactions <- Swaps.count_affiliate_swaps(),
-         affiliate_volume <- Swaps.total_affiliate_volume() do
-      {:ok,
-       %{
-         total_swap_volume: total_swap_volume,
-         daily_swap_volume: daily_swap_volume,
-         total_swaps: total_swaps,
-         affiliate_volume: affiliate_volume,
-         affiliate_transactions: affiliate_transactions
-       }}
-    end
   end
 
   def get_dest_address(memo) do

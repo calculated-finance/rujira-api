@@ -1,6 +1,14 @@
 defmodule Rujira.Analytics.Common do
   @moduledoc false
   import Ecto.Query
+  alias Rujira.Resolution
+
+  @resolutions ["1D", "1M", "12M"]
+  def resolutions, do: @resolutions
+
+  def active(now) do
+    Enum.map(@resolutions, &{&1, Resolution.truncate(now, &1)})
+  end
 
   def shift_from_back(from, period, "1D"), do: DateTime.add(from, -period, :day)
 

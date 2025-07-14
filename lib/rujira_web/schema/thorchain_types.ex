@@ -55,10 +55,6 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
       arg(:hash, non_null(:string))
       resolve(&Resolvers.Thorchain.tx_in/3)
     end
-
-    field :analytics, :thorchain_analytics do
-      resolve(fn _, _, _ -> {:ok, %{}} end)
-    end
   end
 
   object :thorchain_quote do
