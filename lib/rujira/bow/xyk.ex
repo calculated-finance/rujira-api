@@ -100,32 +100,32 @@ defmodule Rujira.Bow.Xyk do
     def load(%{address: address, config: config, state: state}) do
       with {:ok, volume} <- Xyk.volume(address),
            {:ok, asset_x} <- Assets.from_denom(config.x),
-           {:ok, price_x} <- Prices.get(asset_x.symbol),
+           {:ok, %{current: price_x}} <- Prices.get(asset_x.symbol),
            {:ok, asset_y} <- Assets.from_denom(config.y),
-           {:ok, price_y} <- Prices.get(asset_y.symbol),
+           {:ok, %{current: price_y}} <- Prices.get(asset_y.symbol),
            {low, mid, high} <- Xyk.limit(config, state) do
         spread = Decimal.div(Decimal.sub(high, low), mid)
 
         depth =
           Xyk.depth(config, state, Decimal.mult(Decimal.from_float(0.98), mid))
-          |> Decimal.mult(price_y.current)
+          |> Decimal.mult(price_y)
           |> Decimal.round()
           |> Decimal.to_integer()
 
         volume =
           volume
-          |> Decimal.mult(price_y.current)
+          |> Decimal.mult(price_y)
           |> Decimal.round()
           |> Decimal.to_integer()
 
         value =
           state.x
           |> Decimal.new()
-          |> Decimal.mult(price_x.current)
+          |> Decimal.mult(price_x)
           |> Decimal.add(
             state.y
             |> Decimal.new()
-            |> Decimal.mult(price_y.current)
+            |> Decimal.mult(price_y)
           )
           |> Decimal.round()
           |> Decimal.to_integer()
