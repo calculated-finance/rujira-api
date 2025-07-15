@@ -48,8 +48,8 @@ defmodule Thornode.Backfill do
        when from < to do
     Logger.info("[Backfill] Session: backfilling blocks #{from + 1} to #{to}")
 
-    case Enum.reduce_while(to..(from + 1), session, &backfill_height/2) do
-      {:helt, height} ->
+    case Enum.reduce_while((from + 1)..to, session, &backfill_height/2) do
+      {:halt, height} ->
         Sessions.complete_backfill(session, height)
 
         Logger.info(

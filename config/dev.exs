@@ -4,6 +4,7 @@ import Config
 config :rujira,
   dev_routes: true,
   observers: [
+    Thornode.Backfill,
     Thorchain,
     Rujira.Balances,
     Rujira.Chains,

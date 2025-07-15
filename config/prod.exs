@@ -54,6 +54,7 @@ config :libcluster,
 
 config :rujira,
   observers: [
+    Thornode.Backfill,
     Thorchain,
     Rujira.Balances,
     Rujira.Chains,
