@@ -17,9 +17,12 @@ defmodule Thornode.Websocket do
     pubsub = Keyword.get(config, :pubsub)
     Logger.info("#{__MODULE__} Starting node websocket: #{endpoint}")
 
+    # Check if we already have a current session to avoid unnecessary session creation
+    session_started = Sessions.get_current_session() != nil
+
     case WebSockex.start_link("#{endpoint}/websocket", __MODULE__, %{
            pubsub: pubsub,
-           session_started: false
+           session_started: session_started
          }) do
       {:ok, pid} ->
         for {s, idx} <- Enum.with_index(@subscriptions), do: do_subscribe(pid, idx, s)

@@ -45,10 +45,10 @@ defmodule Thornode.Backfill do
   end
 
   defp backfill_session(%Session{checkpoint_height: from, restart_height: to} = session)
-       when from < to do
-    Logger.info("[Backfill] Session: backfilling blocks #{from + 1} to #{to}")
+       when from < to - 1 do
+    Logger.info("[Backfill] Session: backfilling blocks #{from + 1} to #{to - 1}")
 
-    case Enum.reduce_while((from + 1)..to, session, &backfill_height/2) do
+    case Enum.reduce_while((from + 1)..(to - 1), session, &backfill_height/2) do
       {:halt, height} ->
         Sessions.complete_backfill(session, height)
 
@@ -57,9 +57,15 @@ defmodule Thornode.Backfill do
         )
 
       _ ->
-        Sessions.complete_backfill(session, to)
-        Logger.info("[Backfill] Session backfill completed back from #{to} to #{from + 1}")
+        Sessions.complete_backfill(session, to - 1)
+        Logger.info("[Backfill] Session backfill completed from #{from + 1} to #{to - 1}")
     end
+  end
+
+  defp backfill_session(%Session{checkpoint_height: from, restart_height: to} = session)
+       when from >= to do
+    Logger.info("[Backfill] Session checkpoint #{from} >= restart #{to}, marking as completed")
+    Sessions.complete_backfill(session, from)
   end
 
   defp backfill_session(_) do

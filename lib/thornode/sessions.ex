@@ -17,6 +17,7 @@ defmodule Thornode.Sessions do
   """
 
   import Ecto.Query
+  require Logger
   alias Rujira.Repo
   alias Thornode.Session
 
@@ -63,11 +64,24 @@ defmodule Thornode.Sessions do
   Should be called on restart/crash before starting a new session.
 
   If there is no current session, this is a no-op and returns :ok.
+  If the session doesn't need backfill (checkpoint >= restart), marks it as completed.
   """
   def start_backfill(restart_height) do
     case get_current_session() do
       nil ->
         :ok
+
+      %Session{checkpoint_height: checkpoint} = session when checkpoint >= restart_height ->
+        Logger.info(
+          "[Sessions] Session checkpoint #{checkpoint} >= restart #{restart_height}, marking as completed"
+        )
+
+        session
+        |> Session.changeset(%{
+          status: :completed,
+          restart_height: restart_height
+        })
+        |> Repo.update()
 
       session ->
         session
