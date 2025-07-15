@@ -60,13 +60,10 @@ defmodule Thornode.Backfill do
         Sessions.complete_backfill(session, to)
         Logger.info("[Backfill] Session backfill completed back from #{to} to #{from + 1}")
     end
-
-    :ok
   end
 
-  defp backfill_session(%Session{checkpoint_height: from, restart_height: to}) do
-    Logger.info("[Backfill] Nothing to backfill for this session (from == to)")
-    :ok
+  defp backfill_session(_) do
+    Logger.info("[Backfill] Nothing to backfill for this session")
   end
 
   defp backfill_height(height, session_acc) do
