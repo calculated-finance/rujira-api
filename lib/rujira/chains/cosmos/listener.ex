@@ -20,14 +20,20 @@ defmodule Rujira.Chains.Cosmos.Listener do
       @retry_delay 60_000
 
       def start_link(_) do
-        WebSockex.start_link("#{@ws}/websocket", __MODULE__, %{},
-          handle_initial_conn_failure: true
-        )
+        case WebSockex.start_link("#{@ws}/websocket", __MODULE__, %{},
+               handle_initial_conn_failure: true
+             ) do
+          {:ok, pid} ->
+            subscribe(pid, 0, @subscription)
+            {:ok, pid}
+
+          {:error, err} ->
+            {:error, err}
+        end
       end
 
       def handle_connect(_conn, state) do
         Logger.info("#{__MODULE__} Connected")
-        subscribe(self(), 0, @subscription)
         {:ok, state}
       end
 
