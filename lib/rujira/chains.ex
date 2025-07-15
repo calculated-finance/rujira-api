@@ -11,7 +11,7 @@ defmodule Rujira.Chains do
         __MODULE__.Base,
         __MODULE__.Bsc,
         __MODULE__.Eth,
-        # __MODULE__.Gaia,
+        __MODULE__.Gaia,
         __MODULE__.Noble
         # __MODULE__.Xrp
       ],

@@ -17,24 +17,33 @@ defmodule Rujira.Chains.Cosmos.Listener do
       @ws unquote(ws)
       @subscription "tm.event='NewBlock'"
 
+      @retry_delay 60_000
+
       def start_link(_) do
+        WebSockex.start_link("#{@ws}/websocket", __MODULE__, %{}, handle_initial_conn_failure: true)
+      end
+
+      def handle_info(:connect, state) do
         case WebSockex.start_link("#{@ws}/websocket", __MODULE__, %{}) do
           {:ok, pid} ->
             subscribe(pid, 0, @subscription)
-            {:ok, pid}
-
-          {:error, err} ->
-            {:error, err}
+            {:ok, state}
+          {:error, _reason} ->
+            Process.send_after(self(), :connect, @retry_delay)
+            {:ok, state}
         end
       end
 
       def handle_connect(_conn, state) do
         Logger.info("#{__MODULE__} Connected")
+        subscribe(self(), 0, @subscription)
         {:ok, state}
       end
 
-      def handle_disconnect(_status, _state) do
-        raise "#{__MODULE__} Disconnected"
+      def handle_disconnect(_status, state) do
+        Logger.warning("#{__MODULE__} Disconnected, will attempt reconnect in #{@retry_delay}ms")
+        Process.send_after(self(), :connect, @retry_delay)
+        {:reconnect, state}
       end
 
       def handle_frame({:text, msg}, state) do
