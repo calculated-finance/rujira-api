@@ -79,7 +79,11 @@ defmodule Rujira.Chains.Cosmos.Listener do
         |> Rujira.Enum.uniq()
         |> Enum.each(fn address ->
           Logger.debug("#{__MODULE__} change #{address}")
-          Rujira.Events.publish_node(:layer_1_account, "#{@chain}:#{address}")
+
+          # Prevent async resolvers from calling this process
+          Task.start(fn ->
+            Rujira.Events.publish_node(:layer_1_account, "#{@chain}:#{address}")
+          end)
         end)
 
         :ok
