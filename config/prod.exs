@@ -64,5 +64,6 @@ config :rujira,
     Rujira.Staking,
     Rujira.Leagues,
     Rujira.Bow,
-    Rujira.Index
+    Rujira.Index,
+    Rujira.Analytics
   ]
