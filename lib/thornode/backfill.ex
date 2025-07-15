@@ -64,7 +64,7 @@ defmodule Thornode.Backfill do
     :ok
   end
 
-  defp backfill_session(%Session{checkpoint_height: from, restart_height: to}) when from == to do
+  defp backfill_session(%Session{checkpoint_height: from, restart_height: to}) do
     Logger.info("[Backfill] Nothing to backfill for this session (from == to)")
     :ok
   end
