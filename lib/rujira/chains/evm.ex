@@ -25,6 +25,7 @@ defmodule Rujira.Chains.Evm do
       @rpc unquote(rpc)
       @ws unquote(ws)
       @transfer "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+      @retry_delay 60_000
 
       defp api_key, do: Application.get_env(:rujira, Rujira.Chains.Evm)[:alchemy_key]
       defp rpc, do: @rpc <> api_key()
@@ -33,7 +34,7 @@ defmodule Rujira.Chains.Evm do
       def start_link(_) do
         Logger.info("#{__MODULE__} Starting node websocket: #{ws()}")
 
-        case WebSockex.start_link(ws(), __MODULE__, %{}) do
+        case WebSockex.start_link(ws(), __MODULE__, %{}, handle_initial_conn_failure: true) do
           {:ok, pid} ->
             message =
               Jason.encode!(%{
@@ -68,9 +69,10 @@ defmodule Rujira.Chains.Evm do
         {:ok, state}
       end
 
-      def handle_disconnect(x, _) do
-        Logger.error("#{__MODULE__} Disconnected")
-        raise "#{__MODULE__} Disconnected"
+      def handle_disconnect(x, state) do
+        Logger.warning("#{__MODULE__} Disconnected, will attempt reconnect in #{@retry_delay}ms")
+        Process.sleep(@retry_delay)
+        {:reconnect, state}
       end
 
       def handle_frame({:text, msg}, state) do
