@@ -74,6 +74,10 @@ defmodule Thornode.Websocket do
       {:error, error} ->
         Logger.error("#{__MODULE__} #{inspect(error)}")
         {:close, state}
+
+      other ->
+        Logger.error("#{__MODULE__} #{inspect(other)}")
+        {:close, state}
     end
   end
 
