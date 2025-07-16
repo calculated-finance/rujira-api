@@ -139,7 +139,7 @@ defmodule Rujira.Chains.Evm do
 
       defp handle_native_transfers(block_hash) do
         with {:ok, %{"transactions" => txs}} <-
-               Ethereumex.HttpClient.eth_get_block_by_hash(block_hash, true, url: @rpc) do
+               Ethereumex.HttpClient.eth_get_block_by_hash(block_hash, true, url: rpc()) do
           Task.async_stream(txs, fn %{"from" => from, "to" => to, "value" => "0x" <> value_hex} ->
             if String.to_integer(value_hex, 16) > 0 do
               from = eip55(from)
