@@ -31,6 +31,14 @@ defmodule Rujira.Fin.Listener do
         _ -> []
       end)
 
+    action_name = String.trim_leading("#{__MODULE__}#scan_txs", "Elixir.")
+
+    span =
+      "fin_listener"
+      |> Appsignal.Tracer.create_span()
+
+    Appsignal.Span.set_name(span, action_name)
+
     addresses =
       events
       |> Enum.map(&scan_fin_event/1)
@@ -43,42 +51,77 @@ defmodule Rujira.Fin.Listener do
       events |> Enum.map(&scan_bow_event/1) |> Enum.reject(&is_nil/1) |> Rujira.Enum.uniq()
 
     for address <- addresses |> Enum.map(&elem(&1, 1)) |> Rujira.Enum.uniq() do
-      Logger.info("#{__MODULE__} change #{address}")
-      Memoize.invalidate(Fin, :query_book, [address, :_])
-      Rujira.Events.publish_node(:fin_book, address)
-      Logger.info("#{__MODULE__} change complete #{address}")
+      Appsignal.instrument("fin.invalidate_publish", fn ->
+        Logger.info("#{__MODULE__} change #{address}")
+
+        Appsignal.instrument("fin.memoize.invalidate", fn ->
+          Memoize.invalidate(Fin, :query_book, [address, :_])
+        end)
+
+        Appsignal.instrument("fin.publish", fn ->
+          Rujira.Events.publish_node(:fin_book, address)
+        end)
+
+        Logger.info("#{__MODULE__} change complete #{address}")
+      end)
     end
 
     for address <- bow_addresses do
       with {:ok, %{address: pair}} <- Bow.fin_pair(address) do
-        Logger.info("#{__MODULE__} bow change #{address}")
-        Memoize.invalidate(Fin, :query_book, [pair, :_])
-        Rujira.Events.publish_node(:fin_book, pair)
-        Logger.info("#{__MODULE__} bow change complete #{address}")
+        Appsignal.instrument("bow.invalidate_publish", fn ->
+          Logger.info("#{__MODULE__} bow change #{address}")
+
+          Appsignal.instrument("bow.memoize.invalidate", fn ->
+            Memoize.invalidate(Fin, :query_book, [pair, :_])
+          end)
+
+          Appsignal.instrument("bow.publish", fn ->
+            Rujira.Events.publish_node(:fin_book, pair)
+          end)
+
+          Logger.info("#{__MODULE__} bow change complete #{address}")
+        end)
       end
     end
 
     for {name, contract, owner, side, price} <- addresses do
       id = Enum.join([name, contract, owner, side, price], "/")
-      Logger.info("#{__MODULE__} order change #{id} ")
 
-      Memoize.invalidate(Fin, :query_orders, [contract, owner, :_, :_])
-      Memoize.invalidate(Fin, :query_order, [contract, owner, side, price])
+      Appsignal.instrument("order.invalidate_publish", fn ->
+        Logger.info("#{__MODULE__} order change #{id}")
 
-      case name do
-        "trade" ->
-          Rujira.Events.publish(%{side: side, price: price},
-            fin_order_filled: "#{contract}/#{side}/#{price}"
-          )
+        Appsignal.instrument("memo.invalidate.orders", fn ->
+          Memoize.invalidate(Fin, :query_orders, [contract, owner, :_, :_])
+        end)
 
-        _ ->
-          Rujira.Events.publish(
-            %{side: side, price: price, contract: contract},
-            fin_order_updated: owner
-          )
-      end
+        Appsignal.instrument("memo.invalidate.order", fn ->
+          Memoize.invalidate(Fin, :query_order, [contract, owner, side, price])
+        end)
 
-      Logger.info("#{__MODULE__} change complete #{id}")
+        Appsignal.instrument("order.publish", fn ->
+          publish_order(name, contract, owner, side, price)
+        end)
+
+        Logger.info("#{__MODULE__} change complete #{id}")
+      end)
+    end
+
+    Appsignal.Tracer.current_span()
+    |> Appsignal.Tracer.close_span(end_time: :os.system_time())
+  end
+
+  defp publish_order(name, contract, owner, side, price) do
+    case name do
+      "trade" ->
+        Rujira.Events.publish(%{side: side, price: price},
+          fin_order_filled: "#{contract}/#{side}/#{price}"
+        )
+
+      _ ->
+        Rujira.Events.publish(
+          %{side: side, price: price, contract: contract},
+          fin_order_updated: owner
+        )
     end
   end
 
