@@ -25,17 +25,25 @@ defmodule Rujira.Fin.Listener.Thorchain do
   defp broadcast_swaps(pools) when is_list(pools), do: Enum.each(pools, &broadcast_swap/1)
 
   defp broadcast_swap(pool) do
+    Logger.info("#{__MODULE__} change #{pool}")
+
     Memoize.invalidate(Thorchain, :oracle_price, ["THOR.RUNE"])
     Memoize.invalidate(Thorchain, :oracle_price, [pool])
+    Logger.info("#{__MODULE__} invalidate #{pool}")
+
     Rujira.Events.publish_node(:thorchain_oracle, "THOR.RUNE")
     Rujira.Events.publish_node(:thorchain_oracle, pool)
+    Logger.info("#{__MODULE__} publish oracle #{pool}")
 
     with {:ok, pools} <- Rujira.Fin.list_pairs() do
       pools
       |> Enum.filter(&(&1.oracle_base == pool or &1.oracle_quote == pool))
       |> Enum.each(fn %{address: address} ->
         Rujira.Events.publish_node(:fin_book, address)
+        Logger.info("#{__MODULE__} publish book #{address}")
       end)
     end
+
+    Logger.info("#{__MODULE__} done #{pool}")
   end
 end
