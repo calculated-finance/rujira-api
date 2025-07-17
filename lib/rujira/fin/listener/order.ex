@@ -31,10 +31,11 @@ defmodule Rujira.Fin.Listener.Order do
 
     for {name, contract, owner, side, price} <- addresses do
       id = Enum.join([name, contract, owner, side, price], "/")
-      Logger.debug("#{__MODULE__} order change #{id} ")
+      Logger.info("#{__MODULE__} change #{id} ")
 
       Memoize.invalidate(Fin, :query_orders, [contract, owner, :_, :_])
       Memoize.invalidate(Fin, :query_order, [contract, owner, side, price])
+      Logger.info("#{__MODULE__} invalidate #{id} ")
 
       case name do
         "trade" ->
@@ -49,7 +50,7 @@ defmodule Rujira.Fin.Listener.Order do
           )
       end
 
-      Logger.debug("#{__MODULE__} change complete #{id}")
+      Logger.info("#{__MODULE__} publish #{id}")
     end
   end
 
