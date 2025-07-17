@@ -43,19 +43,24 @@ defmodule Rujira.Fin.Listener do
       events |> Enum.map(&scan_bow_event/1) |> Enum.reject(&is_nil/1) |> Rujira.Enum.uniq()
 
     for address <- addresses |> Enum.map(&elem(&1, 1)) |> Rujira.Enum.uniq() do
+      Logger.info("#{__MODULE__} change #{address}")
       Memoize.invalidate(Fin, :query_book, [address, :_])
       Rujira.Events.publish_node(:fin_book, address)
+      Logger.info("#{__MODULE__} change complete #{address}")
     end
 
     for address <- bow_addresses do
       with {:ok, %{address: pair}} <- Bow.fin_pair(address) do
+        Logger.info("#{__MODULE__} bow change #{address}")
         Memoize.invalidate(Fin, :query_book, [pair, :_])
         Rujira.Events.publish_node(:fin_book, pair)
+        Logger.info("#{__MODULE__} bow change complete #{address}")
       end
     end
 
     for {name, contract, owner, side, price} <- addresses do
-      Logger.debug("#{__MODULE__} change #{contract}")
+      id = Enum.join([name, contract, owner, side, price], "/")
+      Logger.info("#{__MODULE__} order change #{id} ")
 
       Memoize.invalidate(Fin, :query_orders, [contract, owner, :_, :_])
       Memoize.invalidate(Fin, :query_order, [contract, owner, side, price])
@@ -72,6 +77,8 @@ defmodule Rujira.Fin.Listener do
             fin_order_updated: owner
           )
       end
+
+      Logger.info("#{__MODULE__} change complete #{id}")
     end
   end
 
