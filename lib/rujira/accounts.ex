@@ -10,8 +10,8 @@ defmodule Rujira.Accounts do
 
     try do
       {:ok, %Layer1{id: id, chain: String.to_existing_atom(chain), address: address}}
-    catch
-      _ ->
+    rescue
+      ArgumentError ->
         {:error, :invalid_chain}
     end
   end
