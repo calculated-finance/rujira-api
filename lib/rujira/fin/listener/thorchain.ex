@@ -9,33 +9,42 @@ defmodule Rujira.Fin.Listener.Thorchain do
   require Logger
 
   @impl true
-  def handle_new_block(%{end_block_events: end_block_events}, state) do
+  def handle_new_block(
+        %{end_block_events: end_block_events},
+        %{
+          address: address,
+          oracle_base: oracle_base,
+          oracle_quote: oracle_quote
+        } = state
+      ) do
     end_block_events
-    |> Enum.map(&scan_end_block_event/1)
+    |> Enum.map(&scan_end_block_event(oracle_base, oracle_quote, &1))
     |> Enum.filter(&is_binary/1)
     |> Rujira.Enum.uniq()
-    |> broadcast_swaps()
+    |> broadcast_swaps(address)
 
     {:noreply, state}
   end
 
-  def scan_end_block_event(%{attributes: %{"pool" => pool}, type: "swap"}), do: pool
-  def scan_end_block_event(_), do: nil
+  def scan_end_block_event(oracle_base, oracle_quote, %{
+        attributes: %{"pool" => pool},
+        type: "swap"
+      })
+      when pool == oracle_base or pool == oracle_quote,
+      do: pool
 
-  defp broadcast_swaps(pools) when is_list(pools), do: Enum.each(pools, &broadcast_swap/1)
+  def scan_end_block_event(_, _, _), do: nil
 
-  defp broadcast_swap(pool) do
+  defp broadcast_swaps(pools, address) when is_list(pools),
+    do: Enum.each(pools, &broadcast_swap(&1, address))
+
+  defp broadcast_swap(pool, address) do
+    Logger.debug("#{__MODULE__} change #{address} (#{pool})")
+
     Memoize.invalidate(Thorchain, :oracle_price, ["THOR.RUNE"])
     Memoize.invalidate(Thorchain, :oracle_price, [pool])
     Rujira.Events.publish_node(:thorchain_oracle, "THOR.RUNE")
     Rujira.Events.publish_node(:thorchain_oracle, pool)
-
-    with {:ok, pools} <- Rujira.Fin.list_pairs() do
-      pools
-      |> Enum.filter(&(&1.oracle_base == pool or &1.oracle_quote == pool))
-      |> Enum.each(fn %{address: address} ->
-        Rujira.Events.publish_node(:fin_book, address)
-      end)
-    end
+    Rujira.Events.publish_node(:fin_book, address)
   end
 end

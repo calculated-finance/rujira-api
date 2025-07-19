@@ -7,7 +7,13 @@ defmodule Rujira.Accounts do
 
   def layer_1_from_id(id) do
     [chain, address] = String.split(id, ":")
-    {:ok, %Layer1{id: id, chain: String.to_existing_atom(chain), address: address}}
+
+    try do
+      {:ok, %Layer1{id: id, chain: String.to_existing_atom(chain), address: address}}
+    rescue
+      ArgumentError ->
+        {:error, :invalid_chain}
+    end
   end
 
   def from_id(id) do
