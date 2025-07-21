@@ -47,21 +47,27 @@ defmodule Thornode.Observer do
           ) do
         action_name = String.trim_leading("#{__MODULE__}#handle_new_block", "Elixir.")
 
-        "observer"
-        |> Appsignal.Tracer.create_span()
-        |> Appsignal.Span.set_name(action_name)
-        |> Appsignal.Span.set_sample_data(
-          "params",
-          %{
-            chain_id: chain_id,
-            height: height,
-            time: DateTime.to_iso8601(time)
-          }
-        )
+        span =
+          "observer"
+          |> Appsignal.Tracer.create_span()
+          |> Appsignal.Span.set_name(action_name)
+          |> Appsignal.Span.set_sample_data(
+            "params",
+            %{
+              chain_id: chain_id,
+              height: height,
+              time: DateTime.to_iso8601(time)
+            }
+          )
 
-        Appsignal.instrument("handle_new_block", fn ->
-          handle_new_block(message, state)
-        end)
+        res =
+          Appsignal.instrument("handle_new_block", fn ->
+            handle_new_block(message, state)
+          end)
+
+        Appsignal.Tracer.close_span(span)
+
+        res
       end
 
       # Allow other handle_info patterns to be defined by the implementing module

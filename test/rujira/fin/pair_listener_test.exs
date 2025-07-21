@@ -9,7 +9,10 @@ defmodule Rujira.Fin.Listener.PairTest do
     # it should publish a FinBook update
     # it should publish an Order filled update
     {:ok, block} = Block.load_block("4539686")
-    Pair.handle_new_block(block, nil)
+
+    Pair.handle_new_block(block, %{
+      address: "sthor1uywajy5vddpsvdkcztp92ymlnfwv07tu4stpprwrts4lmc6c9l0sy4s4e5"
+    })
 
     messages = wait_for_publishes(1)
     assert length(messages) == 1
