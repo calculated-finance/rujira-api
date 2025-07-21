@@ -60,6 +60,10 @@ defmodule Rujira.Fin.Listener.Order do
         )
 
       _ ->
+        # "trade" is caught already by the Pair listener
+        Memoize.invalidate(Fin, :query_book, [contract, :_])
+        Rujira.Events.publish_node(:fin_book, contract)
+
         Rujira.Events.publish(
           %{side: side, price: price, contract: contract},
           fin_order_updated: owner
