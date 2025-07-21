@@ -47,16 +47,24 @@ defmodule Rujira.Fin.Order do
           deviation: deviation
         }
 
-  def from_query(%{address: address, fee_taker: fee_taker, token_quote: token_quote}, %{
-        "owner" => owner,
-        "side" => side,
-        "price" => price,
-        "rate" => rate,
-        "updated_at" => updated_at,
-        "offer" => offer,
-        "remaining" => remaining,
-        "filled" => filled
-      }) do
+  def from_query(
+        %{
+          address: address,
+          fee_taker: fee_taker,
+          token_quote: token_quote,
+          token_base: token_base
+        },
+        %{
+          "owner" => owner,
+          "side" => side,
+          "price" => price,
+          "rate" => rate,
+          "updated_at" => updated_at,
+          "offer" => offer,
+          "remaining" => remaining,
+          "filled" => filled
+        }
+      ) do
     with {type, deviation, price_id} <- parse_price(price),
          {rate, ""} <- Decimal.parse(rate),
          {updated_at, ""} <- Integer.parse(updated_at),
@@ -64,7 +72,8 @@ defmodule Rujira.Fin.Order do
          {offer, ""} <- Integer.parse(offer),
          {remaining, ""} <- Integer.parse(remaining),
          {filled, ""} <- Integer.parse(filled),
-         {:ok, asset} <- Assets.from_denom(token_quote) do
+         {:ok, asset_quote} <- Assets.from_denom(token_quote),
+         {:ok, asset_base} <- Assets.from_denom(token_base) do
       side = String.to_existing_atom(side)
 
       filled_fee =
@@ -95,11 +104,13 @@ defmodule Rujira.Fin.Order do
         deviation: deviation,
         value_usd:
           case side do
-            :base ->
-              Prices.value_usd(asset.symbol, remaining_value + filled)
-
             :quote ->
-              Prices.value_usd(asset.symbol, remaining + filled_value)
+              Prices.value_usd(asset_quote.symbol, remaining) +
+                Prices.value_usd(asset_base.symbol, filled)
+
+            :base ->
+              Prices.value_usd(asset_base.symbol, remaining) +
+                Prices.value_usd(asset_quote.symbol, filled)
           end
       }
     end
