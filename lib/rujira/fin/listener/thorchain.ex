@@ -43,7 +43,7 @@ defmodule Rujira.Fin.Listener.Thorchain do
 
     Memoize.invalidate(Thorchain, :oracle_price, ["THOR.RUNE"])
     Memoize.invalidate(Thorchain, :oracle_price, [pool])
-    Logger.info("#{__MODULE__} invalidate #{pool}")
+    Logger.debug("#{__MODULE__} invalidate #{pool}")
 
     Rujira.Events.publish_node(:thorchain_oracle, "THOR.RUNE")
     Rujira.Events.publish_node(:thorchain_oracle, pool)
