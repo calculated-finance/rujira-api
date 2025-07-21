@@ -38,10 +38,19 @@ defmodule Rujira.Fin.Listener.OrderTest do
       address: "sthor1knzcsjqu3wpgm0ausx6w0th48kvl2wvtqzmvud4hgst4ggutehlseele4r"
     })
 
-    messages = wait_for_publishes(1)
-    assert length(messages) == 1
+    messages = wait_for_publishes(2)
+    assert length(messages) == 2
 
     assert messages == [
+             {:published, RujiraWeb.Endpoint,
+              %{
+                id:
+                  "RmluQm9vazpzdGhvcjFrbnpjc2pxdTN3cGdtMGF1c3g2dzB0aDQ4a3ZsMnd2dHF6bXZ1ZDRoZ3N0NGdndXRlaGxzZWVsZTRy"
+              },
+              [
+                node:
+                  "RmluQm9vazpzdGhvcjFrbnpjc2pxdTN3cGdtMGF1c3g2dzB0aDQ4a3ZsMnd2dHF6bXZ1ZDRoZ3N0NGdndXRlaGxzZWVsZTRy"
+              ]},
              {:published, RujiraWeb.Endpoint,
               %{
                 price: "fixed:1.012",
@@ -86,10 +95,19 @@ defmodule Rujira.Fin.Listener.OrderTest do
       address: "thor17cawwg2lsnvcne69fek6nsqkf8snma6gc5ccceshul86rl0u3q4s5l5d0a"
     })
 
-    messages = wait_for_publishes(1)
-    assert length(messages) == 1
+    messages = wait_for_publishes(2)
+    assert length(messages) == 2
 
     assert messages == [
+             {:published, RujiraWeb.Endpoint,
+              %{
+                id:
+                  "RmluQm9vazp0aG9yMTdjYXd3ZzJsc252Y25lNjlmZWs2bnNxa2Y4c25tYTZnYzVjY2Nlc2h1bDg2cmwwdTNxNHM1bDVkMGE="
+              },
+              [
+                node:
+                  "RmluQm9vazp0aG9yMTdjYXd3ZzJsc252Y25lNjlmZWs2bnNxa2Y4c25tYTZnYzVjY2Nlc2h1bDg2cmwwdTNxNHM1bDVkMGE="
+              ]},
              {:published, RujiraWeb.Endpoint,
               %{
                 price: "fixed:69",
