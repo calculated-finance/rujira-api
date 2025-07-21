@@ -120,7 +120,13 @@ defmodule Rujira.Fin.Order do
       pair: address,
       owner: owner,
       side: String.to_existing_atom(side),
-      type: type
+      rate: 0,
+      updated_at: DateTime.utc_now(),
+      offer: 0,
+      remaining: 0,
+      filled: 0,
+      type: type,
+      deviation: nil
     }
   end
 
@@ -138,41 +144,5 @@ defmodule Rujira.Fin.Order do
     |> Decimal.div(rate)
     |> Decimal.round(0, :floor)
     |> Decimal.to_integer()
-  end
-
-  def from_id(id) do
-    [pair_address, side, price, owner] = String.split(id, "/")
-    load(pair_address, side, price, owner)
-  end
-
-  def load(pair_address, side, price, owner) do
-    case Rujira.Contracts.query_state_smart(
-           pair_address,
-           %{order: [owner, side, decode_price(price)]}
-         ) do
-      {:ok, order} ->
-        {:ok, from_query(pair_address, order)}
-
-      {:error, %GRPC.RPCError{status: 2, message: "NotFound: query wasm contract failed"}} ->
-        [type | _] = String.split(price, ":")
-
-        {:ok,
-         %__MODULE__{
-           id: "#{pair_address}/#{side}/#{price}/#{owner}",
-           pair: pair_address,
-           owner: owner,
-           side: String.to_existing_atom(side),
-           rate: 0,
-           updated_at: DateTime.utc_now(),
-           offer: 0,
-           remaining: 0,
-           filled: 0,
-           type: type,
-           deviation: nil
-         }}
-
-      err ->
-        err
-    end
   end
 end
