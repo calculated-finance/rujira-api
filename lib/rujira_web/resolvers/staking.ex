@@ -115,6 +115,13 @@ defmodule RujiraWeb.Resolvers.Staking do
     end
   end
 
+  # Inject the bond denom for status value when queried directly from its ID
+  def value_usd(%{id: id} = status, x, y) do
+    with {:ok, %{bond_denom: bond_denom}} <- Staking.get_pool(id) do
+      status |> Map.put(:bond_denom, bond_denom) |> value_usd(x, y)
+    end
+  end
+
   def summary(pool, _, _) do
     Helpers.async(fn ->
       Pool.summary(pool)
