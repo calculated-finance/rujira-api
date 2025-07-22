@@ -123,10 +123,54 @@ defmodule Rujira.Fin do
     end
   end
 
-  defmemo query_orders(contract, address, offset \\ 0, limit \\ 30) do
-    Contracts.query_state_smart(contract, %{
-      orders: %{owner: address, offset: offset, limit: limit}
-    })
+  def query_orders(contract, address, offset \\ 0, limit \\ 30) do
+    # We're hitting shared buffer issues when contracts query base layer state via gprc, causing grpc responses to be empty.
+    # Will fix upstream, but for now this is the most parallel query. Retry on the common failures
+    case Contracts.query_state_smart(contract, %{
+           orders: %{owner: address, offset: offset, limit: limit}
+         }) do
+      {:error,
+       %GRPC.RPCError{
+         status: 2,
+         message: "Invalid layer 1 string : query wasm contract failed"
+       }} ->
+        Contracts.query_state_smart(contract, %{
+          orders: %{owner: address, offset: offset, limit: limit}
+        })
+
+      {:error,
+       %GRPC.RPCError{
+         status: 2,
+         message:
+           "codespace wasm code 29: wasmvm error: Error calling the VM: Error executing Wasm: Wasmer runtime error: RuntimeError: Error calling into the VM's backend: Panic in FFI call"
+       }} ->
+        Contracts.query_state_smart(contract, %{
+          orders: %{owner: address, offset: offset, limit: limit}
+        })
+
+      {:error,
+       %GRPC.RPCError{
+         status: 2,
+         message:
+           "Generic error: Parsing u128: cannot parse integer from empty string: query wasm contract failed"
+       }} ->
+        Contracts.query_state_smart(contract, %{
+          orders: %{owner: address, offset: offset, limit: limit}
+        })
+
+      {:error,
+       %GRPC.RPCError{
+         status: 2,
+         message:
+           "failed to decode Protobuf message: invalid tag value: 0: query wasm contract failed"
+       }} ->
+        Contracts.query_state_smart(contract, %{
+          orders: %{owner: address, offset: offset, limit: limit}
+        })
+
+      other ->
+        other
+    end
   end
 
   def list_all_orders(address) do
