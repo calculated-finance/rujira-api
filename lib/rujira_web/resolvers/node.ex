@@ -243,7 +243,7 @@ defmodule RujiraWeb.Resolvers.Node do
 
        # --- Staking ---
        %{type: "StakingPool", format: "pool_address"},
-       %{type: "StakingAccount", format: "account_address/bond_denom"},
+       %{type: "StakingAccount", format: "pool_address/account_address"},
        %{type: "StakingStatus", format: "pool_address"},
        %{type: "StakingSummary", format: "pool_address"},
 

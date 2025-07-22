@@ -55,6 +55,12 @@ defmodule RujiraWeb.Resolvers.Staking do
     {:ok, %{single: nil, dual: nil, revenue: nil}}
   end
 
+  def account_subscription(%{contract: contract}, %{owner: owner}, _) do
+    with {:ok, pool} <- Staking.get_pool(contract) do
+      Staking.load_account(pool, owner)
+    end
+  end
+
   def accounts(%{address: address}, _, _) do
     Helpers.async(fn ->
       with {:ok, single} <- Staking.get_pool(Staking.single()),

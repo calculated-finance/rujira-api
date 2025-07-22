@@ -130,6 +130,7 @@ defmodule RujiraWeb.Schema do
     end
 
     import_fields(:fin_subscriptions)
+    import_fields(:staking_subscriptions)
   end
 
   @desc "A Relay-style edge object containing a node and its pagination cursor."

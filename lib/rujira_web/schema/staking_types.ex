@@ -196,4 +196,21 @@ defmodule RujiraWeb.Schema.StakingTypes do
     field :execute_msg, non_null(:string)
     field :limit, non_null(:bigint)
   end
+
+  object :staking_subscriptions do
+    @desc """
+    Triggered any time a staking contract allocates rewards via contract executions.
+    Use a `node` subscription to detect changes to liquid account balances
+    affected by Transfer events.
+    """
+    field :staking_account_updated, :staking_account do
+      arg(:owner, non_null(:address))
+
+      config(fn _, _ ->
+        {:ok, topic: "*"}
+      end)
+
+      resolve(&Staking.account_subscription/3)
+    end
+  end
 end

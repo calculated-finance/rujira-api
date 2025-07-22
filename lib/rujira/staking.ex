@@ -86,35 +86,9 @@ defmodule Rujira.Staking do
   end
 
   def account_from_id(id) do
-    with [account, denom] <- String.split(id, "/", parts: 2) do
-      with {:ok, pool} <- pool_from_bond_denom(denom) do
-        load_account(pool, account)
-      end
-    end
-  end
-
-  def pool_from_bond_denom(bond_denom) do
-    case bond_denom_map() do
-      %{} = map ->
-        case Map.get(map, bond_denom) do
-          nil -> {:error, :not_found}
-          pool -> {:ok, pool}
-        end
-
-      error ->
-        error
-    end
-  end
-
-  def bond_denom_map do
-    case list_pools() do
-      {:ok, pools} ->
-        pools
-        |> Enum.map(&{&1.bond_denom, &1})
-        |> Enum.into(%{})
-
-      error ->
-        error
+    with [contract, owner] <- String.split(id, "/", parts: 2),
+         {:ok, pool} <- get_pool(contract) do
+      load_account(pool, owner)
     end
   end
 

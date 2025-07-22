@@ -49,7 +49,7 @@ defmodule Rujira.Staking.Account do
          {liquid_shares, ""} <- Integer.parse(balance.amount) do
       {:ok,
        %__MODULE__{
-         id: "#{address}/#{pool.bond_denom}",
+         id: "#{pool.address}/#{address}",
          pool: pool,
          account: address,
          bonded: bonded,
@@ -65,7 +65,7 @@ defmodule Rujira.Staking.Account do
   def default(pool, account) do
     {:ok,
      %__MODULE__{
-       id: "#{account}/#{pool.bond_denom}",
+       id: "#{pool.address}/#{account}",
        pool: pool,
        account: account,
        bonded: 0,
