@@ -82,9 +82,9 @@ defmodule Rujira.Index.Vault do
         total_value = Enum.reduce(allocations, 0, &(&2 + &1.value))
 
         nav =
-          if total_shares == 0,
-            do: Decimal.new(1),
-            else: Decimal.div(Decimal.new(total_value), total_shares)
+          Enum.reduce(allocations, Decimal.new(0), fn %{target_weight: w, price: p}, acc ->
+            Decimal.add(acc, Decimal.mult(Decimal.new(w), p))
+          end)
 
         {:ok,
          %__MODULE__{
