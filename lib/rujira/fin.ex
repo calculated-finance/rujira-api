@@ -124,7 +124,7 @@ defmodule Rujira.Fin do
   end
 
   def query_orders(contract, address, offset \\ 0, limit \\ 30) do
-    # We're hitting shared buffer issues when contracts query base layer state via gprc, causing grpc responses to be empty.
+    # We're hitting shared buffer issues when contracts query base layer state via gprc, causing responses to be empty
     # Will fix upstream, but for now this is the most parallel query. Retry on the common failures
     case Contracts.query_state_smart(contract, %{
            orders: %{owner: address, offset: offset, limit: limit}
