@@ -168,9 +168,9 @@ defmodule Rujira.Staking.Pool do
       revenue_denom: revenue_denom,
       receipt_token_metadata: %{
         description:
-          "Transferable shares issued when staking #{Assets.short_id(asset)} on Rujira via the Liquid Staking interface",
+          "Transferable shares issued when staking #{Assets.short_id(asset)} on Rujira via the Auto-Compounding interface",
         display: "x/staking-#{bond_denom}",
-        name: "Yield bearing #{Assets.short_id(asset)}",
+        name: "Auto-Compounding #{Assets.short_id(asset)}",
         symbol: "s#{asset.ticker}"
       },
       revenue_converter: [contract, Base.encode64(msg), min]
