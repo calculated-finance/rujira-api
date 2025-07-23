@@ -26,6 +26,7 @@ defmodule RujiraWeb.Schema.ChainTypes do
     value(:kuji)
     value(:ltc)
     value(:noble)
+    value(:osmo)
     value(:thor)
     value(:terra2)
     value(:terra)

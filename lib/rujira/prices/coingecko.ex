@@ -94,6 +94,7 @@ defmodule Rujira.Prices.Coingecko do
   def id("GUSD"), do: {:ok, "gemini-dollar"}
   def id("LINK"), do: {:ok, "chainlink"}
   def id("LUSD"), do: {:ok, "ripple-usd"}
+  def id("LVN"), do: {:ok, "levana-protocol"}
   def id("NAMI"), do: {:ok, "nami-protocol"}
   def id("RAZE"), do: {:ok, "craze"}
   def id("SNX"), do: {:ok, "havven"}

@@ -13,6 +13,8 @@ defmodule Rujira.Chains.Terra2 do
 
   @rpc "terra2-grpc.bryanlabs.net"
 
+  use Rujira.Chains.Cosmos.Listener, ws: "wss://terra2-rpc.bryanlabs.net", chain: "terra2"
+
   @symbol_traces %{
     "LUNA" => "uluna",
     "USDC" => "ibc/2C962DAB9F57FE0921435426AE75196009FAA1981BF86991203C8411F8980FDB",
