@@ -13,6 +13,7 @@ defmodule RujiraWeb.Resolvers.Token do
   alias Rujira.Chains.Gaia
   alias Rujira.Chains.Kuji
   alias Rujira.Chains.Noble
+  alias Rujira.Chains.Osmo
 
   def string(%Asset{} = asset, _, _), do: {:ok, Assets.to_string(asset)}
   def layer1(%{asset: %Asset{} = asset}, _, _), do: {:ok, Assets.to_layer1(asset)}
@@ -49,6 +50,13 @@ defmodule RujiraWeb.Resolvers.Token do
 
   def native(%{asset: %Asset{chain: "NOBLE", symbol: symbol}}, _, _) do
     case Noble.to_denom(symbol) do
+      {:ok, denom} -> {:ok, %{denom: denom}}
+      _ -> {:ok, nil}
+    end
+  end
+
+  def native(%{asset: %Asset{chain: "OSMO", symbol: symbol}}, _, _) do
+    case Osmo.to_denom(symbol) do
       {:ok, denom} -> {:ok, %{denom: denom}}
       _ -> {:ok, nil}
     end
