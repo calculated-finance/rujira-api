@@ -1,7 +1,6 @@
 stages:
   - build
-  - lint
-  - test
+  - check
   - deploy
 
 variables:
