@@ -70,6 +70,16 @@ defmodule Rujira.Staking.Account do
          | liquid_shares: liquid_shares,
            liquid_size: floor(liquid_shares * liquid_bond_size / liquid_bond_shares)
        }}
+    else
+      {:error,
+       %GRPC.RPCError{
+         status: 2,
+         message: "codespace wasm code 22: no such contract: address" <> _
+       }} ->
+        {:ok, %{account | liquid_shares: 0, liquid_size: 0}}
+
+      other ->
+        other
     end
   end
 
