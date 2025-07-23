@@ -10,4 +10,14 @@ targets:
       revenue_converter: 
         contract: ${targets:rujira-fin.ruji-eth-usdc}
         msg: '{"swap": {}}'
-        min: "10000000"
+        min: "10000000000"
+  - id: nami
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      bond_denom: thor.nami
+      revenue_denom: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+      revenue_converter: 
+        contract: ${targets:rujira-fin.nami-eth-usdc}
+        msg: '{"swap": {}}'
+        min: "1000000000"
