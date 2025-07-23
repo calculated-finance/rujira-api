@@ -35,6 +35,25 @@ defmodule Rujira.Staking.Account do
           "pending_revenue" => pending_revenue
         }
       ) do
+    with {bonded, ""} <- Integer.parse(bonded),
+         {pending_revenue, ""} <- Integer.parse(pending_revenue) do
+      {:ok,
+       %__MODULE__{
+         id: "#{pool.address}/#{address}",
+         pool: pool,
+         account: address,
+         bonded: bonded,
+         pending_revenue: pending_revenue + unallocated_revenue(pool, bonded)
+       }}
+    else
+      _ -> {:error, :parse_error}
+    end
+  end
+
+  def load_balance(
+        %Pool{} = pool,
+        %__MODULE__{account: address} = account
+      ) do
     with {:ok,
           %{
             receipt_denom: receipt_denom,
@@ -42,37 +61,28 @@ defmodule Rujira.Staking.Account do
               liquid_bond_size: liquid_bond_size,
               liquid_bond_shares: liquid_bond_shares
             }
-          } = pool} <- Staking.load_pool(pool),
-         {bonded, ""} <- Integer.parse(bonded),
-         {pending_revenue, ""} <- Integer.parse(pending_revenue),
+          }} <- Staking.load_pool(pool),
          {:ok, balance} <- Thor.balance_of(address, receipt_denom),
          {liquid_shares, ""} <- Integer.parse(balance.amount) do
       {:ok,
-       %__MODULE__{
-         id: "#{pool.address}/#{address}",
-         pool: pool,
-         account: address,
-         bonded: bonded,
-         pending_revenue: pending_revenue + unallocated_revenue(pool, bonded),
-         liquid_shares: liquid_shares,
-         liquid_size: floor(liquid_shares * liquid_bond_size / liquid_bond_shares)
+       %{
+         account
+         | liquid_shares: liquid_shares,
+           liquid_size: floor(liquid_shares * liquid_bond_size / liquid_bond_shares)
        }}
-    else
-      _ -> {:error, :parse_error}
     end
   end
 
   def default(pool, account) do
-    {:ok,
-     %__MODULE__{
-       id: "#{pool.address}/#{account}",
-       pool: pool,
-       account: account,
-       bonded: 0,
-       pending_revenue: 0,
-       liquid_shares: 0,
-       liquid_size: 0
-     }}
+    %__MODULE__{
+      id: "#{pool.address}/#{account}",
+      pool: pool,
+      account: account,
+      bonded: 0,
+      pending_revenue: 0,
+      liquid_shares: 0,
+      liquid_size: 0
+    }
   end
 
   # Contract current doesn't allocate global pending revnue to Account balance on Query,

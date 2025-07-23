@@ -112,12 +112,12 @@ defmodule Rujira.Staking do
   def load_account(nil, _), do: {:ok, nil}
 
   def load_account(pool, account) do
-    case query_account(pool.address, account) do
-      {:ok, res} ->
-        Account.from_query(pool, res)
-
+    with {:ok, res} <- query_account(pool.address, account),
+         {:ok, account} <- Account.from_query(pool, res) do
+      Account.load_balance(pool, account)
+    else
       _ ->
-        Account.default(pool, account)
+        Account.load_balance(pool, Account.default(pool, account))
     end
   end
 
