@@ -115,4 +115,11 @@ defmodule Rujira.Staking.Account do
       account_bond
     )
   end
+
+  defp unallocated_revenue(%{status: :not_loaded} = pool, bonded) do
+    case Staking.load_pool(pool) do
+      {:ok, pool} -> unallocated_revenue(pool, bonded)
+      _ -> 0
+    end
+  end
 end
