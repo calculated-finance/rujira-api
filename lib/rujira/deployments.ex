@@ -171,10 +171,11 @@ defmodule Rujira.Deployments do
         code_id: code_id,
         config: config,
         salt: salt,
-        admin: admin
+        admin: admin,
+        creator: creator
       }) do
     %MsgInstantiateContract2{
-      sender: admin,
+      sender: creator,
       admin: admin,
       code_id: to_string(code_id),
       msg: module.init_msg(config),
