@@ -214,7 +214,7 @@ defmodule Rujira.Bow.Xyk do
     end
   end
 
-  def limit(_, %{k: 0}), do: nil
+  def limit(_, %{shares: shares}) when shares < 10_000, do: nil
 
   def limit(config, state) do
     {bid, ask, _} = do_quote(config, state)
