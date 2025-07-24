@@ -70,7 +70,7 @@ test:
 
 deploy_stagenet:
   stage: deploy
-  image: alpine/git:latest 
+  image: elixir:1.17.3-alpine  
   before_script: []  # No compilation needed
   script:  
     - >
@@ -81,7 +81,7 @@ deploy_stagenet:
 
 deploy_mainnet:
   stage: deploy
-  image: alpine/git:latest 
+  image: elixir:1.17.3-alpine  
   before_script: []  # No compilation needed
   script:  
     - >
