@@ -35,19 +35,21 @@ defmodule Rujira.Chains.Xrp do
                 "account_data" => %{
                   "Account" => account,
                   "Balance" => balance
-                  # "Flags" => flags,
-                  # "LedgerEntryType" => ledger_entry_type,
-                  # "OwnerCount" => owner_count,
-                  # "PreviousTxnID" => previous_tx_id,
-                  # "PreviousTxnLgrSeq" => previous_tx_lgr_seq,
-                  # "Sequence" => seq,
-                  # "index" => idx
                 }
               }
             }
           }} <- Tesla.post(client(), "/", body),
          {balance, ""} <- Integer.parse(balance) do
       {:ok, %{account: account, balance: balance}}
+    else
+      {:ok, %{body: %{"result" => %{"error" => "actNotFound"}}}} ->
+        {:ok, %{account: account, balance: 0}}
+
+      {:ok, %{body: %{"result" => %{"error_message" => error}}}} ->
+        {:error, error}
+
+      other ->
+        other
     end
   end
 
