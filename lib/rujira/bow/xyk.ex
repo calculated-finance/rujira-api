@@ -313,6 +313,8 @@ defmodule Rujira.Bow.Xyk do
     |> Decimal.div(Decimal.new(1_000_000_000_000))
   end
 
+  defp value(:bid, 0, total), do: Decimal.new(0)
+
   defp value(:bid, price, total) do
     total
     |> Decimal.new()
