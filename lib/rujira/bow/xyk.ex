@@ -214,7 +214,7 @@ defmodule Rujira.Bow.Xyk do
     end
   end
 
-  def limit(_, %{k: 0}), do: nil
+  def limit(_, %{shares: shares}) when shares < 10_000, do: nil
 
   def limit(config, state) do
     {bid, ask, _} = do_quote(config, state)
@@ -273,7 +273,7 @@ defmodule Rujira.Bow.Xyk do
     acc
   end
 
-  defp do_quotes(_config, %{shares: 0}, _side, _, _), do: []
+  defp do_quotes(_config, %{shares: shares}, _side, _, _) when shares < 10_000, do: []
 
   defp do_quotes(config, state, side, acc, count) do
     {x, y, new_state} = quote_for(side, config, state)
@@ -301,6 +301,8 @@ defmodule Rujira.Bow.Xyk do
 
   defp quote_for(:bid, config, state), do: do_quote(config, state)
 
+  defp get_price(:ask, _, 0), do: Decimal.new(0)
+  defp get_price(:bid, 0, _), do: Decimal.new(0)
   defp get_price(:ask, x, y), do: Decimal.div(x, y)
   defp get_price(:bid, x, y), do: Decimal.div(y, x)
 
@@ -312,10 +314,14 @@ defmodule Rujira.Bow.Xyk do
   end
 
   defp value(:bid, price, total) do
-    total
-    |> Decimal.new()
-    |> Decimal.div(price)
-    |> Decimal.div(Decimal.new(1_000_000_000_000))
+    if Decimal.gt?(price, Decimal.new(0)) do
+      total
+      |> Decimal.new()
+      |> Decimal.div(price)
+      |> Decimal.div(Decimal.new(1_000_000_000_000))
+    else
+      Decimal.new(0)
+    end
   end
 
   def init_msg(%{"x" => x, "y" => y} = params) do

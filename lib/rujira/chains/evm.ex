@@ -165,6 +165,9 @@ defmodule Rujira.Chains.Evm do
       {:error, %{"error" => %{"message" => message}}} ->
         {:error, message}
 
+      {:error, {:invalid_json, %Jason.DecodeError{data: data}}} ->
+        {:error, data}
+
       err ->
         err
     end
