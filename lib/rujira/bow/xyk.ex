@@ -273,7 +273,7 @@ defmodule Rujira.Bow.Xyk do
     acc
   end
 
-  defp do_quotes(_config, %{shares: 0}, _side, _, _), do: []
+  defp do_quotes(_config, %{shares: shares}, _side, _, _) when shares < 10_000, do: []
 
   defp do_quotes(config, state, side, acc, count) do
     {x, y, new_state} = quote_for(side, config, state)
@@ -313,13 +313,15 @@ defmodule Rujira.Bow.Xyk do
     |> Decimal.div(Decimal.new(1_000_000_000_000))
   end
 
-  defp value(:bid, 0, total), do: Decimal.new(0)
-
   defp value(:bid, price, total) do
-    total
-    |> Decimal.new()
-    |> Decimal.div(price)
-    |> Decimal.div(Decimal.new(1_000_000_000_000))
+    if Decimal.gt?(price, Decimal.new(0)) do
+      total
+      |> Decimal.new()
+      |> Decimal.div(price)
+      |> Decimal.div(Decimal.new(1_000_000_000_000))
+    else
+      Decimal.new(0)
+    end
   end
 
   def init_msg(%{"x" => x, "y" => y} = params) do
