@@ -62,7 +62,10 @@ defmodule Rujira.Index.Vault do
            {shares, ""} <- Integer.parse(shares_str),
            {total_value, ""} <- Integer.parse(total_value_str),
            {:ok, allocations} <- Nav.parse_allocations(raw_allocs) do
-        allocations = Nav.add_current_weights(allocations)
+        allocations =
+          allocations
+          |> Nav.add_current_weights()
+          |> Enum.sort_by(& &1.value, :desc)
 
         {:ok,
          %__MODULE__{
@@ -86,11 +89,16 @@ defmodule Rujira.Index.Vault do
             Decimal.add(acc, Decimal.mult(Decimal.new(w), p))
           end)
 
+        allocations =
+          allocations
+          |> Fixed.assign_current_weights()
+          |> Enum.sort_by(& &1.value, :desc)
+
         {:ok,
          %__MODULE__{
            total_shares: total_shares,
            total_value: total_value,
-           allocations: Fixed.assign_current_weights(allocations),
+           allocations: allocations,
            nav: nav
          }}
       else
