@@ -35,3 +35,18 @@ targets:
       target_addresses:
         - address: ${accounts:thorchain-reserve}
           weight: 1
+
+  - id: nami-index-revenue-converter
+    admin: ${accounts:nami-deployer}
+    creator: ${accounts:creator}
+    config:
+      executor: ${accounts:nami-deployer}
+      target_denoms:
+        - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+      target_addresses:
+        - address: ${targets:rujira-staking.nami}
+          weight: 25
+        - address: thor1g5peya3jn038taayjw90x5rgkqmulllgflzhkx
+          weight: 35
+        - address: thor1gllwce856wljjnppfa5c0qm9we967pyhkkvgmk
+          weight: 40
