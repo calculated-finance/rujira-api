@@ -1,6 +1,6 @@
 stages:
-  - lint
-  - test
+  - build
+  - check
   - deploy
 
 variables:
@@ -8,20 +8,42 @@ variables:
   POSTGRES_HOST: postgres
   POSTGRES_USER: postgres
   POSTGRES_PASSWORD: "postgres"
+  MIX_HOME: /opt/build/.mix
+  HEX_HOME: /opt/build/.hex
 services:
   - name: postgres:14
     alias: postgres
     
 before_script:
+  - mkdir -p $MIX_HOME $HEX_HOME
   - mix local.hex --force
   - mix local.rebar --force
   - mix deps.get
   - mix ecto.create --quiet
   - mix ecto.migrate --quiet
 
-lint:
-  stage: lint
+build:
+  stage: build
   image: elixir:1.17.3
+  script:
+    - mix compile --warnings-as-errors
+  artifacts:
+    paths:
+      - _build/
+      - deps/
+    expire_in: 1 hour
+  only:
+    - merge_requests
+    - develop
+    - stage
+    - main
+    - dev
+
+lint:
+  stage: check
+  image: elixir:1.17.3
+  dependencies:
+    - build
   script:
     - mix format --check-formatted
     - mix credo
@@ -32,21 +54,11 @@ lint:
     - main
     - dev
 
-check_warnings:
-  stage: test
-  image: elixir:1.17.3
-  script:
-    - mix compile --warnings-as-errors
-  only:
-    - merge_requests
-    - develop
-    - stage
-    - main
-    - dev
-
 test:
-  stage: test
+  stage: check
   image: elixir:1.17.3
+  dependencies:
+    - build
   script:
     - mix test
   only:
@@ -58,7 +70,8 @@ test:
 
 deploy_stagenet:
   stage: deploy
-  image: elixir:1.17.3
+  image: alpine/git:latest 
+  before_script: []  # No compilation needed
   script:  
     - >
       git remote add gigalixir https://$GIGALIXIR_EMAIL:$GIGALIXIR_API_KEY@git.gigalixir.com/$GIGALIXIR_APP_NAME_STAGENET.git &&
@@ -68,7 +81,8 @@ deploy_stagenet:
 
 deploy_mainnet:
   stage: deploy
-  image: elixir:1.17.3
+  image: alpine/git:latest 
+  before_script: []  # No compilation needed
   script:  
     - >
       git remote add gigalixir https://$GIGALIXIR_EMAIL:$GIGALIXIR_API_KEY@git.gigalixir.com/$GIGALIXIR_APP_NAME_MAINNET.git &&
