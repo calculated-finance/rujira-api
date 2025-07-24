@@ -77,6 +77,9 @@ defmodule RujiraWeb.Fragments.StakingFragments do
     revenueAsset {
       ...AssetFragment
     }
+    receiptAsset {
+      ...AssetFragment
+    }
     revenueConverter {
       ...RevenueConverterTypeFragment
     }

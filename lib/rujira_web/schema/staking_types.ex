@@ -60,6 +60,12 @@ defmodule RujiraWeb.Schema.StakingTypes do
       end)
     end
 
+    field :receipt_asset, non_null(:asset) do
+      resolve(fn %{receipt_denom: denom}, _, _ ->
+        Assets.from_denom(denom)
+      end)
+    end
+
     @desc "The contract, payload and limit used to convert the collected revenue to the bonded token"
     field :revenue_converter, non_null(:revenue_converter_type) do
       resolve(fn %{revenue_converter: [address, execute_msg, limit]}, _, _ ->
