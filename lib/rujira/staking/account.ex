@@ -68,7 +68,11 @@ defmodule Rujira.Staking.Account do
        %{
          account
          | liquid_shares: liquid_shares,
-           liquid_size: floor(liquid_shares * liquid_bond_size / liquid_bond_shares)
+           liquid_size:
+             if(liquid_bond_shares > 0,
+               do: floor(liquid_shares * liquid_bond_size / liquid_bond_shares),
+               else: 0
+             )
        }}
     else
       {:error, %GRPC.RPCError{}} ->
