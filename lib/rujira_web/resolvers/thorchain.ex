@@ -79,9 +79,9 @@ defmodule RujiraWeb.Resolvers.Thorchain do
   defp cast_inbound_address(x) do
     x
     |> Map.update(:chain, nil, &String.to_existing_atom(String.downcase(&1)))
-    |> Map.update(:gas_rate_units, nil, &maybe_to_integer/1)
-    |> Map.update(:pub_key, nil, &maybe_to_integer/1)
-    |> Map.update(:router, nil, &maybe_to_integer/1)
+    |> Map.update(:gas_rate_units, nil, &maybe_string/1)
+    |> Map.update(:pub_key, nil, &maybe_string/1)
+    |> Map.update(:router, nil, &maybe_string/1)
     |> Map.put(:id, x.chain)
   end
 
@@ -103,6 +103,8 @@ defmodule RujiraWeb.Resolvers.Thorchain do
 
   defp maybe_to_integer(""), do: nil
   defp maybe_to_integer(str), do: String.to_integer(str)
+  defp maybe_string(""), do: nil
+  defp maybe_string(str), do: str
 
   def inbound_address(id) do
     with {:ok, adds} <- inbound_addresses() do
