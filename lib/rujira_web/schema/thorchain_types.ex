@@ -17,6 +17,10 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
       resolve(&Resolvers.Thorchain.inbound_addresses/3)
     end
 
+    field :outbound_fees, non_null(list_of(non_null(:thorchain_outbound_fee))) do
+      resolve(&Resolvers.Thorchain.outbound_fees/3)
+    end
+
     field :quote, :thorchain_quote do
       arg(:from_asset, non_null(:asset_string))
       arg(:to_asset, non_null(:asset_string))
@@ -256,5 +260,19 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
   node object(:thorchain_oracle) do
     field :asset, non_null(:asset)
     field :price, non_null(:bigint)
+  end
+
+  object :thorchain_outbound_fee do
+    field :asset, non_null(:asset) do
+      resolve(fn %{asset: asset}, _, _ ->
+        {:ok, Assets.from_string(asset)}
+      end)
+    end
+
+    field :outbound_fee, non_null(:integer)
+    field :fee_withheld_rune, :integer
+    field :fee_spent_rune, :integer
+    field :surplus_rune, :integer
+    field :dynamic_multiplier_basis_points, :integer
   end
 end

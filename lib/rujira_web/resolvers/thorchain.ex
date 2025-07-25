@@ -2,6 +2,8 @@ defmodule RujiraWeb.Resolvers.Thorchain do
   @moduledoc """
   Handles GraphQL resolution for Thorchain-related queries and operations.
   """
+  alias Thorchain.Types.QueryOutboundFeesRequest
+  alias Thorchain.Types.QueryOutboundFeesResponse
   alias Absinthe.Resolution.Helpers
   alias Rujira.Assets
   alias Thorchain.Types.Query.Stub, as: Q
@@ -70,9 +72,39 @@ defmodule RujiraWeb.Resolvers.Thorchain do
   def inbound_addresses do
     with {:ok, %QueryInboundAddressesResponse{inbound_addresses: inbound_addresses}} <-
            Thornode.query(&Q.inbound_addresses/2, %QueryInboundAddressesRequest{}) do
-      {:ok, Enum.map(inbound_addresses, &cast_response/1)}
+      {:ok, Enum.map(inbound_addresses, &cast_inbound_address/1)}
     end
   end
+
+  defp cast_inbound_address(x) do
+    x
+    |> Map.update(:chain, nil, &String.to_existing_atom(String.downcase(&1)))
+    |> Map.update(:gas_rate_units, nil, &maybe_to_integer/1)
+    |> Map.update(:pub_key, nil, &maybe_to_integer/1)
+    |> Map.update(:router, nil, &maybe_to_integer/1)
+    |> Map.put(:id, x.chain)
+  end
+
+  def outbound_fees(_, _, _) do
+    with {:ok, %QueryOutboundFeesResponse{outbound_fees: outbound_fees}} <-
+           Thornode.query(&Q.outbound_fees/2, %QueryOutboundFeesRequest{}) do
+      {:ok, Enum.map(outbound_fees, &cast_outbound_fee/1)}
+    end
+  end
+
+  defp cast_outbound_fee(x) do
+    IO.inspect(x)
+
+    x
+    |> Map.update(:outbound_fee, "0", &String.to_integer/1)
+    |> Map.update(:fee_withheld_rune, nil, &maybe_to_integer/1)
+    |> Map.update(:fee_spent_rune, nil, &maybe_to_integer/1)
+    |> Map.update(:surplus_rune, nil, &maybe_to_integer/1)
+    |> Map.update(:dynamic_multiplier_basis_points, nil, &maybe_to_integer/1)
+  end
+
+  defp maybe_to_integer(""), do: nil
+  defp maybe_to_integer(str), do: String.to_integer(str)
 
   def inbound_address(id) do
     with {:ok, adds} <- inbound_addresses() do
@@ -90,24 +122,6 @@ defmodule RujiraWeb.Resolvers.Thorchain do
         &Thorchain.liquidity_provider(&1.asset.id, address)
       )
     end
-  end
-
-  defp cast_response(x) do
-    x
-    |> Map.update(:chain, nil, &String.to_existing_atom(String.downcase(&1)))
-    |> Map.update(:gas_rate_units, nil, fn
-      "" -> nil
-      x -> x
-    end)
-    |> Map.update(:pub_key, nil, fn
-      "" -> nil
-      x -> x
-    end)
-    |> Map.update(:router, nil, fn
-      "" -> nil
-      x -> x
-    end)
-    |> Map.put(:id, x.chain)
   end
 
   def tx_in(_, %{hash: hash}, _) do
