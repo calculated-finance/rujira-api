@@ -49,8 +49,8 @@ defmodule RujiraWeb.TradeJSON do
       base_currency: Assets.label(base),
       target_currency: Assets.label(target),
       last_price: Map.get(summary, :last),
-      base_volume: Map.get(summary, :volume_base),
-      target_volume: Map.get(summary, :volume),
+      base_volume: Map.get(summary, :volume_base) |> amount(),
+      target_volume: Map.get(summary, :volume) |> amount(),
       bid: bid,
       ask: ask
     }

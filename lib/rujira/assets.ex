@@ -242,6 +242,9 @@ defmodule Rujira.Assets do
 
   def short_id(%{chain: chain, ticker: ticker}), do: "#{chain}.#{ticker}"
 
+  def label(%{chain: "ETH", ticker: "USDC"}),
+    do: "USDC"
+
   def label(%{chain: chain, ticker: ticker}) when ticker in ["USDC", "USDT"],
     do: "#{ticker}.#{chain}"
 
