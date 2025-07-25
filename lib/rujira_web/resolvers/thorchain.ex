@@ -2,13 +2,13 @@ defmodule RujiraWeb.Resolvers.Thorchain do
   @moduledoc """
   Handles GraphQL resolution for Thorchain-related queries and operations.
   """
-  alias Thorchain.Types.QueryOutboundFeesRequest
-  alias Thorchain.Types.QueryOutboundFeesResponse
   alias Absinthe.Resolution.Helpers
   alias Rujira.Assets
   alias Thorchain.Types.Query.Stub, as: Q
   alias Thorchain.Types.QueryInboundAddressesRequest
   alias Thorchain.Types.QueryInboundAddressesResponse
+  alias Thorchain.Types.QueryOutboundFeesRequest
+  alias Thorchain.Types.QueryOutboundFeesResponse
   alias Thorchain.Types.QueryQuoteSwapRequest
   alias Thorchain.Types.QueryQuoteSwapResponse
 
@@ -93,8 +93,6 @@ defmodule RujiraWeb.Resolvers.Thorchain do
   end
 
   defp cast_outbound_fee(x) do
-    IO.inspect(x)
-
     x
     |> Map.update(:outbound_fee, "0", &String.to_integer/1)
     |> Map.update(:fee_withheld_rune, nil, &maybe_to_integer/1)
