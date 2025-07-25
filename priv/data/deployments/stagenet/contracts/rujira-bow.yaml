@@ -41,6 +41,14 @@ targets:
         xyk:
           x: x/ruji
           y: rune
+  - id: ruji-eth-usdc
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      strategy: 
+        xyk: 
+          x: x/ruji
+          y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
   - id: ruji-eth-usdt
     admin: ${accounts:admin}
     creator: ${accounts:creator}
