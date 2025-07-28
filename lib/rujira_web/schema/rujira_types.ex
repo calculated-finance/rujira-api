@@ -62,6 +62,8 @@ defmodule RujiraWeb.Schema.RujiraTypes do
     connection field :strategies, node_type: :strategy, non_null: true do
       arg(:typenames, list_of(non_null(:string)))
       arg(:query, :string)
+      arg(:sort_by, :strategy_sort_by)
+      arg(:sort_dir, :strategy_sort_dir)
       resolve(&Resolvers.Strategy.list/3)
     end
 

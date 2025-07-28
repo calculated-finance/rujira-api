@@ -44,4 +44,15 @@ defmodule RujiraWeb.Schema.StrategyTypes do
   end
 
   connection(node_type: :strategy_account)
+
+  enum :strategy_sort_by do
+    value(:name)
+    value(:tvl)
+    value(:apr)
+  end
+
+  enum :strategy_sort_dir do
+    value(:asc)
+    value(:desc)
+  end
 end

@@ -20,6 +20,8 @@ defmodule Thorchain do
   alias Thorchain.Types.QueryBlockResponse
   alias Thorchain.Types.QueryBlockTx
   alias Thorchain.Types.QueryLiquidityProviderRequest
+  alias Thorchain.Types.QueryMimirValuesRequest
+  alias Thorchain.Types.QueryMimirValuesResponse
   alias Thorchain.Types.QueryNetworkRequest
   alias Thorchain.Types.QueryPoolRequest
   alias Thorchain.Types.QueryPoolsRequest
@@ -72,6 +74,27 @@ defmodule Thorchain do
     with {:ok, %QueryPoolsResponse{pools: pools}} <-
            Thornode.query(&Q.pools/2, req) do
       {:ok, Enum.map(pools, &cast_pool/1)}
+    end
+  end
+
+  defmemo halted_pools do
+    with {:ok, %QueryMimirValuesResponse{mimirs: mimirs}} <-
+           Thornode.query(&Q.mimir_values/2, %QueryMimirValuesRequest{}) do
+      halted_pools =
+        Enum.reduce(mimirs, [], fn %{key: key, value: value}, acc ->
+          if String.starts_with?(key, "PAUSELPDEPOSIT-") && value == 1 do
+            pool =
+              key
+              |> String.replace_prefix("PAUSELPDEPOSIT-", "")
+              |> String.replace("-", ".", global: false)
+
+            acc ++ [pool]
+          else
+            acc
+          end
+        end)
+
+      {:ok, halted_pools}
     end
   end
 
