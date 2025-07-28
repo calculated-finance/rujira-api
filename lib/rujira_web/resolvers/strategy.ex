@@ -28,13 +28,7 @@ defmodule RujiraWeb.Resolvers.Strategy do
       |> Enum.concat(Enum.filter(staking, &staking_query(query, &1)))
       |> Enum.concat(Enum.filter(perps, &perps_query(query, &1)))
       |> Enum.filter(&filter_type(&1, typenames))
-      |> Enum.sort_by(
-        fn item ->
-          sort_fn = sort_by(item, sort_by)
-          sort_fn.(item)
-        end,
-        sort_dir
-      )
+      |> sort(sort_by, sort_dir)
       |> Connection.from_list(args)
     end
   end
@@ -147,6 +141,18 @@ defmodule RujiraWeb.Resolvers.Strategy do
 
   # ---- Sort By ----
 
+  def sort(enum, nil, _), do: enum
+
+  def sort(enum, sort_by, sort_dir) do
+    Enum.sort_by(
+      fn item ->
+        sort_fn = sort_by(item, sort_by)
+        sort_fn.(item)
+      end,
+      sort_dir
+    )
+  end
+
   # ThorchainPool
   def sort_by(%QueryPoolResponse{}, :name), do: & &1.asset.symbol
   def sort_by(%QueryPoolResponse{}, :tvl), do: &Prices.value_usd("RUNE", &1.balance_rune * 2)
@@ -206,6 +212,4 @@ defmodule RujiraWeb.Resolvers.Strategy do
   def sort_by(%Perps.Pool{}, :name), do: & &1.base_denom
   def sort_by(%Perps.Pool{}, :tvl), do: & &1.liquidity.total
   # def sort_by(%Perps.Pool{}, :apr), do: & &1.stats.lp_apr
-
-  def sort_by(_, nil), do: fn _ -> "" end
 end
