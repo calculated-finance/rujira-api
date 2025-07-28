@@ -31,4 +31,15 @@ defmodule RujiraWeb.Resolvers.Index do
 
     {:ok, type}
   end
+
+  def deposit_query(
+        %{address: address, entry_adapter: entry_adapter},
+        %{deposit_amount: deposit_amount, slippage_bps: slippage_bps},
+        _
+      ) do
+    case entry_adapter do
+      nil -> {:ok, nil}
+      _ -> Index.deposit_query(address, deposit_amount, slippage_bps)
+    end
+  end
 end

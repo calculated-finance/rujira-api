@@ -38,8 +38,10 @@ defmodule RujiraWeb.Fragments.IndexFragments do
       ...IndexAllocationFragment
     }
     totalValue
+    totalValueChange
     navChange
     navQuote
+    apr
   }
   #{@index_allocation_fragment}
   """

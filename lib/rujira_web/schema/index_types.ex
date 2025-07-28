@@ -32,6 +32,13 @@ defmodule RujiraWeb.Schema.IndexTypes do
     @desc "Index entry adapter address, present only if index is of type fixed"
     field :entry_adapter, :address
 
+    @desc "Deposit query for fixed index, through entry adapter, returns the array of data to use in the transaction, empty if not fixed index"
+    field :deposit_query, :index_fixed_deposit_msg do
+      arg(:deposit_amount, non_null(:bigint))
+      arg(:slippage_bps, non_null(:integer))
+      resolve(&Resolvers.Index.deposit_query/3)
+    end
+
     field :config, non_null(:index_config)
 
     field :status, non_null(:index_status)
@@ -77,10 +84,14 @@ defmodule RujiraWeb.Schema.IndexTypes do
     field :allocations, non_null(list_of(non_null(:index_allocation)))
     @desc "The total value of the index vault"
     field :total_value, non_null(:bigint)
+    @desc "The change in total value over the last 24 hours"
+    field :total_value_change, :bigint
     @desc "The change in NAV over the last 24 hours"
     field :nav_change, :bigint
     @desc "The NAV in quote asset"
     field :nav_quote, :bigint
+    @desc "The APR over the last 30 days, when applicable otherwise N/A"
+    field :apr, :bigint
   end
 
   @desc "An index_allocation represents the allocation of the index vault"
@@ -129,5 +140,16 @@ defmodule RujiraWeb.Schema.IndexTypes do
     field :shares, non_null(:bigint)
     @desc "The current value of the account"
     field :shares_value, non_null(:bigint)
+  end
+
+  object :index_fixed_deposit_msg do
+    field :index, non_null(:address)
+    field :swaps, non_null(list_of(non_null(:index_fixed_deposit_swap)))
+  end
+
+  object :index_fixed_deposit_swap do
+    field :denom, non_null(:string)
+    field :amount, non_null(:bigint)
+    field :min_return, non_null(:bigint)
   end
 end

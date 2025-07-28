@@ -2,6 +2,7 @@ defmodule Rujira.Index.Fixed do
   @moduledoc """
   Parses and manages fixed-weight index allocations and their Net Asset Value (NAV) calculations.
   """
+  alias Rujira.Fin
   alias Rujira.Index.Vault
   alias Rujira.Prices
 
@@ -103,6 +104,53 @@ defmodule Rujira.Index.Fixed do
        fees: :not_loaded,
        deployment_status: :live
      }}
+  end
+
+  def deposit_query(
+        %{address: address, status: %{allocations: allocations}},
+        deposit_amount,
+        slippage_bps
+      ) do
+    {:ok, swaps} =
+      allocations
+      |> Rujira.Enum.reduce_while_ok(&calc_swap(&1, deposit_amount, slippage_bps))
+
+    {:ok, %{index: address, swaps: adjust_swaps(swaps, deposit_amount)}}
+  end
+
+  def calc_swap(%{denom: denom, current_weight: current_weight}, deposit_amount, slippage_bps) do
+    with {:ok, pair} <- Fin.get_stable_pair(denom),
+         {:ok, res} <- Fin.query_book(pair.address),
+         {:ok, %{center: price}} <- Fin.Book.from_query(pair.address, res) do
+      swap_amount =
+        deposit_amount
+        |> Decimal.mult(current_weight)
+        |> Decimal.round()
+        |> Decimal.to_integer()
+
+      min_return =
+        swap_amount
+        |> Decimal.div(price)
+        |> Decimal.mult(10_000 - slippage_bps)
+        |> Decimal.div(10_000)
+        |> Decimal.round()
+        |> Decimal.to_integer()
+
+      {:ok, %{denom: denom, amount: swap_amount, min_return: min_return}}
+    end
+  end
+
+  #  we need to ensure that the total amount of the swaps is equal to the deposit amount
+  #  for this we adjust the last swap amount to be the difference between
+  # the deposit amount and the sum of the other swaps
+  def adjust_swaps(swaps, deposit_amount) do
+    total_amount = Enum.reduce(swaps, 0, fn swap, acc -> acc + swap.amount end)
+    last_swap = Enum.at(swaps, -1)
+
+    adjusted_last_swap =
+      Map.put(last_swap, :amount, deposit_amount - total_amount + last_swap.amount)
+
+    List.replace_at(swaps, -1, adjusted_last_swap)
   end
 
   def init_msg(msg), do: msg

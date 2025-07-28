@@ -9,6 +9,8 @@ defmodule Rujira.Index do
   alias Rujira.Deployments
   alias Rujira.Index.Account
   alias Rujira.Index.EntryAdapter
+  alias Rujira.Index.Fixed
+  alias Rujira.Index.Nav
   alias Rujira.Index.NavBin
   alias Rujira.Index.Vault
   alias Rujira.Prices
@@ -35,7 +37,7 @@ defmodule Rujira.Index do
     {:ok, state}
   end
 
-  defp index_types, do: [Rujira.Index.Nav, Rujira.Index.Fixed]
+  defp index_types, do: [Nav, Fixed]
 
   @doc """
   List all Index Vaults
@@ -98,6 +100,7 @@ defmodule Rujira.Index do
       |> add_nav_change_24h()
       |> add_nav_quote()
       |> add_vault_entry_adapter()
+      |> add_apr_30d()
       |> then(&{:ok, &1})
     end
   end
@@ -228,9 +231,13 @@ defmodule Rujira.Index do
   end
 
   def add_nav_change_24h(vault) do
-    nav_change = change_24h(vault.address, vault.status.nav)
+    {nav_change, tvl_change} =
+      change_24h(vault.address, vault.status.nav, vault.status.total_value)
 
-    %Vault{vault | status: %{vault.status | nav_change: nav_change}}
+    %Vault{
+      vault
+      | status: %{vault.status | nav_change: nav_change, total_value_change: tvl_change}
+    }
   end
 
   def add_nav_quote(vault) do
@@ -241,18 +248,26 @@ defmodule Rujira.Index do
     end
   end
 
-  def change_24h(address, current_nav) do
+  def change_24h(address, current_nav, current_tvl) do
     today = Resolution.truncate(DateTime.utc_now(), "1D")
     nav_24h_ago = query_nav_bin_at(address, "1D", DateTime.add(today, -1, :day))
 
     case nav_24h_ago do
       nil ->
-        nil
+        {nil, nil}
 
       _ ->
-        Decimal.new(current_nav)
-        |> Decimal.sub(nav_24h_ago.open)
-        |> Decimal.div(nav_24h_ago.open)
+        nav_change =
+          Decimal.new(current_nav)
+          |> Decimal.sub(nav_24h_ago.open)
+          |> Decimal.div(nav_24h_ago.open)
+
+        tvl_change =
+          Decimal.new(current_tvl)
+          |> Decimal.sub(nav_24h_ago.tvl)
+          |> Decimal.div(nav_24h_ago.tvl)
+
+        {nav_change, tvl_change}
     end
   end
 
@@ -279,4 +294,55 @@ defmodule Rujira.Index do
 
   def value(shares, %Vault{status: %Vault.Status{nav: nav}}),
     do: Decimal.mult(nav, Decimal.new(shares))
+
+  def deposit_query(address, deposit_amount, slippage_bps) do
+    with {:ok, vault} <- get_index(address),
+         {:ok, vault} <- load_index(vault) do
+      Fixed.deposit_query(vault, deposit_amount, slippage_bps)
+    end
+  end
+
+  def get_yield_vaults do
+    ids = [
+      "yrune-1.0.1",
+      "ytcy"
+    ]
+
+    Nav
+    |> Deployments.list_targets()
+    |> Enum.filter(fn %{id: id} -> id in ids end)
+    |> Enum.map(fn %{address: address} -> address end)
+  end
+
+  def apr_30d(%{address: address} = vault) do
+    today = Resolution.truncate(DateTime.utc_now(), "1D")
+    nav_30d_ago = query_nav_bin_at(address, "1D", DateTime.add(today, -30, :day))
+
+    case nav_30d_ago do
+      nil ->
+        %Vault{vault | status: %{vault.status | apr: "Soon™"}}
+
+      _ ->
+        # APR = ((NAV / OPEN) - 1) * (365 / 30)
+        growth_factor = Decimal.div(vault.status.nav, nav_30d_ago.open)
+
+        apr =
+          growth_factor
+          |> Decimal.sub(1)
+          |> Decimal.mult(Decimal.new(365))
+          |> Decimal.div(30)
+
+        %Vault{vault | status: %{vault.status | apr: apr}}
+    end
+  end
+
+  def add_apr_30d(vault) do
+    yield_vaults = get_yield_vaults()
+
+    if vault.address in yield_vaults do
+      apr_30d(vault)
+    else
+      vault
+    end
+  end
 end

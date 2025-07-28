@@ -47,10 +47,21 @@ defmodule Rujira.Index.Vault do
             total_value: non_neg_integer(),
             allocations: list(Allocation.t()),
             nav_change: Decimal.t() | nil,
-            nav_quote: Decimal.t() | nil
+            total_value_change: Decimal.t() | nil,
+            nav_quote: Decimal.t() | nil,
+            apr: Decimal.t() | nil
           }
 
-    defstruct [:nav, :total_shares, :total_value, :allocations, :nav_change, :nav_quote]
+    defstruct [
+      :nav,
+      :total_shares,
+      :total_value,
+      :allocations,
+      :nav_change,
+      :total_value_change,
+      :nav_quote,
+      :apr
+    ]
 
     def from_query(%{
           "nav" => nav_str,
@@ -72,7 +83,8 @@ defmodule Rujira.Index.Vault do
            nav: nav,
            total_shares: shares,
            total_value: total_value,
-           allocations: allocations
+           allocations: allocations,
+           apr: "N/A"
          }}
       else
         error -> error
@@ -99,7 +111,8 @@ defmodule Rujira.Index.Vault do
            total_shares: total_shares,
            total_value: total_value,
            allocations: allocations,
-           nav: nav
+           nav: nav,
+           apr: "N/A"
          }}
       else
         error -> error
