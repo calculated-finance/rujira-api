@@ -207,5 +207,5 @@ defmodule RujiraWeb.Resolvers.Strategy do
   def sort_by(%Perps.Pool{}, :tvl), do: & &1.liquidity.total
   # def sort_by(%Perps.Pool{}, :apr), do: & &1.stats.lp_apr
 
-  def sort_by(_, nil), do: fn -> nil end
+  def sort_by(_, nil), do: fn _ -> nil end
 end
