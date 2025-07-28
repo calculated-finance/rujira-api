@@ -145,6 +145,7 @@ defmodule RujiraWeb.Resolvers.Strategy do
 
   def sort(enum, sort_by, sort_dir) do
     Enum.sort_by(
+      enum,
       fn item ->
         sort_fn = sort_by(item, sort_by)
         sort_fn.(item)
