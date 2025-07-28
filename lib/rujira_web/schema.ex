@@ -22,6 +22,7 @@ defmodule RujiraWeb.Schema do
   import_types(RujiraWeb.Schema.IndexTypes)
   import_types(RujiraWeb.Schema.LeaguesTypes)
   import_types(RujiraWeb.Schema.MergeTypes)
+  import_types(RujiraWeb.Schema.PerpsTypes)
   import_types(RujiraWeb.Schema.PilotTypes)
   import_types(RujiraWeb.Schema.RujiraTypes)
   import_types(RujiraWeb.Schema.Scalars.Address)

@@ -8,6 +8,7 @@ defmodule Rujira.Deployments do
   alias Rujira.Deployments.Target
   alias Rujira.Fin
   alias Rujira.Index
+  alias Rujira.Perps
   alias Rujira.Revenue
   alias Rujira.Staking
   alias Rujira.Ventures
@@ -193,6 +194,7 @@ defmodule Rujira.Deployments do
   defp to_module("nami-index-nav"), do: Index.Nav
   defp to_module("nami-index-fixed"), do: Index.Fixed
   defp to_module("nami-index-entry-adpter"), do: Index.EntryAdapter
+  defp to_module("rujira-perps"), do: Perps.Pool
 
   defp parse_ctx(map, ctx) when is_map(map) do
     map

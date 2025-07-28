@@ -53,6 +53,11 @@ defmodule RujiraWeb.Schema.RujiraTypes do
       resolve(&Resolvers.Leagues.resolver/3)
     end
 
+    @desc "Returns all available perps data for Rujira Perps"
+    field :perps, non_null(list_of(non_null(:perps_pool))) do
+      resolve(&Resolvers.Perps.resolver/3)
+    end
+
     @desc "Connection-based access to strategies available in Rujira"
     connection field :strategies, node_type: :strategy, non_null: true do
       arg(:typenames, list_of(non_null(:string)))

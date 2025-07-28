@@ -6,6 +6,7 @@ defmodule RujiraWeb.Resolvers.Strategy do
   alias Rujira.Assets
   alias Rujira.Bow
   alias Rujira.Index
+  alias Rujira.Perps
   alias Rujira.Staking
   alias Thorchain.Types.QueryPoolResponse
 
@@ -16,11 +17,13 @@ defmodule RujiraWeb.Resolvers.Strategy do
     with {:ok, bow} <- Bow.list_pools(),
          {:ok, thorchain} <- Thorchain.pools(),
          {:ok, index} <- Index.load_vaults(),
-         {:ok, staking} <- Staking.list_pools() do
+         {:ok, staking} <- Staking.list_pools(),
+         {:ok, perps} <- Perps.list_pools() do
       Enum.filter(bow, &bow_query(query, &1))
       |> Enum.concat(Enum.filter(thorchain, &thorchain_query(query, &1)))
       |> Enum.concat(Enum.filter(index, &index_query(query, &1)))
       |> Enum.concat(Enum.filter(staking, &staking_query(query, &1)))
+      |> Enum.concat(Enum.filter(perps, &perps_query(query, &1)))
       |> Enum.filter(&filter_type(&1, typenames))
       |> Connection.from_list(args)
     end
@@ -57,12 +60,14 @@ defmodule RujiraWeb.Resolvers.Strategy do
                  other -> other
                end
              end
-           ) do
+           ),
+         {:ok, perps} <- Perps.accounts(address) do
       accounts =
         bow
         |> Enum.concat(thorchain)
         |> Enum.concat(index)
         |> Enum.concat(staking)
+        |> Enum.concat(perps)
 
       {:ok, accounts}
     end
@@ -104,6 +109,13 @@ defmodule RujiraWeb.Resolvers.Strategy do
     end
   end
 
+  defp perps_query(query, %{quote_denom: quote_denom}) do
+    case Assets.from_denom(quote_denom) do
+      {:ok, asset} -> Assets.matches(query, asset)
+      _ -> false
+    end
+  end
+
   def filter_type(_, nil), do: true
   def filter_type(%Bow.Xyk{}, list), do: Enum.member?(list, "BowPoolXyk")
 
@@ -115,4 +127,7 @@ defmodule RujiraWeb.Resolvers.Strategy do
 
   def filter_type(%Staking.Pool{}, list),
     do: Enum.member?(list, "StakingPool")
+
+  def filter_type(%Perps.Pool{}, list),
+    do: Enum.member?(list, "PerpsPool")
 end

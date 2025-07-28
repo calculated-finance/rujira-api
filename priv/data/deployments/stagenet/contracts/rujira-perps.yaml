@@ -1,0 +1,15 @@
+code: 61
+
+targets:
+  - id: btc-usdt
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    address: sthor1f86r2e5kzlwf9dcq5f8frku5d39lhd3jc95juvs0ydrspqa49r4qua7xj4
+    config:
+
+  - id: rune-usdt
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    address: sthor1tuccj59p4lsfcuerd03lpf2tnp8lxk9swjtgn8dklkndaexn2fys0l05pl
+    config:
+    

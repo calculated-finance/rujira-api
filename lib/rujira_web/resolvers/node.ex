@@ -21,6 +21,7 @@ defmodule RujiraWeb.Resolvers.Node do
   alias Rujira.Index
   alias Rujira.Leagues
   alias Rujira.Merge
+  alias Rujira.Perps
   alias Rujira.Staking
 
   # Data & Analytics
@@ -86,6 +87,10 @@ defmodule RujiraWeb.Resolvers.Node do
   # Prices & Market Data
   def type(%Prices.Price{}, _), do: :price
 
+  # Perps
+  def type(%Perps.Pool{}, _), do: :perps_pool
+  def type(%Perps.Account{}, _), do: :perps_account
+
   # Index Module
   def type(%Index.Account{}, _), do: :index_account
   def type(%Index.Vault{}, _), do: :index_vault
@@ -134,6 +139,10 @@ defmodule RujiraWeb.Resolvers.Node do
   defp resolve_id({:ok, %{type: :fin_candle, id: id}}), do: Fin.candle_from_id(id)
   defp resolve_id({:ok, %{type: :fin_order, id: id}}), do: Fin.order_from_id(id)
   defp resolve_id({:ok, %{type: :fin_trade, id: id}}), do: Fin.trade_from_id(id)
+
+  # --- Perps Module ---
+  defp resolve_id({:ok, %{type: :perps_pool, id: id}}), do: Perps.pool_from_id(id)
+  defp resolve_id({:ok, %{type: :perps_account, id: id}}), do: Perps.account_from_id(id)
 
   # --- Prices  ---
   defp resolve_id({:ok, %{type: :price, id: id}}), do: Prices.price_from_id(id)
