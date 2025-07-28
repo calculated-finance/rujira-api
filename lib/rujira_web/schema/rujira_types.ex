@@ -69,5 +69,11 @@ defmodule RujiraWeb.Schema.RujiraTypes do
     field :index, non_null(list_of(non_null(:index_vault))) do
       resolve(&Resolvers.Index.resolver/3)
     end
+
+    @desc "Retrieves all vesting contracts deployed through Rujira Vesting"
+    connection field :vesting, node_type: :vesting, non_null: true do
+      arg(:creator, list_of(non_null(:string)))
+      resolve(&Resolvers.Vestings.resolver/3)
+    end
   end
 end

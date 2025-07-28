@@ -12,6 +12,7 @@ defmodule Rujira.Deployments do
   alias Rujira.Revenue
   alias Rujira.Staking
   alias Rujira.Ventures
+  alias Rujira.Vestings
 
   use GenServer
   use Memoize
@@ -195,6 +196,7 @@ defmodule Rujira.Deployments do
   defp to_module("nami-index-fixed"), do: Index.Fixed
   defp to_module("nami-index-entry-adpter"), do: Index.EntryAdapter
   defp to_module("rujira-perps"), do: Perps.Pool
+  defp to_module("daodao-payroll-factory"), do: Vestings
 
   defp parse_ctx(map, ctx) when is_map(map) do
     map

@@ -1,0 +1,8 @@
+code: 74
+
+targets:
+  - id: payroll-factory
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    address: sthor1yta3z4czq0e63k85r8ru68m6kvhdesu8xpkxtuc34m44l0g76tes7ak0mu
+    config:

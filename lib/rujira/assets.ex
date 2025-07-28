@@ -199,7 +199,15 @@ defmodule Rujira.Assets do
          ticker: "#{x.ticker}/#{y.ticker} LP"
        }}
     else
-      _ -> {:error, :invalid_denom_string}
+      _ ->
+        {:ok,
+         %Asset{
+           id: denom,
+           type: :native,
+           chain: "THOR",
+           symbol: String.upcase(id),
+           ticker: String.upcase(id)
+         }}
     end
   end
 

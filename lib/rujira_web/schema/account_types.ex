@@ -66,5 +66,9 @@ defmodule RujiraWeb.Schema.AccountTypes do
     field :index, non_null(list_of(non_null(:index_account))) do
       resolve(&Resolvers.Index.accounts/3)
     end
+
+    field :vesting, non_null(list_of(non_null(:vesting_account))) do
+      resolve(&Resolvers.Vestings.accounts/3)
+    end
   end
 end

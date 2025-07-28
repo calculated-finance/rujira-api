@@ -16,6 +16,7 @@ defmodule RujiraWeb.Schema do
   import_types(RujiraWeb.Schema.BalanceTypes)
   import_types(RujiraWeb.Schema.BowTypes)
   import_types(RujiraWeb.Schema.ChainTypes)
+  import_types(RujiraWeb.Schema.CosmosTypes)
   import_types(RujiraWeb.Schema.DeploymentTypes)
   import_types(RujiraWeb.Schema.DeveloperTypes)
   import_types(RujiraWeb.Schema.FinTypes)
@@ -36,7 +37,7 @@ defmodule RujiraWeb.Schema do
   import_types(RujiraWeb.Schema.ThorchainTypesOld)
   import_types(RujiraWeb.Schema.TokenTypes)
   import_types(RujiraWeb.Schema.VenturesTypes)
-  import_types(RujiraWeb.Schema.CosmosTypes)
+  import_types(RujiraWeb.Schema.VestingTypes)
 
   def middleware(middleware, _field, _) do
     [RujiraWeb.Middleware.InstrumentResolver | middleware]

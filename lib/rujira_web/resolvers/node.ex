@@ -23,6 +23,7 @@ defmodule RujiraWeb.Resolvers.Node do
   alias Rujira.Merge
   alias Rujira.Perps
   alias Rujira.Staking
+  alias Rujira.Vestings
 
   # Data & Analytics
 
@@ -108,6 +109,10 @@ defmodule RujiraWeb.Resolvers.Node do
 
   # Chain Modules
   def type(%Rujira.Chains.Cosmos{}, _), do: :cosmos_account
+
+  # Vesting
+  def type(%Vestings.Account{}, _), do: :vesting_account
+  def type(%Vestings.Vesting{}, _), do: :vesting
 
   # ===== ID Resolution =====
   # Resolves GraphQL global IDs to their associated Elixir domain entities
@@ -196,6 +201,13 @@ defmodule RujiraWeb.Resolvers.Node do
   # --- Chain Modules ---
   defp resolve_id({:ok, %{type: :cosmos_account, id: id}}),
     do: Cosmos.account_from_id(id)
+
+  # --- Vesting ---
+  defp resolve_id({:ok, %{type: :vesting_account, id: id}}),
+    do: Vestings.account_from_id(id)
+
+  defp resolve_id({:ok, %{type: :vesting, id: id}}),
+    do: Vestings.vesting_from_id(id)
 
   # --- Fallback Error Case ---
   defp resolve_id({:error, error}), do: {:error, error}
