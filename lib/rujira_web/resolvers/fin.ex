@@ -23,6 +23,19 @@ defmodule RujiraWeb.Resolvers.Fin do
     end)
   end
 
+  def resolver_v2(_, args, _) do
+    query = Map.get(args, :query)
+    sort_by = Map.get(args, :sort_by)
+    sort_dir = Map.get(args, :sort_dir)
+
+    with {:ok, pairs} <- Rujira.Fin.list_pairs() do
+      pairs
+      |> Enum.filter(&query_match(query, &1))
+      |> sort(sort_by, sort_dir)
+      |> Relay.Connection.from_list(args)
+    end
+  end
+
   def get_pair(%{pair: pair}, _, _), do: Fin.get_pair(pair)
 
   def book(%{book: :not_loaded} = pair, _, _) do
@@ -134,4 +147,33 @@ defmodule RujiraWeb.Resolvers.Fin do
   end
 
   defp insert_candle_nodes([], agg), do: agg
+
+  defp query_match(query, %{token_base: token_base, token_quote: token_quote}) do
+    with {:ok, asset_base} <- Assets.from_denom(token_base),
+         {:ok, asset_quote} <- Assets.from_denom(token_quote) do
+      Assets.query_match(query, asset_base, asset_quote)
+    else
+      _ -> false
+    end
+  end
+
+  def sort(enum, nil, _), do: enum
+
+  def sort(enum, sort_by, sort_dir) do
+    Enum.sort_by(
+      enum,
+      &sort_by(&1, sort_by),
+      sort_dir
+    )
+  end
+
+  defp sort_by(_, :volume), do: & &1.summary.volume
+  defp sort_by(_, :change), do: & &1.summary.change
+
+  defp sort_by(%{token_base: token_base, token_quote: token_quote}, :name) do
+    with {:ok, asset_base} <- Assets.from_denom(token_base),
+         {:ok, asset_quote} <- Assets.from_denom(token_quote) do
+      "#{asset_base.symbol}/#{asset_quote.symbol}"
+    end
+  end
 end

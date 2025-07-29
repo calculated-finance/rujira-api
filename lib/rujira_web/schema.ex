@@ -31,6 +31,7 @@ defmodule RujiraWeb.Schema do
   import_types(RujiraWeb.Schema.Scalars.BigInt)
   import_types(RujiraWeb.Schema.Scalars.Resolution)
   import_types(RujiraWeb.Schema.Scalars.Timestamp)
+  import_types(RujiraWeb.Schema.SortTypes)
   import_types(RujiraWeb.Schema.StakingTypes)
   import_types(RujiraWeb.Schema.StrategyTypes)
   import_types(RujiraWeb.Schema.ThorchainTypes)

@@ -74,6 +74,7 @@ defmodule RujiraWeb.Schema.FinTypes do
     end
   end
 
+  connection(node_type: :fin_pair)
   connection(node_type: :fin_trade)
   connection(node_type: :fin_candle)
   connection(node_type: :fin_order)
@@ -265,5 +266,11 @@ defmodule RujiraWeb.Schema.FinTypes do
 
       resolve(&Fin.order_edge/3)
     end
+  end
+
+  enum :fin_sort_by do
+    value(:name)
+    value(:volume)
+    value(:change)
   end
 end

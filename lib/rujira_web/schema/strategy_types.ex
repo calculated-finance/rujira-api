@@ -50,9 +50,4 @@ defmodule RujiraWeb.Schema.StrategyTypes do
     value(:tvl)
     value(:apr)
   end
-
-  enum :strategy_sort_dir do
-    value(:asc)
-    value(:desc)
-  end
 end

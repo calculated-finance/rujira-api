@@ -33,6 +33,14 @@ defmodule RujiraWeb.Schema.RujiraTypes do
       resolve(&Resolvers.Fin.resolver/3)
     end
 
+    @desc "Returns all trading pairs managed by Rujira Trade"
+    connection field :fin_v2, node_type: :fin_pair, non_null: true do
+      arg(:query, :string)
+      arg(:sort_by, non_null(:fin_sort_by))
+      arg(:sort_dir, non_null(:sort_dir))
+      resolve(&Resolvers.Fin.resolver_v2/3)
+    end
+
     @desc "Returns all staking data for Rujira Staking"
     field :staking, non_null(:staking) do
       resolve(&Resolvers.Staking.resolver/3)
@@ -63,7 +71,7 @@ defmodule RujiraWeb.Schema.RujiraTypes do
       arg(:typenames, list_of(non_null(:string)))
       arg(:query, :string)
       arg(:sort_by, :strategy_sort_by)
-      arg(:sort_dir, :strategy_sort_dir)
+      arg(:sort_dir, :sort_dir)
       resolve(&Resolvers.Strategy.list/3)
     end
 

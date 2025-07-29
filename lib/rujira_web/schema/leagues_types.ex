@@ -22,7 +22,7 @@ defmodule RujiraWeb.Schema.LeaguesTypes do
     connection field :leaderboard, node_type: :league_leaderboard_entry do
       arg(:search, :string)
       arg(:sort_by, non_null(:league_leaderboard_sort_by))
-      arg(:sort_dir, non_null(:league_leaderboard_sort_dir))
+      arg(:sort_dir, non_null(:sort_dir))
       resolve(&Resolvers.Leagues.leaderboard/3)
     end
   end
@@ -74,10 +74,5 @@ defmodule RujiraWeb.Schema.LeaguesTypes do
     value(:total_tx)
     value(:rank)
     value(:rank_previous)
-  end
-
-  enum :league_leaderboard_sort_dir do
-    value(:asc)
-    value(:desc)
   end
 end

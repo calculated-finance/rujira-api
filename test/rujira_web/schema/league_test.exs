@@ -59,7 +59,7 @@ defmodule RujiraWeb.Schema.LeagueTest do
   end
 
   @query """
-  query($sort_by: LeagueLeaderboardSortBy!, $sort_dir: LeagueLeaderboardSortDir!, $first: Int!) {
+  query($sort_by: LeagueLeaderboardSortBy!, $sort_dir: SortDir!, $first: Int!) {
     league {
       league
       season
