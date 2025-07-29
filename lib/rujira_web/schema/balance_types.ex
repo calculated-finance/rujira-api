@@ -57,6 +57,6 @@ defmodule RujiraWeb.Schema.BalanceTypes do
     field :script_hex, non_null(:string)
     field :o_tx_hex, non_null(:string)
     field :is_coinbase, :boolean
-    field :address, non_null(:string)
+    field :address, non_null(:address)
   end
 end

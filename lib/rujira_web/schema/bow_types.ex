@@ -15,7 +15,7 @@ defmodule RujiraWeb.Schema.BowTypes do
   alias RujiraWeb.Resolvers.Bow
 
   node object(:bow_pool) do
-    field :address, non_null(:string)
+    field :address, non_null(:address)
 
     field :contract, :contract_info do
       resolve(fn %{address: address}, _, _ ->
@@ -42,7 +42,7 @@ defmodule RujiraWeb.Schema.BowTypes do
   end
 
   node object(:bow_pool_xyk) do
-    field :address, non_null(:string)
+    field :address, non_null(:address)
 
     field :contract, :contract_info do
       resolve(fn %{address: address}, _, _ ->

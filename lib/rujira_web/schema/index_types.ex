@@ -15,7 +15,7 @@ defmodule RujiraWeb.Schema.IndexTypes do
 
   @desc "A index_vault represents the configuration about a rujira-index contract"
   node object(:index_vault) do
-    field :address, non_null(:string)
+    field :address, non_null(:address)
 
     field :contract, :contract_info do
       resolve(fn %{address: address}, _, _ ->

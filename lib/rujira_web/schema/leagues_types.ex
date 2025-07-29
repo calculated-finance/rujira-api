@@ -31,7 +31,7 @@ defmodule RujiraWeb.Schema.LeaguesTypes do
 
   object :league_leaderboard_entry do
     field :rank, non_null(:integer)
-    field :address, non_null(:string)
+    field :address, non_null(:address)
     field :points, non_null(:bigint)
     field :total_tx, non_null(:integer)
     @desc "Rank from 7 days ago"
@@ -47,7 +47,7 @@ defmodule RujiraWeb.Schema.LeaguesTypes do
   node object(:league_account) do
     field :league, non_null(:string)
     field :season, non_null(:integer)
-    field :address, non_null(:string)
+    field :address, non_null(:address)
     field :points, non_null(:bigint)
     field :total_tx, non_null(:integer)
     field :badges, list_of(non_null(:string))

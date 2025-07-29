@@ -18,7 +18,7 @@ defmodule RujiraWeb.Schema.MergeTypes do
 
   @desc "A merge_pool represents the configuration about a rujira-merge contract"
   node object(:merge_pool) do
-    field :address, non_null(:string)
+    field :address, non_null(:address)
 
     field :contract, non_null(:contract_info) do
       resolve(fn %{address: address}, _, _ ->
