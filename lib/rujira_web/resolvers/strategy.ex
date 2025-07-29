@@ -146,18 +146,16 @@ defmodule RujiraWeb.Resolvers.Strategy do
   def sort(enum, sort_by, sort_dir) do
     Enum.sort_by(
       enum,
-      fn item ->
-        sort_fn = sort_by(item, sort_by)
-        sort_fn.(item)
-      end,
+      &sort_by(&1, sort_by),
       sort_dir
     )
   end
 
   # ThorchainPool
-  def sort_by(%QueryPoolResponse{}, :name), do: & &1.asset.symbol
-  def sort_by(%QueryPoolResponse{}, :tvl), do: &Prices.value_usd("RUNE", &1.balance_rune * 2)
-  # def sort_by(%QueryPoolResponse{}, :apr), do: & &1.asset.symbol
+  def sort_by(%QueryPoolResponse{asset: asset}, :name), do: asset.symbol
+
+  def sort_by(%QueryPoolResponse{balance_rune: balance_rune}, :tvl),
+    do: Prices.value_usd("RUNE", balance_rune * 2)
 
   # BowPoolXyk
   def sort_by(%Bow.Xyk{config: %{x: x, y: y}}, :name) do
@@ -167,13 +165,11 @@ defmodule RujiraWeb.Resolvers.Strategy do
     end
   end
 
-  def sort_by(%Bow.Xyk{config: %{x: x}}, :tvl) do
-    with {:ok, x} <- Assets.from_denom(x) do
-      &Prices.value_usd(x.symbol, &1.state.x * 2)
+  def sort_by(%Bow.Xyk{config: %{x: x}, state: state}, :tvl) do
+    with {:ok, %{symbol: symbol}} <- Assets.from_denom(x) do
+      Prices.value_usd(symbol, state.x * 2)
     end
   end
-
-  # def sort_by(%Bow.Xyk{}, :apr), do: &("#{&1.config.x}-#{&1.config.y}")
 
   # IndexVault
   def sort_by(%Index.Vault{share_denom: share_denom}, :name) do
@@ -182,8 +178,7 @@ defmodule RujiraWeb.Resolvers.Strategy do
     end
   end
 
-  def sort_by(%Index.Vault{}, :tvl), do: & &1.status.total_value
-  # def sort_by(%Index.Vault{}, :apr), do: & &1.status.apr
+  def sort_by(%Index.Vault{status: status}, :tvl), do: status.total_value
 
   # StakingPool
   def sort_by(%Staking.Pool{bond_denom: bond_denom}, :name) do
@@ -207,10 +202,13 @@ defmodule RujiraWeb.Resolvers.Strategy do
     end
   end
 
-  # def sort_by(%Staking.Pool{}, :apr), do: & &1.bond_denom
+  def sort_by(%Staking.Pool{status: :not_loaded} = pool, by) do
+    with {:ok, pool} <- Staking.load_pool(pool) do
+      sort_by(pool, by)
+    end
+  end
 
   # PerpsPool
-  def sort_by(%Perps.Pool{}, :name), do: & &1.base_denom
-  def sort_by(%Perps.Pool{}, :tvl), do: & &1.liquidity.total
-  # def sort_by(%Perps.Pool{}, :apr), do: & &1.stats.lp_apr
+  def sort_by(%Perps.Pool{base_denom: base_denom}, :name), do: base_denom
+  def sort_by(%Perps.Pool{liquidity: liquidity}, :tvl), do: liquidity.total
 end
