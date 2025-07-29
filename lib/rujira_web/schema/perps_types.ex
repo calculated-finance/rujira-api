@@ -14,7 +14,7 @@ defmodule RujiraWeb.Schema.PerpsTypes do
   alias RujiraWeb.Resolvers.Perps
 
   node object(:perps_pool) do
-    field :address, non_null(:string)
+    field :address, non_null(:address)
 
     field :contract, :contract_info do
       resolve(fn %{address: address}, _, _ ->
@@ -24,9 +24,9 @@ defmodule RujiraWeb.Schema.PerpsTypes do
 
     field :name, non_null(:string)
 
-    field :base_asset_str, non_null(:string) do
+    field :base_asset, non_null(:asset) do
       resolve(fn %{base_denom: base_denom}, _, _ ->
-        {:ok, base_denom}
+        {:ok, Assets.from_shortcode(base_denom)}
       end)
     end
 
@@ -64,7 +64,7 @@ defmodule RujiraWeb.Schema.PerpsTypes do
 
     field :lp_shares, non_null(:bigint)
 
-    field :lp_balance, non_null(:balance) do
+    field :lp_size, non_null(:balance) do
       resolve(fn %{lp_value: value, pool: %{quote_denom: quote_denom}}, _, _ ->
         with {:ok, asset} <- Assets.from_denom(quote_denom) do
           {:ok, %{amount: value, asset: asset}}
@@ -74,7 +74,7 @@ defmodule RujiraWeb.Schema.PerpsTypes do
 
     field :xlp_shares, non_null(:bigint)
 
-    field :xlp_balance, non_null(:balance) do
+    field :xlp_size, non_null(:balance) do
       resolve(fn %{xlp_value: value, pool: %{quote_denom: quote_denom}}, _, _ ->
         with {:ok, asset} <- Assets.from_denom(quote_denom) do
           {:ok, %{amount: value, asset: asset}}

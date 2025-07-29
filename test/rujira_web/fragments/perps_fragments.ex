@@ -48,7 +48,9 @@ defmodule RujiraWeb.Fragments.PerpsFragments do
       ...ContractInfoFragment
     }
     name
-    baseAssetStr
+    baseAsset {
+      ...AssetFragment
+    }
     quoteAsset {
       ...AssetFragment
     }
@@ -73,22 +75,22 @@ defmodule RujiraWeb.Fragments.PerpsFragments do
       id
       address
     }
-    lp_shares
-    value_usd
-    lp_balance {
+    lpShares
+    valueUsd
+    lpSize {
       ...BalanceFragment
     }
-    xlp_shares
-    xlp_balance {
+    xlpShares
+    xlpSize {
       ...BalanceFragment
     }
-    available_yield_lp {
+    availableYieldLp {
       ...BalanceFragment
     }
-    available_yield_xlp {
+    availableYieldXlp {
       ...BalanceFragment
     }
-    liquidity_cooldown {
+    liquidityCooldown {
       ...LiquidityCooldownFragment
     }
   }
