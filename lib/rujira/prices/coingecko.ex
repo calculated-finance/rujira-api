@@ -11,6 +11,8 @@ defmodule Rujira.Prices.Coingecko do
   @ids [
     "aave",
     "base-baboon",
+    "binance-bitcoin",
+    "binance-peg-busd",
     "bitcoin",
     "chainflip",
     "chainlink",
@@ -26,15 +28,18 @@ defmodule Rujira.Prices.Coingecko do
     "nami-protocol",
     "paxos-standard",
     "ripple-usd",
+    "solana",
     "shapeshift-fox-token",
     "tcy",
     "tether",
+    "trust-wallet-token",
     "thorchain",
     "thorstarter",
     "thorswap",
     "thorwallet",
     "unstake-fi",
     "usd-coin",
+    "venice-token",
     "winkhub",
     "wrapped-bitcoin",
     "xdefi",
@@ -84,6 +89,8 @@ defmodule Rujira.Prices.Coingecko do
 
   def id("AUTO"), do: {:error, :not_found}
   def id("BTC"), do: {:ok, "bitcoin"}
+  def id("BTCB"), do: {:ok, "binance-bitcoin"}
+  def id("BUSD"), do: {:ok, "binance-peg-busd"}
   def id("RKUJI"), do: {:ok, "kujira"}
   def id("rKUJI"), do: {:ok, "kujira"}
   def id("KUJI"), do: {:ok, "kujira"}
@@ -98,13 +105,16 @@ defmodule Rujira.Prices.Coingecko do
   def id("LVN"), do: {:ok, "levana-protocol"}
   def id("NAMI"), do: {:ok, "nami-protocol"}
   def id("RAZE"), do: {:ok, "craze"}
+  def id("SOL"), do: {:ok, "solana"}
   def id("SNX"), do: {:ok, "havven"}
   def id("TCY"), do: {:ok, "tcy"}
   def id("TGT"), do: {:ok, "thorwallet"}
   def id("THOR"), do: {:ok, "thorswap"}
+  def id("TWT"), do: {:ok, "trust-wallet-token"}
   def id("USDC" <> _), do: {:ok, "usd-coin"}
   def id("USDP"), do: {:ok, "paxos-standard"}
   def id("USDT" <> _), do: {:ok, "tether"}
+  def id("VVV"), do: {:ok, "venice-token"}
   def id("WBTC"), do: {:ok, "wrapped-bitcoin"}
   def id("WINK"), do: {:ok, "winkhub"}
   def id("XDEFI"), do: {:ok, "xdefi"}
