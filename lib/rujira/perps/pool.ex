@@ -11,6 +11,13 @@ defmodule Rujira.Perps.Pool do
       :xlp_apr,
       :risk
     ]
+
+    @type t :: %__MODULE__{
+            sharpe_ratio: non_neg_integer(),
+            lp_apr: non_neg_integer(),
+            xlp_apr: non_neg_integer(),
+            risk: non_neg_integer()
+          }
   end
 
   defstruct [
