@@ -40,7 +40,7 @@ defmodule RujiraWeb.Schema.StakingTypes do
 
   @desc "A staking_pool represents the configuration about a rujira-staking contract"
   node object(:staking_pool) do
-    field :address, non_null(:string)
+    field :address, non_null(:address)
 
     field :contract, :contract_info do
       resolve(fn %{address: address}, _, _ ->
