@@ -3,6 +3,7 @@ defmodule Rujira.Analytics.Swap.Indexer do
   Listener for base layer swap events.
   """
   alias Rujira.Analytics.Swap
+  alias Rujira.Assets
   alias Rujira.Prices
   alias Thorchain.Affiliates
   use Thornode.Observer
@@ -24,6 +25,18 @@ defmodule Rujira.Analytics.Swap.Indexer do
     Swap.insert_asset(swaps, time)
     Swap.insert_affiliate(swaps, time)
 
+    affiliate =
+      events
+      |> Enum.map(&scan_affiliate_event/1)
+      |> Enum.reject(&is_nil/1)
+      |> List.flatten()
+      |> Enum.group_by(& &1.affiliate)
+      |> Enum.map(fn {affiliate, entries} ->
+        %{affiliate: affiliate, revenue: entries |> Enum.map(& &1.revenue) |> Enum.sum()}
+      end)
+
+    Swap.update_affiliate(affiliate, time)
+
     {:noreply, state}
   end
 
@@ -44,6 +57,24 @@ defmodule Rujira.Analytics.Swap.Indexer do
 
   defp scan_swap_event(_), do: nil
 
+  defp scan_affiliate_event(%{
+         attributes: %{
+           "thorname" => thorname,
+           "asset" => asset,
+           "fee_amount" => fee_amount
+         },
+         type: "affiliate_fee"
+       }) do
+    asset = Assets.from_string(asset)
+
+    %{
+      affiliate: thorname,
+      revenue: Prices.value_usd(asset.symbol, fee_amount)
+    }
+  end
+
+  defp scan_affiliate_event(_), do: nil
+
   defp insert_swap(
          pool,
          liquidity_fee_in_rune,
@@ -53,21 +84,12 @@ defmodule Rujira.Analytics.Swap.Indexer do
          coin,
          memo
        ) do
-    with {:ok, %{current: price}} <- Prices.get("RUNE"),
-         liquidity_fee_in_rune <- String.to_integer(liquidity_fee_in_rune),
+    with liquidity_fee_in_rune <- String.to_integer(liquidity_fee_in_rune),
          coin <- parse_asset(coin),
-         emit_asset <- parse_asset(emit_asset) do
-      volume_usd =
-        swap_size_rune(coin, emit_asset)
-        |> Decimal.mult(price)
-        |> Decimal.round()
-        |> Decimal.to_integer()
-
-      liquidity_fee_in_usd =
-        liquidity_fee_in_rune
-        |> Decimal.mult(price)
-        |> Decimal.round()
-        |> Decimal.to_integer()
+         emit_asset <- parse_asset(emit_asset),
+         chain <- parse_chain(chain, emit_asset, coin) do
+      volume_usd = Prices.value_usd("RUNE", swap_size_rune(coin, emit_asset))
+      liquidity_fee_in_usd = Prices.value_usd("RUNE", liquidity_fee_in_rune)
 
       swap = %{
         asset: pool,
@@ -78,89 +100,41 @@ defmodule Rujira.Analytics.Swap.Indexer do
         total_swaps: 1
       }
 
-      list_of_affiliate_data = affiliate_data(memo, volume_usd)
-
-      merge_data(swap, list_of_affiliate_data)
+      merge_data(swap, affiliate_data(memo))
     end
   end
 
   defp merge_data(swap, []) do
-    [
-      %{
-        asset: swap.asset,
-        source_chain: swap.source_chain,
-        address: swap.address,
-        address_weight: Decimal.new(1),
-        volume: swap.volume,
-        liquidity_fee: swap.liquidity_fee,
-        count: Decimal.new(1),
-        # no affiliate
-        affiliate: "*",
-        revenue: 0,
-        bps: Decimal.new(0)
-      }
-    ]
+    [base_swap_entry(swap, "*", Decimal.new(1), swap.volume, swap.liquidity_fee, Decimal.new(0))]
   end
 
   defp merge_data(swap, list_of_affiliate_data) do
     # sum the total bps so that we can weight the data for the swap
     total_bps =
-      Enum.reduce(list_of_affiliate_data, Decimal.new(0), fn affiliate_data, acc ->
-        Decimal.add(acc, affiliate_data.bps)
+      Enum.reduce(list_of_affiliate_data, Decimal.new(0), fn {_, bps}, acc ->
+        Decimal.add(acc, bps)
       end)
 
     # weight the data for the swap
-    Enum.map(list_of_affiliate_data, fn affiliate_data ->
+    Enum.map(list_of_affiliate_data, fn {affiliate, bps} ->
       # if total bps is 0, set weight to 1/length(list_of_affiliate_data) to avoid division by zero
       weight =
-        if total_bps == Decimal.new(0),
-          do: Decimal.div(Decimal.new(1), Decimal.new(length(list_of_affiliate_data))),
-          else: Decimal.div(affiliate_data.bps, total_bps)
+        case Decimal.compare(total_bps, 0) do
+          :eq -> Decimal.div(1, length(list_of_affiliate_data))
+          _ -> Decimal.div(bps, total_bps)
+        end
 
-      volume =
-        swap.volume
-        |> Decimal.new()
-        |> Decimal.mult(weight)
-        |> Decimal.round()
-        |> Decimal.to_integer()
+      volume = weighted_amount(swap.volume, weight)
+      liquidity_fee = weighted_amount(swap.liquidity_fee, weight)
 
-      liquidity_fee =
-        swap.liquidity_fee
-        |> Decimal.new()
-        |> Decimal.mult(weight)
-        |> Decimal.round()
-        |> Decimal.to_integer()
-
-      %{
-        asset: swap.asset,
-        source_chain: swap.source_chain,
-        address: swap.address,
-        address_weight: weight,
-        volume: volume,
-        liquidity_fee: liquidity_fee,
-        count: weight,
-        affiliate: affiliate_data.affiliate,
-        revenue: affiliate_data.revenue,
-        bps: affiliate_data.bps
-      }
+      base_swap_entry(swap, affiliate, weight, volume, liquidity_fee, bps)
     end)
   end
 
-  defp affiliate_data(memo, volume_usd) do
+  defp affiliate_data(memo) do
     case Affiliates.get_affiliate(memo) do
-      {:ok, affiliates} ->
-        Enum.map(affiliates, fn {aff, bps} ->
-          revenue =
-            volume_usd
-            |> Decimal.mult(bps)
-            |> Decimal.round()
-            |> Decimal.to_integer()
-
-          %{affiliate: aff, revenue: revenue, bps: bps}
-        end)
-
-      _ ->
-        []
+      {:ok, affiliates} -> affiliates
+      _ -> []
     end
   end
 
@@ -171,7 +145,45 @@ defmodule Rujira.Analytics.Swap.Indexer do
     end
   end
 
-  defp swap_size_rune({"THOR.RUNE", in_amount}, _), do: in_amount
-  defp swap_size_rune(_, {"THOR.RUNE", out_amount}), do: out_amount
-  defp swap_size_rune(_, _), do: 0
+  defp swap_size_rune(coin, emit_asset) do
+    case {coin, emit_asset} do
+      {{"THOR.RUNE", amount}, _} -> amount
+      {_, {"THOR.RUNE", amount}} -> amount
+      _ -> 0
+    end
+  end
+
+  defp weighted_amount(amount, weight) do
+    amount
+    |> Decimal.new()
+    |> Decimal.mult(weight)
+    |> Decimal.round()
+    |> Decimal.to_integer()
+  end
+
+  defp base_swap_entry(swap, affiliate, address_weight, volume, liquidity_fee, bps) do
+    %{
+      asset: swap.asset,
+      source_chain: swap.source_chain,
+      address: swap.address,
+      address_weight: address_weight,
+      volume: volume,
+      liquidity_fee: liquidity_fee,
+      count: address_weight,
+      affiliate: affiliate,
+      revenue: 0,
+      bps: bps
+    }
+  end
+
+  defp parse_chain("THOR", _, _), do: "THOR"
+
+  defp parse_chain(chain, {emit_asset, _}, {coin, _}) do
+    with %{chain: emit_chain} <- Assets.from_string(emit_asset),
+         %{chain: coin_chain} <- Assets.from_string(coin) do
+      if emit_chain != "THOR", do: emit_chain, else: coin_chain
+    else
+      _ -> chain
+    end
+  end
 end

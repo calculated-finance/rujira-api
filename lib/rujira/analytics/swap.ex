@@ -30,6 +30,28 @@ defmodule Rujira.Analytics.Swap do
     |> Enum.map(fn {:ok, _} -> :ok end)
   end
 
+  def update_affiliate(entries, time) do
+    entries_with_bins = expand_with_bins(entries, time)
+
+    AffiliateBin
+    |> Repo.insert_all(
+      entries_with_bins,
+      on_conflict:
+        from(c in AffiliateBin,
+          update: [
+            set: [
+              count: c.count,
+              revenue: fragment("EXCLUDED.revenue + ?", c.revenue),
+              liquidity_fee: c.liquidity_fee,
+              volume: c.volume
+            ]
+          ]
+        ),
+      conflict_target: [:resolution, :bin, :affiliate],
+      returning: true
+    )
+  end
+
   defp expand_with_bins(entries, time) do
     bins = Common.active(time)
 

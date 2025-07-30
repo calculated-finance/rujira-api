@@ -35,6 +35,7 @@ defmodule Rujira.Analytics.Swap.AffiliateBin do
     field :bin, :utc_datetime, primary_key: true
     field :affiliate, :string, primary_key: true
 
+    # 2 leg swaps are accounted as 2 swaps
     field :count, :decimal
     field :revenue, :integer
     field :liquidity_fee, :integer
