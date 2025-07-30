@@ -74,5 +74,6 @@ defmodule RujiraWeb.TradeJSON do
     }
   end
 
+  defp amount(nil), do: Decimal.new(0)
   defp amount(v), do: Decimal.div(Decimal.new(v), Decimal.new(100_000_000))
 end
