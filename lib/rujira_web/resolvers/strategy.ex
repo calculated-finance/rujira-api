@@ -202,6 +202,8 @@ defmodule RujiraWeb.Resolvers.Strategy do
     end
   end
 
+  def sort_by(%Staking.Pool{deployment_status: :preview}, :tvl), do: -1
+
   def sort_by(%Staking.Pool{status: :not_loaded} = pool, by) do
     with {:ok, pool} <- Staking.load_pool(pool) do
       sort_by(pool, by)
