@@ -57,9 +57,18 @@ defmodule RujiraWeb.Resolvers.Fin do
 
   def summary(%{status: :preview}, _, _), do: {:ok, nil}
 
-  def summary(%{address: address, token_quote: token_quote}, _, _) do
-    with %Summary{} = summary <- Rujira.Fin.get_summary(address),
-         {:ok, volume_asset} <- Assets.from_denom(token_quote),
+  def summary(%{address: address, summary: :not_loaded, token_quote: token_quote}, _, _) do
+    address |> Rujira.Fin.get_summary() |> resolve_summary(token_quote)
+  end
+
+  def summary(%{token_quote: token_quote, summary: summary}, _, _) do
+    resolve_summary(summary, token_quote)
+  end
+
+  def resolve_summary(nil, _), do: {:ok, nil}
+
+  def resolve_summary(%Summary{} = summary, token_quote) do
+    with {:ok, volume_asset} <- Assets.from_denom(token_quote),
          {:ok, %{current: price}} <- Rujira.Prices.get(String.upcase(volume_asset.ticker)) do
       {:ok,
        %{
@@ -70,9 +79,6 @@ defmodule RujiraWeb.Resolvers.Fin do
              amount: summary.volume
            }
        }}
-    else
-      nil -> {:ok, nil}
-      {:error, err} -> {:error, err}
     end
   end
 
@@ -159,22 +165,31 @@ defmodule RujiraWeb.Resolvers.Fin do
 
   def sort(enum, nil, _), do: enum
 
-  def sort(enum, sort_by, sort_dir) do
-    enum
-    |> Fin.load_summaries()
-    |> Enum.sort_by(
+  def sort(enum, :name, sort_dir) do
+    Enum.sort_by(
+      enum,
       &sort_by(&1, :name),
-      :desc
-    )
-    |> Enum.sort_by(
-      &sort_by(&1, sort_by),
       sort_dir
     )
   end
 
-  defp sort_by(%{summary: nil}, _), do: -1
-  defp sort_by(%{summary: summary}, :volume), do: summary.volume
-  defp sort_by(%{summary: summary}, :change), do: summary.change
+  def sort(enum, sort_by, sort_dir) do
+    {live, preview} =
+      enum
+      |> Fin.load_summaries()
+      |> Enum.split_with(&(&1.deployment_status == :live))
+
+    Enum.sort_by(
+      live,
+      &sort_by(&1, sort_by),
+      sort_dir
+    ) ++
+      Enum.sort_by(
+        preview,
+        &sort_by(&1, :name),
+        :asc
+      )
+  end
 
   defp sort_by(%{token_base: token_base, token_quote: token_quote}, :name) do
     with {:ok, asset_base} <- Assets.from_denom(token_base),
@@ -182,4 +197,8 @@ defmodule RujiraWeb.Resolvers.Fin do
       "#{asset_base.symbol}/#{asset_quote.symbol}"
     end
   end
+
+  defp sort_by(%{summary: nil}, _), do: 0
+  defp sort_by(%{summary: summary}, :volume), do: summary.volume
+  defp sort_by(%{summary: summary}, :change), do: Decimal.to_float(summary.change)
 end

@@ -5,6 +5,7 @@ defmodule Rujira.Fin.Pair do
   alias Rujira.Assets
   alias Rujira.Deployments.Target
   alias Rujira.Fin.Book
+  alias Rujira.Fin.Summary
 
   defstruct [
     :id,
@@ -37,6 +38,7 @@ defmodule Rujira.Fin.Pair do
           fee_maker: Decimal.t(),
           fee_address: String.t(),
           book: :not_loaded | Book.t(),
+          summary: :not_loaded | Summary.t(),
           deployment_status: Target.status()
         }
 
@@ -68,6 +70,7 @@ defmodule Rujira.Fin.Pair do
          fee_maker: fee_maker,
          fee_address: fee_address,
          book: :not_loaded,
+         summary: :not_loaded,
          deployment_status: :live
        }}
     end
@@ -101,6 +104,7 @@ defmodule Rujira.Fin.Pair do
          fee_maker: fee_maker,
          fee_address: fee_address,
          book: :not_loaded,
+         summary: :not_loaded,
          deployment_status: status
        }}
     end
