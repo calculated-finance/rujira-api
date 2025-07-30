@@ -311,6 +311,11 @@ defmodule Rujira.Fin do
     |> Repo.all()
   end
 
+  def load_summaries(pairs) do
+    summaries = get_summaries()
+    Enum.map(pairs, fn p -> %{p | summary: Enum.find(summaries, &(&1.id == p.address))} end)
+  end
+
   def trade_from_id(id) do
     {:ok, get_trade(id)}
   end

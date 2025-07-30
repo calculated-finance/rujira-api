@@ -160,15 +160,21 @@ defmodule RujiraWeb.Resolvers.Fin do
   def sort(enum, nil, _), do: enum
 
   def sort(enum, sort_by, sort_dir) do
-    Enum.sort_by(
-      enum,
+    enum
+    |> Fin.load_summaries()
+    |> Enum.sort_by(
+      &sort_by(&1, :name),
+      :desc
+    )
+    |> Enum.sort_by(
       &sort_by(&1, sort_by),
       sort_dir
     )
   end
 
-  defp sort_by(_, :volume), do: & &1.summary.volume
-  defp sort_by(_, :change), do: & &1.summary.change
+  defp sort_by(%{summary: nil}, _), do: -1
+  defp sort_by(%{summary: summary}, :volume), do: summary.volume
+  defp sort_by(%{summary: summary}, :change), do: summary.change
 
   defp sort_by(%{token_base: token_base, token_quote: token_quote}, :name) do
     with {:ok, asset_base} <- Assets.from_denom(token_base),
