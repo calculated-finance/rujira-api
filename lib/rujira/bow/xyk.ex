@@ -284,7 +284,9 @@ defmodule Rujira.Bow.Xyk do
       price: price,
       total: total,
       side: Atom.to_string(side),
-      value: value(side, price, total)
+      value: value(side, price, total),
+      virtual_value: 0,
+      virtual_total: 0
     }
 
     do_quotes(config, new_state, side, [entry | acc], count + 1)
