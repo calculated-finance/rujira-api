@@ -9,6 +9,7 @@ defmodule Rujira.Bow.Listener do
   require Logger
 
   alias Rujira.Assets
+  alias Rujira.Chains.Thor
 
   @impl true
   def handle_new_block(%{txs: txs}, state) do
@@ -44,6 +45,7 @@ defmodule Rujira.Bow.Listener do
 
     for {denom, account} <- transfers do
       Logger.debug("#{__MODULE__} change #{denom} #{account}")
+      Memoize.invalidate(Thor, :balance_of, [account, denom])
       Rujira.Events.publish_node(:bow_account, "#{account}/#{denom}")
     end
   end
