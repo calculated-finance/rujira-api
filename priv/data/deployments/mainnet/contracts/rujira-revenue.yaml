@@ -25,6 +25,19 @@ targets:
         - address: ${targets:rujira-revenue.base}
           weight: 1
 
+  - id: trade
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    config:
+      executor: ${accounts:admin}
+      target_denoms:
+        - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+      target_addresses:
+        - address: ${targets:rujira-revenue.single}
+          weight: 1
+        - address: ${targets:rujira-revenue.split}
+          weight: 1
+
   - id: base
     admin: ${accounts:admin}
     creator: ${accounts:creator}

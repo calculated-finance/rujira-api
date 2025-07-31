@@ -8,7 +8,7 @@ targets:
       denoms: 
         - gaia-atom
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
       market_maker: ${targets:rujira-bow.atom-eth-usdc}
 
   - id: auto-eth-usdc
@@ -19,7 +19,7 @@ targets:
         - thor.auto
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
       market_maker: ${targets:rujira-bow.auto-eth-usdc}
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
 
   - id: avax-eth-usdc
     admin: ${accounts:admin}
@@ -28,7 +28,7 @@ targets:
       denoms: 
         - avax-avax
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
       market_maker: ${targets:rujira-bow.avax-eth-usdc}
 
   - id: avax-usdc-eth-usdc
@@ -38,7 +38,7 @@ targets:
       denoms: 
         - avax-usdc-0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
 
   - id: avax-usdt-eth-usdc
     admin: ${accounts:admin}
@@ -47,7 +47,7 @@ targets:
       denoms: 
         - avax-usdt-0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
 
   - id: base-cbbtc-btc
     admin: ${accounts:admin}
@@ -56,7 +56,7 @@ targets:
       denoms: 
         - base-cbbtc-0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf
         - btc-btc
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
 
   - id: base-eth-eth
     admin: ${accounts:admin}
@@ -65,7 +65,7 @@ targets:
       denoms: 
         - base-eth
         - eth-eth
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
 
   - id: base-usdc-eth-usdc
     admin: ${accounts:admin}
@@ -74,7 +74,7 @@ targets:
       denoms: 
         - base-usdc-0x833589fcd6edb6e08f4c7c32d4f71b54bda02913
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
 
   - id: bch-eth-usdc
     admin: ${accounts:admin}
@@ -83,7 +83,7 @@ targets:
       denoms: 
         - bch-bch
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
       market_maker: ${targets:rujira-bow.bch-eth-usdc}
 
   - id: bnb-eth-usdc
@@ -93,7 +93,7 @@ targets:
       denoms: 
         - bsc-bnb
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
       market_maker: ${targets:rujira-bow.bnb-eth-usdc}
 
   - id: bsc-usdc-eth-usdc
@@ -103,7 +103,7 @@ targets:
       denoms: 
         - bsc-usdc-0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
 
   - id: bsc-usdt-eth-usdc
     admin: ${accounts:admin}
@@ -112,7 +112,7 @@ targets:
       denoms: 
         - bsc-usdt-0x55d398326f99059ff775485246999027b3197955
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
 
 
   - id: btc-eth-usdc
@@ -123,7 +123,7 @@ targets:
         - btc-btc
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
       market_maker: ${targets:rujira-bow.btc-eth-usdc}
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
 
   - id: doge-eth-usdc
     admin: ${accounts:admin}
@@ -132,7 +132,7 @@ targets:
       denoms: 
         - doge-doge
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
       market_maker: ${targets:rujira-bow.doge-eth-usdc}
 
   - id: eth-btc
@@ -143,7 +143,7 @@ targets:
         - eth-eth
         - btc-btc
       market_maker: ${targets:rujira-bow.eth-btc}
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
 
   - id: eth-eth-usdc
     admin: ${accounts:admin}
@@ -153,7 +153,7 @@ targets:
         - eth-eth
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
       market_maker: ${targets:rujira-bow.eth-eth-usdc}
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
 
   - id: eth-dai-eth-usdc
     admin: ${accounts:admin}
@@ -162,7 +162,7 @@ targets:
       denoms: 
         - eth-dai-0x6b175474e89094c44da98b954eedeac495271d0f
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
 
   - id: eth-gusd-eth-usdc
     admin: ${accounts:admin}
@@ -171,7 +171,7 @@ targets:
       denoms: 
         - eth-gusd-0x056fd409e1d7a124bd7017459dfea2f387b6d5cd
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
 
   - id: eth-usdp-eth-usdc
     admin: ${accounts:admin}
@@ -180,7 +180,7 @@ targets:
       denoms: 
         - eth-usdp-0x8e870d67f660d95d5be530380d0ec0bd388289e1
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
 
   - id: eth-usdt-eth-usdc
     admin: ${accounts:admin}
@@ -189,7 +189,7 @@ targets:
       denoms: 
         - eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
 
   - id: eth-wbtc-btc
     admin: ${accounts:admin}
@@ -198,7 +198,7 @@ targets:
       denoms: 
         - eth-wbtc-0x2260fac5e5542a773aa44fbcfedf7c193bc2c599
         - btc-btc
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
 
   - id: lqdy-btc
     admin: ${accounts:admin}
@@ -208,7 +208,7 @@ targets:
         - thor.lqdy
         - btc-btc
       market_maker: ${targets:rujira-bow.lqdy-btc}
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
 
 
   - id: lqdy-eth-usdc
@@ -219,7 +219,7 @@ targets:
         - thor.lqdy
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
       market_maker: ${targets:rujira-bow.lqdy-eth-usdc}
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
 
   - id: ltc-eth-usdc
     admin: ${accounts:admin}
@@ -228,7 +228,7 @@ targets:
       denoms: 
         - ltc-ltc
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
       market_maker: ${targets:rujira-bow.ltc-eth-usdc}
 
   - id: nami-eth-usdc
@@ -239,7 +239,7 @@ targets:
         - thor.nami
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
       market_maker: ${targets:rujira-bow.nami-eth-usdc}
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
 
   - id: ruji-eth-usdc
     admin: ${accounts:admin}
@@ -249,7 +249,7 @@ targets:
         - x/ruji
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
       market_maker: ${targets:rujira-bow.ruji-eth-usdc}
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
 
   - id: ruji-rune
     admin: ${accounts:admin}
@@ -258,7 +258,7 @@ targets:
       denoms: 
         - x/ruji
         - rune
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
 
   - id: rune-eth-usdc
     admin: ${accounts:admin}
@@ -267,7 +267,7 @@ targets:
       denoms: 
         - rune
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
 
   - id: tcy-rune
     admin: ${accounts:admin}
@@ -276,7 +276,7 @@ targets:
       denoms: 
         - tcy
         - rune
-      fee_address: ${targets:rujira-revenue.single}
+      fee_address: ${targets:rujira-revenue.trade}
 
   - id: tcy-eth-usdc
     admin: ${accounts:admin}
@@ -285,7 +285,7 @@ targets:
       denoms: 
         - tcy
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
 
   - id: xrp-eth-usdc
     admin: ${accounts:admin}
@@ -295,4 +295,4 @@ targets:
         - xrp-xrp
         - eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
       market_maker: ${targets:rujira-bow.xrp-eth-usdc}
-      fee_address: ${targets:rujira-revenue.split}
+      fee_address: ${targets:rujira-revenue.trade}
