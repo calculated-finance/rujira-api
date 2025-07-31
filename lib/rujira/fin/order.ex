@@ -119,7 +119,7 @@ defmodule Rujira.Fin.Order do
   def parse_price(%{"fixed" => v}), do: {:fixed, nil, "fixed:#{v}"}
   def parse_price(%{"oracle" => v}), do: {:oracle, v, "oracle:#{v}"}
   def decode_price("fixed:" <> v), do: %{fixed: v}
-  def decode_price("oracle:" <> v), do: %{oracle: v}
+  def decode_price("oracle:" <> v), do: %{oracle: String.to_integer(v)}
   def encode_price(%{fixed: v}), do: "fixed:#{v}"
   def encode_price(%{oracle: v}), do: "oracle:#{v}"
 
