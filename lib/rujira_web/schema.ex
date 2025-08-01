@@ -133,6 +133,7 @@ defmodule RujiraWeb.Schema do
     end
 
     import_fields(:fin_subscriptions)
+    import_fields(:perps_subscriptions)
     import_fields(:staking_subscriptions)
   end
 

@@ -111,4 +111,21 @@ defmodule RujiraWeb.Schema.PerpsTypes do
     field :start_at, non_null(:timestamp)
     field :end_at, non_null(:timestamp)
   end
+
+  object :perps_subscriptions do
+    @desc """
+    Triggered when a perps account is updated.
+    One subscription per order.
+    """
+    field :perps_account_updated, :node_edge do
+      arg(:contract, non_null(:address))
+      arg(:owner, non_null(:address))
+
+      config(fn %{contract: contract}, _ ->
+        {:ok, topic: contract}
+      end)
+
+      resolve(&Perps.account_edge/3)
+    end
+  end
 end

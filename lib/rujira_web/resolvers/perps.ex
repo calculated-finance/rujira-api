@@ -37,4 +37,10 @@ defmodule RujiraWeb.Resolvers.Perps do
        )}
     end
   end
+
+  def account_edge(_, %{owner: owner, contract: contract}, _) do
+    with {:ok, account} <- Perps.account_from_id("#{owner}/#{contract}") do
+      {:ok, %{cursor: account.id, node: account}}
+    end
+  end
 end

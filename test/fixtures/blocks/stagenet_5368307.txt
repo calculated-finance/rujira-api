@@ -1,0 +1,926 @@
+%Thorchain.Types.QueryBlockResponse{
+  id: %Thorchain.Types.BlockResponseId{
+    hash: "BE15A7F76CB905155CF9C709F20DDE466637EF62458F793A1F0CFF424D954221",
+    parts: %Thorchain.Types.BlockResponseIdParts{
+      total: 1,
+      hash: "130903EAB5FE75F9F444ED40A090DF80ABCED32008C8B84329D82BE452B78776",
+      __unknown_fields__: []
+    },
+    __unknown_fields__: []
+  },
+  header: %{
+    time: ~U[2025-07-30 12:33:00.137706Z],
+    chain_id: "thorchain-stagenet-2",
+    height: 5368307
+  },
+  begin_block_events: [],
+  end_block_events: [
+    %{
+      attributes: %{
+        "amount" => "47504rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "coin_spent"
+    },
+    %{
+      attributes: %{
+        "amount" => "47504rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1gdq9qejfy33jctztqdrg5v4hvxnytmvjhduacc"
+      },
+      type: "coin_received"
+    },
+    %{
+      attributes: %{
+        "amount" => "47504rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1gdq9qejfy33jctztqdrg5v4hvxnytmvjhduacc",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "transfer"
+    },
+    %{
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "message"
+    },
+    %{
+      attributes: %{
+        "amount" => "95rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "coin_spent"
+    },
+    %{
+      attributes: %{
+        "amount" => "95rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6"
+      },
+      type: "coin_received"
+    },
+    %{
+      attributes: %{
+        "amount" => "95rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "transfer"
+    },
+    %{
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "message"
+    },
+    %{
+      attributes: %{
+        "amount" => "95rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6"
+      },
+      type: "coin_spent"
+    },
+    %{
+      attributes: %{
+        "amount" => "95rune",
+        "burner" => "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6",
+        "mode" => "EndBlock"
+      },
+      type: "burn"
+    },
+    %{
+      attributes: %{
+        "amount" => "95",
+        "denom" => "rune",
+        "mode" => "EndBlock",
+        "reason" => "burn_system_income",
+        "supply" => "burn"
+      },
+      type: "mint_burn"
+    },
+    %{
+      attributes: %{
+        "amount" => "95008rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "coin_spent"
+    },
+    %{
+      attributes: %{
+        "amount" => "95008rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor128a8hqnkaxyqv7qwajpggmfyudh64jl3vgk6jj"
+      },
+      type: "coin_received"
+    },
+    %{
+      attributes: %{
+        "amount" => "95008rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor128a8hqnkaxyqv7qwajpggmfyudh64jl3vgk6jj",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "transfer"
+    },
+    %{
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "message"
+    },
+    %{
+      attributes: %{
+        "amount" => "174xrp/xrp",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6"
+      },
+      type: "coin_received"
+    },
+    %{
+      attributes: %{
+        "amount" => "174xrp/xrp",
+        "minter" => "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6",
+        "mode" => "EndBlock"
+      },
+      type: "coinbase"
+    },
+    %{
+      attributes: %{
+        "amount" => "174xrp/xrp",
+        "mode" => "EndBlock",
+        "spender" => "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6"
+      },
+      type: "coin_spent"
+    },
+    %{
+      attributes: %{
+        "amount" => "174xrp/xrp",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
+      type: "coin_received"
+    },
+    %{
+      attributes: %{
+        "amount" => "174xrp/xrp",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6"
+      },
+      type: "transfer"
+    },
+    %{
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6"
+      },
+      type: "message"
+    },
+    %{
+      attributes: %{
+        "chain" => "THOR",
+        "coin" => "174 XRP/XRP",
+        "from" => "sthor1v8ppstuf6e3x0r4glqc68d5jqcs2tf38v3kkv6",
+        "id" => "0000000000000000000000000000000000000000000000000000000000000000",
+        "memo" => "THOR-SAVERS-YIELD",
+        "mode" => "EndBlock",
+        "pool" => "XRP/XRP",
+        "to" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
+      type: "donate"
+    },
+    %{
+      attributes: %{
+        "amount" => "2136rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "coin_spent"
+    },
+    %{
+      attributes: %{
+        "amount" => "2136rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
+      type: "coin_received"
+    },
+    %{
+      attributes: %{
+        "amount" => "2136rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "transfer"
+    },
+    %{
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "message"
+    },
+    %{
+      attributes: %{
+        "amount" => "720rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "coin_spent"
+    },
+    %{
+      attributes: %{
+        "amount" => "720rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
+      type: "coin_received"
+    },
+    %{
+      attributes: %{
+        "amount" => "720rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "transfer"
+    },
+    %{
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "message"
+    },
+    %{
+      attributes: %{
+        "amount" => "17107rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "coin_spent"
+    },
+    %{
+      attributes: %{
+        "amount" => "17107rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
+      type: "coin_received"
+    },
+    %{
+      attributes: %{
+        "amount" => "17107rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "transfer"
+    },
+    %{
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "message"
+    },
+    %{
+      attributes: %{
+        "amount" => "10342rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "coin_spent"
+    },
+    %{
+      attributes: %{
+        "amount" => "10342rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
+      type: "coin_received"
+    },
+    %{
+      attributes: %{
+        "amount" => "10342rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "transfer"
+    },
+    %{
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "message"
+    },
+    %{
+      attributes: %{
+        "amount" => "528rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "coin_spent"
+    },
+    %{
+      attributes: %{
+        "amount" => "528rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
+      type: "coin_received"
+    },
+    %{
+      attributes: %{
+        "amount" => "528rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "transfer"
+    },
+    %{
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "message"
+    },
+    %{
+      attributes: %{
+        "amount" => "2058rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "coin_spent"
+    },
+    %{
+      attributes: %{
+        "amount" => "2058rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
+      type: "coin_received"
+    },
+    %{
+      attributes: %{
+        "amount" => "2058rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "transfer"
+    },
+    %{
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "message"
+    },
+    %{
+      attributes: %{
+        "amount" => "142488rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "coin_spent"
+    },
+    %{
+      attributes: %{
+        "amount" => "142488rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
+      type: "coin_received"
+    },
+    %{
+      attributes: %{
+        "amount" => "142488rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "transfer"
+    },
+    %{
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "message"
+    },
+    %{
+      attributes: %{
+        "amount" => "71878rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "coin_spent"
+    },
+    %{
+      attributes: %{
+        "amount" => "71878rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
+      type: "coin_received"
+    },
+    %{
+      attributes: %{
+        "amount" => "71878rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "transfer"
+    },
+    %{
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "message"
+    },
+    %{
+      attributes: %{
+        "amount" => "335437rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "coin_spent"
+    },
+    %{
+      attributes: %{
+        "amount" => "335437rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
+      type: "coin_received"
+    },
+    %{
+      attributes: %{
+        "amount" => "335437rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "transfer"
+    },
+    %{
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "message"
+    },
+    %{
+      attributes: %{
+        "amount" => "3468rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "coin_spent"
+    },
+    %{
+      attributes: %{
+        "amount" => "3468rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
+      type: "coin_received"
+    },
+    %{
+      attributes: %{
+        "amount" => "3468rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "transfer"
+    },
+    %{
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "message"
+    },
+    %{
+      attributes: %{
+        "amount" => "76069rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "coin_spent"
+    },
+    %{
+      attributes: %{
+        "amount" => "76069rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
+      type: "coin_received"
+    },
+    %{
+      attributes: %{
+        "amount" => "76069rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "transfer"
+    },
+    %{
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "message"
+    },
+    %{
+      attributes: %{
+        "amount" => "528rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "coin_spent"
+    },
+    %{
+      attributes: %{
+        "amount" => "528rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
+      type: "coin_received"
+    },
+    %{
+      attributes: %{
+        "amount" => "528rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "transfer"
+    },
+    %{
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "message"
+    },
+    %{
+      attributes: %{
+        "amount" => "75147rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "coin_spent"
+    },
+    %{
+      attributes: %{
+        "amount" => "75147rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
+      type: "coin_received"
+    },
+    %{
+      attributes: %{
+        "amount" => "75147rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "transfer"
+    },
+    %{
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "message"
+    },
+    %{
+      attributes: %{
+        "amount" => "8188rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "coin_spent"
+    },
+    %{
+      attributes: %{
+        "amount" => "8188rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
+      type: "coin_received"
+    },
+    %{
+      attributes: %{
+        "amount" => "8188rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "transfer"
+    },
+    %{
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "message"
+    },
+    %{
+      attributes: %{
+        "amount" => "1641rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "coin_spent"
+    },
+    %{
+      attributes: %{
+        "amount" => "1641rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
+      type: "coin_received"
+    },
+    %{
+      attributes: %{
+        "amount" => "1641rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "transfer"
+    },
+    %{
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "message"
+    },
+    %{
+      attributes: %{
+        "amount" => "3846rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "coin_spent"
+    },
+    %{
+      attributes: %{
+        "amount" => "3846rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3"
+      },
+      type: "coin_received"
+    },
+    %{
+      attributes: %{
+        "amount" => "3846rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor1g98cy3n9mmjrpn0sxmn63lztelera37nn2xgw3",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "transfer"
+    },
+    %{
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "message"
+    },
+    %{
+      attributes: %{
+        "amount" => "55890rune",
+        "mode" => "EndBlock",
+        "spender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "coin_spent"
+    },
+    %{
+      attributes: %{
+        "amount" => "55890rune",
+        "mode" => "EndBlock",
+        "receiver" => "sthor17gw75axcnr8747pkanye45pnrwk7p9c3ve0wxj"
+      },
+      type: "coin_received"
+    },
+    %{
+      attributes: %{
+        "amount" => "55890rune",
+        "mode" => "EndBlock",
+        "recipient" => "sthor17gw75axcnr8747pkanye45pnrwk7p9c3ve0wxj",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "transfer"
+    },
+    %{
+      attributes: %{
+        "mode" => "EndBlock",
+        "sender" => "sthor1dheycdevq39qlkxs2a6wuuzyn4aqxhvepe6as4"
+      },
+      type: "message"
+    },
+    %{
+      attributes: %{
+        "AVAX.AVAX" => "2136",
+        "AVAX.USDC-0XB97EF9EF8734C71904D8002F8B6BC66DD9C48A6E" => "720",
+        "BASE.CBBTC-0XCBB7C0000AB88B473B1F5AFD9EF808440EED33BF" => "17107",
+        "BASE.ETH" => "10342",
+        "BASE.USDC-0X833589FCD6EDB6E08F4C7C32D4F71B54BDA02913" => "528",
+        "BCH.BCH" => "2058",
+        "BSC.BNB" => "142488",
+        "BSC.USDT-0X55D398326F99059FF775485246999027B3197955" => "71878",
+        "BTC.BTC" => "335437",
+        "DOGE.DOGE" => "3468",
+        "ETH.ETH" => "76069",
+        "ETH.USDC-0XA0B86991C6218B36C1D19D4A2E9EB0CE3606EB48" => "528",
+        "ETH.USDT-0XDAC17F958D2EE523A2206206994597C13D831EC7" => "75147",
+        "GAIA.ATOM" => "8188",
+        "LTC.LTC" => "1641",
+        "XRP.XRP" => "3846",
+        "bond_reward" => "55890",
+        "dev_fund_reward" => "47504",
+        "income_burn" => "95",
+        "mode" => "EndBlock",
+        "tcy_stake_reward" => "95008"
+      },
+      type: "rewards"
+    }
+  ],
+  txs: [
+    %{
+      result: %{
+        code: 0,
+        data: "",
+        info: "",
+        log: "",
+        events: [
+          %{
+            attributes: %{
+              "fee" => "0rune",
+              "fee_payer" => "sthor1h4eyzp33jx9nxh6dfz7s3jhjn3mkvpehm9mpjg"
+            },
+            type: "tx"
+          },
+          %{
+            attributes: %{
+              "acc_seq" => "sthor1h4eyzp33jx9nxh6dfz7s3jhjn3mkvpehm9mpjg/172"
+            },
+            type: "tx"
+          },
+          %{
+            attributes: %{
+              "signature" => "9c+tloSWvNH02EQ/o7XjR7GwwoP3vCf8+kGV15VroOtQgzFx2ZWXBqfs4enXGjv+rglgqU8WBNWci2DLkqzCog=="
+            },
+            type: "tx"
+          },
+          %{
+            attributes: %{
+              "action" => "/cosmwasm.wasm.v1.MsgExecuteContract",
+              "module" => "wasm",
+              "msg_index" => "0",
+              "sender" => "sthor1h4eyzp33jx9nxh6dfz7s3jhjn3mkvpehm9mpjg"
+            },
+            type: "message"
+          },
+          %{
+            attributes: %{
+              "amount" => "1100000eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7",
+              "msg_index" => "0",
+              "spender" => "sthor1h4eyzp33jx9nxh6dfz7s3jhjn3mkvpehm9mpjg"
+            },
+            type: "coin_spent"
+          },
+          %{
+            attributes: %{
+              "amount" => "1100000eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7",
+              "msg_index" => "0",
+              "receiver" => "sthor1f86r2e5kzlwf9dcq5f8frku5d39lhd3jc95juvs0ydrspqa49r4qua7xj4"
+            },
+            type: "coin_received"
+          },
+          %{
+            attributes: %{
+              "amount" => "1100000eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7",
+              "msg_index" => "0",
+              "recipient" => "sthor1f86r2e5kzlwf9dcq5f8frku5d39lhd3jc95juvs0ydrspqa49r4qua7xj4",
+              "sender" => "sthor1h4eyzp33jx9nxh6dfz7s3jhjn3mkvpehm9mpjg"
+            },
+            type: "transfer"
+          },
+          %{
+            attributes: %{
+              "_contract_address" => "sthor1f86r2e5kzlwf9dcq5f8frku5d39lhd3jc95juvs0ydrspqa49r4qua7xj4",
+              "msg_index" => "0"
+            },
+            type: "execute"
+          },
+          %{
+            attributes: %{
+              "_contract_address" => "sthor1f86r2e5kzlwf9dcq5f8frku5d39lhd3jc95juvs0ydrspqa49r4qua7xj4",
+              "contract_name" => "levana.finance:market",
+              "contract_version" => "0.1.2",
+              "levana_protocol" => "perps",
+              "locked" => "0",
+              "locked-usd" => "0",
+              "lp-collateral" => "11.377422988733107923",
+              "msg_index" => "0",
+              "total-lp" => "11.313749764440130984",
+              "total-xlp" => "2.700097736322589197",
+              "unlocked" => "14.09271674161584731",
+              "unlocked-usd" => "14.09271674161584731",
+              "xlp-collateral" => "2.715293752882739387"
+            },
+            type: "wasm-liquidity-pool-size"
+          },
+          %{
+            attributes: %{
+              "_contract_address" => "sthor1f86r2e5kzlwf9dcq5f8frku5d39lhd3jc95juvs0ydrspqa49r4qua7xj4",
+              "contract_name" => "levana.finance:market",
+              "contract_version" => "0.1.2",
+              "delta-neutrality-ratio" => "0",
+              "levana_protocol" => "perps",
+              "long-interest" => "0",
+              "msg_index" => "0",
+              "net-notional" => "0",
+              "price-notional" => "97809.38268142",
+              "short-interest" => "0",
+              "total-liquidity" => "14.09271674161584731"
+            },
+            type: "wasm-delta-neutrality-ratio"
+          },
+          %{
+            attributes: %{
+              "_contract_address" => "sthor1f86r2e5kzlwf9dcq5f8frku5d39lhd3jc95juvs0ydrspqa49r4qua7xj4",
+              "amount" => "0.011",
+              "amount-usd" => "0.011",
+              "contract_name" => "levana.finance:market",
+              "contract_version" => "0.1.2",
+              "levana_protocol" => "perps",
+              "msg_index" => "0",
+              "shares" => "0.010938439006098626"
+            },
+            type: "wasm-liquidity-deposit"
+          },
+          %{
+            attributes: %{
+              "_contract_address" => "sthor1f86r2e5kzlwf9dcq5f8frku5d39lhd3jc95juvs0ydrspqa49r4qua7xj4",
+              "action-id" => "0",
+              "addr" => "sthor1h4eyzp33jx9nxh6dfz7s3jhjn3mkvpehm9mpjg",
+              "collateral" => "0.011",
+              "collateral-usd" => "0.011",
+              "contract_name" => "levana.finance:market",
+              "contract_version" => "0.1.2",
+              "kind" => "deposit-lp",
+              "levana_protocol" => "perps",
+              "msg_index" => "0",
+              "timestamp" => "1753878780.137706090",
+              "tokens" => "0.010938439006098626"
+            },
+            type: "wasm-history-lp-action"
+          },
+          %{
+            attributes: %{
+              "_contract_address" => "sthor1f86r2e5kzlwf9dcq5f8frku5d39lhd3jc95juvs0ydrspqa49r4qua7xj4",
+              "contract_name" => "levana.finance:market",
+              "contract_version" => "0.1.2",
+              "deposit" => "0.011",
+              "deposit-usd" => "0.011",
+              "levana_protocol" => "perps",
+              "msg_index" => "0"
+            },
+            type: "wasm-history-lp-deposit"
+          }
+        ],
+        codespace: "",
+        gas_used: 135690,
+        gas_wanted: -1
+      },
+      hash: "FF7AFCBC76AC6EAC50194BFDCC2F39520E42F9B6957F27AED699F50B0E2EE775",
+      tx_data: "{\"body\":{\"messages\":[{\"@type\":\"/cosmwasm.wasm.v1.MsgExecuteContract\",\"sender\":\"sthor1h4eyzp33jx9nxh6dfz7s3jhjn3mkvpehm9mpjg\",\"contract\":\"sthor1f86r2e5kzlwf9dcq5f8frku5d39lhd3jc95juvs0ydrspqa49r4qua7xj4\",\"msg\":{\"deposit_liquidity\":{\"stake_to_xlp\":false}},\"funds\":[{\"denom\":\"eth-usdt-0xdac17f958d2ee523a2206206994597c13d831ec7\",\"amount\":\"1100000\"}]}],\"memo\":\"\",\"timeout_height\":\"0\",\"unordered\":false,\"timeout_timestamp\":null,\"extension_options\":[],\"non_critical_extension_options\":[]},\"auth_info\":{\"signer_infos\":[{\"public_key\":{\"@type\":\"/cosmos.crypto.secp256k1.PubKey\",\"key\":\"AphhSH2o4ssbmTe0urRln9HRmOc6Ud46MdcC7NUuj+OA\"},\"mode_info\":{\"single\":{\"mode\":\"SIGN_MODE_DIRECT\"}},\"sequence\":\"172\"}],\"fee\":{\"amount\":[{\"denom\":\"rune\",\"amount\":\"0\"}],\"gas_limit\":\"174338\",\"payer\":\"\",\"granter\":\"\"},\"tip\":null},\"signatures\":[\"9c+tloSWvNH02EQ/o7XjR7GwwoP3vCf8+kGV15VroOtQgzFx2ZWXBqfs4enXGjv+rglgqU8WBNWci2DLkqzCog==\"]}"
+    }
+  ],
+  __unknown_fields__: []
+}

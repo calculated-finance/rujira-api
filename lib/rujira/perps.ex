@@ -7,7 +7,18 @@ defmodule Rujira.Perps do
   alias Rujira.Deployments
   alias Rujira.Perps.Account
   alias Rujira.Perps.Pool
+
+  use GenServer
   use Memoize
+
+  def start_link(_) do
+    Supervisor.start_link([__MODULE__.Listener], strategy: :one_for_one)
+  end
+
+  @impl true
+  def init(state) do
+    {:ok, state}
+  end
 
   @spec list_pools() ::
           {:ok, list(Pool.t())} | {:error, GRPC.RPCError.t()}
@@ -22,7 +33,7 @@ defmodule Rujira.Perps do
     end)
   end
 
-  def query_pool(address) do
+  defmemo query_pool(address) do
     Contracts.query_state_smart(address, %{status: %{}})
   end
 
@@ -59,7 +70,7 @@ defmodule Rujira.Perps do
     end
   end
 
-  def query_account(pool, account) do
+  defmemo query_account(pool, account) do
     Contracts.query_state_smart(pool.address, %{lp_info: %{liquidity_provider: account}})
   end
 end
