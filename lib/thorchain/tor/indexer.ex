@@ -23,8 +23,9 @@ defmodule Thorchain.Tor.Indexer do
   end
 
   def rune_price do
-    with {:ok, %{rune_price_in_tor: price}} <- Thorchain.network() do
-      {:ok, String.to_integer(price)}
+    with {:ok, %{rune_price_in_tor: price}} <- Thorchain.network(),
+         {:ok, price} <- Decimal.cast(price) do
+      {:ok, Decimal.div(price, Decimal.new(100_000_000))}
     end
   end
 end
