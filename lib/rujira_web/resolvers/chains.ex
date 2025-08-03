@@ -15,7 +15,8 @@ defmodule RujiraWeb.Resolvers.Chains do
        kuji: %{chain: :kuji},
        ltc: %{chain: :ltc},
        osmo: %{chain: :osmo},
-       thor: %{chain: :thor}
+       thor: %{chain: :thor},
+       tron: %{chain: :tron}
      }}
   end
 end

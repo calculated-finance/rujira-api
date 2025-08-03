@@ -22,7 +22,7 @@ defmodule Thorchain.Tor.Indexer do
     {:noreply, state}
   end
 
-  def rune_price() do
+  def rune_price do
     with {:ok, %{rune_price_in_tor: price}} <- Thorchain.network() do
       {:ok, String.to_integer(price)}
     end
