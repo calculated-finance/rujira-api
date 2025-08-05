@@ -110,7 +110,7 @@ defmodule RujiraWeb.Resolvers.Strategy do
   defp staking_query(query, %{bond_denom: denom}) do
     case Assets.from_denom(denom) do
       {:ok, asset} ->
-        Assets.matches(query, asset)
+        Assets.query_match(query, asset, asset)
 
       _ ->
         false
@@ -119,7 +119,7 @@ defmodule RujiraWeb.Resolvers.Strategy do
 
   defp perps_query(query, %{quote_denom: quote_denom}) do
     case Assets.from_denom(quote_denom) do
-      {:ok, asset} -> Assets.matches(query, asset)
+      {:ok, asset} -> Assets.query_match(query, asset, asset)
       _ -> false
     end
   end
