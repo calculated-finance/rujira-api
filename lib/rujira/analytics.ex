@@ -3,11 +3,13 @@ defmodule Rujira.Analytics do
   Starts analytics listeners.
   """
   use GenServer
+  alias Rujira.Analytics.Staking
   alias Rujira.Analytics.Swap
 
   def start_link(_) do
     children = [
-      Swap.Indexer
+      Swap.Indexer,
+      Staking
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one)

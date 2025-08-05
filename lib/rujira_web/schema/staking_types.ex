@@ -11,6 +11,7 @@ defmodule RujiraWeb.Schema.StakingTypes do
 
   alias Rujira.Assets
   alias Rujira.Contracts
+  alias RujiraWeb.Resolvers.Analytics
   alias RujiraWeb.Resolvers.Staking
 
   object :staking do
@@ -82,6 +83,15 @@ defmodule RujiraWeb.Schema.StakingTypes do
     end
 
     field :deployment_status, non_null(:deployment_target_status)
+
+    @desc "The analytics bins for this staking pool"
+    field :analytics_bins, :analytics_staking_bins do
+      arg(:from, non_null(:timestamp))
+      arg(:to, non_null(:timestamp))
+      arg(:resolution, non_null(:resolution))
+      arg(:period, non_null(:integer))
+      resolve(&Analytics.staking_bins_from_pool/3)
+    end
   end
 
   object :revenue_converter do
