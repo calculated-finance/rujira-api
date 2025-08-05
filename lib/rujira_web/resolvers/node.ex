@@ -105,6 +105,7 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Thorchain.Types.QueryInboundAddressResponse{}, _), do: :thorchain_inbound_address
   def type(%Thorchain.Types.QueryPoolResponse{}, _), do: :thorchain_pool
   def type(%{observed_tx: _}, _), do: :thorchain_tx_in
+  def type(%{type: :thorchain_tor_price}, _), do: :thorchain_tor_price
   def type(%Thorchain.Oracle{}, _), do: :thorchain_oracle
 
   # Chain Modules
@@ -176,6 +177,9 @@ defmodule RujiraWeb.Resolvers.Node do
 
   defp resolve_id({:ok, %{type: :thorchain_tor_candle, id: id}}),
     do: Thorchain.Tor.candle_from_id(id)
+
+  defp resolve_id({:ok, %{type: :thorchain_tor_price, id: id}}),
+    do: {:ok, %{id: id, type: :thorchain_tor_price}}
 
   # --- League ---
   defp resolve_id({:ok, %{type: :league_account, id: id}}),
@@ -274,6 +278,7 @@ defmodule RujiraWeb.Resolvers.Node do
        %{type: "ThorchainInboundAddress", format: ""},
        %{type: "ThorchainTxIn", format: ""},
        %{type: "ThorchainOracle", format: ""},
+       %{type: "ThorchainTorPrice", format: "asset_id"},
        %{type: "ThorchainTorCandle", format: "asset_id/resolution/bin"},
 
        # --- League ---

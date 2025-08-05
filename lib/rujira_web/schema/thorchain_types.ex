@@ -127,6 +127,13 @@ defmodule RujiraWeb.Schema.ThorchainTypes do
     end
   end
 
+  node object(:thorchain_tor_price) do
+    connection field :candles, node_type: :thorchain_tor_candle, non_null: true do
+      arg(:resolution, non_null(:string))
+      resolve(&Resolvers.Thorchain.tor_candles/3)
+    end
+  end
+
   connection(node_type: :thorchain_tor_candle)
 
   @desc "Represents a candlestick chart data point for a specific time period, including high, low, open, close, and timestamp."
