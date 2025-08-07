@@ -29,3 +29,17 @@ defmodule RujiraWeb.Grpc do
   def to_string(int) when is_integer(int), do: Integer.to_string(int)
   def to_string(nil), do: ""
 end
+
+defimpl Enumerable, for: Mint.TransportError do
+  def count(%Mint.TransportError{reason: reason}),
+    do: Enumerable.count(%{status: reason, reason: reason})
+
+  def member?(%Mint.TransportError{reason: reason}, element),
+    do: Enumerable.member?(%{status: reason, reason: reason}, element)
+
+  def reduce(%Mint.TransportError{reason: reason}, acc, fun),
+    do: Enumerable.reduce(%{status: reason, reason: reason}, acc, fun)
+
+  def slice(%Mint.TransportError{reason: reason}),
+    do: Enumerable.slice(%{status: reason, reason: reason})
+end
