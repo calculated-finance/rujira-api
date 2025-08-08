@@ -8,10 +8,10 @@ defmodule Rujira.Deployments do
   alias Rujira.Deployments.Target
   alias Rujira.Fin
   alias Rujira.Index
+  alias Rujira.Keiko
   alias Rujira.Perps
   alias Rujira.Revenue
   alias Rujira.Staking
-  alias Rujira.Ventures
   alias Rujira.Vestings
 
   use GenServer
@@ -191,7 +191,7 @@ defmodule Rujira.Deployments do
   defp to_module("rujira-fin"), do: Fin.Pair
   defp to_module("rujira-revenue"), do: Revenue.Converter
   defp to_module("rujira-staking"), do: Staking.Pool
-  defp to_module("rujira-keiko"), do: Ventures.Keiko
+  defp to_module("rujira-keiko"), do: Keiko
   defp to_module("nami-index-nav"), do: Index.Nav
   defp to_module("nami-index-fixed"), do: Index.Fixed
   defp to_module("nami-index-entry-adpter"), do: Index.EntryAdapter

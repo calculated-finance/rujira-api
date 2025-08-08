@@ -7,7 +7,6 @@ defmodule RujiraWeb.Resolvers.Token do
   - Resolving native token denominations for different blockchains
   - Supporting various token types including THORChain and KUJI assets
   """
-  alias Absinthe.Resolution.Helpers
   alias Rujira.Assets
   alias Rujira.Assets.Asset
   alias Rujira.Chains.Gaia
@@ -69,13 +68,10 @@ defmodule RujiraWeb.Resolvers.Token do
   def chain(%{chain: chain}, _, _),
     do: {:ok, chain |> String.downcase() |> String.to_existing_atom()}
 
-  def metadata(%Asset{} = asset, _, _) do
-    Helpers.async(fn -> Assets.load_metadata(asset) end)
-  end
+  def metadata(%Asset{metadata: nil} = asset, _, _), do: Assets.load_metadata(asset)
+  def metadata(%Asset{metadata: metadata}, _, _), do: {:ok, metadata}
 
-  def price(%Asset{ticker: ticker}, _, _) do
-    Helpers.async(fn -> Rujira.Prices.get(ticker) end)
-  end
+  def price(%Asset{ticker: ticker}, _, _), do: Rujira.Prices.get(ticker)
 
   def quote(%{request: %{to_asset: asset}, expected_amount_out: amount}, _, _) do
     {:ok, %{asset: asset, amount: amount}}

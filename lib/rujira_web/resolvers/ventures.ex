@@ -2,7 +2,6 @@ defmodule RujiraWeb.Resolvers.Ventures do
   @moduledoc false
 
   alias Absinthe.Relay
-  alias Rujira.Assets
   alias Rujira.Ventures
 
   def resolver(_, _, _) do
@@ -11,27 +10,16 @@ defmodule RujiraWeb.Resolvers.Ventures do
     end
   end
 
-  def sales(_, _, _) do
-    with {:ok, sales} <- Ventures.sales() do
-      Relay.Connection.from_list(sales, %{first: 100})
+  def sales(_, args, _) do
+    owner = Map.get(args, :owner)
+    status = Map.get(args, :status)
+
+    with {:ok, sales} <- Ventures.load_sales(owner, status) do
+      Relay.Connection.from_list(sales, args)
     end
   end
 
-  def sales_by_owner(_, %{owner: owner}, _) do
-    with {:ok, sales} <- Ventures.sales_by_owner(owner) do
-      Relay.Connection.from_list(sales, %{first: 100})
-    end
-  end
-
-  def sales_by_status(_, %{status: status}, _) do
-    with {:ok, sales} <- Ventures.sales_by_status(status) do
-      Relay.Connection.from_list(sales, %{first: 100})
-    end
-  end
-
-  def sale_by_idx(_, %{idx: idx}, _) do
-    Ventures.sale_by_idx(idx)
-  end
+  def sale(_, %{idx: idx}, _), do: Ventures.sale_from_id(idx)
 
   def validate_token(_, %{token: token_input}, _) do
     token_payload = transform_token_input(token_input)
@@ -87,18 +75,5 @@ defmodule RujiraWeb.Resolvers.Ventures do
 
   defp transform_recipient(%{amount: amount}) do
     %{set: %{amount: amount}}
-  end
-
-  def asset(%{denom: denom}, _, _), do: Assets.from_denom(denom)
-
-  def deposit(%{sale: %{deposit: deposit}}, _, _), do: do_deposit(deposit)
-  def deposit(%{deposit: deposit}, _, _), do: do_deposit(deposit)
-
-  defp do_deposit(nil), do: {:ok, nil}
-
-  defp do_deposit(%{denom: denom, amount: amount}) do
-    with {:ok, asset} <- Assets.from_denom(denom) do
-      {:ok, %{asset: asset, amount: amount}}
-    end
   end
 end

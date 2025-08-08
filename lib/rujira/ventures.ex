@@ -1,67 +1,40 @@
 defmodule Rujira.Ventures do
-  @moduledoc false
+  @moduledoc """
+  Provides the main interface for interacting with Rujira Ventures products.
 
-  alias Rujira.Contracts
-  alias Rujira.Deployments
-  alias Rujira.Ventures.Keiko
-  alias Rujira.Ventures.Pilot
+  This module acts as the central entry point for business logic related to
+  various venture products — currently focused on the Keiko launchpad platform,
+  with support for sales, validation, and deployment orchestration.
 
-  def address, do: Deployments.get_target(Keiko, "keiko").address
+  Future products will be integrated under this umbrella.
+  """
 
-  def keiko do
-    Contracts.get({Keiko, address()})
-  end
+  alias Rujira.Keiko
 
-  def sales do
-    with {:ok, ventures} <- Contracts.query_state_smart(address(), %{ventures: %{}}) do
-      Rujira.Enum.reduce_while_ok(ventures, [], &sale_from_query/1)
-    end
-  end
+  # -- Keiko Config --
 
-  def sales_by_owner(owner) do
-    with {:ok, ventures} <-
-           Contracts.query_state_smart(address(), %{ventures_by_owner: %{owner: owner}}) do
-      Rujira.Enum.reduce_while_ok(ventures, [], &sale_from_query/1)
-    end
-  end
+  @doc "Loads the active Keiko configuration from deployment."
+  def keiko, do: Keiko.load()
 
-  def sales_by_status(status) do
-    with {:ok, ventures} <-
-           Contracts.query_state_smart(address(), %{
-             ventures_by_status: %{status: Atom.to_string(status)}
-           }) do
-      Rujira.Enum.reduce_while_ok(ventures, [], &sale_from_query/1)
-    end
-  end
+  # -- Keiko Sales --
+  @doc "Fetches a specific sale by id."
+  def sale_from_id(id), do: Keiko.query_sale(id)
 
-  def sale_by_idx(idx) do
-    with {:ok, venture} <-
-           Contracts.query_state_smart(address(), %{venture: %{idx: idx}}) do
-      # Update if we do Bond sale types later
-      sale_from_query(venture)
-    end
-  end
+  @doc """
+  Queries sales based on optional filters: `:owner`, `:status`.
+  Only one filter should be used at a time.
+  """
+  def load_sales(owner, status), do: Keiko.load_sales(owner, status)
 
-  defp sale_from_query(%{
-         "venture_type" => "pilot",
-         "owner" => owner,
-         "idx" => idx,
-         "status" => status,
-         "venture" => %{"pilot" => pilot}
-       }),
-       do: Pilot.from_query(owner, idx, status, pilot)
+  # -- Keiko Validation --
 
-  def validate_token(token) do
-    Contracts.query_state_smart(address(), %{validate_token: %{token: token}})
-  end
+  @doc "Validates the token metadata."
+  def validate_token(token), do: Keiko.validate_token(token)
 
-  def validate_tokenomics(token_payload, tokenomics_payload) do
-    Contracts.query_state_smart(address(), %{
-      validate_tokenomics: %{token: token_payload, tokenomics: tokenomics_payload}
-    })
-  end
+  @doc "Validates tokenomics parameters against token payload."
+  def validate_tokenomics(token_payload, tokenomics_payload),
+    do: Keiko.validate_tokenomics(token_payload, tokenomics_payload)
 
-  def validate_venture(venture_payload) do
-    Contracts.query_state_smart(address(), %{validate_venture: %{venture: venture_payload}})
-  end
+  @doc "Validates a full venture payload before deployment."
+  def validate_venture(venture_payload), do: Keiko.validate_venture(venture_payload)
 end

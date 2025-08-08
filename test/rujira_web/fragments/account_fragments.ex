@@ -7,6 +7,7 @@ defmodule RujiraWeb.Fragments.AccountFragments do
   import RujiraWeb.Fragments.StrategyFragments
   import RujiraWeb.Fragments.BalanceFragments
   import RujiraWeb.Fragments.ThorchainFragments
+  import RujiraWeb.Fragments.PilotFragments
 
   @account_fragment """
   fragment AccountFragment on Account {
@@ -27,12 +28,16 @@ defmodule RujiraWeb.Fragments.AccountFragments do
     strategies {
       ...StrategyAccountFragment
     }
+    pilot {
+      ...PilotAccountFragment
+    }
   }
   #{get_bow_account_fragment()}
   #{get_fin_account_fragment()}
   #{get_staking_accounts_fragment()}
   #{get_staking_account_fragment()}
   #{get_strategy_account_fragment()}
+  #{get_pilot_account_fragment()}
   """
 
   @layer1_account_fragment """

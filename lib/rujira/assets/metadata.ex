@@ -12,7 +12,18 @@ defmodule Rujira.Assets.Metadata do
   alias Thornode
 
   use Memoize
-  defstruct [:decimals, :description, :display, :name, :symbol, :uri, :uri_hash]
+
+  defstruct [
+    :decimals,
+    :description,
+    :display,
+    :name,
+    :symbol,
+    :uri,
+    :uri_hash,
+    :png_url,
+    :svg_url
+  ]
 
   @type t :: %__MODULE__{
           decimals: integer(),
@@ -21,7 +32,9 @@ defmodule Rujira.Assets.Metadata do
           name: String.t(),
           symbol: String.t(),
           uri: String.t(),
-          uri_hash: String.t()
+          uri_hash: String.t(),
+          png_url: String.t(),
+          svg_url: String.t()
         }
 
   defmemo load_metadata(asset) do

@@ -35,10 +35,6 @@ defmodule RujiraWeb.Schema.AccountTypes do
     @desc "The THORChain address for this account on the app layer"
     field :address, non_null(:address)
 
-    field :merge, :merge_stats do
-      resolve(&Resolvers.Merge.account/3)
-    end
-
     field :bow, non_null(list_of(non_null(:bow_account))) do
       resolve(&Resolvers.Bow.accounts/3)
     end
@@ -47,8 +43,16 @@ defmodule RujiraWeb.Schema.AccountTypes do
       resolve(&Resolvers.Fin.account/3)
     end
 
-    field :pilot, :pilot_account do
-      resolve(&Resolvers.Pilot.account/3)
+    field :index, non_null(list_of(non_null(:index_account))) do
+      resolve(&Resolvers.Index.accounts/3)
+    end
+
+    field :merge, :merge_stats do
+      resolve(&Resolvers.Merge.account/3)
+    end
+
+    field :pilot, non_null(list_of(non_null(:pilot_account))) do
+      resolve(&Resolvers.Pilot.accounts/3)
     end
 
     field :staking, non_null(:staking_accounts) do
@@ -61,10 +65,6 @@ defmodule RujiraWeb.Schema.AccountTypes do
 
     field :strategies, non_null(list_of(non_null(:strategy_account))) do
       resolve(&Resolvers.Strategy.accounts/3)
-    end
-
-    field :index, non_null(list_of(non_null(:index_account))) do
-      resolve(&Resolvers.Index.accounts/3)
     end
 
     field :vesting, non_null(list_of(non_null(:vesting_account))) do

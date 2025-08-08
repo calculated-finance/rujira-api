@@ -9,29 +9,20 @@ defmodule RujiraWeb.Schema.VenturesTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
 
-  alias Rujira.Ventures.Pilot
+  alias Rujira.Assets
+  alias Rujira.Keiko.Sale.Pilot, as: PilotSale
+  alias Rujira.Keiko.Tokenomics.Send
+  alias Rujira.Keiko.Tokenomics.Set
+  alias Rujira.Keiko.Tokenomics.Stream
   alias RujiraWeb.Resolvers.Ventures
 
   object :ventures do
     field :config, :ventures_config
 
     connection field :sales, node_type: :ventures_sale do
+      arg(:owner, :address)
+      arg(:status, list_of(non_null(:ventures_sale_status)))
       resolve(&Ventures.sales/3)
-    end
-
-    connection field :sales_by_owner, node_type: :ventures_sale do
-      arg(:owner, non_null(:address))
-      resolve(&Ventures.sales_by_owner/3)
-    end
-
-    connection field :sales_by_status, node_type: :ventures_sale do
-      arg(:status, non_null(:ventures_sale_status))
-      resolve(&Ventures.sales_by_status/3)
-    end
-
-    field :sale_by_idx, :ventures_sale do
-      arg(:idx, non_null(:string))
-      resolve(&Ventures.sale_by_idx/3)
     end
 
     field :validate_token, :ventures_validate_token_response do
@@ -82,74 +73,69 @@ defmodule RujiraWeb.Schema.VenturesTypes do
     field :fee_maker, non_null(:bigint)
     field :fee_taker, non_null(:bigint)
     field :max_premium, non_null(:integer)
-    field :deposit, :balance, resolve: &Ventures.deposit/3
+
+    field :deposit, :balance do
+      resolve(fn %{deposit: %{denom: denom, amount: amount}}, _, _ ->
+        with {:ok, asset} <- Assets.from_denom(denom) do
+          {:ok, %{asset: asset, amount: amount}}
+        end
+      end)
+    end
 
     field :bid_assets, non_null(list_of(non_null(:ventures_config_pilot_bid_asset))) do
-      resolve(fn %{bid_denoms: bid_assets}, _, _ -> {:ok, bid_assets} end)
+      resolve(fn %{bid_denoms: bid_denoms}, _, _ -> {:ok, bid_denoms} end)
     end
   end
 
   object :ventures_config_pilot_bid_asset do
-    field :asset, non_null(:asset), resolve: &Ventures.asset/3
+    field :asset, non_null(:asset) do
+      resolve(fn %{denom: denom}, _, _ -> Assets.from_denom(denom) end)
+    end
+
     field :min_raise_amount, non_null(:bigint)
   end
 
   object :venures_config_streams do
-    field :admin, non_null(:address)
-    field :code_id, non_null(:integer)
+    field :cw1_contract_address, non_null(:address)
+    field :payroll_factory_contract_address, non_null(:address)
   end
 
   object :venures_config_tokenomics do
     field :min_liquidity, non_null(:bigint)
   end
 
-  union :ventures_sale do
-    types([:ventures_sale_pilot, :ventures_sale_bond])
+  node object(:ventures_sale) do
+    field :title, non_null(:string)
+    field :description, non_null(:string)
+    field :url, non_null(:string)
+    field :beneficiary, non_null(:address)
+    field :idx, non_null(:string)
+    field :owner, non_null(:address)
+    field :status, non_null(:ventures_sale_status)
+    field :venture, non_null(:ventures_sale_type)
+  end
+
+  union :ventures_sale_type do
+    types([:ventures_sale_pilot])
 
     resolve_type(fn
-      %Pilot{}, _ -> :ventures_sale_pilot
-      %{}, _ -> :ventures_sale_bond
+      %PilotSale{}, _ -> :ventures_sale_pilot
     end)
   end
 
   object :ventures_sale_pilot do
-    field :idx, non_null(:string)
-    field :deposit, :balance, resolve: &Ventures.deposit/3
-    field :terms_conditions_accepted, non_null(:boolean)
+    field :sale, non_null(:pilot_sale)
     field :token, non_null(:ventures_token)
     field :tokenomics, non_null(:ventures_tokenomics)
-    field :sale, non_null(:ventures_pilot)
-    # field :fin, :address
-    # field :bow, :address
-    field :owner, non_null(:address)
-    field :status, non_null(:ventures_sale_status)
+    field :fin, :address
+    field :bow, :address
+    field :terms_conditions_accepted, non_null(:boolean)
   end
 
-  object :ventures_sale_bond do
-    field :address, non_null(:address)
+  object :ventures_token do
+    field :admin, :address
+    field :asset, non_null(:asset)
   end
-
-  # union :venture_configure do
-  #   types([:pilot_config])
-
-  #   resolve_type(fn
-  #     %{terms_conditions_accepted: _, token: _, tokenomics: _, pilot: _} -> :pilot_config
-  #   end)
-  # end
-
-  # object :pilot_config do
-  #   field :terms_conditions_accepted, non_null(:boolean)
-  #   field :token, non_null(:token)
-  #   field :tokenomics, non_null(:tokenomics)
-  #   field :pilot, non_null(:pilot)
-  # end
-
-  # object :bonds_venture do
-  # end
-
-  # enum :venture_type do
-  #   value(:pilot, as: 1)
-  # end
 
   enum :ventures_sale_status do
     value(:configured)
@@ -158,40 +144,6 @@ defmodule RujiraWeb.Schema.VenturesTypes do
     value(:executed)
     value(:retracted)
     value(:completed)
-  end
-
-  # object :venture do
-  #   field :idx, non_null(:string)
-  #   field :owner, non_null(:address)
-  #   field :status, non_null(:venture_status)
-  #   field :venture_type, non_null(:venture_type)
-  #   field :venture, non_null(:ventures)
-  # end
-
-  # object :coin do
-  #   field :denom, non_null(:string)
-  #   field :amount, non_null(:bigint)
-  # end
-
-  # union :token do
-  #   types([:token_create, :token_exists])
-
-  #   resolve_type(fn
-  #     %{denom: _}, _ -> :token_exists
-  #     %{symbol: _, name: _}, _ -> :token_create
-  #   end)
-  # end
-
-  object :ventures_token do
-    field :symbol, non_null(:string)
-    field :name, non_null(:string)
-    field :display, non_null(:string)
-    field :description, non_null(:string)
-    field :denom_admin, :address
-    field :png_url, non_null(:string)
-    field :svg_url, non_null(:string)
-    field :uri, :string
-    field :uri_hash, :string
   end
 
   # Input type for the validate_token query
@@ -219,10 +171,6 @@ defmodule RujiraWeb.Schema.VenturesTypes do
     field :valid, :boolean
     field :message, :string
   end
-
-  # object :token_exists do
-  #   field :denom, non_null(:string)
-  # end
 
   object :ventures_tokenomics do
     field :categories, list_of(:ventures_tokenomics_categories)
@@ -279,16 +227,21 @@ defmodule RujiraWeb.Schema.VenturesTypes do
   end
 
   union :ventures_tokenomics_recipient do
-    # , :ventures_tokenomics_recipient_stream])
-    types([:ventures_tokenomics_recipient_set, :ventures_tokenomics_recipient_send])
+    types([
+      :ventures_tokenomics_recipient_set,
+      :ventures_tokenomics_recipient_send,
+      :ventures_tokenomics_recipient_stream
+    ])
 
     resolve_type(fn
-      %{amount: _, address: _}, _ ->
+      %Send{}, _ ->
         :ventures_tokenomics_recipient_send
 
-      %{amount: _}, _ ->
+      %Set{}, _ ->
         :ventures_tokenomics_recipient_set
-        # %{recipients: _, schedule: _}, _ -> :ventures_tokenomics_recipient_stream
+
+      %Stream{}, _ ->
+        :ventures_tokenomics_recipient_stream
     end)
   end
 
@@ -301,129 +254,21 @@ defmodule RujiraWeb.Schema.VenturesTypes do
     field :amount, non_null(:string)
   end
 
-  # object :ventures_tokenomics_recipient_stream do
-  #   field :recipients, list_of(:ventures_stream_recipient)
-  #   field :schedule, non_null(:ventures_schedule)
-  # end
-
-  # object :ventures_stream_recipient do
-  #   field :address, non_null(:address)
-  #   field :percentage, non_null(:integer)
-  # end
+  object :ventures_tokenomics_recipient_stream do
+    field :owner, :address
+    field :recipient, :address
+    field :title, :string
+    field :total, non_null(:bigint)
+    field :denom, :string
+    field :start_time, :timestamp
+    field :schedule, :string
+    field :vesting_duration_seconds, non_null(:bigint)
+    field :unbonding_duration_seconds, non_null(:bigint)
+  end
 
   object :ventures_tokenomics_categories do
     field :label, non_null(:string)
     field :type, :ventures_tokenomics_category_type
     field :recipients, list_of(:ventures_tokenomics_recipient)
-  end
-
-  # object :tokenomics_config do
-  #   field :minimum_liquidity_one_side, non_null(:decimal)
-  #   field :default_lp_vest_cliff, non_null(:integer)
-  #   field :default_lp_vest_duration, non_null(:integer)
-  # end
-
-  # object :pilot do
-  #   field :title, non_null(:string)
-  #   field :description, non_null(:string)
-  #   field :url, non_null(:string)
-
-  #   field :beneficiary, non_null(:address),
-  #     description: "The address that the raise will be sent to"
-
-  #   field :price, non_null(:decimal), description: "Base price of the token at sale"
-  #   field :opens, non_null(:timestamp), description: "The time after which the sale takes orders"
-
-  #   field :closes, non_null(:timestamp),
-  #     description: "The time after which the sale can be executed"
-
-  #   field :bid_denom, non_null(:string),
-  #     description: "The raise token, that the price is quoted in"
-
-  #   field :bid_threshold, non_null(:string),
-  #     description: "The threshold under which bids are automatically activated when placed"
-
-  #   field :max_premium, non_null(:integer),
-  #     description: "The maximum premium to be used in the sale as a percentage"
-
-  #   field :waiting_period, non_null(:integer),
-  #     description: "The amount of time in seconds that a bid must wait until it can be activated"
-  # end
-
-  # union :ventures_schedule do
-  #   types([:ventures_continuous_schedule, :ventures_fixed_schedule])
-
-  #   resolve_type(fn
-  #     %{period: _}, _ -> :ventures_continuous_schedule
-  #     %{ends: _}, _ -> :ventures_fixed_schedule
-  #   end)
-  # end
-
-  # object :ventures_continuous_schedule do
-  #   field :starts, non_null(:timestamp)
-  #   field :amount, list_of(:balance) # coin
-  #   field :period, non_null(:integer)
-  # end
-
-  # object :ventures_fixed_schedule do
-  #   field :starts, non_null(:timestamp)
-  #   field :ends, non_null(:timestamp)
-  #   field :amount, list_of(:balance) # coin
-  # end
-
-  object :ventures_pool_response do
-    field :premium, non_null(:integer)
-    field :epoch, non_null(:integer)
-    field :price, non_null(:integer)
-    field :total, non_null(:bigint)
-  end
-
-  object :ventures_pools_response do
-    field :pools, list_of(:ventures_pool_response)
-  end
-
-  # object :ventures_pilot_info do
-  #   field :pilot, non_null(:ventures_pilot)
-
-  #   field :deposit, :balance do
-  #     resolve(&resolve_deposit_field/3)
-  #   end
-
-  #   field :contract_address, :address
-  #   field :raise_amount, :bigint
-  #   field :fee_amount, :bigint
-  #   field :bid_pools_snapshot, :ventures_pools_response
-  # end
-
-  # object :fin_info do
-  #   field :contract_address, non_null(:address)
-  # end
-
-  # object :bow_info do
-  #   field :contract_address, non_null(:address)
-  # end
-
-  # object :streams_info do
-  #   field :contract_address, non_null(:address)
-  #   field :recipient, non_null(:address)
-  # end
-
-  object :ventures_pilot do
-    field :beneficiary, non_null(:address)
-    field :bid_denom, non_null(:string)
-    field :bid_pools_snapshot, :ventures_pools_response
-    field :bid_threshold, non_null(:bigint)
-    field :closes, non_null(:string)
-    field :contract_address, :address
-    field :deposit, :balance, resolve: &Ventures.deposit/3
-    field :description, non_null(:string)
-    field :fee_amount, :bigint
-    field :max_premium, non_null(:integer)
-    field :opens, non_null(:string)
-    field :price, :string
-    field :raise_amount, :bigint
-    field :title, non_null(:string)
-    field :url, non_null(:string)
-    field :waiting_period, non_null(:integer)
   end
 end

@@ -19,10 +19,13 @@ defmodule RujiraWeb.Resolvers.Node do
   alias Rujira.Bow
   alias Rujira.Fin
   alias Rujira.Index
+  alias Rujira.Keiko
   alias Rujira.Leagues
   alias Rujira.Merge
   alias Rujira.Perps
+  alias Rujira.Pilot
   alias Rujira.Staking
+  alias Rujira.Ventures
   alias Rujira.Vestings
 
   # Data & Analytics
@@ -95,6 +98,12 @@ defmodule RujiraWeb.Resolvers.Node do
   # Index Module
   def type(%Index.Account{}, _), do: :index_account
   def type(%Index.Vault{}, _), do: :index_vault
+
+  # Ventures
+  def type(%Keiko.Sale{}, _), do: :ventures_sale
+  def type(%Pilot.BidPools{}, _), do: :pilot_bid_pools
+  def type(%Pilot.Bid{}, _), do: :pilot_bid
+  def type(%Pilot.Account{}, _), do: :pilot_account
 
   # Thorchain Integration
   def type(%Thorchain.Tor.Candle{}, _), do: :thorchain_tor_candle
@@ -202,6 +211,19 @@ defmodule RujiraWeb.Resolvers.Node do
   defp resolve_id({:ok, %{type: :index_account, id: id}}),
     do: Index.account_from_id(id)
 
+  # --- Ventures ---
+  defp resolve_id({:ok, %{type: :ventures_sale, id: id}}),
+    do: Ventures.sale_from_id(id)
+
+  defp resolve_id({:ok, %{type: :pilot_bid_pools, id: id}}),
+    do: Pilot.bid_pools_from_id(id)
+
+  defp resolve_id({:ok, %{type: :pilot_bid, id: id}}),
+    do: Pilot.bid_from_id(id)
+
+  defp resolve_id({:ok, %{type: :pilot_account, id: id}}),
+    do: Pilot.account_from_id(id)
+
   # --- Chain Modules ---
   defp resolve_id({:ok, %{type: :cosmos_account, id: id}}),
     do: Cosmos.account_from_id(id)
@@ -287,6 +309,9 @@ defmodule RujiraWeb.Resolvers.Node do
        # --- Index ---
        %{type: "IndexAccount", format: "account_address/denom"},
        %{type: "IndexVault", format: "vault_address"},
+
+       # --- Ventures ---
+       %{type: "VentureSale", format: "idx"},
 
        # --- Prices & Market Data ---
        %{type: "Price", format: "symbol"},

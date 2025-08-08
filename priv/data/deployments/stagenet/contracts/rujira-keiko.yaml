@@ -4,7 +4,7 @@ targets:
   - id: keiko
     admin: ${accounts:admin}
     creator: ${accounts:creator}
-    address: sthor1s32thdr7l646hn7edezjqawmkfs0mssy7kxn9sx6pvtj530ltkrqy27vjy
+    address: sthor155tv8aw0jsg523uw4mres33zyp5ce7phlmxdnhmh9ckyvwe3dhlsrn8cm7
     config:
       bow:
         admin: ${accounts:admin}

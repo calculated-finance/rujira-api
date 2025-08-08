@@ -66,5 +66,6 @@ config :rujira,
     Rujira.Leagues,
     Rujira.Bow,
     Rujira.Index,
-    Rujira.Analytics
+    Rujira.Analytics,
+    Rujira.Pilot
   ]

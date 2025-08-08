@@ -36,6 +36,8 @@ defmodule RujiraWeb.Schema.TokenTypes do
     field :name, :string
     field :uri, :string
     field :uri_hash, :string
+    field :png_url, :string
+    field :svg_url, :string
   end
 
   @desc "Price data for a token"
