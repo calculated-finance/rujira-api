@@ -85,7 +85,7 @@ defmodule RujiraWeb.Schema.StakingTypes do
     field :deployment_status, non_null(:deployment_target_status)
 
     @desc "The analytics bins for this staking pool"
-    field :analytics_bins, :analytics_staking_bins do
+    connection field :analytics_bins, node_type: :analytics_staking_bins do
       arg(:from, non_null(:timestamp))
       arg(:to, non_null(:timestamp))
       arg(:resolution, non_null(:resolution))
