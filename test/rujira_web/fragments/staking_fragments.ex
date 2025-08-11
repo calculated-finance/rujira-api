@@ -54,14 +54,9 @@ defmodule RujiraWeb.Fragments.StakingFragments do
   @staking_summary_fragment """
   fragment StakingSummaryFragment on StakingSummary {
     apr
-    revenue {
-      ...StakingRevenuePointFragment
-    }
-    revenue1
+    apy
     revenue7
-    revenue30
   }
-  #{@staking_revenue_point_fragment}
   """
 
   @staking_pool_fragment """

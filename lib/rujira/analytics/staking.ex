@@ -93,6 +93,28 @@ defmodule Rujira.Analytics.Staking do
     end
   end
 
+  def summary(contract) do
+    from = Common.shift_from_back(DateTime.utc_now(), 7, "1D")
+    to = DateTime.utc_now()
+
+    RevenueBin
+    |> where(
+      [r],
+      r.contract == ^contract and r.resolution == "1D" and r.bin >= ^from and r.bin < ^to
+    )
+    |> group_by([r], r.contract)
+    |> select([r], %{
+      apr: coalesce(avg(r.account_apr), 0),
+      apy: coalesce(avg(r.liquid_apy), 0),
+      revenue: coalesce(sum(r.account_revenue), 0) |> type(:integer)
+    })
+    |> Repo.one()
+    |> case do
+      nil -> {:ok, nil}
+      summary -> {:ok, summary}
+    end
+  end
+
   def bins(from, to, resolution, period, contract) do
     shifted_from = Common.shift_from_back(from, period, resolution)
 
