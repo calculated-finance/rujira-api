@@ -1,6 +1,6 @@
 defmodule RujiraWeb.Schema.AccountTest do
   use RujiraWeb.ConnCase
-
+  import Tesla.Mock
   import RujiraWeb.Fragments.AccountFragments
 
   @query """
@@ -19,6 +19,15 @@ defmodule RujiraWeb.Schema.AccountTest do
     account_empty: empty_account,
     account_populated: populated_account
   } do
+    mock(fn
+      %{
+        method: :get,
+        url:
+          "https://indexer-mainnet.levana.finance/v2/markets-earn-data?network=rujira-mainnet&factory=thor1gclfrvam6a33yhpw3ut3arajyqs06esdvt9pfvluzwsslap9p6uqt4rzxs"
+      } ->
+        %Tesla.Env{status: 200, body: %{}}
+    end)
+
     Enum.each([empty_account, populated_account], fn acct ->
       resp =
         post(conn, "/api", %{

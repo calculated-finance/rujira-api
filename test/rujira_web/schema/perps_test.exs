@@ -1,6 +1,7 @@
 defmodule RujiraWeb.Schema.PerpsTest do
   use RujiraWeb.ConnCase
   import RujiraWeb.Fragments.PerpsFragments
+  import Tesla.Mock
 
   @pool_query """
   query {
@@ -25,6 +26,15 @@ defmodule RujiraWeb.Schema.PerpsTest do
   test "list, lookup and layer1-account perps flows", %{
     conn: conn
   } do
+    mock(fn
+      %{
+        method: :get,
+        url:
+          "https://indexer-mainnet.levana.finance/v2/markets-earn-data?network=rujira-mainnet&factory=thor1gclfrvam6a33yhpw3ut3arajyqs06esdvt9pfvluzwsslap9p6uqt4rzxs"
+      } ->
+        %Tesla.Env{status: 200, body: %{}}
+    end)
+
     # 1) fetch all pools
     conn = post(conn, "/api", %{"query" => @pool_query})
     %{"data" => %{"perps" => pools}} = json_response(conn, 200)
