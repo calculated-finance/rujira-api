@@ -141,4 +141,8 @@ defmodule Rujira.Perps.Pool do
   # need to normalize and add the 8 decimals places according to the api standard
   defp normalize(decimal),
     do: Decimal.round(decimal) |> Decimal.mult(100_000_000) |> Decimal.to_integer()
+
+  def init_msg(msg), do: msg
+  def migrate_msg(_from, _to, _), do: %{}
+  def init_label(_, _), do: "rujira-perps-pool"
 end

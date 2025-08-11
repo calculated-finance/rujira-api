@@ -78,4 +78,8 @@ defmodule Rujira.Vestings do
   defp query_owner(address) do
     Contracts.query_state_smart(address, %{ownership: %{}})
   end
+
+  def init_msg(msg), do: msg
+  def migrate_msg(_from, _to, _), do: %{}
+  def init_label(_, _), do: "rujira-vestings-factory"
 end
