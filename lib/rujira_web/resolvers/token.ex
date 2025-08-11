@@ -68,8 +68,8 @@ defmodule RujiraWeb.Resolvers.Token do
   def chain(%{chain: chain}, _, _),
     do: {:ok, chain |> String.downcase() |> String.to_existing_atom()}
 
-  def metadata(%Asset{metadata: nil} = asset, _, _), do: Assets.load_metadata(asset)
-  def metadata(%Asset{metadata: metadata}, _, _), do: {:ok, metadata}
+  def metadata(%Asset{metadata: %Assets.Metadata{} = metadata}, _, _), do: {:ok, metadata}
+  def metadata(%Asset{} = asset, _, _), do: Assets.load_metadata(asset)
 
   def price(%Asset{ticker: ticker}, _, _), do: Rujira.Prices.get(ticker)
 
