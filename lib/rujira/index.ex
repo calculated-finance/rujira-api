@@ -328,7 +328,7 @@ defmodule Rujira.Index do
 
       _ ->
         # APR = ((NAV / OPEN) - 1) * (365 / 30)
-        growth_factor = Decimal.div(vault.status.nav, nav_30d_ago.open)
+        growth_factor = Decimal.div(vault.status.nav_per_share, nav_30d_ago.open)
 
         apr =
           growth_factor

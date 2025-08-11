@@ -178,7 +178,7 @@ defmodule RujiraWeb.Resolvers.Strategy do
     end
   end
 
-  def sort_by(%Index.Vault{status: status}, :tvl), do: status.total_value
+  def sort_by(%Index.Vault{status: status}, :tvl), do: status.nav
 
   # StakingPool
   def sort_by(%Staking.Pool{bond_denom: bond_denom}, :name) do
