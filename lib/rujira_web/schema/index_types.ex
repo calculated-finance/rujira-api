@@ -78,16 +78,33 @@ defmodule RujiraWeb.Schema.IndexTypes do
   object :index_status do
     @desc "The total amount of shares issued for the index vault"
     field :total_shares, non_null(:bigint)
-    @desc "The NAV of the index vault in usd"
-    field :nav, non_null(:bigint)
+    field :redemption_rate, non_null(:bigint)
+
     @desc "The allocations of the index vault"
     field :allocations, non_null(list_of(non_null(:index_allocation)))
+
     @desc "The total value of the index vault"
-    field :total_value, non_null(:bigint)
+    field :total_value, non_null(:bigint) do
+      resolve(fn %{nav: nav}, _, _ ->
+        {:ok, nav}
+      end)
+    end
+
+    field :nav, non_null(:bigint)
+
+    field :nav_per_share, non_null(:bigint)
+
     @desc "The change in total value over the last 24 hours"
-    field :total_value_change, :bigint
+    field :total_value_change, :bigint do
+      resolve(fn %{nav_change: nav_change}, _, _ ->
+        {:ok, nav_change}
+      end)
+    end
+
     @desc "The change in NAV over the last 24 hours"
     field :nav_change, :bigint
+    @desc "The change in NAV per share over the last 24 hours"
+    field :nav_per_share_change, :bigint
     @desc "The NAV in quote asset"
     field :nav_quote, :bigint
     @desc "The APR over the last 30 days, when applicable otherwise N/A"

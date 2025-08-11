@@ -3,6 +3,8 @@ defmodule Rujira.Perps.Pool do
   Rujira Perps Pool.
   """
 
+  @roi_endpoint "https://indexer-mainnet.levana.finance/v2/markets-earn-data?network=rujira-mainnet&factory=thor1gclfrvam6a33yhpw3ut3arajyqs06esdvt9pfvluzwsslap9p6uqt4rzxs"
+
   defmodule Stats do
     @moduledoc false
     defstruct [
@@ -16,7 +18,7 @@ defmodule Rujira.Perps.Pool do
             sharpe_ratio: non_neg_integer(),
             lp_apr: non_neg_integer(),
             xlp_apr: non_neg_integer(),
-            risk: non_neg_integer()
+            risk: atom()
           }
   end
 
@@ -43,6 +45,7 @@ defmodule Rujira.Perps.Pool do
         "base" => base,
         "liquidity" => liquidity,
         "market_id" => market_id,
+        "config" => %{"max_leverage" => max_leverage},
         "collateral" => %{"native" => %{"denom" => quote_denom}}
       }) do
     with {:ok, liquidity} <- parse_liquidity(liquidity) do
@@ -55,18 +58,21 @@ defmodule Rujira.Perps.Pool do
          quote_denom: quote_denom,
          liquidity: liquidity
        }
-       |> add_stats()}
+       |> add_stats(max_leverage)}
     end
   end
 
-  def add_stats(pool) do
+  def add_stats(pool, max_leverage) do
+    {lp, xlp, sharpe_ratio} = get_roi_data(pool.address)
+    risk = parse_risk(max_leverage)
+
     %__MODULE__{
       pool
       | stats: %__MODULE__.Stats{
-          sharpe_ratio: 0,
-          lp_apr: 0,
-          xlp_apr: 0,
-          risk: 0
+          sharpe_ratio: sharpe_ratio,
+          lp_apr: lp,
+          xlp_apr: xlp,
+          risk: risk
         }
     }
   end
@@ -83,8 +89,60 @@ defmodule Rujira.Perps.Pool do
     end
   end
 
+  defp parse_risk(max_leverage) do
+    case Decimal.parse(max_leverage) do
+      {:ok, parsed} ->
+        cond do
+          Decimal.compare(parsed, Decimal.new(30)) != :lt -> :low
+          Decimal.compare(parsed, Decimal.new(10)) != :lt -> :medium
+          true -> :high
+        end
+
+      # fallback in case of parse failure
+      _ ->
+        :high
+    end
+  end
+
+  defp get_roi_data(address) do
+    case Tesla.get(client(), @roi_endpoint) do
+      {:ok, res} ->
+        data = Map.get(res.body, address, %{})
+        roi7 = Map.get(data, "roi7", %{})
+        sharpe = Map.get(data, "sharpe", %{})
+        annualized_roi30_rate = Map.get(sharpe, "annualized_roi30_rate", %{})
+
+        {lp, ""} =
+          Map.get(roi7, "lp", "0")
+          |> Decimal.parse()
+
+        {xlp, ""} =
+          Map.get(roi7, "xlp", "0")
+          |> Decimal.parse()
+
+        {sharpe_ratio, ""} =
+          Map.get(annualized_roi30_rate, "xlp", "0")
+          |> Decimal.parse()
+
+        sharpe_ratio = Decimal.div(sharpe_ratio, 3) |> Decimal.mult(100)
+
+        {lp, xlp, sharpe_ratio}
+
+      {:error, _} ->
+        {Decimal.new(0), Decimal.new(0), Decimal.new(0)}
+    end
+  end
+
+  defp client do
+    Tesla.client([Tesla.Middleware.JSON, {Tesla.Middleware.Timeout, timeout: 10_000}])
+  end
+
   # query store liquidity as decimal
   # need to normalize and add the 8 decimals places according to the api standard
   defp normalize(decimal),
     do: Decimal.round(decimal) |> Decimal.mult(100_000_000) |> Decimal.to_integer()
+
+  def init_msg(msg), do: msg
+  def migrate_msg(_from, _to, _), do: %{}
+  def init_label(_, _), do: "rujira-perps-pool"
 end

@@ -196,8 +196,8 @@ defmodule Rujira.Index do
             id: NavBin.id(&1.address, resolution, time),
             contract: &1.address,
             resolution: resolution,
-            open: &1.status.nav,
-            tvl: &1.status.total_value,
+            open: &1.status.nav_per_share,
+            tvl: &1.status.nav,
             bin: time,
             inserted_at: now,
             updated_at: now
@@ -231,12 +231,16 @@ defmodule Rujira.Index do
   end
 
   def add_nav_change_24h(vault) do
-    {nav_change, tvl_change} =
-      change_24h(vault.address, vault.status.nav, vault.status.total_value)
+    {nav_per_share_change, nav_change} =
+      change_24h(vault.address, vault.status.nav_per_share, vault.status.nav)
 
     %Vault{
       vault
-      | status: %{vault.status | nav_change: nav_change, total_value_change: tvl_change}
+      | status: %{
+          vault.status
+          | nav_change: nav_change,
+            nav_per_share_change: nav_per_share_change
+        }
     }
   end
 
@@ -248,7 +252,7 @@ defmodule Rujira.Index do
     end
   end
 
-  def change_24h(address, current_nav, current_tvl) do
+  def change_24h(address, current_nav_per_share, current_nav) do
     today = Resolution.truncate(DateTime.utc_now(), "1D")
     nav_24h_ago = query_nav_bin_at(address, "1D", DateTime.add(today, -1, :day))
 
@@ -257,17 +261,17 @@ defmodule Rujira.Index do
         {nil, nil}
 
       _ ->
-        nav_change =
-          Decimal.new(current_nav)
+        nav_per_share_change =
+          Decimal.new(current_nav_per_share)
           |> Decimal.sub(nav_24h_ago.open)
           |> Decimal.div(nav_24h_ago.open)
 
-        tvl_change =
-          Decimal.new(current_tvl)
+        nav_change =
+          Decimal.new(current_nav)
           |> Decimal.sub(nav_24h_ago.tvl)
           |> Decimal.div(nav_24h_ago.tvl)
 
-        {nav_change, tvl_change}
+        {nav_per_share_change, nav_change}
     end
   end
 
@@ -292,8 +296,8 @@ defmodule Rujira.Index do
 
   defmemo(add_vault_entry_adapter(vault), do: vault)
 
-  def value(shares, %Vault{status: %Vault.Status{nav: nav}}),
-    do: Decimal.mult(nav, Decimal.new(shares))
+  def value(shares, %Vault{status: %Vault.Status{nav_per_share: nav_per_share}}),
+    do: Decimal.mult(nav_per_share, Decimal.new(shares))
 
   def deposit_query(address, deposit_amount, slippage_bps) do
     with {:ok, vault} <- get_index(address),

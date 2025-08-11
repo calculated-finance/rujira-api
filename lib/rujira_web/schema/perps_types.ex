@@ -55,7 +55,13 @@ defmodule RujiraWeb.Schema.PerpsTypes do
     field :sharpe_ratio, non_null(:bigint)
     field :lp_apr, non_null(:bigint)
     field :xlp_apr, non_null(:bigint)
-    field :risk, non_null(:bigint)
+    field :risk, non_null(:perps_risk_level)
+  end
+
+  enum :perps_risk_level do
+    value(:low)
+    value(:medium)
+    value(:high)
   end
 
   node object(:perps_account) do

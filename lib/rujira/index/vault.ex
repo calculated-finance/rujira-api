@@ -43,35 +43,41 @@ defmodule Rujira.Index.Vault do
 
     @type t :: %__MODULE__{
             nav: Decimal.t(),
+            redemption_rate: Decimal.t(),
+            nav_per_share: Decimal.t(),
             total_shares: non_neg_integer(),
             total_value: non_neg_integer(),
             allocations: list(Allocation.t()),
             nav_change: Decimal.t() | nil,
-            total_value_change: Decimal.t() | nil,
+            nav_per_share_change: Decimal.t() | nil,
             nav_quote: Decimal.t() | nil,
             apr: Decimal.t() | nil
           }
 
     defstruct [
       :nav,
+      :redemption_rate,
+      :nav_per_share,
       :total_shares,
       :total_value,
       :allocations,
       :nav_change,
-      :total_value_change,
+      :nav_per_share_change,
       :nav_quote,
       :apr
     ]
 
     def from_query(%{
-          "nav" => nav_str,
+          "nav_per_share" => nav_per_share_str,
+          "redemption_rate" => redemption_rate_str,
           "shares" => shares_str,
-          "total_value" => total_value_str,
+          "nav" => nav_str,
           "allocation" => raw_allocs
         }) do
-      with {nav, ""} <- Decimal.parse(nav_str),
+      with {nav_per_share, ""} <- Decimal.parse(nav_per_share_str),
+           {redemption_rate, ""} <- Decimal.parse(redemption_rate_str),
            {shares, ""} <- Integer.parse(shares_str),
-           {total_value, ""} <- Integer.parse(total_value_str),
+           {nav, ""} <- Integer.parse(nav_str),
            {:ok, allocations} <- Nav.parse_allocations(raw_allocs) do
         allocations =
           allocations
@@ -80,9 +86,10 @@ defmodule Rujira.Index.Vault do
 
         {:ok,
          %__MODULE__{
-           nav: nav,
+           nav_per_share: nav_per_share,
+           redemption_rate: redemption_rate,
            total_shares: shares,
-           total_value: total_value,
+           nav: nav,
            allocations: allocations,
            apr: "N/A"
          }}
@@ -94,9 +101,9 @@ defmodule Rujira.Index.Vault do
     def from_query(%{"total_shares" => total_shares_str, "allocation" => raw_allocations}) do
       with {total_shares, ""} <- Integer.parse(total_shares_str),
            {:ok, allocations} <- Fixed.parse_allocations(raw_allocations, total_shares) do
-        total_value = Enum.reduce(allocations, 0, &(&2 + &1.value))
+        nav = Enum.reduce(allocations, 0, &(&2 + &1.value))
 
-        nav =
+        nav_per_share =
           Enum.reduce(allocations, Decimal.new(0), fn %{target_weight: w, price: p}, acc ->
             Decimal.add(acc, Decimal.mult(Decimal.new(w), p))
           end)
@@ -109,9 +116,10 @@ defmodule Rujira.Index.Vault do
         {:ok,
          %__MODULE__{
            total_shares: total_shares,
-           total_value: total_value,
-           allocations: allocations,
            nav: nav,
+           nav_per_share: nav_per_share,
+           redemption_rate: nav_per_share,
+           allocations: allocations,
            apr: "N/A"
          }}
       else
