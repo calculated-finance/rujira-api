@@ -320,7 +320,7 @@ defmodule Rujira.Index do
 
   def apr_30d(%{address: address} = vault) do
     today = Resolution.truncate(DateTime.utc_now(), "1D")
-    nav_30d_ago = query_nav_bin_at(address, "1D", DateTime.add(today, -30, :day))
+    nav_30d_ago = query_nav_bin_at(address, "1D", DateTime.add(today, -7, :day))
 
     case nav_30d_ago do
       nil ->
@@ -334,7 +334,7 @@ defmodule Rujira.Index do
           growth_factor
           |> Decimal.sub(1)
           |> Decimal.mult(Decimal.new(365))
-          |> Decimal.div(30)
+          |> Decimal.div(7)
 
         %Vault{vault | status: %{vault.status | apr: apr}}
     end
