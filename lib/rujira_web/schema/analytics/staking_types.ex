@@ -87,7 +87,9 @@ defmodule RujiraWeb.Schema.Analytics.StakingTypes do
                  },
                  _,
                  _ ->
-        {:ok, Decimal.sub(inflow_account_staked.value, outflow_account_staked.value)}
+        {:ok,
+         Decimal.sub(inflow_account_staked.value, outflow_account_staked.value)
+         |> Decimal.to_integer()}
       end)
     end
 
@@ -98,7 +100,9 @@ defmodule RujiraWeb.Schema.Analytics.StakingTypes do
                  },
                  _,
                  _ ->
-        {:ok, Decimal.sub(inflow_liquid_staked.value, outflow_liquid_staked.value)}
+        {:ok,
+         Decimal.sub(inflow_liquid_staked.value, outflow_liquid_staked.value)
+         |> Decimal.to_integer()}
       end)
     end
 
@@ -109,7 +113,9 @@ defmodule RujiraWeb.Schema.Analytics.StakingTypes do
                  },
                  _,
                  _ ->
-        {:ok, Decimal.sub(inflow_total_staked.value, outflow_total_staked.value)}
+        {:ok,
+         Decimal.sub(inflow_total_staked.value, outflow_total_staked.value)
+         |> Decimal.to_integer()}
       end)
     end
   end

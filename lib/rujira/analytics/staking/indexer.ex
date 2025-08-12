@@ -45,6 +45,16 @@ defmodule Rujira.Analytics.Staking.Indexer do
   defp scan_revenue(_, _), do: 0
 
   defp scan_pool_inflows(
+         %{
+           attributes: %{"_contract_address" => c, "returned" => a},
+           type: "wasm-rujira-staking/liquid.unbond"
+         },
+         %{address: c}
+       ) do
+    with {a, ""} <- Integer.parse(a), do: {{0, 0}, {0, a}}
+  end
+
+  defp scan_pool_inflows(
          %{attributes: %{"_contract_address" => c, "amount" => a}, type: t},
          %{address: c}
        ) do
@@ -78,7 +88,7 @@ defmodule Rujira.Analytics.Staking.Indexer do
          {:ok, asset} <- Assets.from_denom(denom),
          {:ok, lp_weight} <- lp_weight(asset) do
       total = s.account_bond + s.liquid_bond_size
-      weight = Decimal.div(s.account_bond, total)
+      weight = Decimal.div(s.liquid_bond_size, total)
 
       comp_revenue =
         Decimal.mult(revenue, weight) |> Decimal.round(0, :floor) |> Decimal.to_integer()
