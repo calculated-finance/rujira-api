@@ -7,10 +7,6 @@ defmodule Rujira.Ghost do
   alias Rujira.Ghost.Registry
   alias Rujira.Ghost.Vault
 
-  def registry_from_id(id) do
-    Contracts.get({Registry, id})
-  end
-
   def vault_from_id(id) do
     Contracts.get({Vault, id})
   end

@@ -109,21 +109,19 @@ defmodule Rujira.Ghost.Vault do
     end
   end
 
-  defstruct [:id, :address, :denom, :interest, :registry, :status]
+  defstruct [:id, :address, :denom, :interest, :status]
 
   @type t :: %__MODULE__{
           id: String.t(),
           address: String.t(),
           denom: String.t(),
           interest: Interest.t(),
-          registry: String.t(),
           status: Status.t() | :not_loaded
         }
 
   def from_config(address, %{
         "denom" => denom,
-        "interest" => interest,
-        "registry" => registry
+        "interest" => interest
       }) do
     with {:ok, interest} <- Interest.from_query(interest) do
       {:ok,
@@ -131,18 +129,16 @@ defmodule Rujira.Ghost.Vault do
          id: address,
          address: address,
          denom: denom,
-         interest: interest,
-         registry: registry
+         interest: interest
        }}
     end
   end
 
-  def init_msg(%{"denom" => denom, "registry" => registry}) do
+  def init_msg(%{"denom" => denom}) do
     {:ok, asset} = Assets.from_denom(denom)
 
     %{
       denom: denom,
-      registry: registry,
       interest: %{
         target_utilization: "0.8",
         base_rate: "0.03",
@@ -155,13 +151,6 @@ defmodule Rujira.Ghost.Vault do
         display: "x/ghost-vault/#{denom}/rcpt",
         name: "#{Assets.short_id(asset)}} Lend Shares",
         symbol: "LEND-#{Assets.short_id(asset)}"
-      },
-      debt: %{
-        description:
-          "Debt shares issued when borrowing funds from the Rujira #{Assets.short_id(asset)} lending pool",
-        display: "x/ghost-vault/#{denom}/debt",
-        name: "#{Assets.short_id(asset)}} Debt Shares",
-        symbol: "DEBT-#{Assets.short_id(asset)}"
       }
     }
   end
