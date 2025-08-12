@@ -81,7 +81,6 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Fin.Order{}, _), do: :fin_order
 
   # GHOST Protocol
-  def type(%Ghost.Registry{}, _), do: :ghost_registry
   def type(%Ghost.Vault{}, _), do: :ghost_vault
 
   # Staking

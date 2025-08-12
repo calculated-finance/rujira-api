@@ -32,13 +32,6 @@ defmodule RujiraWeb.Fragments.GhostFragments do
   }
   """
 
-  @ghost_registry_fragment """
-  fragment GhostRegistryFragment on GhostRegistry {
-    codeId
-    checksum
-  }
-  """
-
   @ghost_vault_fragment """
   fragment GhostVaultFragment on GhostVault {
     id
@@ -49,16 +42,12 @@ defmodule RujiraWeb.Fragments.GhostFragments do
     interest {
       ...GhostVaultInterestFragment
     }
-    registry {
-      ...GhostRegistryFragment
-    }
     status {
       ...GhostVaultStatusFragment
     }
   }
   #{@asset_fragment}
   #{@ghost_vault_interest_fragment}
-  #{@ghost_registry_fragment}
   #{@ghost_vault_status_fragment}
   """
 

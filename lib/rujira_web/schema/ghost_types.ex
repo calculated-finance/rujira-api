@@ -24,12 +24,6 @@ defmodule RujiraWeb.Schema.GhostTypes do
 
     field :interest, non_null(:ghost_vault_interest)
 
-    field :registry, non_null(:ghost_registry) do
-      resolve(fn %{registry: address}, _, _ ->
-        Contracts.get({Registry, address})
-      end)
-    end
-
     field :status, non_null(:ghost_vault_status) do
       resolve(fn vault, _, _ ->
         with {:ok, %{status: status}} <- Ghost.load_vault(vault) do
@@ -44,11 +38,6 @@ defmodule RujiraWeb.Schema.GhostTypes do
     field :base_rate, non_null(:bigint)
     field :step1, non_null(:bigint)
     field :step2, non_null(:bigint)
-  end
-
-  node object(:ghost_registry) do
-    field :code_id, non_null(:integer)
-    field :checksum, non_null(:string)
   end
 
   object :ghost_vault_status do
