@@ -7,9 +7,7 @@ defmodule RujiraWeb.Schema.GhostTypes do
   """
 
   alias Rujira.Assets
-  alias Rujira.Contracts
   alias Rujira.Ghost
-  alias Rujira.Ghost.Registry
   use Absinthe.Relay.Schema.Notation, :modern
   use Absinthe.Schema.Notation
 

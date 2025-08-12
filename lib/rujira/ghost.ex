@@ -4,7 +4,6 @@ defmodule Rujira.Ghost do
   """
   alias Rujira.Contracts
   alias Rujira.Deployments
-  alias Rujira.Ghost.Registry
   alias Rujira.Ghost.Vault
 
   def vault_from_id(id) do
