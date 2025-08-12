@@ -32,5 +32,6 @@ defmodule RujiraWeb.Schema.ChainTypes do
     value(:terra)
     value(:tron)
     value(:xrp)
+    value(:tron)
   end
 end

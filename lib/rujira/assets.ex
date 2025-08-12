@@ -105,6 +105,7 @@ defmodule Rujira.Assets do
   def decimals(%{type: :layer_1, chain: "NOBLE", ticker: "USDY"}), do: 18
   def decimals(%{type: :layer_1, chain: "NOBLE"}), do: 6
   def decimals(%{type: :layer_1, chain: "OSMO"}), do: 6
+  def decimals(%{type: :layer_1, chain: "TRON"}), do: 6
   def decimals(%{type: :layer_1, chain: "XRP"}), do: 6
   def decimals(_), do: 8
 

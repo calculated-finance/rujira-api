@@ -37,6 +37,7 @@ defmodule Rujira.Prices.Coingecko do
     "thorstarter",
     "thorswap",
     "thorwallet",
+    "tron",
     "unstake-fi",
     "usd-coin",
     "venice-token",
@@ -110,6 +111,7 @@ defmodule Rujira.Prices.Coingecko do
   def id("TCY"), do: {:ok, "tcy"}
   def id("TGT"), do: {:ok, "thorwallet"}
   def id("THOR"), do: {:ok, "thorswap"}
+  def id("TRX"), do: {:ok, "tron"}
   def id("TWT"), do: {:ok, "trust-wallet-token"}
   def id("USDC" <> _), do: {:ok, "usd-coin"}
   def id("USDP"), do: {:ok, "paxos-standard"}
