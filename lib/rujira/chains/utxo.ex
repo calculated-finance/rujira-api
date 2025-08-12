@@ -45,12 +45,8 @@ defmodule Rujira.Chains.Utxo do
 
         body = %{"query" => query, "variables" => %{"address" => address, "page" => 0}}
 
-        with {:ok,
-              %{
-                body: %{
-                  "data" => %{@chain => %{"balances" => [%{"amount" => %{"value" => amount}}]}}
-                }
-              }} <- Tesla.post(client(), "", body),
+        with {:ok, %{@chain => %{"balances" => [%{"amount" => %{"value" => amount}}]}}} <-
+               fetch(body),
              {amount, ""} <- Integer.parse(amount) do
           {:ok,
            [
@@ -83,13 +79,21 @@ defmodule Rujira.Chains.Utxo do
 
         body = %{"query" => query, "variables" => %{"address" => address, "page" => 0}}
 
-        with {:ok,
-              %{
-                body: %{
-                  "data" => %{@chain => %{"unspentTxOutputsV5" => utxos}}
-                }
-              }} <- Tesla.post(client(), "", body) do
+        with {:ok, %{@chain => %{"unspentTxOutputsV5" => utxos}}} <- fetch(body) do
           {:ok, Enum.map(utxos, &cast_utxo/1)}
+        end
+      end
+
+      defp fetch(query) do
+        case Tesla.post(client(), "", query) do
+          %{body: %{"data" => nil, "errors" => errors}} ->
+            {:error, Enum.map(errors, & &1["message"])}
+
+          {:ok, %{body: %{"data" => data}}} ->
+            {:ok, data}
+
+          {:error, err} ->
+            {:error, err}
         end
       end
 

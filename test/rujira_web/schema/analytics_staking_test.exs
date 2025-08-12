@@ -2,6 +2,7 @@ defmodule RujiraWeb.Schema.AnalyticsStakingTest do
   use RujiraWeb.ConnCase
 
   import RujiraWeb.Fragments.AnalyticsStakingFragments
+  import RujiraWeb.Fragments.StakingFragments
   import Mox
   alias Rujira.Analytics.Staking.Indexer
   alias Rujira.Fixtures.Block
@@ -26,6 +27,17 @@ defmodule RujiraWeb.Schema.AnalyticsStakingTest do
     }
   }
   #{get_analytics_staking_connection_fragment()}
+  """
+
+  @staking_pool_node_query """
+  query($id: ID!) {
+    node(id: $id) {
+      ... on StakingPool {
+        ...StakingPoolFragment
+      }
+    }
+  }
+  #{get_staking_pool_fragment()}
   """
 
   test "staking analytics", %{conn: conn} do
@@ -100,9 +112,6 @@ defmodule RujiraWeb.Schema.AnalyticsStakingTest do
 
     assert length(edges) == 2
 
-    # credo:disable-for-next-line Credo.Check.Warning.IoInspect
-    IO.inspect(Enum.at(edges, 1), label: "Deposit 1 RUJI inflow of 100_000_000")
-
     # block 5451594
     # Distribute 0.5 Usdt
     {:ok, block} = Block.load_block("5451594")
@@ -124,11 +133,6 @@ defmodule RujiraWeb.Schema.AnalyticsStakingTest do
              response
 
     assert length(edges) == 2
-
-    # credo:disable-for-next-line Credo.Check.Warning.IoInspect
-    IO.inspect(Enum.at(edges, 1),
-      label: "Distribute 0.5 Usdt revenue of 50_000_000 * price of usdt"
-    )
 
     # block 5451604
     # Deposit 0.69 ruji liquid
@@ -152,9 +156,6 @@ defmodule RujiraWeb.Schema.AnalyticsStakingTest do
 
     assert length(edges) == 2
 
-    # credo:disable-for-next-line Credo.Check.Warning.IoInspect
-    IO.inspect(Enum.at(edges, 1), label: "Deposit 0.69 ruji liquid inflow of 69_000_000")
-
     # block 5451618
     # Withdraw 2 ruji
     {:ok, block} = Block.load_block("5451618")
@@ -176,9 +177,6 @@ defmodule RujiraWeb.Schema.AnalyticsStakingTest do
              response
 
     assert length(edges) == 2
-
-    # credo:disable-for-next-line Credo.Check.Warning.IoInspect
-    IO.inspect(Enum.at(edges, 1), label: "Withdraw 2 ruji outflow of 200_000_000")
 
     # block 5451627
     # Withdraw 1 ruji liquid
@@ -202,7 +200,19 @@ defmodule RujiraWeb.Schema.AnalyticsStakingTest do
 
     assert length(edges) == 2
 
-    # credo:disable-for-next-line Credo.Check.Warning.IoInspect
-    IO.inspect(Enum.at(edges, 1), label: "Withdraw 1 ruji liquid outflow of 100_000_000")
+    # query the staking pool node
+    pool_gid =
+      Base.encode64(
+        "StakingPool:sthor1z42a3wpxl2xfvq967hh9gtwnp3r85l4hvum5lkrz6ku9cpf30fzszf29jj"
+      )
+
+    response =
+      post(conn, "/api", %{
+        "query" => @staking_pool_node_query,
+        "variables" => %{"id" => pool_gid}
+      })
+      |> json_response(200)
+
+    assert Map.get(response, "errors") == nil
   end
 end

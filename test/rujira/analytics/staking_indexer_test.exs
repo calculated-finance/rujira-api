@@ -13,13 +13,9 @@ defmodule Rujira.Analytics.Staking.IndexerTest do
 
     Indexer.handle_new_block(block, pool)
 
-    messages = wait_for_publishes(3)
-    # credo:disable-for-next-line Credo.Check.Warning.IoInspect
-    IO.inspect(messages, label: "messages")
+    wait_for_publishes(3)
 
     RevenueBin
     |> Rujira.Repo.all()
-    # credo:disable-for-next-line Credo.Check.Warning.IoInspect
-    |> IO.inspect(label: "RevenueBins")
   end
 end

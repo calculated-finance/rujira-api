@@ -5,6 +5,7 @@ defmodule Rujira.Staking.Pool do
   Handles pool configuration, status tracking, and revenue calculations.
   """
 
+  alias Rujira.Analytics
   alias Rujira.Assets
   alias Rujira.Deployments.Target
   use Memoize
@@ -16,19 +17,15 @@ defmodule Rujira.Staking.Pool do
     defstruct [
       :id,
       :apr,
-      :revenue,
-      :revenue1,
-      :revenue7,
-      :revenue30
+      :apy,
+      :revenue7
     ]
 
     @type t :: %__MODULE__{
             id: String.t(),
             apr: Decimal.t(),
-            revenue: list(map()),
-            revenue1: integer(),
-            revenue7: integer(),
-            revenue30: integer()
+            apy: Decimal.t(),
+            revenue7: integer()
           }
   end
 
@@ -126,15 +123,28 @@ defmodule Rujira.Staking.Pool do
   end
 
   def summary(%__MODULE__{} = pool) do
-    {:ok,
-     %__MODULE__.Summary{
-       id: pool.address,
-       apr: Decimal.new(0),
-       revenue: [],
-       revenue1: Decimal.new(0),
-       revenue7: Decimal.new(0),
-       revenue30: Decimal.new(0)
-     }}
+    case Analytics.Staking.summary(pool.address) do
+      {:ok, %{apr: apr, apy: apy, revenue: revenue}} ->
+        {:ok,
+         %__MODULE__.Summary{
+           id: pool.address,
+           apr: apr,
+           apy: apy,
+           revenue7: revenue
+         }}
+
+      {:ok, nil} ->
+        {:ok,
+         %__MODULE__.Summary{
+           id: pool.address,
+           apr: Decimal.new(0),
+           apy: Decimal.new(1),
+           revenue7: Decimal.new(0)
+         }}
+
+      {:error, reason} ->
+        {:error, reason}
+    end
   end
 
   def from_target(%Target{

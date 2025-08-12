@@ -185,19 +185,10 @@ defmodule RujiraWeb.Schema.StakingTypes do
   node object(:staking_summary) do
     @desc "Annualized APR based on 30 day revenue over current value staked"
     field :apr, non_null(:bigint)
-    @desc "Trailing 30 days of collected revenue"
-    field :revenue, non_null(list_of(non_null(:staking_revenue_point)))
-    @desc "The total amount of [revenue_denom] sent to contract in the last 24 hours"
-    field :revenue1, non_null(:bigint)
+    @desc "Annualized APY based on 30 day revenue over current value staked"
+    field :apy, non_null(:bigint)
     @desc "The total amount of [revenue_denom] sent to contract in the last 7 days"
     field :revenue7, non_null(:bigint)
-    @desc "The total amount of [revenue_denom] sent to contract in the last 30 days"
-    field :revenue30, non_null(:bigint)
-  end
-
-  object :staking_revenue_point do
-    field :amount, non_null(:bigint)
-    field :timestamp, non_null(:timestamp)
   end
 
   object :revenue_converter_type do
