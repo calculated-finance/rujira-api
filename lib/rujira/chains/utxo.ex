@@ -86,11 +86,14 @@ defmodule Rujira.Chains.Utxo do
 
       defp fetch(query) do
         case Tesla.post(client(), "", query) do
-          %{body: %{"data" => nil, "errors" => errors}} ->
+          %{status: 200, body: %{"data" => nil, "errors" => errors}} ->
             {:error, Enum.map(errors, & &1["message"])}
 
-          {:ok, %{body: %{"data" => data}}} ->
+          {:ok, %{status: 200, body: %{"data" => data}}} ->
             {:ok, data}
+
+          {:ok, %{status: status}} ->
+            {:error, "status #{status}"}
 
           {:error, err} ->
             {:error, err}
