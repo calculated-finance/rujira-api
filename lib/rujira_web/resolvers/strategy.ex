@@ -235,7 +235,7 @@ defmodule RujiraWeb.Resolvers.Strategy do
     end
   end
 
-  def sort_by(%Ghost.Vault{denom: denom, status: %{size: size}}, :tvl) do
+  def sort_by(%Ghost.Vault{denom: denom, status: %{deposit_pool: %{size: size}}}, :tvl) do
     with {:ok, %{symbol: symbol}} <- Assets.from_denom(denom) do
       Prices.value_usd(symbol, size)
     end
