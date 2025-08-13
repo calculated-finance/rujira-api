@@ -121,7 +121,7 @@ defmodule Rujira.Perps.Pool do
         sharpe_ratio = Decimal.div(sharpe_ratio, 3) |> Decimal.mult(100)
         {lp, xlp, sharpe_ratio}
 
-      other ->
+      _ ->
         {Decimal.new(0), Decimal.new(0), Decimal.new(0)}
     end
   end
