@@ -18,6 +18,7 @@ defmodule RujiraWeb.Resolvers.Node do
   # Protocol Modules
   alias Rujira.Bow
   alias Rujira.Fin
+  alias Rujira.Ghost
   alias Rujira.Index
   alias Rujira.Keiko
   alias Rujira.Leagues
@@ -79,7 +80,12 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Fin.Candle{}, _), do: :fin_candle
   def type(%Fin.Order{}, _), do: :fin_order
 
+  # GHOST Protocol
+  def type(%Ghost.Vault{}, _), do: :ghost_vault
+
   # Staking
+  def type(%Prices.Price{}, _), do: :price
+  def type(%Leagues.Account{}, _), do: :league_account
   def type(%Staking.Account{}, _), do: :staking_account
   def type(%Staking.Pool{}, _), do: :staking_pool
   def type(%Staking.Pool.Status{}, _), do: :staking_status
@@ -159,7 +165,10 @@ defmodule RujiraWeb.Resolvers.Node do
   defp resolve_id({:ok, %{type: :perps_pool, id: id}}), do: Perps.pool_from_id(id)
   defp resolve_id({:ok, %{type: :perps_account, id: id}}), do: Perps.account_from_id(id)
 
-  # --- Prices  ---
+  # --- Ghost Module ---
+  defp resolve_id({:ok, %{type: :ghost_vault, id: id}}), do: Ghost.vault_from_id(id)
+
+  # --- Prices & Bank ---
   defp resolve_id({:ok, %{type: :price, id: id}}), do: Prices.price_from_id(id)
 
   # --- Staking ---

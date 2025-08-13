@@ -6,7 +6,9 @@ defmodule Rujira.Deployments do
   alias Rujira.Bow
   alias Rujira.Contracts
   alias Rujira.Deployments.Target
+  alias Rujira.Deployments.Target
   alias Rujira.Fin
+  alias Rujira.Ghost
   alias Rujira.Index
   alias Rujira.Keiko
   alias Rujira.Perps
@@ -191,6 +193,7 @@ defmodule Rujira.Deployments do
   defp to_module("rujira-fin"), do: Fin.Pair
   defp to_module("rujira-revenue"), do: Revenue.Converter
   defp to_module("rujira-staking"), do: Staking.Pool
+  defp to_module("rujira-ghost-vault"), do: Ghost.Vault
   defp to_module("rujira-keiko"), do: Keiko
   defp to_module("nami-index-nav"), do: Index.Nav
   defp to_module("nami-index-fixed"), do: Index.Fixed
