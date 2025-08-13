@@ -8,6 +8,8 @@ defmodule RujiraWeb.Schema.GhostTypes do
 
   alias Rujira.Assets
   alias Rujira.Ghost
+  alias RujiraWeb.Resolvers.Bow
+
   use Absinthe.Relay.Schema.Notation, :modern
   use Absinthe.Schema.Notation
 
@@ -77,7 +79,7 @@ defmodule RujiraWeb.Schema.GhostTypes do
 
     field :value_usd, non_null(:bigint) do
       resolve(fn %{value: value}, _, _ ->
-        {:ok, RujiraWeb.Resolvers.Bow.value_usd(value)}
+        {:ok, Bow.value_usd(value)}
       end)
     end
   end
