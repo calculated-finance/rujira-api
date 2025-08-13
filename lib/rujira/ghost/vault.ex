@@ -2,6 +2,7 @@ defmodule Rujira.Ghost.Vault do
   @moduledoc """
   Defines the structure of a Ghost lending vault
   """
+  alias Rujira.Deployments.Target
   alias Rujira.Assets
 
   defmodule Interest do
@@ -109,14 +110,15 @@ defmodule Rujira.Ghost.Vault do
     end
   end
 
-  defstruct [:id, :address, :denom, :interest, :status]
+  defstruct [:id, :address, :denom, :interest, :status, :deployment_status]
 
   @type t :: %__MODULE__{
           id: String.t(),
           address: String.t(),
           denom: String.t(),
           interest: Interest.t(),
-          status: Status.t() | :not_loaded
+          status: Status.t() | :not_loaded,
+          deployment_status: Target.status()
         }
 
   def from_config(address, %{
@@ -134,16 +136,23 @@ defmodule Rujira.Ghost.Vault do
     end
   end
 
-  def from_target(%{address: address, config: %{"denom" => denom}}) do
-    from_config(address, %{
-      "denom" => denom,
-      "interest" => %{
-        "target_utilization" => "0.8",
-        "base_rate" => "0.03",
-        "step1" => "0.1",
-        "step2" => "2"
-      }
-    })
+  def from_target(%{
+        address: address,
+        status: deployment_status,
+        config: %{"denom" => denom}
+      }) do
+    with {:ok, vault} <-
+           from_config(address, %{
+             "denom" => denom,
+             "interest" => %{
+               "target_utilization" => "0.8",
+               "base_rate" => "0.03",
+               "step1" => "0.1",
+               "step2" => "2"
+             }
+           }) do
+      {:ok, %{vault | deployment_status: deployment_status}}
+    end
   end
 
   def init_msg(%{"denom" => denom}) do

@@ -31,6 +31,8 @@ defmodule RujiraWeb.Schema.GhostTypes do
         end
       end)
     end
+
+    field :deployment_status, non_null(:deployment_target_status)
   end
 
   object :ghost_vault_interest do
