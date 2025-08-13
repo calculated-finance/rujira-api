@@ -7,14 +7,18 @@ defmodule Rujira.Ghost do
   alias Rujira.Ghost.Vault
 
   def vault_from_id(id) do
-    Contracts.get({Vault, id})
+    case Deployments.list_targets(Vault)
+         |> Enum.find(&(&1.address == id)) do
+      nil -> {:error, :not_found}
+      target -> Vault.from_target(target)
+    end
   end
 
   def list_vaults do
     Deployments.list_targets(Vault)
-    |> Task.async_stream(&get_vault/1, timeout: 30_000)
+    |> Enum.map(&Vault.from_target(&1))
     |> Enum.reduce({:ok, []}, fn
-      {:ok, {:ok, x}}, {:ok, xs} ->
+      {:ok, x}, {:ok, xs} ->
         {:ok, [x | xs]}
 
       _, err ->
@@ -29,18 +33,8 @@ defmodule Rujira.Ghost do
     end
   end
 
-  def load_vault(%{address: address}) do
-    with {:ok, vault} <- get_vault(%{address: address}) do
-      load_vault(vault)
-    end
-  end
-
   # TODO: Memoize & invalidate
   defp query_vault_status(address) do
     Contracts.query_state_smart(address, %{status: %{}})
-  end
-
-  def get_vault(%{address: address}) do
-    Contracts.get({Vault, address})
   end
 end
