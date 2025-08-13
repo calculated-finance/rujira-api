@@ -134,6 +134,18 @@ defmodule Rujira.Ghost.Vault do
     end
   end
 
+  def from_target(%{address: address, config: %{"denom" => denom}}) do
+    from_config(address, %{
+      "denom" => denom,
+      "interest" => %{
+        "target_utilization" => "0.8",
+        "base_rate" => "0.03",
+        "step1" => "0.1",
+        "step2" => "2"
+      }
+    })
+  end
+
   def init_msg(%{"denom" => denom}) do
     {:ok, asset} = Assets.from_denom(denom)
 
@@ -149,7 +161,7 @@ defmodule Rujira.Ghost.Vault do
         description:
           "Transferable shares issued when depositing funds into the Rujira #{Assets.short_id(asset)} lending pool",
         display: "x/ghost-vault/#{denom}/rcpt",
-        name: "#{Assets.short_id(asset)}} Lend Shares",
+        name: "#{Assets.short_id(asset)} Lend Shares",
         symbol: "LEND-#{Assets.short_id(asset)}"
       }
     }

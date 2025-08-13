@@ -15,7 +15,6 @@ defmodule Rujira.Deployments do
   alias Rujira.Revenue
   alias Rujira.Staking
   alias Rujira.Vestings
-  alias Rujira.Ventures
 
   use GenServer
   use Memoize
