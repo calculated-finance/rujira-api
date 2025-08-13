@@ -1,4 +1,4 @@
-code: 35
+code: 579
 
 targets:
   - id: eth-usdt
@@ -10,4 +10,4 @@ targets:
     admin: ${accounts:admin}
     creator: ${accounts:creator}
     config:
-      denom: eth-usdt-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
+      denom: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48

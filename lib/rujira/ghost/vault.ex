@@ -160,7 +160,7 @@ defmodule Rujira.Ghost.Vault do
       receipt: %{
         description:
           "Transferable shares issued when depositing funds into the Rujira #{Assets.short_id(asset)} lending pool",
-        display: "x/ghost-vault/#{denom}/rcpt",
+        display: "x/ghost-vault/#{denom}",
         name: "#{Assets.short_id(asset)} Lend Shares",
         symbol: "LEND-#{Assets.short_id(asset)}"
       }
