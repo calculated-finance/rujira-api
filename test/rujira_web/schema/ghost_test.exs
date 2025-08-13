@@ -1,11 +1,8 @@
 defmodule RujiraWeb.Schema.GhostTest do
   use RujiraWeb.ConnCase
-
   import RujiraWeb.Fragments.GhostFragments
 
-  import Mox
-
-  setup :verify_on_exit!
+  import Tesla.Mock
 
   @strategies_query """
   query {
@@ -32,6 +29,15 @@ defmodule RujiraWeb.Schema.GhostTest do
   """
 
   test "list, and lookup vault", %{conn: conn} do
+    mock(fn
+      %{
+        method: :get,
+        url:
+          "https://indexer-mainnet.levana.finance/v2/markets-earn-data?network=rujira-mainnet&factory=thor1gclfrvam6a33yhpw3ut3arajyqs06esdvt9pfvluzwsslap9p6uqt4rzxs"
+      } ->
+        %Tesla.Env{status: 200, body: %{}}
+    end)
+
     # 1) fetch all vaults
     conn = post(conn, "/api", %{"query" => @strategies_query})
     %{"data" => %{"strategies" => %{"edges" => edges}}} = res = json_response(conn, 200)

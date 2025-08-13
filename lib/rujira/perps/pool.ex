@@ -106,29 +106,22 @@ defmodule Rujira.Perps.Pool do
 
   defp get_roi_data(address) do
     case Tesla.get(client(), @roi_endpoint) do
-      {:ok, res} ->
-        data = Map.get(res.body, address, %{})
-        roi7 = Map.get(data, "roi7", %{})
-        sharpe = Map.get(data, "sharpe", %{})
-        annualized_roi30_rate = Map.get(sharpe, "annualized_roi30_rate", %{})
-
-        {lp, ""} =
-          Map.get(roi7, "lp", "0")
-          |> Decimal.parse()
-
-        {xlp, ""} =
-          Map.get(roi7, "xlp", "0")
-          |> Decimal.parse()
-
-        {sharpe_ratio, ""} =
-          Map.get(annualized_roi30_rate, "xlp", "0")
-          |> Decimal.parse()
-
+      {:ok,
+       %{
+         body: %{
+           ^address => %{
+             "roi7" => %{"lp" => lp, "xlp" => xlp},
+             "sharpe" => %{"annualized_roi30_rate" => %{"xlp" => sharpe_ratio}}
+           }
+         }
+       }} ->
+        {lp, ""} = Decimal.parse(lp)
+        {xlp, ""} = Decimal.parse(xlp)
+        {sharpe_ratio, ""} = Decimal.parse(sharpe_ratio)
         sharpe_ratio = Decimal.div(sharpe_ratio, 3) |> Decimal.mult(100)
-
         {lp, xlp, sharpe_ratio}
 
-      {:error, _} ->
+      _ ->
         {Decimal.new(0), Decimal.new(0), Decimal.new(0)}
     end
   end
