@@ -152,7 +152,7 @@ defmodule RujiraWeb.Resolvers.Strategy do
   def filter_type(%Perps.Pool{}, list),
     do: Enum.member?(list, "PerpsPool")
 
-  def filter_type(%Rujira.Ghost.Vault{}, list),
+  def filter_type(%Ghost.Vault{}, list),
     do: Enum.member?(list, "GhostVault")
 
   # ---- Sort By ----
