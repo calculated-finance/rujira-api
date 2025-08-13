@@ -131,7 +131,8 @@ defmodule Rujira.Ghost.Vault do
          id: address,
          address: address,
          denom: denom,
-         interest: interest
+         interest: interest,
+         status: :not_loaded
        }}
     end
   end
