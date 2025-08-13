@@ -2,8 +2,9 @@ defmodule Rujira.Ghost.Vault do
   @moduledoc """
   Defines the structure of a Ghost lending vault
   """
-  alias Rujira.Deployments.Target
+
   alias Rujira.Assets
+  alias Rujira.Deployments.Target
 
   defmodule Interest do
     @moduledoc """
