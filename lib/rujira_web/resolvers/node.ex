@@ -84,8 +84,6 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Ghost.Vault{}, _), do: :ghost_vault
 
   # Staking
-  def type(%Prices.Price{}, _), do: :price
-  def type(%Leagues.Account{}, _), do: :league_account
   def type(%Staking.Account{}, _), do: :staking_account
   def type(%Staking.Pool{}, _), do: :staking_pool
   def type(%Staking.Pool.Status{}, _), do: :staking_status
