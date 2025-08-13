@@ -1,11 +1,6 @@
 defmodule RujiraWeb.Schema.GhostTest do
   use RujiraWeb.ConnCase
-
   import RujiraWeb.Fragments.GhostFragments
-
-  import Mox
-
-  setup :verify_on_exit!
 
   @strategies_query """
   query {

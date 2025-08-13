@@ -218,8 +218,6 @@ defmodule RujiraWeb.Resolvers.Strategy do
     end
   end
 
-  def sort_by(%Staking.Pool{deployment_status: :preview}, :tvl), do: -1
-
   def sort_by(%Staking.Pool{status: :not_loaded} = pool, by) do
     with {:ok, pool} <- Staking.load_pool(pool) do
       sort_by(pool, by)
@@ -229,4 +227,25 @@ defmodule RujiraWeb.Resolvers.Strategy do
   # PerpsPool
   def sort_by(%Perps.Pool{base_denom: base_denom}, :name), do: base_denom
   def sort_by(%Perps.Pool{liquidity: liquidity}, :tvl), do: liquidity.total
+
+  # GhostVault
+  def sort_by(%Ghost.Vault{denom: denom}, :name) do
+    with {:ok, asset} <- Assets.from_denom(denom) do
+      asset.symbol
+    end
+  end
+
+  def sort_by(%Ghost.Vault{denom: denom, status: %{size: size}}, :tvl) do
+    with {:ok, %{symbol: symbol}} <- Assets.from_denom(denom) do
+      Prices.value_usd(symbol, size)
+    end
+  end
+
+  def sort_by(%Ghost.Vault{status: :not_loaded} = vault, :tvl) do
+    with {:ok, vault} <- Ghost.load_vault(vault) do
+      sort_by(vault, :tvl)
+    end
+  end
+
+  def sort_by(%{deployment_status: :preview}, :tvl), do: -1
 end
