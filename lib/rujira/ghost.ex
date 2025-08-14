@@ -15,15 +15,9 @@ defmodule Rujira.Ghost do
   end
 
   def list_vaults do
-    Deployments.list_targets(Vault)
-    |> Enum.map(&Vault.from_target(&1))
-    |> Enum.reduce({:ok, []}, fn
-      {:ok, x}, {:ok, xs} ->
-        {:ok, [x | xs]}
-
-      _, err ->
-        err
-    end)
+    Vault
+    |> Deployments.list_targets()
+    |> Rujira.Enum.reduce_async_while_ok(&Vault.from_target/1)
   end
 
   def load_vault(%Vault{address: address} = vault) do
