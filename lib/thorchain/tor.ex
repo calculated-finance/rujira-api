@@ -59,8 +59,8 @@ defmodule Thorchain.Tor do
     new =
       from(c in Candle,
         where: c.resolution == ^resolution,
-        distinct: c.asset,
-        order_by: [desc: c.bin]
+        distinct: [c.asset],
+        order_by: [asc: c.asset, desc: c.bin]
       )
       |> Repo.all()
       |> Enum.map(
