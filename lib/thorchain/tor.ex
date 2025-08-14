@@ -56,12 +56,17 @@ defmodule Thorchain.Tor do
   def insert_candles(time, resolution) do
     now = DateTime.utc_now()
 
-    new =
+    bin =
       from(c in Candle,
-        where: c.resolution == ^resolution,
-        distinct: c.asset,
-        order_by: [desc: c.bin]
+        where: c.resolution == ^resolution and c.asset == "BTC.BTC",
+        order_by: [desc: c.bin],
+        limit: 1,
+        select: c.bin
       )
+      |> Repo.one()
+
+    new =
+      from(c in Candle, where: c.bin == ^bin)
       |> Repo.all()
       |> Enum.map(
         &%{
