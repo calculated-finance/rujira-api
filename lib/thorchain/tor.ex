@@ -67,7 +67,7 @@ defmodule Thorchain.Tor do
       |> Repo.one()
 
     new =
-      from(c in Candle, where: c.bin == ^bin)
+      from(c in Candle, where: c.bin == ^bin and c.resolution == ^resolution)
       |> Repo.all()
       |> Enum.map(
         &%{
