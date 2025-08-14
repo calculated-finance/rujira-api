@@ -12,25 +12,34 @@ defmodule RujiraWeb.Resolvers.Strategy do
   alias Rujira.Staking
   alias Thorchain.Types.QueryPoolResponse
 
+  @loaders %{
+    "BowPoolXyk" => {&Bow.list_pools/0, &__MODULE__.bow_query/2},
+    "GhostVault" => {&Ghost.list_vaults/0, &__MODULE__.ghost_query/2},
+    "IndexVault" => {&Index.load_vaults/0, &__MODULE__.index_query/2},
+    "PerpsPool" => {&Perps.list_pools/0, &__MODULE__.perps_query/2},
+    "StakingPool" => {&Staking.list_pools/0, &__MODULE__.staking_query/2},
+    "ThorchainPool" => {&Thorchain.pools/0, &__MODULE__.thorchain_query/2}
+  }
+
   def list(_, args, _) do
-    typenames = Map.get(args, :typenames)
+    typenames = Map.get(args, :typenames, Map.keys(@loaders))
     query = Map.get(args, :query)
     sort_by = Map.get(args, :sort_by)
     sort_dir = Map.get(args, :sort_dir)
 
-    with {:ok, bow} <- Bow.list_pools(),
-         {:ok, thorchain} <- Thorchain.pools(),
-         {:ok, index} <- Index.load_vaults(),
-         {:ok, staking} <- Staking.list_pools(),
-         {:ok, perps} <- Perps.list_pools(),
-         {:ok, ghost} <- Ghost.list_vaults() do
-      Enum.filter(bow, &bow_query(query, &1))
-      |> Enum.concat(Enum.filter(thorchain, &thorchain_query(query, &1)))
-      |> Enum.concat(Enum.filter(index, &index_query(query, &1)))
-      |> Enum.concat(Enum.filter(staking, &staking_query(query, &1)))
-      |> Enum.concat(Enum.filter(perps, &perps_query(query, &1)))
-      |> Enum.concat(Enum.filter(ghost, &ghost_query(query, &1)))
-      |> Enum.filter(&filter_type(&1, typenames))
+    with {:ok, list} <-
+           Rujira.Enum.reduce_async_while_ok(
+             typenames,
+             fn name ->
+               with {load, filter} <- Map.get(@loaders, name),
+                    {:ok, list} <- load.() do
+                 {:ok, Enum.filter(list, &filter.(query, &1))}
+               end
+             end,
+             timeout: 30_000
+           ) do
+      list
+      |> Enum.concat()
       |> sort(sort_by, sort_dir)
       |> Connection.from_list(args)
     end
@@ -80,7 +89,7 @@ defmodule RujiraWeb.Resolvers.Strategy do
     end
   end
 
-  defp bow_query(query, %{config: %{x: x, y: y}}) do
+  def bow_query(query, %{config: %{x: x, y: y}}) do
     with {:ok, x} <- Assets.from_denom(x),
          {:ok, y} <- Assets.from_denom(y) do
       Assets.query_match(query, x, y)
@@ -89,7 +98,7 @@ defmodule RujiraWeb.Resolvers.Strategy do
     end
   end
 
-  defp ghost_query(query, %{denom: denom}) do
+  def ghost_query(query, %{denom: denom}) do
     case Assets.from_denom(denom) do
       {:ok, asset} ->
         Assets.matches(query, asset)
@@ -99,9 +108,9 @@ defmodule RujiraWeb.Resolvers.Strategy do
     end
   end
 
-  defp thorchain_query(_, %{asset: %{symbol: "TCY"}}), do: false
+  def thorchain_query(_, %{asset: %{symbol: "TCY"}}), do: false
 
-  defp thorchain_query(query, %{asset: asset}) do
+  def thorchain_query(query, %{asset: asset}) do
     with {:ok, halted_pools} <- Thorchain.halted_pools() do
       if Enum.member?(halted_pools, asset.id) do
         false
@@ -111,7 +120,7 @@ defmodule RujiraWeb.Resolvers.Strategy do
     end
   end
 
-  defp index_query(query, %{status: %{allocations: allocations}}) do
+  def index_query(query, %{status: %{allocations: allocations}}) do
     Enum.any?(allocations, fn %{denom: denom} ->
       case Assets.from_denom(denom) do
         {:ok, asset} -> Assets.query_match(query, asset, asset)
@@ -120,7 +129,7 @@ defmodule RujiraWeb.Resolvers.Strategy do
     end)
   end
 
-  defp staking_query(query, %{bond_denom: denom}) do
+  def staking_query(query, %{bond_denom: denom}) do
     case Assets.from_denom(denom) do
       {:ok, asset} ->
         Assets.query_match(query, asset, asset)
@@ -130,30 +139,12 @@ defmodule RujiraWeb.Resolvers.Strategy do
     end
   end
 
-  defp perps_query(query, %{quote_denom: quote_denom}) do
+  def perps_query(query, %{quote_denom: quote_denom}) do
     case Assets.from_denom(quote_denom) do
       {:ok, asset} -> Assets.query_match(query, asset, asset)
       _ -> false
     end
   end
-
-  def filter_type(_, nil), do: true
-  def filter_type(%Bow.Xyk{}, list), do: Enum.member?(list, "BowPoolXyk")
-
-  def filter_type(%QueryPoolResponse{}, list),
-    do: Enum.member?(list, "ThorchainPool")
-
-  def filter_type(%Index.Vault{}, list),
-    do: Enum.member?(list, "IndexVault")
-
-  def filter_type(%Staking.Pool{}, list),
-    do: Enum.member?(list, "StakingPool")
-
-  def filter_type(%Perps.Pool{}, list),
-    do: Enum.member?(list, "PerpsPool")
-
-  def filter_type(%Ghost.Vault{}, list),
-    do: Enum.member?(list, "GhostVault")
 
   # ---- Sort By ----
 
