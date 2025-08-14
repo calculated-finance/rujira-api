@@ -378,12 +378,18 @@ defmodule Rujira.Fin do
   def insert_candles(time, resolution) do
     now = DateTime.utc_now()
 
-    new =
+    # TODO: Step back from the `time` value to calculate the previous bin
+    bin =
       from(c in Candle,
         where: c.resolution == ^resolution,
-        distinct: c.contract,
-        order_by: [desc: c.bin]
+        order_by: [desc: c.bin],
+        limit: 1,
+        select: c.bin
       )
+      |> Repo.one()
+
+    new =
+      from(c in Candle, where: c.bin == ^bin and c.resolution == ^resolution)
       |> Repo.all()
       |> Enum.map(
         &%{

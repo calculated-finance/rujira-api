@@ -59,7 +59,7 @@ defmodule Thorchain.Tor do
     # TODO: Step back from the `time` value to calculate the previous bin
     bin =
       from(c in Candle,
-        where: c.resolution == ^resolution and c.asset == "BTC.BTC",
+        where: c.resolution == ^resolution,
         order_by: [desc: c.bin],
         limit: 1,
         select: c.bin
