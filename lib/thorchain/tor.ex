@@ -56,6 +56,7 @@ defmodule Thorchain.Tor do
   def insert_candles(time, resolution) do
     now = DateTime.utc_now()
 
+    # TODO: Step back from the `time` value to calculate the previous bin
     bin =
       from(c in Candle,
         where: c.resolution == ^resolution and c.asset == "BTC.BTC",
