@@ -56,18 +56,10 @@ defmodule Thorchain.Tor do
   def insert_candles(time, resolution) do
     now = DateTime.utc_now()
 
-    # TODO: Step back from the `time` value to calculate the previous bin
-    bin =
-      from(c in Candle,
-        where: c.resolution == ^resolution,
-        order_by: [desc: c.bin],
-        limit: 1,
-        select: c.bin
-      )
-      |> Repo.one()
+    previous = Rujira.Resolution.remove(time, resolution)
 
     new =
-      from(c in Candle, where: c.bin == ^bin and c.resolution == ^resolution)
+      from(c in Candle, where: c.bin == ^previous and c.resolution == ^resolution)
       |> Repo.all()
       |> Enum.map(
         &%{

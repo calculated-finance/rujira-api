@@ -18,6 +18,12 @@ defmodule Rujira.Resolution do
     end
   end
 
+  def remove(%DateTime{} = datetime, resolution) do
+    datetime
+    |> DateTime.add(-1)
+    |> truncate(resolution)
+  end
+
   def truncate(%DateTime{} = datetime, "1") do
     d = DateTime.truncate(datetime, :second)
     %{d | second: 0}
