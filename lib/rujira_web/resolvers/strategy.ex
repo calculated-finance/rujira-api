@@ -28,8 +28,9 @@ defmodule RujiraWeb.Resolvers.Strategy do
     sort_dir = Map.get(args, :sort_dir)
 
     with {:ok, list} <-
-           Rujira.Enum.reduce_async_while_ok(
-             typenames,
+           typenames
+           |> Enum.filter(&Enum.member?(Map.keys(@loaders), &1))
+           |> Rujira.Enum.reduce_async_while_ok(
              fn name ->
                with {load, filter} <- Map.get(@loaders, name),
                     {:ok, list} <- load.() do
