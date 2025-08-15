@@ -1,6 +1,7 @@
 defmodule RujiraWeb.Fragments.PerpsFragments do
   @moduledoc false
 
+  alias RujiraWeb.Fragments.AprFragments
   alias RujiraWeb.Fragments.AssetFragments
   alias RujiraWeb.Fragments.BalanceFragments
   alias RujiraWeb.Fragments.DeveloperFragments
@@ -8,6 +9,7 @@ defmodule RujiraWeb.Fragments.PerpsFragments do
   @asset_fragment AssetFragments.get_asset_fragment()
   @balance_fragment BalanceFragments.get_balance_fragment()
   @contract_info_fragment DeveloperFragments.get_contract_info_fragment()
+  @apr_fragment AprFragments.get_apr_fragment()
 
   @liquidity_cooldown_fragment """
   fragment LiquidityCooldownFragment on PerpsLiquidityCooldown {
@@ -19,10 +21,15 @@ defmodule RujiraWeb.Fragments.PerpsFragments do
   @perps_stats_fragment """
   fragment PerpsStatsFragment on PerpsStats {
     sharpeRatio
-    lpApr
-    xlpApr
+    lpApr {
+      ...AprFragment
+    }
+    xlpApr {
+      ...AprFragment
+    }
     risk
   }
+  #{@apr_fragment}
   """
 
   @perps_liquidity_fragment """

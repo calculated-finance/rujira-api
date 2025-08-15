@@ -140,6 +140,13 @@ defmodule Thorchain do
       Prices.value_usd(asset.symbol, provider.asset_redeem_value) +
         Prices.value_usd("RUNE", provider.rune_redeem_value)
     )
+    |> Map.update(:asset_redeem_value, "0", &String.to_integer/1)
+    |> Map.update(:rune_redeem_value, "0", &String.to_integer/1)
+    |> Map.update(:asset_deposit_value, "0", &String.to_integer/1)
+    |> Map.update(:rune_deposit_value, "0", &String.to_integer/1)
+    |> Map.update(:luvi_deposit_value, "0", &String.to_integer/1)
+    |> Map.update(:luvi_redeem_value, "0", &String.to_integer/1)
+    |> Map.update(:luvi_growth_pct, "0", &String.to_float/1)
   end
 
   def cast_pool(pool) do
@@ -147,11 +154,28 @@ defmodule Thorchain do
     |> Map.put(:id, pool.asset)
     |> Map.put(:asset, Assets.from_string(pool.asset))
     |> Map.put(:lp_units, Map.get(pool, :LP_units))
-    |> Map.update(:derived_depth_bps, "0", &String.to_integer/1)
-    |> Map.update(:savers_fill_bps, "0", &String.to_integer/1)
+    |> Map.update(:lp_units, "0", &String.to_integer/1)
+    |> Map.update(:pending_inbound_asset, "0", &String.to_integer/1)
+    |> Map.update(:pending_inbound_rune, "0", &String.to_integer/1)
     |> Map.update(:balance_asset, "0", &String.to_integer/1)
     |> Map.update(:balance_rune, "0", &String.to_integer/1)
-    |> Map.update(:asset_tor_price, nil, &Decimal.div(Decimal.new(&1), Decimal.new(100_000_000)))
+    |> Map.update(
+      :asset_tor_price,
+      nil,
+      &Decimal.div(Decimal.new(&1), Decimal.new(100_000_000))
+    )
+    |> Map.update(:pool_units, "0", &String.to_integer/1)
+    |> Map.update(:derived_depth_bps, "0", &String.to_integer/1)
+    |> Map.update(:savers_fill_bps, "0", &String.to_integer/1)
+    |> Map.update(:savers_depth, "0", &String.to_integer/1)
+    |> Map.update(:synth_supply_remaining, "0", &String.to_integer/1)
+    |> Map.update(:synth_supply, "0", &String.to_integer/1)
+    |> Map.update(:synth_units, "0", &String.to_integer/1)
+    |> Map.update(:savers_units, "0", &String.to_integer/1)
+    |> Map.update(:savers_capacity_remaining, "0", &String.to_integer/1)
+    |> Map.update(:loan_collateral, "0", &String.to_integer/1)
+    |> Map.update(:loan_collateral_remaining, "0", &String.to_integer/1)
+    |> Map.update(:loan_cr, "0", &String.to_integer/1)
   end
 
   def get_dest_address(memo) do

@@ -184,9 +184,9 @@ defmodule RujiraWeb.Schema.StakingTypes do
   @desc "A summary represents apr and revenue earned calculated on a defined resolution"
   node object(:staking_summary) do
     @desc "Annualized APR based on 30 day revenue over current value staked"
-    field :apr, non_null(:bigint)
+    field :apr, non_null(:apr)
     @desc "Annualized APY based on 30 day revenue over current value staked"
-    field :apy, non_null(:bigint)
+    field :apy, non_null(:apr)
     @desc "The total amount of [revenue_denom] sent to contract in the last 7 days"
     field :revenue7, non_null(:bigint)
   end

@@ -1,10 +1,12 @@
 defmodule RujiraWeb.Fragments.IndexFragments do
   @moduledoc false
+  alias RujiraWeb.Fragments.AprFragments
   alias RujiraWeb.Fragments.AssetFragments
   alias RujiraWeb.Fragments.DeveloperFragments
 
   @asset_fragment AssetFragments.get_asset_fragment()
   @contract_info_fragment DeveloperFragments.get_contract_info_fragment()
+  @apr_fragment AprFragments.get_apr_fragment()
 
   @index_config_fragment """
   fragment IndexConfigFragment on IndexConfig {
@@ -41,9 +43,12 @@ defmodule RujiraWeb.Fragments.IndexFragments do
     totalValueChange
     navChange
     navQuote
-    apr
+    apr {
+      ...AprFragment
+    }
   }
   #{@index_allocation_fragment}
+  #{@apr_fragment}
   """
 
   @index_fees_fragment """

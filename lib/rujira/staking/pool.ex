@@ -23,8 +23,8 @@ defmodule Rujira.Staking.Pool do
 
     @type t :: %__MODULE__{
             id: String.t(),
-            apr: Decimal.t(),
-            apy: Decimal.t(),
+            apr: map(),
+            apy: map(),
             revenue7: integer()
           }
   end
@@ -107,19 +107,21 @@ defmodule Rujira.Staking.Pool do
   def from_config(address, %{
         "bond_denom" => bond_denom,
         "revenue_denom" => revenue_denom,
-        "revenue_converter" => revenue_converter
+        "revenue_converter" => [contract, msg, min]
       }) do
-    {:ok,
-     %__MODULE__{
-       id: address,
-       address: address,
-       bond_denom: bond_denom,
-       receipt_denom: "x/staking-#{bond_denom}",
-       revenue_denom: revenue_denom,
-       revenue_converter: revenue_converter,
-       status: :not_loaded,
-       deployment_status: :live
-     }}
+    with {min, ""} <- Integer.parse(min) do
+      {:ok,
+       %__MODULE__{
+         id: address,
+         address: address,
+         bond_denom: bond_denom,
+         receipt_denom: "x/staking-#{bond_denom}",
+         revenue_denom: revenue_denom,
+         revenue_converter: [contract, msg, min],
+         status: :not_loaded,
+         deployment_status: :live
+       }}
+    end
   end
 
   def summary(%__MODULE__{} = pool) do
@@ -128,8 +130,8 @@ defmodule Rujira.Staking.Pool do
         {:ok,
          %__MODULE__.Summary{
            id: pool.address,
-           apr: apr,
-           apy: apy,
+           apr: %{status: :available, value: apr},
+           apy: %{status: :available, value: apy},
            revenue7: revenue
          }}
 
@@ -137,8 +139,8 @@ defmodule Rujira.Staking.Pool do
         {:ok,
          %__MODULE__.Summary{
            id: pool.address,
-           apr: Decimal.new(0),
-           apy: Decimal.new(1),
+           apr: %{status: :soon},
+           apy: %{status: :soon},
            revenue7: Decimal.new(0)
          }}
 

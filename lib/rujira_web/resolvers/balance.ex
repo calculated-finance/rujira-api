@@ -20,4 +20,12 @@ defmodule RujiraWeb.Resolvers.Balance do
       |> Rujira.Balances.utxos(address)
     end)
   end
+
+  def parse(amount) when is_binary(amount) do
+    with {amount, ""} <- Integer.parse(amount) do
+      {:ok, amount}
+    end
+  end
+
+  def parse(amount) when is_integer(amount), do: {:ok, amount}
 end

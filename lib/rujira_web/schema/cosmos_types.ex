@@ -31,7 +31,14 @@ defmodule RujiraWeb.Schema.CosmosTypes do
   object :cosmos_delegation_entry do
     field :delegator_address, non_null(:string)
     field :validator_address, non_null(:string)
-    field :shares, non_null(:bigint)
+
+    field :shares, non_null(:bigint) do
+      resolve(fn %{shares: shares}, _, _ ->
+        with {shares, ""} <- Integer.parse(shares) do
+          {:ok, shares}
+        end
+      end)
+    end
   end
 
   object :cosmos_unbonding_account do
@@ -43,7 +50,15 @@ defmodule RujiraWeb.Schema.CosmosTypes do
   object :cosmos_unbonding_entry do
     field :creation_height, non_null(:bigint)
     field :completion_time, non_null(:timestamp)
-    field :initial_balance, non_null(:bigint)
+
+    field :initial_balance, non_null(:bigint) do
+      resolve(fn %{initial_balance: initial_balance}, _, _ ->
+        with {initial_balance, ""} <- Integer.parse(initial_balance) do
+          {:ok, initial_balance}
+        end
+      end)
+    end
+
     field :balance, non_null(:balance)
   end
 
@@ -54,6 +69,13 @@ defmodule RujiraWeb.Schema.CosmosTypes do
 
   object :cosmos_vesting_period do
     field :end_time, non_null(:timestamp)
-    field :balances, list_of(non_null(:balance))
+
+    field :balances, list_of(non_null(:balance)) do
+      resolve(fn %{balances: balances}, _, _ ->
+        with {balances, ""} <- Integer.parse(balances) do
+          {:ok, balances}
+        end
+      end)
+    end
   end
 end

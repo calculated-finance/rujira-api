@@ -42,7 +42,8 @@ defmodule Rujira.Chains.Cosmos.Vesting do
   end
 
   def serialize_vesting_period(start_time, [period | rest], collection) do
-    with end_time <- DateTime.add(start_time, period.length, :second) do
+    with end_time <- DateTime.add(start_time, period.length, :second),
+         {amount, ""} <- Integer.parse(period.amount) do
       serialize_vesting_period(
         end_time,
         rest,
@@ -50,7 +51,7 @@ defmodule Rujira.Chains.Cosmos.Vesting do
           [
             %{
               end_time: end_time,
-              balances: period.amount
+              balances: amount
             }
           ]
       )

@@ -16,7 +16,12 @@ defmodule RujiraWeb.Schema.BalanceTypes do
   @desc "The balance of a token or coin on a layer 1 chain"
   object :layer_1_balance do
     field :asset, non_null(:asset)
-    field :amount, non_null(:bigint)
+
+    field :amount, non_null(:bigint) do
+      resolve(fn %{amount: amount}, _, _ ->
+        Balance.parse(amount)
+      end)
+    end
 
     field :utxos, list_of(non_null(:utxo)) do
       resolve(&Balance.utxos/3)
@@ -36,7 +41,13 @@ defmodule RujiraWeb.Schema.BalanceTypes do
   @desc "Relacement for layer_1_balance"
   object :balance do
     field :asset, non_null(:asset)
-    field :amount, non_null(:bigint)
+
+    field :amount, non_null(:bigint) do
+      resolve(fn %{amount: amount}, _, _ ->
+        Balance.parse(amount)
+      end)
+    end
+
     field :utxos, list_of(non_null(:utxo))
 
     field :tcy, :thorchain_tcy do

@@ -1,5 +1,6 @@
 defmodule RujiraWeb.Fragments.StakingFragments do
   @moduledoc false
+  alias RujiraWeb.Fragments.AprFragments
   alias RujiraWeb.Fragments.AssetFragments
   alias RujiraWeb.Fragments.BalanceFragments
   alias RujiraWeb.Fragments.DeveloperFragments
@@ -7,6 +8,7 @@ defmodule RujiraWeb.Fragments.StakingFragments do
   @asset_fragment AssetFragments.get_asset_fragment()
   @contract_info_fragment DeveloperFragments.get_contract_info_fragment()
   @balance_fragment BalanceFragments.get_balance_fragment()
+  @apr_fragment AprFragments.get_apr_fragment()
 
   @staking_status_fragment """
   fragment StakingStatusFragment on StakingStatus {
@@ -53,10 +55,15 @@ defmodule RujiraWeb.Fragments.StakingFragments do
 
   @staking_summary_fragment """
   fragment StakingSummaryFragment on StakingSummary {
-    apr
-    apy
+    apr {
+      ...AprFragment
+    }
+    apy {
+      ...AprFragment
+    }
     revenue7
   }
+  #{@apr_fragment}
   """
 
   @staking_pool_fragment """
