@@ -49,7 +49,14 @@ defmodule RujiraWeb.Resolvers.Thorchain do
          asset: Assets.from_string(to_asset),
          amount: res.expected_amount_out
        })
-       |> Map.update!(:fees, &%{&1 | asset: Assets.from_string(&1.asset)})}
+       |> Map.update!(:fees, &%{&1 | asset: Assets.from_string(&1.asset)})
+       |> Map.update!(:inbound_confirmation_blocks, &String.to_integer/1)
+       |> Map.update!(:inbound_confirmation_seconds, &String.to_integer/1)
+       |> Map.update!(:outbound_delay_blocks, &String.to_integer/1)
+       |> Map.update!(:outbound_delay_seconds, &String.to_integer/1)
+       |> Map.update!(:streaming_swap_blocks, &String.to_integer/1)
+       |> Map.update!(:streaming_swap_seconds, &String.to_integer/1)
+       |> Map.update!(:total_swap_seconds, &String.to_integer/1)}
     end
   end
 
