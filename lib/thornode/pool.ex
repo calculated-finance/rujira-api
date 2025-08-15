@@ -18,14 +18,13 @@ defmodule Thornode.Pool do
   def init(opts) do
     config = opts
     grpcs = Keyword.get(config, :grpcs, [])
-    size = Keyword.get(config, :size, 14)
 
     poolboy_config = [
       name: {:local, @pool_name},
       worker_module: Thornode.Worker,
-      size: size,
-      max_overflow: 7,
-      strategy: :fifo
+      size: System.schedulers_online(),
+      max_overflow: 7
+      # strategy: :fifo
     ]
 
     children = [:poolboy.child_spec(@pool_name, poolboy_config, grpcs)]
