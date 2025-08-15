@@ -67,7 +67,8 @@ defmodule Rujira.MixProject do
       {:yaml_elixir, "~> 2.11.0"},
       {:libcluster, "~> 3.3.3"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:basefiftyeight, "~> 0.1.0"}
+      {:basefiftyeight, "~> 0.1.0"},
+      {:horde, "~> 0.9.1"}
     ]
   end
 

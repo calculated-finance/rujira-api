@@ -31,12 +31,18 @@ defmodule Thornode.Observer do
       @behaviour Thornode.Observer
 
       def start_link(init_arg \\ []) do
-        GenServer.start_link(__MODULE__, init_arg)
+        unique_key = "observer:#{__MODULE__}:#{:erlang.phash2(init_arg)}"
+
+        GenServer.start_link(__MODULE__, init_arg,
+          name: {:via, Horde.Registry, {Rujira.HordeRegistry, unique_key}}
+        )
       end
 
       @impl true
       def init(state) do
-        Phoenix.PubSub.subscribe(Rujira.PubSub, "tendermint/event/NewBlock")
+        unique_key = "observer:#{__MODULE__}:#{:erlang.phash2(state)}"
+        Horde.Registry.register(Rujira.HordeRegistry, unique_key, __MODULE__)
+        Logger.info("Observer #{__MODULE__} registered with Horde as #{unique_key}")
         {:ok, state}
       end
 
