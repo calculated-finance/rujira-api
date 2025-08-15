@@ -16,16 +16,14 @@ defmodule Thornode.Pool do
 
   @impl true
   def init(opts) do
-    config = opts
-    grpcs = Keyword.get(config, :grpcs, [])
-    size = Keyword.get(config, :size, 2)
+    grpcs = Keyword.get(opts, :grpcs, [])
 
     poolboy_config = [
       name: {:local, @pool_name},
       worker_module: Thornode.Worker,
-      size: size,
-      max_overflow: 2,
-      strategy: :fifo
+      size: System.schedulers_online() * 2,
+      max_overflow: System.schedulers_online()
+      # strategy: :fifo
     ]
 
     children = [:poolboy.child_spec(@pool_name, poolboy_config, grpcs)]
@@ -34,7 +32,11 @@ defmodule Thornode.Pool do
 
   def query(query_fn, req) do
     :poolboy.transaction(@pool_name, fn worker_pid ->
-      GenServer.call(worker_pid, {:request, query_fn, req}, @timeout)
+      try do
+        GenServer.call(worker_pid, {:request, query_fn, req}, @timeout)
+      after
+        :ok
+      end
     end)
   end
 end
