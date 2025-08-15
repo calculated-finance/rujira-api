@@ -35,7 +35,7 @@ defmodule Thornode.Appsignal do
       [[:rujira, :repo, :query]],
       fn _event, meas, meta, _ ->
         Logger.info(fn ->
-          "Ecto queue=#{meas[:queue_time]} decode=#{meas[:decode_time]} query=#{meas[:query_time]} idle=#{meas[:idle_time]} query=#{String.slice(meta.query, 0, 100)}..."
+          "Ecto queue=#{System.convert_time_unit(meas[:queue_time], :native, :millisecond)} decode=#{System.convert_time_unit(meas[:decode_time], :native, :millisecond)} query=#{System.convert_time_unit(meas[:query_time], :native, :millisecond)} idle=#{System.convert_time_unit(meas[:idle_time], :native, :millisecond)} query=#{String.slice(meta.query, 0, 100)}..."
         end)
       end,
       nil
