@@ -22,8 +22,8 @@ defmodule Thornode.Pool do
     poolboy_config = [
       name: {:local, @pool_name},
       worker_module: Thornode.Worker,
-      size: System.schedulers_online(),
-      max_overflow: 7
+      size: System.schedulers_online() * 2,
+      max_overflow: System.schedulers_online()
       # strategy: :fifo
     ]
 
