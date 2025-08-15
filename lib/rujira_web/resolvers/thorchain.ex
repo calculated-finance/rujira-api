@@ -49,7 +49,16 @@ defmodule RujiraWeb.Resolvers.Thorchain do
          asset: Assets.from_string(to_asset),
          amount: res.expected_amount_out
        })
-       |> Map.update!(:fees, &%{&1 | asset: Assets.from_string(&1.asset)})
+       |> Map.update!(
+         :fees,
+         &%{
+           &1
+           | asset: Assets.from_string(&1.asset),
+             outbound: String.to_integer(&1.outbound),
+             liquidity: String.to_integer(&1.liquidity),
+             total: String.to_integer(&1.total)
+         }
+       )
        |> Map.update(:dust_threshold, nil, &String.to_integer/1)
        |> Map.update!(:recommended_min_amount_in, &String.to_integer/1)
        |> Map.update!(:recommended_gas_rate, &String.to_integer/1)
