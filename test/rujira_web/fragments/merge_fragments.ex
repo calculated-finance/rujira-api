@@ -1,5 +1,7 @@
 defmodule RujiraWeb.Fragments.MergeFragments do
   @moduledoc false
+
+  alias RujiraWeb.Fragments.AprFragments
   alias RujiraWeb.Fragments.AssetFragments
   alias RujiraWeb.Fragments.BalanceFragments
   alias RujiraWeb.Fragments.DeveloperFragments
@@ -7,6 +9,7 @@ defmodule RujiraWeb.Fragments.MergeFragments do
   @asset_fragment AssetFragments.get_asset_fragment()
   @contract_info_fragment DeveloperFragments.get_contract_info_fragment()
   @balance_fragment BalanceFragments.get_balance_fragment()
+  @apr_fragment AprFragments.get_apr_fragment()
 
   @merge_status_fragment """
   fragment MergeStatusFragment on MergeStatus {
@@ -16,8 +19,11 @@ defmodule RujiraWeb.Fragments.MergeFragments do
     currentRate
     shareValue
     shareValueChange
-    apr
+    apr {
+      ...AprFragment
+    }
   }
+  #{@apr_fragment}
   """
 
   @merge_pool_fragment """

@@ -53,8 +53,8 @@ defmodule RujiraWeb.Schema.PerpsTypes do
 
   object :perps_stats do
     field :sharpe_ratio, non_null(:bigint)
-    field :lp_apr, non_null(:bigint)
-    field :xlp_apr, non_null(:bigint)
+    field :lp_apr, non_null(:apr)
+    field :xlp_apr, non_null(:apr)
     field :risk, non_null(:perps_risk_level)
   end
 

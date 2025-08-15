@@ -34,8 +34,6 @@ defmodule RujiraWeb.Schema.Scalars.BigInt do
   defp parse_bigint(%Absinthe.Blueprint.Input.Null{}), do: {:ok, nil}
 
   defp serialize_bigint(value) when is_integer(value), do: Integer.to_string(value)
-  defp serialize_bigint(""), do: nil
-  defp serialize_bigint(value) when is_binary(value), do: value
 
   defp serialize_bigint(%Decimal{} = value) do
     value

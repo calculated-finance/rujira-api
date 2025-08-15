@@ -108,7 +108,7 @@ defmodule RujiraWeb.Schema.IndexTypes do
     @desc "The NAV in quote asset"
     field :nav_quote, :bigint
     @desc "The APR over the last 30 days, when applicable otherwise N/A"
-    field :apr, :bigint
+    field :apr, non_null(:apr)
   end
 
   @desc "An index_allocation represents the allocation of the index vault"

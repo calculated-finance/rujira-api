@@ -25,7 +25,7 @@ defmodule RujiraWeb.RujiController do
       json(conn, Decimal.new(74_500_000) |> Decimal.add(vested))
     else
       _ ->
-        json(conn, Decimal.new(0))
+        json(conn, Decimal.new(74_500_000))
     end
   end
 

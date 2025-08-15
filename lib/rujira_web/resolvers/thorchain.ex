@@ -82,6 +82,10 @@ defmodule RujiraWeb.Resolvers.Thorchain do
     |> Map.update(:gas_rate_units, nil, &maybe_string/1)
     |> Map.update(:pub_key, nil, &maybe_string/1)
     |> Map.update(:router, nil, &maybe_string/1)
+    |> Map.update(:outbound_tx_size, "0", &String.to_integer/1)
+    |> Map.update(:outbound_fee, "0", &String.to_integer/1)
+    |> Map.update(:dust_threshold, "0", &String.to_integer/1)
+    |> Map.update(:gas_rate, "0", &String.to_integer/1)
     |> Map.put(:id, x.chain)
   end
 

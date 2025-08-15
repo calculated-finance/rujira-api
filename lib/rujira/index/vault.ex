@@ -91,7 +91,7 @@ defmodule Rujira.Index.Vault do
            total_shares: shares,
            nav: nav,
            allocations: allocations,
-           apr: "N/A"
+           apr: %{status: :not_applicable}
          }}
       else
         error -> error
@@ -120,7 +120,7 @@ defmodule Rujira.Index.Vault do
            nav_per_share: nav_per_share,
            redemption_rate: nav_per_share,
            allocations: allocations,
-           apr: "N/A"
+           apr: %{status: :not_applicable}
          }}
       else
         error -> error

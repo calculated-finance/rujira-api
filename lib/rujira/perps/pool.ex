@@ -70,8 +70,8 @@ defmodule Rujira.Perps.Pool do
       pool
       | stats: %__MODULE__.Stats{
           sharpe_ratio: sharpe_ratio,
-          lp_apr: lp,
-          xlp_apr: xlp,
+          lp_apr: %{status: :available, value: lp},
+          xlp_apr: %{status: :available, value: xlp},
           risk: risk
         }
     }

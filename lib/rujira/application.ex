@@ -16,6 +16,7 @@ defmodule Rujira.Application do
       RujiraWeb.Telemetry,
       Rujira.Repo,
       {Phoenix.PubSub, name: Rujira.PubSub},
+      {Horde.Registry, [name: Rujira.HordeRegistry, keys: :unique]},
       # Start a worker by calling: Rujira.Worker.start_link(arg)
       # {Rujira.Worker, arg},
       # Start to serve requests, typically the last entry

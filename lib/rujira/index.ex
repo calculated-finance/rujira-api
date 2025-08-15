@@ -324,7 +324,7 @@ defmodule Rujira.Index do
 
     case nav_30d_ago do
       nil ->
-        %Vault{vault | status: %{vault.status | apr: "Soon™"}}
+        %Vault{vault | status: %{vault.status | apr: %{status: :soon}}}
 
       _ ->
         # APR = ((NAV / OPEN) - 1) * (365 / 30)
@@ -336,7 +336,7 @@ defmodule Rujira.Index do
           |> Decimal.mult(Decimal.new(365))
           |> Decimal.div(7)
 
-        %Vault{vault | status: %{vault.status | apr: apr}}
+        %Vault{vault | status: %{vault.status | apr: %{status: :available, value: apr}}}
     end
   end
 

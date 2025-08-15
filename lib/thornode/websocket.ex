@@ -56,9 +56,7 @@ defmodule Thornode.Websocket do
       # Move previous :current session into :backfill with the new starting height
       backfill(height, state)
 
-      # Always broadcast the block first
-      # This ensures that the block is processed by any subscribers before the checkpoint is updated
-      Phoenix.PubSub.broadcast(pubsub(), t, block)
+      broadcast_to_observers(block)
 
       # Now start or update session
       update_session(height, state)
@@ -135,5 +133,13 @@ defmodule Thornode.Websocket do
 
         {:ok, state}
     end
+  end
+
+  defp broadcast_to_observers(block) do
+    Horde.Registry.select(Rujira.HordeRegistry, [{{:_, :"$1", :_}, [], [:"$1"]}])
+    |> Task.async_stream(fn pid ->
+      send(pid, block)
+    end)
+    |> Stream.run()
   end
 end

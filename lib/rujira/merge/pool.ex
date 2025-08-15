@@ -61,7 +61,13 @@ defmodule Rujira.Merge.Pool do
           |> Decimal.mult(Decimal.new(365 * 24 * 60 * 60))
           |> Decimal.div(Decimal.new(DateTime.diff(decay_ends_at, DateTime.utc_now(), :second)))
 
-        {:ok, %__MODULE__{merged: merged, shares: shares, size: size, apr: apr}}
+        {:ok,
+         %__MODULE__{
+           merged: merged,
+           shares: shares,
+           size: size,
+           apr: %{status: :available, value: apr}
+         }}
       else
         _ -> {:error, :parse_error}
       end
