@@ -29,17 +29,6 @@ defmodule Thornode.Appsignal do
           error
       end
     end
-
-    :telemetry.attach_many(
-      "ecto-queue-logger",
-      [[:rujira, :repo, :query]],
-      fn _event, meas, meta, _ ->
-        Logger.info(fn ->
-          "Ecto queue=#{meas[:queue_time]} decode=#{meas[:decode_time]} query=#{meas[:query_time]} idle=#{meas[:idle_time]} query=#{String.slice(meta.query, 0, 100)}..."
-        end)
-      end,
-      nil
-    )
   end
 
   def grpc_request_start(
