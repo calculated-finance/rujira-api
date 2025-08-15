@@ -64,7 +64,11 @@ defmodule RujiraWeb.Resolvers.Thorchain do
          x -> String.to_integer(x)
        end)
        |> Map.update!(:recommended_min_amount_in, &String.to_integer/1)
-       |> Map.update!(:recommended_gas_rate, &String.to_integer/1)
+       |> Map.update!(:recommended_gas_rate, fn
+         # TODO: Update schema to make this nullable
+         "" -> 0
+         x -> String.to_integer(x)
+       end)
        |> Map.update!(:expected_amount_out, &String.to_integer/1)}
     end
   end
