@@ -59,7 +59,10 @@ defmodule RujiraWeb.Resolvers.Thorchain do
              total: String.to_integer(&1.total)
          }
        )
-       |> Map.update(:dust_threshold, nil, &String.to_integer/1)
+       |> Map.update(:dust_threshold, nil, fn
+         "" -> nil
+         x -> String.to_integer(x)
+       end)
        |> Map.update!(:recommended_min_amount_in, &String.to_integer/1)
        |> Map.update!(:recommended_gas_rate, &String.to_integer/1)
        |> Map.update!(:expected_amount_out, &String.to_integer/1)}
