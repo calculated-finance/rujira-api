@@ -18,13 +18,13 @@ defmodule Thornode.Pool do
   def init(opts) do
     config = opts
     grpcs = Keyword.get(config, :grpcs, [])
-    size = Keyword.get(config, :size, 2)
+    size = Keyword.get(config, :size, 14)
 
     poolboy_config = [
       name: {:local, @pool_name},
       worker_module: Thornode.Worker,
       size: size,
-      max_overflow: 2,
+      max_overflow: 7,
       strategy: :fifo
     ]
 
@@ -34,7 +34,11 @@ defmodule Thornode.Pool do
 
   def query(query_fn, req) do
     :poolboy.transaction(@pool_name, fn worker_pid ->
-      GenServer.call(worker_pid, {:request, query_fn, req}, @timeout)
+      try do
+        GenServer.call(worker_pid, {:request, query_fn, req}, @timeout)
+      after
+        :ok
+      end
     end)
   end
 end
