@@ -16,8 +16,7 @@ defmodule Thornode.Pool do
 
   @impl true
   def init(opts) do
-    config = opts
-    grpcs = Keyword.get(config, :grpcs, [])
+    grpcs = Keyword.get(opts, :grpcs, [])
 
     poolboy_config = [
       name: {:local, @pool_name},
