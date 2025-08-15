@@ -50,11 +50,11 @@ defmodule RujiraWeb.Resolvers.Thorchain do
          amount: res.expected_amount_out
        })
        |> Map.update!(:fees, &%{&1 | asset: Assets.from_string(&1.asset)})
-       |> Map.update!(:outbound_delay_blocks, &String.to_integer/1)
-       |> Map.update!(:outbound_delay_seconds, &String.to_integer/1)
-       |> Map.update!(:streaming_swap_blocks, &String.to_integer/1)
-       |> Map.update!(:streaming_swap_seconds, &String.to_integer/1)
-       |> Map.update!(:total_swap_seconds, &String.to_integer/1)}
+       |> Map.update(:dust_threshold, nil, &String.to_integer/1)
+       |> Map.update!(:recommended_min_amount_in, &String.to_integer/1)
+       |> Map.update!(:recommended_gas_rate, &String.to_integer/1)
+       |> Map.update!(:expected_amount_out, &String.to_integer/1)
+       |> Map.update!(:max_streaming_quantity, &String.to_integer/1)}
     end
   end
 
