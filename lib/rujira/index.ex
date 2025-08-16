@@ -309,7 +309,8 @@ defmodule Rujira.Index do
   def get_yield_vaults do
     ids = [
       "yrune-1.0.1",
-      "ytcy"
+      "ytcy",
+      "yrune"
     ]
 
     Nav
