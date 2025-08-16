@@ -191,13 +191,12 @@ defmodule Rujira.Analytics.Staking.RevenueBin do
             fragment(
               """
               CASE
-                WHEN EXCLUDED.liquid_value = 0 THEN 69
-                ELSE POWER(EXCLUDED.liquid_redemption_rate_current::DECIMAL / ?,
-                     1.0 / CASE EXCLUDED.resolution
-                       WHEN '1D' THEN 365
-                       WHEN '1M' THEN 12
-                       WHEN '12M' THEN 1
-                       ELSE 0
+                WHEN EXCLUDED.liquid_value = 0 THEN 0
+                ELSE POWER(EXCLUDED.liquid_redemption_rate_current::numeric / ?::numeric,
+                     CASE EXCLUDED.resolution
+                       WHEN '1D' THEN 365::numeric
+                       WHEN '1M' THEN 12::numeric
+                       WHEN '12M' THEN 1::numeric
                      END) - 1
               END
               """,
