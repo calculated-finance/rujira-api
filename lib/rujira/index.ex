@@ -199,6 +199,7 @@ defmodule Rujira.Index do
             open: &1.status.nav_per_share,
             tvl: &1.status.nav,
             bin: time,
+            redemption_rate: &1.status.redemption_rate,
             inserted_at: now,
             updated_at: now
           }
@@ -321,21 +322,22 @@ defmodule Rujira.Index do
 
   def apr_30d(%{address: address} = vault) do
     today = Resolution.truncate(DateTime.utc_now(), "1D")
-    nav_30d_ago = query_nav_bin_at(address, "1D", DateTime.add(today, -7, :day))
+    redemption_rate_30d_ago = query_nav_bin_at(address, "1D", DateTime.add(today, -30, :day))
 
-    case nav_30d_ago do
+    case redemption_rate_30d_ago do
       nil ->
         %Vault{vault | status: %{vault.status | apr: %{status: :soon}}}
 
       _ ->
         # APR = ((NAV / OPEN) - 1) * (365 / 30)
-        growth_factor = Decimal.div(vault.status.nav_per_share, nav_30d_ago.open)
+        growth_factor =
+          Decimal.div(vault.status.redemption_rate, redemption_rate_30d_ago.redemption_rate)
 
         apr =
           growth_factor
           |> Decimal.sub(1)
           |> Decimal.mult(Decimal.new(365))
-          |> Decimal.div(7)
+          |> Decimal.div(30)
 
         %Vault{vault | status: %{vault.status | apr: %{status: :available, value: apr}}}
     end

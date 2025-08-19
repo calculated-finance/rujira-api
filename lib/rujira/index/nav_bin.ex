@@ -8,7 +8,6 @@ defmodule Rujira.Index.NavBin do
   """
   alias Rujira.Index
   alias Rujira.Resolution
-  import Ecto.Changeset
   require Logger
   use Ecto.Schema
   use GenServer
@@ -19,6 +18,7 @@ defmodule Rujira.Index.NavBin do
           resolution: String.t(),
           bin: DateTime.t(),
           open: Decimal.t(),
+          redemption_rate: Decimal.t(),
           tvl: non_neg_integer(),
           inserted_at: DateTime.t(),
           updated_at: DateTime.t()
@@ -33,6 +33,7 @@ defmodule Rujira.Index.NavBin do
     field :bin, :utc_datetime, primary_key: true
 
     field :open, :decimal
+    field :redemption_rate, :decimal
     field :tvl, :integer
 
     timestamps(type: :utc_datetime_usec)
@@ -76,11 +77,4 @@ defmodule Rujira.Index.NavBin do
   end
 
   def id(contract, resolution, bin), do: "#{contract}/#{resolution}/#{DateTime.to_iso8601(bin)}"
-
-  @doc false
-  def changeset(candle, attrs) do
-    candle
-    |> cast(attrs, [:id, :contract, :resolution, :bin, :open, :tvl])
-    |> validate_required([:id, :contract, :resolution, :bin, :open, :tvl])
-  end
 end

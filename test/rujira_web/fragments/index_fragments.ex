@@ -46,6 +46,7 @@ defmodule RujiraWeb.Fragments.IndexFragments do
     apr {
       ...AprFragment
     }
+    redemptionRate
   }
   #{@index_allocation_fragment}
   #{@apr_fragment}
