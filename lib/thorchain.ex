@@ -6,6 +6,8 @@ defmodule Thorchain do
   of the Thorchain network, including vaults, nodes, and liquidity providers.
   """
 
+  alias Cosmos.Bank.V1beta1.QueryDenomOwnersRequest
+  alias Cosmos.Base.Query.V1beta1.PageRequest
   alias Rujira.Assets
   alias Rujira.Assets.Asset
   alias Rujira.Prices
@@ -28,6 +30,8 @@ defmodule Thorchain do
   alias Thorchain.Types.QueryPoolsResponse
   alias Thorchain.Types.QueryTxRequest
   alias Thorchain.Types.QueryTxResponse
+
+  import Cosmos.Bank.V1beta1.Query.Stub
 
   use GenServer
   use Memoize
@@ -343,6 +347,41 @@ defmodule Thorchain do
 
       _ ->
         {:ok, nil}
+    end
+  end
+
+  # Holders query
+  defmemo get_holders(denom, limit \\ 100), expires_in: 30 * 60 * 60 * 1000 do
+    with {:ok, holders} <- get_holders_page(denom) do
+      {:ok, holders |> Enum.sort_by(&Integer.parse(&1.balance.amount), :desc) |> Enum.take(limit)}
+    end
+  end
+
+  defp get_holders_page(denom, key \\ nil)
+
+  defp get_holders_page(denom, nil) do
+    with {:ok, %{denom_owners: denom_owners, pagination: %{next_key: next_key}}} <-
+           Thornode.query(
+             &denom_owners/2,
+             %QueryDenomOwnersRequest{denom: denom}
+           ),
+         {:ok, next} <- get_holders_page(denom, next_key) do
+      {:ok, Enum.concat(denom_owners, next)}
+    end
+  end
+
+  defp get_holders_page(_, "") do
+    {:ok, []}
+  end
+
+  defp get_holders_page(denom, key) do
+    with {:ok, %{denom_owners: denom_owners, pagination: %{next_key: next_key}}} <-
+           Thornode.query(
+             &denom_owners/2,
+             %QueryDenomOwnersRequest{denom: denom, pagination: %PageRequest{key: key}}
+           ),
+         {:ok, next} <- get_holders_page(denom, next_key) do
+      {:ok, Enum.concat(denom_owners, next)}
     end
   end
 end
