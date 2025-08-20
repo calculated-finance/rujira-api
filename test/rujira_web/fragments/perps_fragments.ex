@@ -27,6 +27,12 @@ defmodule RujiraWeb.Fragments.PerpsFragments do
     xlpApr {
       ...AprFragment
     }
+    lpRoi {
+      ...AprFragment
+    }
+    xlpRoi {
+      ...AprFragment
+    }
     risk
   }
   #{@apr_fragment}

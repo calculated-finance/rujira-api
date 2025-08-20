@@ -11,6 +11,8 @@ defmodule Rujira.Perps.Pool do
       :sharpe_ratio,
       :lp_apr,
       :xlp_apr,
+      :lp_roi,
+      :xlp_roi,
       :risk
     ]
 
@@ -18,6 +20,8 @@ defmodule Rujira.Perps.Pool do
             sharpe_ratio: non_neg_integer(),
             lp_apr: non_neg_integer(),
             xlp_apr: non_neg_integer(),
+            lp_roi: non_neg_integer(),
+            xlp_roi: non_neg_integer(),
             risk: atom()
           }
   end
@@ -63,15 +67,17 @@ defmodule Rujira.Perps.Pool do
   end
 
   def add_stats(pool, max_leverage) do
-    {lp, xlp, sharpe_ratio} = get_roi_data(pool.address)
+    {lp_apr, xlp_apr, sharpe_ratio, lp_roi, xlp_roi} = get_roi_data(pool.address)
     risk = parse_risk(max_leverage)
 
     %__MODULE__{
       pool
       | stats: %__MODULE__.Stats{
           sharpe_ratio: sharpe_ratio,
-          lp_apr: %{status: :available, value: lp},
-          xlp_apr: %{status: :available, value: xlp},
+          lp_apr: %{status: :available, value: lp_apr},
+          xlp_apr: %{status: :available, value: xlp_apr},
+          lp_roi: %{status: :available, value: lp_roi},
+          xlp_roi: %{status: :available, value: xlp_roi},
           risk: risk
         }
     }
@@ -110,19 +116,22 @@ defmodule Rujira.Perps.Pool do
        %{
          body: %{
            ^address => %{
-             "roi7" => %{"lp" => lp, "xlp" => xlp},
-             "sharpe" => %{"annualized_roi30_rate" => %{"xlp" => sharpe_ratio}}
+             "apr7" => %{"lp" => lp_apr, "xlp" => xlp_apr},
+             "sharpe" => %{"annualized_roi30_rate" => %{"xlp" => sharpe_ratio}},
+             "roi7" => %{"lp" => lp_roi, "xlp" => xlp_roi}
            }
          }
        }} ->
-        {lp, ""} = Decimal.parse(lp)
-        {xlp, ""} = Decimal.parse(xlp)
+        {lp_apr, ""} = Decimal.parse(lp_apr)
+        {xlp_apr, ""} = Decimal.parse(xlp_apr)
+        {lp_roi, ""} = Decimal.parse(lp_roi)
+        {xlp_roi, ""} = Decimal.parse(xlp_roi)
         {sharpe_ratio, ""} = Decimal.parse(sharpe_ratio)
         sharpe_ratio = Decimal.div(sharpe_ratio, 3) |> Decimal.mult(100)
-        {lp, xlp, sharpe_ratio}
+        {lp_apr, xlp_apr, sharpe_ratio, lp_roi, xlp_roi}
 
       _ ->
-        {Decimal.new(0), Decimal.new(0), Decimal.new(0)}
+        {Decimal.new(0), Decimal.new(0), Decimal.new(0), Decimal.new(0), Decimal.new(0)}
     end
   end
 
