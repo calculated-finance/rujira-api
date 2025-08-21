@@ -3,6 +3,7 @@ defmodule Rujira.Deployments do
   alias Cosmwasm.Wasm.V1.ContractInfo
   alias Cosmwasm.Wasm.V1.MsgInstantiateContract2
   alias Cosmwasm.Wasm.V1.MsgMigrateContract
+  alias Cosmwasm.Wasm.V1.MsgUpdateAdmin
   alias Rujira.Bow
   alias Rujira.Contracts
   alias Rujira.Deployments.Target
@@ -145,6 +146,18 @@ defmodule Rujira.Deployments do
         end
     }
   end
+
+  def to_msg(%{
+        address: address,
+        admin: target_admin,
+        protocol: protocol,
+        contract: %ContractInfo{admin: admin}
+      }),
+      do: %MsgUpdateAdmin{
+        sender: admin,
+        new_admin: target_admin,
+        contract: address
+      }
 
   # Existing contract, no change, ignore
   def to_msg(%{code_id: target_code_id, contract: %ContractInfo{code_id: code_id}})

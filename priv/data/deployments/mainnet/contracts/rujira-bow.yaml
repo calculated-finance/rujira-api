@@ -2,7 +2,7 @@ code: 5
 
 targets:
   - id: atom-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       strategy: 
@@ -11,7 +11,7 @@ targets:
           y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
 
   - id: auto-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       strategy: 
@@ -20,7 +20,7 @@ targets:
           y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
 
   - id: avax-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       strategy: 
@@ -30,7 +30,7 @@ targets:
 
 
   - id: btc-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       strategy: 
@@ -40,7 +40,7 @@ targets:
 
 
   - id: bch-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       strategy: 
@@ -49,7 +49,7 @@ targets:
           y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
 
   - id: bnb-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       strategy: 
@@ -58,7 +58,7 @@ targets:
           y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
 
   - id: doge-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       strategy: 
@@ -67,7 +67,7 @@ targets:
           y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
 
   - id: eth-btc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       strategy: 
@@ -76,7 +76,7 @@ targets:
           y: btc-btc
 
   - id: eth-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       strategy: 
@@ -86,7 +86,7 @@ targets:
 
 
   - id: lqdy-btc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       strategy: 
@@ -95,7 +95,7 @@ targets:
           y: btc-btc
 
   - id: lqdy-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       strategy: 
@@ -104,7 +104,7 @@ targets:
           y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
   
   - id: ltc-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       strategy: 
@@ -114,7 +114,7 @@ targets:
 
 
   - id: nami-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       strategy: 
@@ -123,7 +123,7 @@ targets:
           y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
 
   - id: ruji-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       strategy: 
@@ -132,7 +132,7 @@ targets:
           y: eth-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48
 
   - id: xrp-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       strategy: 

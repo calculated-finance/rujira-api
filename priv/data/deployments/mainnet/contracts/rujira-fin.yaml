@@ -2,7 +2,7 @@ code: 4
 
 targets:
   - id: atom-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -12,7 +12,7 @@ targets:
       market_maker: ${targets:rujira-bow.atom-eth-usdc}
 
   - id: auto-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -22,7 +22,7 @@ targets:
       fee_address: ${targets:rujira-revenue.trade}
 
   - id: avax-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -32,7 +32,7 @@ targets:
       market_maker: ${targets:rujira-bow.avax-eth-usdc}
 
   - id: avax-usdc-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -41,7 +41,7 @@ targets:
       fee_address: ${targets:rujira-revenue.trade}
 
   - id: avax-usdt-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -50,7 +50,7 @@ targets:
       fee_address: ${targets:rujira-revenue.trade}
 
   - id: base-cbbtc-btc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -59,7 +59,7 @@ targets:
       fee_address: ${targets:rujira-revenue.trade}
 
   - id: base-eth-eth
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -68,7 +68,7 @@ targets:
       fee_address: ${targets:rujira-revenue.trade}
 
   - id: base-usdc-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -77,7 +77,7 @@ targets:
       fee_address: ${targets:rujira-revenue.trade}
 
   - id: bch-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -87,7 +87,7 @@ targets:
       market_maker: ${targets:rujira-bow.bch-eth-usdc}
 
   - id: bnb-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -97,7 +97,7 @@ targets:
       market_maker: ${targets:rujira-bow.bnb-eth-usdc}
 
   - id: bsc-usdc-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -106,7 +106,7 @@ targets:
       fee_address: ${targets:rujira-revenue.trade}
 
   - id: bsc-usdt-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -116,7 +116,7 @@ targets:
 
 
   - id: btc-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -126,7 +126,7 @@ targets:
       fee_address: ${targets:rujira-revenue.trade}
 
   - id: doge-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -136,7 +136,7 @@ targets:
       market_maker: ${targets:rujira-bow.doge-eth-usdc}
 
   - id: eth-btc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -146,7 +146,7 @@ targets:
       fee_address: ${targets:rujira-revenue.trade}
 
   - id: eth-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -156,7 +156,7 @@ targets:
       fee_address: ${targets:rujira-revenue.trade}
 
   - id: eth-dai-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -165,7 +165,7 @@ targets:
       fee_address: ${targets:rujira-revenue.trade}
 
   - id: eth-gusd-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -174,7 +174,7 @@ targets:
       fee_address: ${targets:rujira-revenue.trade}
 
   - id: eth-usdp-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -183,7 +183,7 @@ targets:
       fee_address: ${targets:rujira-revenue.trade}
 
   - id: eth-usdt-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -192,7 +192,7 @@ targets:
       fee_address: ${targets:rujira-revenue.trade}
 
   - id: eth-wbtc-btc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -201,7 +201,7 @@ targets:
       fee_address: ${targets:rujira-revenue.trade}
 
   - id: lqdy-btc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -212,7 +212,7 @@ targets:
 
 
   - id: lqdy-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -222,7 +222,7 @@ targets:
       fee_address: ${targets:rujira-revenue.trade}
 
   - id: ltc-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -232,7 +232,7 @@ targets:
       market_maker: ${targets:rujira-bow.ltc-eth-usdc}
 
   - id: nami-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -242,7 +242,7 @@ targets:
       fee_address: ${targets:rujira-revenue.trade}
 
   - id: ruji-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -252,7 +252,7 @@ targets:
       fee_address: ${targets:rujira-revenue.trade}
 
   - id: ruji-rune
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -261,7 +261,7 @@ targets:
       fee_address: ${targets:rujira-revenue.trade}
 
   - id: rune-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -270,7 +270,7 @@ targets:
       fee_address: ${targets:rujira-revenue.trade}
 
   - id: tcy-rune
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -279,7 +279,7 @@ targets:
       fee_address: ${targets:rujira-revenue.trade}
 
   - id: tcy-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
@@ -288,7 +288,7 @@ targets:
       fee_address: ${targets:rujira-revenue.trade}
 
   - id: xrp-eth-usdc
-    admin: ${accounts:admin}
+    admin: ${accounts:dao}
     creator: ${accounts:creator}
     config:
       denoms: 
