@@ -5,6 +5,7 @@ defmodule Rujira.Deployments do
   alias Cosmwasm.Wasm.V1.MsgMigrateContract
   alias Cosmwasm.Wasm.V1.MsgUpdateAdmin
   alias Rujira.Bow
+  alias Rujira.Calc
   alias Rujira.Contracts
   alias Rujira.Deployments.Target
   alias Rujira.Deployments.Target
@@ -212,6 +213,8 @@ defmodule Rujira.Deployments do
   defp to_module("nami-index-entry-adpter"), do: Index.EntryAdapter
   defp to_module("rujira-perps"), do: Perps.Pool
   defp to_module("daodao-payroll-factory"), do: Vestings
+  defp to_module("calc-manager"), do: Calc.Manager
+  defp to_module("calc-scheduler"), do: Calc.Scheduler
 
   defp parse_ctx(map, ctx) when is_map(map) do
     map
