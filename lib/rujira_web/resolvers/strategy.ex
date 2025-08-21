@@ -121,8 +121,13 @@ defmodule RujiraWeb.Resolvers.Strategy do
     end
   end
 
-  def index_query(query, %{status: %{allocations: allocations}}) do
-    Enum.any?(allocations, fn %{denom: denom} ->
+  def index_query(query, %{
+        share_denom: share_denom,
+        status: %{allocations: allocations}
+      }) do
+    allocations
+    |> Enum.concat([%{denom: share_denom}])
+    |> Enum.any?(fn %{denom: denom} ->
       case Assets.from_denom(denom) do
         {:ok, asset} -> Assets.query_match(query, asset, asset)
         _ -> false

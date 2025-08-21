@@ -212,6 +212,19 @@ defmodule Rujira.Assets do
     end
   end
 
+  def from_denom("x/nami-index-" <> _ = denom) do
+    with {:ok, metadata} <- Metadata.load_metadata(%Asset{id: denom}) do
+      {:ok,
+       %Asset{
+         id: denom,
+         type: :native,
+         chain: "THOR",
+         symbol: metadata.symbol,
+         ticker: metadata.symbol
+       }}
+    end
+  end
+
   def from_denom("x/" <> id = denom) do
     {:ok,
      %Asset{
