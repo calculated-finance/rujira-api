@@ -49,7 +49,8 @@ defmodule Rujira.Calc.Strategy do
        %Condition{
          condition: condition,
          index: index,
-         next: next
+         on_success: on_success,
+         on_failure: on_failure
        }}
     end
   end
