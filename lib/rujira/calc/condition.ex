@@ -18,16 +18,16 @@ defmodule Rujira.Calc.Condition do
           on_failure: integer() | nil
         }
 
-  def from_config(%{"condition" => "blocks_completed"} = msg),
+  def from_config(%{"condition" => %{"blocks_completed" => msg}}),
     do: BlocksCompleted.from_config(msg)
 
-  def from_config(%{"condition" => "calc_swap"} = msg),
+  def from_config(%{"condition" => %{"calc_swap" => msg}}),
     do: CalcSwap.from_config(msg)
 
-  def from_config(%{"condition" => "schedule"} = msg),
+  def from_config(%{"condition" => %{"schedule" => msg}}),
     do: Schedule.from_config(msg)
 
-  def from_config(%{"condition" => "timestamp_elapsed"} = msg),
+  def from_config(%{"condition" => %{"timestamp_elapsed" => msg}}),
     do: TimestampElapsed.from_config(msg)
 
   def from_config(_), do: {:error, :invalid_condition}
