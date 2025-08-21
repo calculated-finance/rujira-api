@@ -117,12 +117,22 @@ defmodule Rujira.Pilot do
     end
   end
 
+  def bid_action_from_id(id) do
+    {:ok, get_bid_action(id)}
+  end
+
   # --- DB operations ---
   def insert_bid_actions(bid_actions) do
     with {count, items} when is_list(items) <-
            Repo.insert_all(BidAction, bid_actions, on_conflict: :nothing, returning: true) do
       broadcast_bid_actions({count, items})
     end
+  end
+
+  def get_bid_action(id) do
+    BidAction
+    |> where([c], c.id == ^id)
+    |> Repo.one()
   end
 
   def broadcast_bid_actions({_count, bid_actions}) do

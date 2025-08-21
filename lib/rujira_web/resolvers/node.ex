@@ -108,6 +108,7 @@ defmodule RujiraWeb.Resolvers.Node do
   def type(%Pilot.BidPools{}, _), do: :pilot_bid_pools
   def type(%Pilot.Bid{}, _), do: :pilot_bid
   def type(%Pilot.Account{}, _), do: :pilot_account
+  def type(%Pilot.BidAction{}, _), do: :pilot_bid_action
 
   # Thorchain Integration
   def type(%Thorchain.Tor.Candle{}, _), do: :thorchain_tor_candle
@@ -230,6 +231,9 @@ defmodule RujiraWeb.Resolvers.Node do
 
   defp resolve_id({:ok, %{type: :pilot_account, id: id}}),
     do: Pilot.account_from_id(id)
+
+  defp resolve_id({:ok, %{type: :pilot_bid_action, id: id}}),
+    do: Pilot.bid_action_from_id(id)
 
   # --- Chain Modules ---
   defp resolve_id({:ok, %{type: :cosmos_account, id: id}}),

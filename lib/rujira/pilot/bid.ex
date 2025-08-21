@@ -29,15 +29,9 @@ defmodule Rujira.Pilot.Bid do
     with {offer, ""} <- Integer.parse(offer),
          {remaining, ""} <- Integer.parse(remaining),
          {filled, ""} <- Integer.parse(filled),
-         {rate, ""} <- Integer.parse(rate),
+         {rate, ""} <- Decimal.parse(rate),
          {updated_at, ""} <- Integer.parse(updated_at),
          {:ok, updated_at} <- DateTime.from_unix(updated_at, :nanosecond) do
-      # normalize the rate on chain is stored in 8 decimal places
-      rate =
-        rate
-        |> Decimal.new()
-        |> Decimal.div(Decimal.new(100_000_000))
-
       {:ok,
        %__MODULE__{
          id: "#{address}/#{owner}/#{premium}",
