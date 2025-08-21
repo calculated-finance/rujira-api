@@ -58,10 +58,10 @@ defmodule Rujira.Calc.Strategy do
   end
 
   defstruct [
-    :id,
+    :idx,
     :source,
     :owner,
-    :contract_address,
+    :address,
     :created_at,
     :updated_at,
     :label,
@@ -70,10 +70,10 @@ defmodule Rujira.Calc.Strategy do
   ]
 
   @type t :: %__MODULE__{
-          id: integer(),
+          idx: integer(),
           source: String.t() | nil,
           owner: String.t(),
-          contract_address: String.t(),
+          address: String.t(),
           created_at: DateTime.t(),
           updated_at: DateTime.t(),
           label: String.t(),
@@ -101,10 +101,10 @@ defmodule Rujira.Calc.Strategy do
 
       {:ok,
        %__MODULE__{
-         id: id,
+         idx: id,
          source: source,
          owner: owner,
-         contract_address: contract_address,
+         address: contract_address,
          created_at: created_at,
          updated_at: updated_at,
          label: label,
