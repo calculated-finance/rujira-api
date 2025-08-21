@@ -23,7 +23,11 @@ defmodule Rujira.Application do
       RujiraWeb.Endpoint,
       RujiraWeb.Presence,
       {Absinthe.Subscription, RujiraWeb.Endpoint},
-      {Finch, name: Rujira.Finch},
+      {Finch,
+       name: Rujira.Finch,
+       pools: %{
+         default: [size: 50, count: System.schedulers_online()]
+       }},
       Thornode,
       Rujira.Prices
     ]
