@@ -23,11 +23,13 @@ defmodule Rujira.Calc do
   """
   @spec list_strategies(String.t() | nil, atom() | nil, pos_integer(), pos_integer() | nil) ::
           {:ok, [Strategy.t()]} | {:error, any()}
-  def list_strategies(owner, nil, limit \\ 100, offset \\ nil) when not is_nil(owner) do
+  def list_strategies(owner \\ nil, status \\ nil, limit \\ 100, offset \\ nil)
+
+  def list_strategies(owner, nil, limit, offset) when not is_nil(owner) do
     do_list_strategies(%{owner: owner, limit: limit, offset: offset})
   end
 
-  def list_strategies(nil, status, limit \\ 100, offset \\ nil) when not is_nil(status) do
+  def list_strategies(nil, status, limit, offset) when not is_nil(status) do
     do_list_strategies(%{status: status, limit: limit, offset: offset})
   end
 

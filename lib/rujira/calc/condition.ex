@@ -1,4 +1,7 @@
 defmodule Rujira.Calc.Condition do
+  @moduledoc """
+  Condition node in a strategy execution flow that provides branching logic.
+  """
   alias Rujira.Calc.Condition.BlocksCompleted
   alias Rujira.Calc.Condition.CalcSwap
   alias Rujira.Calc.Condition.Schedule

@@ -4,6 +4,9 @@ defmodule Rujira.Calc.Strategy do
   """
 
   defmodule Config do
+    @moduledoc """
+    Configuration data for a strategy instance containing execution nodes and contract details.
+    """
     alias Rujira.Calc.Action
     alias Rujira.Calc.Condition
 
