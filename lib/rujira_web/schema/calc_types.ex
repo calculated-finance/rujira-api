@@ -20,6 +20,19 @@ defmodule RujiraWeb.Schema.CalcTypes do
   import_types(RujiraWeb.Schema.Calc.ActionTypes)
   import_types(RujiraWeb.Schema.Calc.ConditionTypes)
 
+  node object(:calc_account) do
+    field :address, non_null(:address)
+    field :calc_strategies, non_null(list_of(non_null(:calc_strategy)))
+
+    field :value_usd, non_null(:bigint) do
+      resolve(fn %{calc_strategies: calc_strategies}, _, _ ->
+        {:ok, Calc.value_usd(calc_strategies)}
+      end)
+    end
+  end
+
+  connection(node_type: :calc_account)
+
   @desc "A strategy represents the configuration about a rujira-calc contract"
   node object(:calc_strategy) do
     field :idx, non_null(:integer)

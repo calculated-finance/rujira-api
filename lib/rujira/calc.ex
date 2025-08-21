@@ -6,17 +6,26 @@ defmodule Rujira.Calc do
   from blockchain smart contracts.
   """
 
+  alias Rujira.Calc.Account
   alias Rujira.Calc.Strategy
   alias Rujira.Contracts
   alias Rujira.Deployments
 
   @doc "Returns the address of the strategy manager contract"
   @spec manager_address() :: String.t()
-  def manager_address, do: Deployments.get_target(__MODULE__, "calc-manager").address
+  def manager_address, do: Deployments.get_target(__MODULE__.Manager, "calc-manager").address
 
   @doc "Returns the address of the strategy scheduler contract"
   @spec scheduler_address() :: String.t()
-  def scheduler_address, do: Deployments.get_target(__MODULE__, "calc-scheduler").address
+  def scheduler_address,
+    do: Deployments.get_target(__MODULE__.Scheduler, "calc-scheduler").address
+
+  @doc "Loads a single account with its calc strategies"
+  def load_account(address) do
+    with {:ok, strategies} <- list_strategies(address) do
+      {:ok, %Account{address: address, strategies: strategies}}
+    end
+  end
 
   @doc """
   Lists strategies filtered by owner or status.
@@ -33,8 +42,8 @@ defmodule Rujira.Calc do
     do_list_strategies(%{status: status, limit: limit, offset: offset})
   end
 
-  defp do_list_strategies(query) do
-    with {:ok, strategies} <- query_strategies(query) do
+  defp do_list_strategies(params) do
+    with {:ok, strategies} <- query_strategies(%{strategies: params}) do
       load_strategies(strategies)
     end
   end
@@ -66,7 +75,7 @@ defmodule Rujira.Calc do
   end
 
   defp query_strategy(address) do
-    Contracts.query_state_smart(manager_address(), %{address: address})
+    Contracts.query_state_smart(manager_address(), %{strategy: %{address: address}})
   end
 
   defp query_strategy_config(%Strategy{address: address} = strategy) do

@@ -96,8 +96,6 @@ defmodule Rujira.Calc.Strategy do
         } = map
       ) do
     with {:ok, status} <- parse_status(status),
-         {created_at, ""} <- Integer.parse(created_at),
-         {updated_at, ""} <- Integer.parse(updated_at),
          {:ok, created_at} <- DateTime.from_unix(created_at),
          {:ok, updated_at} <- DateTime.from_unix(updated_at) do
       source = Map.get(map, "source", nil)
