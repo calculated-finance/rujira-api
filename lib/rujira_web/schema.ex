@@ -16,6 +16,7 @@ defmodule RujiraWeb.Schema do
   import_types(RujiraWeb.Schema.AprTypes)
   import_types(RujiraWeb.Schema.BalanceTypes)
   import_types(RujiraWeb.Schema.BowTypes)
+  import_types(RujiraWeb.Schema.CalcTypes)
   import_types(RujiraWeb.Schema.ChainTypes)
   import_types(RujiraWeb.Schema.CosmosTypes)
   import_types(RujiraWeb.Schema.DeploymentTypes)
