@@ -21,8 +21,8 @@ defmodule Rujira.Calc.Condition do
   def from_config(%{"condition" => %{"blocks_completed" => msg}}),
     do: BlocksCompleted.from_config(msg)
 
-  def from_config(%{"condition" => %{"calc_swap" => msg}}),
-    do: CalcSwap.from_config(msg)
+  def from_config(%{"condition" => %{"can_swap" => msg}}),
+    do: CanSwap.from_config(msg)
 
   def from_config(%{"condition" => %{"schedule" => msg}}),
     do: Schedule.from_config(msg)
