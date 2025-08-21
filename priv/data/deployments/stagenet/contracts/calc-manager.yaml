@@ -1,0 +1,8 @@
+code: 611
+
+targets:
+  - id: calc-manager
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    address: sthor18e35rm2dwpx3h09p7q7xx8qfvwdsxz2ls92fdfd4j7vh6g55h8ash7gkau
+    config:

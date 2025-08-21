@@ -1,0 +1,8 @@
+code: 611
+
+targets:
+  - id: calc-scheduler
+    admin: ${accounts:admin}
+    creator: ${accounts:creator}
+    address: sthor14zd6glgu67mg2ze7ekqtce3r7yjuk846l3982en9y5v6nlh2y5es2llpa6
+    config:
