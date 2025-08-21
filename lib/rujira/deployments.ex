@@ -150,7 +150,6 @@ defmodule Rujira.Deployments do
   def to_msg(%{
         address: address,
         admin: target_admin,
-        protocol: protocol,
         contract: %ContractInfo{admin: admin}
       }),
       do: %MsgUpdateAdmin{
