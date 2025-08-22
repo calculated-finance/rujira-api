@@ -21,6 +21,14 @@ defmodule RujiraWeb.Resolvers.Strategy do
     "ThorchainPool" => {&Thorchain.pools/0, &__MODULE__.thorchain_query/2}
   }
 
+  @account_loaders [
+    &__MODULE__.bow_accounts/1,
+    &__MODULE__.thorchain_accounts/1,
+    &Index.accounts/1,
+    &__MODULE__.staking_accounts/1,
+    &Perps.accounts/1
+  ]
+
   def list(_, args, _) do
     typenames = Map.get(args, :typenames, Map.keys(@loaders))
     query = Map.get(args, :query)
@@ -47,46 +55,47 @@ defmodule RujiraWeb.Resolvers.Strategy do
   end
 
   def accounts(%{address: address}, _, _) do
-    with {:ok, pools} <- Bow.list_pools(),
-         {:ok, bow} <-
-           Rujira.Enum.reduce_while_ok(pools, [], fn x ->
-             case Bow.load_account(x, address) do
-               {:ok, %{shares: 0}} -> :skip
-               other -> other
-             end
-           end),
-         {:ok, pools} <- Thorchain.pools(),
-         {:ok, thorchain} <-
-           Rujira.Enum.reduce_async_while_ok(
-             pools,
-             fn x ->
-               case Thorchain.liquidity_provider(x.asset.id, address) do
-                 {:ok, %{units: 0}} -> :skip
-                 other -> other
-               end
-             end
-           ),
-         {:ok, index} <- Index.accounts(address),
-         {:ok, pools} <- Staking.list_pools(),
-         {:ok, staking} <-
-           Rujira.Enum.reduce_async_while_ok(
-             pools,
-             fn x ->
-               case Staking.load_account(x, address) do
-                 {:ok, %{bonded: 0, liquid_shares: 0}} -> :skip
-                 other -> other
-               end
-             end
-           ),
-         {:ok, perps} <- Perps.accounts(address) do
-      accounts =
-        bow
-        |> Enum.concat(thorchain)
-        |> Enum.concat(index)
-        |> Enum.concat(staking)
-        |> Enum.concat(perps)
+    with {:ok, accounts} <- Rujira.Enum.reduce_async_while_ok(@account_loaders, & &1.(address)) do
+      {:ok, Enum.concat(accounts)}
+    end
+  end
 
-      {:ok, accounts}
+  def bow_accounts(address) do
+    with {:ok, pools} <- Bow.list_pools() do
+      Rujira.Enum.reduce_while_ok(pools, [], fn x ->
+        case Bow.load_account(x, address) do
+          {:ok, %{shares: 0}} -> :skip
+          other -> other
+        end
+      end)
+    end
+  end
+
+  def thorchain_accounts(address) do
+    with {:ok, pools} <- Thorchain.pools() do
+      Rujira.Enum.reduce_async_while_ok(
+        pools,
+        fn x ->
+          case Thorchain.liquidity_provider(x.asset.id, address) do
+            {:ok, %{units: 0}} -> :skip
+            other -> other
+          end
+        end
+      )
+    end
+  end
+
+  def staking_accounts(address) do
+    with {:ok, pools} <- Staking.list_pools() do
+      Rujira.Enum.reduce_async_while_ok(
+        pools,
+        fn x ->
+          case Staking.load_account(x, address) do
+            {:ok, %{bonded: 0, liquid_shares: 0}} -> :skip
+            other -> other
+          end
+        end
+      )
     end
   end
 
