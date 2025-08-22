@@ -39,13 +39,13 @@ defmodule Thornode.Worker do
       cred = GRPC.Credential.new(ssl: [verify: :verify_none])
 
       GRPC.Stub.connect(addr,
-        adapter: GRPC.Client.Adapters.Mint,
+        # adapter: GRPC.Client.Adapters.Mint,
         interceptors: [{GRPC.Client.Interceptors.Logger, level: :debug}],
         cred: cred
       )
     else
       GRPC.Stub.connect(addr,
-        adapter: GRPC.Client.Adapters.Mint,
+        # adapter: GRPC.Client.Adapters.Mint,
         interceptors: [{GRPC.Client.Interceptors.Logger, level: :debug}]
       )
     end
