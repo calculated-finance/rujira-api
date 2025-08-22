@@ -51,12 +51,18 @@ defmodule Thornode.Worker do
     end
   end
 
+  # GUN
   def handle_info({:gun_down, _pid, _protocol, _message, _}, state) do
     {:stop, :normal, state}
   end
 
   def handle_info({:gun_data, _pid, _ref, :fin, message}, state) do
     {:stop, message, state}
+  end
+
+  # Mint
+  def handle_info({:EXIT, _pid, _}, state) do
+    {:stop, :normal, state}
   end
 
   def handle_call({:request, stub_fn, req}, _, %GRPC.Channel{host: host} = channel) do
