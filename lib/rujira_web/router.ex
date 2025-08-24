@@ -25,6 +25,8 @@ defmodule RujiraWeb.Router do
     forward "/graphiql", Absinthe.Plug.GraphiQL,
       schema: RujiraWeb.Schema,
       socket: RujiraWeb.UserSocket
+
+    forward "/", Absinthe.Plug, schema: RujiraWeb.Schema
   end
 
   # Enable LiveDashboard in development
