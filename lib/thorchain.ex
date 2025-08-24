@@ -49,7 +49,7 @@ defmodule Thorchain do
     {:ok, state}
   end
 
-  def network do
+  defmemo network do
     Thornode.query(&Q.network/2, %QueryNetworkRequest{})
   end
 

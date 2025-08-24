@@ -15,6 +15,7 @@ defmodule Thorchain.Listener do
     Memoize.invalidate(Thorchain, :outbound_fees)
     Memoize.invalidate(Thorchain, :pools)
     Memoize.invalidate(Thorchain, :pool)
+    Memoize.invalidate(Thorchain, :network)
 
     # Invalidate block at this height in case an error response has been cached from a previous request
     Memoize.invalidate(Thorchain, :block, [height])
