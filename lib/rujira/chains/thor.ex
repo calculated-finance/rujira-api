@@ -26,7 +26,7 @@ defmodule Rujira.Chains.Thor do
     end
   end
 
-  def balances(address, _assets) do
+  defmemo balances(address, _assets) do
     req = %QueryAllBalancesRequest{address: address}
 
     with {:ok, %QueryAllBalancesResponse{balances: balances}} <-
