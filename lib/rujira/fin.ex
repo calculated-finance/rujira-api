@@ -52,7 +52,7 @@ defmodule Rujira.Fin do
   Fetches all Pairs
   """
   @spec list_pairs :: {:ok, list(Pair.t())} | {:error, GRPC.RPCError.t()}
-  def list_pairs do
+  defmemo list_pairs do
     Pair
     |> Deployments.list_targets()
     |> Rujira.Enum.reduce_while_ok([], fn
