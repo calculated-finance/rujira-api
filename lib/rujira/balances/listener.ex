@@ -27,7 +27,7 @@ defmodule Rujira.Balances.Listener do
     for {a, denom} <- addresses do
       Logger.debug("#{__MODULE__} change #{a}")
       Memoize.invalidate(Rujira.Chains.Thor, :balance_of, [a, denom])
-      Memoize.invalidate(Rujira.Chains.Thor, :balances, [a, _])
+      Memoize.invalidate(Rujira.Chains.Thor, :balances, [a, :_])
 
       Rujira.Events.publish_node(:layer_1_account, "thor:#{a}")
     end
