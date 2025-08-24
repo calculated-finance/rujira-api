@@ -5,10 +5,6 @@ defmodule RujiraWeb.Resolvers.Thorchain do
   alias Absinthe.Resolution.Helpers
   alias Rujira.Assets
   alias Thorchain.Types.Query.Stub, as: Q
-  alias Thorchain.Types.QueryInboundAddressesRequest
-  alias Thorchain.Types.QueryInboundAddressesResponse
-  alias Thorchain.Types.QueryOutboundFeesRequest
-  alias Thorchain.Types.QueryOutboundFeesResponse
   alias Thorchain.Types.QueryQuoteSwapRequest
   alias Thorchain.Types.QueryQuoteSwapResponse
 
@@ -85,53 +81,18 @@ defmodule RujiraWeb.Resolvers.Thorchain do
 
   def inbound_addresses(_, _, _) do
     Helpers.async(fn ->
-      inbound_addresses()
+      Thorchain.inbound_addresses()
     end)
   end
 
-  def inbound_addresses do
-    with {:ok, %QueryInboundAddressesResponse{inbound_addresses: inbound_addresses}} <-
-           Thornode.query(&Q.inbound_addresses/2, %QueryInboundAddressesRequest{}) do
-      {:ok, Enum.map(inbound_addresses, &cast_inbound_address/1)}
-    end
-  end
-
-  defp cast_inbound_address(x) do
-    x
-    |> Map.update(:chain, nil, &String.to_existing_atom(String.downcase(&1)))
-    |> Map.update(:gas_rate_units, nil, &maybe_string/1)
-    |> Map.update(:pub_key, nil, &maybe_string/1)
-    |> Map.update(:router, nil, &maybe_string/1)
-    |> Map.update(:outbound_tx_size, "0", &String.to_integer/1)
-    |> Map.update(:outbound_fee, "0", &String.to_integer/1)
-    |> Map.update(:dust_threshold, "0", &String.to_integer/1)
-    |> Map.update(:gas_rate, "0", &String.to_integer/1)
-    |> Map.put(:id, x.chain)
-  end
-
   def outbound_fees(_, _, _) do
-    with {:ok, %QueryOutboundFeesResponse{outbound_fees: outbound_fees}} <-
-           Thornode.query(&Q.outbound_fees/2, %QueryOutboundFeesRequest{}) do
-      {:ok, Enum.map(outbound_fees, &cast_outbound_fee/1)}
-    end
+    Helpers.async(fn ->
+      Thorchain.outbound_fees()
+    end)
   end
-
-  defp cast_outbound_fee(x) do
-    x
-    |> Map.update(:outbound_fee, "0", &String.to_integer/1)
-    |> Map.update(:fee_withheld_rune, nil, &maybe_to_integer/1)
-    |> Map.update(:fee_spent_rune, nil, &maybe_to_integer/1)
-    |> Map.update(:surplus_rune, nil, &maybe_to_integer/1)
-    |> Map.update(:dynamic_multiplier_basis_points, nil, &maybe_to_integer/1)
-  end
-
-  defp maybe_to_integer(""), do: nil
-  defp maybe_to_integer(str), do: String.to_integer(str)
-  defp maybe_string(""), do: nil
-  defp maybe_string(str), do: str
 
   def inbound_address(id) do
-    with {:ok, adds} <- inbound_addresses() do
+    with {:ok, adds} <- Thorchain.inbound_addresses() do
       case Enum.find(adds, &(&1.id == id)) do
         nil -> {:error, :not_found}
         add -> {:ok, add}
