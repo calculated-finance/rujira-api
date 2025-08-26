@@ -19,14 +19,17 @@ defmodule Rujira.Calc.Strategy do
             nodes: [Action.t() | Condition.t()]
           }
 
-    def from_config(address, %{"manager" => manager, "owner" => owner, "nodes" => nodes}) do
+    def from_config(strategy, %{"manager" => manager, "owner" => owner, "nodes" => nodes}) do
       with {:ok, nodes} <- Rujira.Enum.reduce_while_ok(nodes, &parse_node/1) do
         {:ok,
-         %__MODULE__{
-           address: address,
-           manager: manager,
-           owner: owner,
-           nodes: nodes
+         %{
+           strategy
+           | config: %__MODULE__{
+               address: strategy.address,
+               manager: manager,
+               owner: owner,
+               nodes: nodes
+             }
          }}
       end
     end
