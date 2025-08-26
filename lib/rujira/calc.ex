@@ -23,7 +23,7 @@ defmodule Rujira.Calc do
   @doc "Loads a single account with its calc strategies"
   def load_account(address) do
     with {:ok, strategies} <- list_strategies(address) do
-      {:ok, %Account{id: "#{address}",address: address, strategies: strategies}}
+      {:ok, %Account{id: "#{address}", address: address, strategies: strategies}}
     end
   end
 
