@@ -3,7 +3,7 @@ defmodule Rujira.Calc.Condition do
   Condition node in a strategy execution flow that provides branching logic.
   """
   alias Rujira.Calc.Condition.BlocksCompleted
-  alias Rujira.Calc.Condition.CalcSwap
+  alias Rujira.Calc.Condition.CanSwap
   alias Rujira.Calc.Condition.Schedule
   alias Rujira.Calc.Condition.TimestampElapsed
 
@@ -15,7 +15,7 @@ defmodule Rujira.Calc.Condition do
   ]
 
   @type t :: %__MODULE__{
-          condition: BlocksCompleted | CalcSwap | Schedule | TimestampElapsed,
+          condition: BlocksCompleted | CanSwap | Schedule | TimestampElapsed,
           index: integer(),
           on_success: integer() | nil,
           on_failure: integer() | nil
