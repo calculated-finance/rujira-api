@@ -4,9 +4,7 @@ defmodule RujiraWeb.Resolvers.Calc do
   """
   alias Rujira.Calc
 
-  def accounts(%{address: address}, _, _) do
-    Calc.load_account(address)
-  end
+  def accounts(%{address: address}, _, _), do: Calc.load_account(address)
 
   def value_usd(_) do
     {:ok, 0}
