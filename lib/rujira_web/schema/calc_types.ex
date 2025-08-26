@@ -9,11 +9,9 @@ defmodule RujiraWeb.Schema.CalcTypes do
   use Absinthe.Schema.Notation
   use Absinthe.Relay.Schema.Notation, :modern
 
-  alias Rujira.Assets
   alias Rujira.Calc.Action
   alias Rujira.Calc.Condition
   alias Rujira.Contracts
-  alias Rujira.Prices
   alias RujiraWeb.Resolvers.Calc
 
   # import types
