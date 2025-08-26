@@ -61,6 +61,7 @@ defmodule Rujira.Calc.Strategy do
   end
 
   defstruct [
+    :id,
     :idx,
     :source,
     :owner,
@@ -102,6 +103,7 @@ defmodule Rujira.Calc.Strategy do
 
       {:ok,
        %__MODULE__{
+         id: contract_address,
          idx: id,
          source: source,
          owner: owner,
