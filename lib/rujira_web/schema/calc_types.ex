@@ -22,7 +22,7 @@ defmodule RujiraWeb.Schema.CalcTypes do
 
   node object(:calc_account) do
     field :address, non_null(:address)
-    field :calc_strategies, non_null(list_of(non_null(:calc_strategy)))
+    field :calc_strategies, list_of(non_null(:calc_strategy))
 
     field :value_usd, non_null(:bigint) do
       resolve(fn %{calc_strategies: calc_strategies}, _, _ ->
