@@ -4,5 +4,5 @@ targets:
   - id: calc-manager
     admin: ${accounts:admin}
     creator: ${accounts:creator}
-    address: sthor18e35rm2dwpx3h09p7q7xx8qfvwdsxz2ls92fdfd4j7vh6g55h8ash7gkau
+    address: sthor1sws3r2t5zecjskzh8n5plk8yhpxm2grtm0tthqljl02qgklfemhqhfnkpr
     config:
