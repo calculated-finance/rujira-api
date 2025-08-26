@@ -43,7 +43,9 @@ defmodule Thornode.Worker do
         cred: cred
       )
     else
-      GRPC.Stub.connect(addr, interceptors: [{GRPC.Client.Interceptors.Logger, level: :debug}])
+      GRPC.Stub.connect(addr,
+        interceptors: [{GRPC.Client.Interceptors.Logger, level: :debug}]
+      )
     end
   end
 

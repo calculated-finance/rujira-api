@@ -10,7 +10,16 @@ defmodule Thorchain.Listener do
   use Thornode.Observer
 
   @impl true
-  def handle_new_block(%{txs: txs}, state) do
+  def handle_new_block(%{header: %{height: height}, txs: txs}, state) do
+    Memoize.invalidate(Thorchain, :inbound_addresses)
+    Memoize.invalidate(Thorchain, :outbound_fees)
+    Memoize.invalidate(Thorchain, :pools)
+    Memoize.invalidate(Thorchain, :pool)
+    Memoize.invalidate(Thorchain, :network)
+
+    # Invalidate block at this height in case an error response has been cached from a previous request
+    Memoize.invalidate(Thorchain, :block, [height])
+
     hashes =
       txs
       |> Enum.flat_map(&scan_txs/1)

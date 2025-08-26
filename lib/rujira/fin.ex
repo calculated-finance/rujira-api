@@ -52,7 +52,7 @@ defmodule Rujira.Fin do
   Fetches all Pairs
   """
   @spec list_pairs :: {:ok, list(Pair.t())} | {:error, GRPC.RPCError.t()}
-  def list_pairs do
+  defmemo list_pairs do
     Pair
     |> Deployments.list_targets()
     |> Rujira.Enum.reduce_while_ok([], fn
@@ -123,7 +123,7 @@ defmodule Rujira.Fin do
     end
   end
 
-  def query_orders(contract, address, offset \\ 0, limit \\ 30) do
+  defmemo query_orders(contract, address, offset \\ 0, limit \\ 30) do
     # We're hitting shared buffer issues when contracts query base layer state via gprc, causing responses to be empty
     # Will fix upstream, but for now this is the most parallel query. Retry on the common failures
     case Contracts.query_state_smart(contract, %{

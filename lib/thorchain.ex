@@ -21,11 +21,14 @@ defmodule Thorchain do
   alias Thorchain.Types.QueryBlockRequest
   alias Thorchain.Types.QueryBlockResponse
   alias Thorchain.Types.QueryBlockTx
+  alias Thorchain.Types.QueryInboundAddressesRequest
+  alias Thorchain.Types.QueryInboundAddressesResponse
   alias Thorchain.Types.QueryLiquidityProviderRequest
   alias Thorchain.Types.QueryMimirValuesRequest
   alias Thorchain.Types.QueryMimirValuesResponse
   alias Thorchain.Types.QueryNetworkRequest
-  alias Thorchain.Types.QueryPoolRequest
+  alias Thorchain.Types.QueryOutboundFeesRequest
+  alias Thorchain.Types.QueryOutboundFeesResponse
   alias Thorchain.Types.QueryPoolsRequest
   alias Thorchain.Types.QueryPoolsResponse
   alias Thorchain.Types.QueryTxRequest
@@ -46,26 +49,18 @@ defmodule Thorchain do
     {:ok, state}
   end
 
-  def network do
+  defmemo network do
     Thornode.query(&Q.network/2, %QueryNetworkRequest{})
   end
 
   def pool_from_id(id) do
-    req =
-      %QueryPoolRequest{
-        asset:
-          case Assets.to_layer1(Assets.from_string(id)) do
-            nil -> id
-            %{id: id} -> id
-          end
-      }
-
-    with {:ok, res} <- Thornode.query(&Q.pool/2, req) do
-      {:ok, cast_pool(res)}
+    case Assets.to_layer1(Assets.from_string(id)) do
+      nil -> pool(id)
+      %{id: id} -> pool(id)
     end
   end
 
-  def pools(height \\ nil) do
+  defmemo pools(height \\ nil) do
     req = %QueryPoolsRequest{
       height:
         if height do
@@ -78,6 +73,17 @@ defmodule Thorchain do
     with {:ok, %QueryPoolsResponse{pools: pools}} <-
            Thornode.query(&Q.pools/2, req) do
       {:ok, Enum.map(pools, &cast_pool/1)}
+    end
+  end
+
+  defmemo pool(asset) do
+    # Save hitting the grpc when we already have all the pools for this block
+    with {:ok, pools} <- pools(),
+         pool when not is_nil(pool) <- Enum.find(pools, &(&1.id == asset)) do
+      {:ok, pool}
+    else
+      nil -> {:ok, nil}
+      other -> other
     end
   end
 
@@ -99,6 +105,20 @@ defmodule Thorchain do
         end)
 
       {:ok, halted_pools}
+    end
+  end
+
+  defmemo inbound_addresses do
+    with {:ok, %QueryInboundAddressesResponse{inbound_addresses: inbound_addresses}} <-
+           Thornode.query(&Q.inbound_addresses/2, %QueryInboundAddressesRequest{}) do
+      {:ok, Enum.map(inbound_addresses, &cast_inbound_address/1)}
+    end
+  end
+
+  defmemo outbound_fees do
+    with {:ok, %QueryOutboundFeesResponse{outbound_fees: outbound_fees}} <-
+           Thornode.query(&Q.outbound_fees/2, %QueryOutboundFeesRequest{}) do
+      {:ok, Enum.map(outbound_fees, &cast_outbound_fee/1)}
     end
   end
 
@@ -182,6 +202,33 @@ defmodule Thorchain do
     |> Map.update(:loan_cr, "0", &String.to_integer/1)
   end
 
+  defp cast_inbound_address(x) do
+    x
+    |> Map.update(:chain, nil, &String.to_existing_atom(String.downcase(&1)))
+    |> Map.update(:gas_rate_units, nil, &maybe_string/1)
+    |> Map.update(:pub_key, nil, &maybe_string/1)
+    |> Map.update(:router, nil, &maybe_string/1)
+    |> Map.update(:outbound_tx_size, "0", &String.to_integer/1)
+    |> Map.update(:outbound_fee, "0", &String.to_integer/1)
+    |> Map.update(:dust_threshold, "0", &String.to_integer/1)
+    |> Map.update(:gas_rate, "0", &String.to_integer/1)
+    |> Map.put(:id, x.chain)
+  end
+
+  defp cast_outbound_fee(x) do
+    x
+    |> Map.update(:outbound_fee, "0", &String.to_integer/1)
+    |> Map.update(:fee_withheld_rune, nil, &maybe_to_integer/1)
+    |> Map.update(:fee_spent_rune, nil, &maybe_to_integer/1)
+    |> Map.update(:surplus_rune, nil, &maybe_to_integer/1)
+    |> Map.update(:dynamic_multiplier_basis_points, nil, &maybe_to_integer/1)
+  end
+
+  defp maybe_to_integer(""), do: nil
+  defp maybe_to_integer(str), do: String.to_integer(str)
+  defp maybe_string(""), do: nil
+  defp maybe_string(str), do: str
+
   def get_dest_address(memo) do
     parts = String.split(memo, ":")
 
@@ -219,7 +266,7 @@ defmodule Thorchain do
     end
   end
 
-  def block(height) do
+  defmemo block(height) do
     with {:ok, %QueryBlockResponse{} = block} <-
            Thornode.query(&Q.block/2, %QueryBlockRequest{height: to_string(height)}) do
       {:ok,
