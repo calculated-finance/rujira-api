@@ -18,13 +18,13 @@ defmodule Rujira.Calc.Action do
           next: integer() | nil
         }
 
-  def from_config(%{"action" => %{"distribute" => msg}}),
+  def from_config(%{"distribute" => msg}),
     do: Distribute.from_config(msg)
 
-  def from_config(%{"action" => %{"limit_order" => msg}}),
+  def from_config(%{"limit_order" => msg}),
     do: LimitOrder.from_config(msg)
 
-  def from_config(%{"action" => %{"swap" => msg}}),
+  def from_config(%{"swap" => msg}),
     do: Swap.from_config(msg)
 
   def from_config(_), do: {:error, :invalid_action}

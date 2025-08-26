@@ -80,7 +80,7 @@ defmodule Rujira.Calc do
 
   defp query_strategy_config(%Strategy{address: address} = strategy) do
     with {:ok, config} <- Contracts.query_state_smart(address, %{config: %{}}) do
-      Strategy.from_config(strategy, config)
+      Strategy.Config.from_config(strategy, config)
     end
   end
 end

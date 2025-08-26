@@ -31,7 +31,7 @@ defmodule Rujira.Calc.Strategy do
       end
     end
 
-    def parse_node(%{"action" => action, "index" => index} = map) do
+    def parse_node(%{"action" => %{"action" => action, "index" => index} = map}) do
       next = Map.get(map, "next", nil)
 
       with {:ok, action} <- Action.from_config(action) do
@@ -44,7 +44,7 @@ defmodule Rujira.Calc.Strategy do
       end
     end
 
-    def parse_node(%{"condition" => condition, "index" => index} = map) do
+    def parse_node(%{"condition" => %{"condition" => condition, "index" => index} = map}) do
       on_success = Map.get(map, "on_success", nil)
       on_failure = Map.get(map, "on_failure", nil)
 
