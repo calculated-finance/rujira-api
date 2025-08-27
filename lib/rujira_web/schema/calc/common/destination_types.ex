@@ -1,4 +1,10 @@
 defmodule RujiraWeb.Schema.Calc.Common.DestinationTypes do
+  @moduledoc """
+  Defines GraphQL types for destination and recipient data in Calc actions.
+
+  This module contains type definitions for distribution destinations and their
+  associated recipients (bank, contract, or deposit types).
+  """
   use Absinthe.Schema.Notation
   alias Rujira.Calc.Common.Recipient
 

@@ -1,4 +1,10 @@
 defmodule RujiraWeb.Schema.Calc.Common.SwapRouteTypes do
+  @moduledoc """
+  Defines GraphQL types for swap routing data in Calc actions.
+
+  This module contains type definitions for different swap route types including
+  Fin and Thorchain routes with their respective configuration parameters.
+  """
   use Absinthe.Schema.Notation
   alias Rujira.Calc.Common.SwapRoute
 

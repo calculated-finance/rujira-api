@@ -1,4 +1,10 @@
 defmodule RujiraWeb.Schema.Calc.Action.SwapTypes do
+  @moduledoc """
+  Defines GraphQL types for swap actions in Calc Protocol.
+
+  This module contains type definitions for swap actions including amount adjustment
+  strategies and the complete swap action type with all its parameters.
+  """
   use Absinthe.Schema.Notation
   alias Rujira.Calc.Common.SwapAmountAdjustment
 
