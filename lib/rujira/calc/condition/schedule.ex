@@ -3,7 +3,7 @@ defmodule Rujira.Calc.Condition.Schedule do
   Condition type that triggers based on a cron-like scheduling expression.
   Currently a placeholder implementation.
   """
-  alias Rujira.Assets.Coin
+  alias Rujira.Balances.Balance
   alias Rujira.Calc.Common.Cadence
 
   # default values
@@ -20,7 +20,7 @@ defmodule Rujira.Calc.Condition.Schedule do
           manager_address: String.t(),
           cadence: Cadence.t(),
           next: Cadence.t() | nil,
-          execution_rebate: list(Coin.t()),
+          execution_rebate: list(Balance.t()),
           executors: [String.t()],
           jitter: non_neg_integer()
         }
@@ -36,7 +36,7 @@ defmodule Rujira.Calc.Condition.Schedule do
       }) do
     with {:ok, cadence} <- Cadence.from_config(cadence),
          {:ok, next} <- Cadence.from_config(next),
-         {:ok, execution_rebate} <- Rujira.Enum.reduce_while_ok(execution_rebate, &Coin.parse/1) do
+         {:ok, execution_rebate} <- Rujira.Enum.reduce_while_ok(execution_rebate, &Balance.parse/1) do
       {:ok,
        %__MODULE__{
          scheduler_address: scheduler_address,
