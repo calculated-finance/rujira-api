@@ -6,13 +6,11 @@ defmodule Rujira.Calc.Action.Swap do
   alias Rujira.Calc.Common.SwapAmountAdjustment
   alias Rujira.Calc.Common.SwapRoute
 
-  defstruct [
-    swap_amount: Coin.default(),
-    minimum_receive_amount: Coin.default(),
-    maximum_slippage_bps: 0,
-    adjustment: SwapAmountAdjustment.default(),
-    routes: []
-  ]
+  defstruct swap_amount: Coin.default(),
+            minimum_receive_amount: Coin.default(),
+            maximum_slippage_bps: 0,
+            adjustment: SwapAmountAdjustment.default(),
+            routes: []
 
   def from_config(%{
         "swap_amount" => swap_amount,
