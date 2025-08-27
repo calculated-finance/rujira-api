@@ -36,7 +36,8 @@ defmodule Rujira.Calc.Condition.Schedule do
       }) do
     with {:ok, cadence} <- Cadence.from_config(cadence),
          {:ok, next} <- Cadence.from_config(next),
-         {:ok, execution_rebate} <- Rujira.Enum.reduce_while_ok(execution_rebate, &Balance.parse/1) do
+         {:ok, execution_rebate} <-
+           Rujira.Enum.reduce_while_ok(execution_rebate, &Balance.parse/1) do
       {:ok,
        %__MODULE__{
          scheduler_address: scheduler_address,
