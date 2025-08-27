@@ -36,7 +36,7 @@ defmodule Rujira.Calc.Common.SwapAmountAdjustment do
     end
   end
 
-  def from_config(%{"fixed" => _}) do
+  def from_config("fixed") do
     {:ok, %Fixed{}}
   end
 end
