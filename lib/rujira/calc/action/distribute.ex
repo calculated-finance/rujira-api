@@ -4,6 +4,8 @@ defmodule Rujira.Calc.Action.Distribute do
   Currently a placeholder implementation.
   """
 
+  alias Rujira.Calc.Common.Destination
+
   defstruct denoms: [],
             destinations: []
 

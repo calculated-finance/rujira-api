@@ -1,4 +1,6 @@
 defmodule Rujira.Calc.Common.SwapRoute do
+  alias Rujira.Calc.Common.SwapRoute.Thorchain.StreamingSwap
+
   defmodule Fin do
     defstruct pair_address: ""
 
@@ -22,6 +24,8 @@ defmodule Rujira.Calc.Common.SwapRoute do
   end
 
   defmodule Thorchain.StreamingSwap do
+    alias Rujira.Assets.Coin
+
     defstruct swap_amount: Coin.default(),
               expected_receive_amount: Coin.default(),
               starting_block: 0,
