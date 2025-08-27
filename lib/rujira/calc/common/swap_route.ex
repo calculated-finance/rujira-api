@@ -24,17 +24,17 @@ defmodule Rujira.Calc.Common.SwapRoute do
   end
 
   defmodule Thorchain.StreamingSwap do
-    alias Rujira.Assets.Coin
+    alias Rujira.Balances.Balance
 
-    defstruct swap_amount: Coin.default(),
-              expected_receive_amount: Coin.default(),
+    defstruct swap_amount: nil,
+              expected_receive_amount: nil,
               starting_block: 0,
               streaming_swap_blocks: 0,
               memo: ""
 
     @type t :: %__MODULE__{
-            swap_amount: Coin.t(),
-            expected_receive_amount: Coin.t(),
+            swap_amount: Balance.t(),
+            expected_receive_amount: Balance.t(),
             starting_block: non_neg_integer(),
             streaming_swap_blocks: non_neg_integer(),
             memo: String.t()
@@ -47,8 +47,8 @@ defmodule Rujira.Calc.Common.SwapRoute do
           "streaming_swap_blocks" => streaming_swap_blocks,
           "memo" => memo
         }) do
-      with {:ok, swap_amount} <- Coin.parse(swap_amount),
-           {:ok, expected_receive_amount} <- Coin.parse(expected_receive_amount) do
+      with {:ok, swap_amount} <- Balance.parse(swap_amount),
+           {:ok, expected_receive_amount} <- Balance.parse(expected_receive_amount) do
         {:ok,
          %__MODULE__{
            swap_amount: swap_amount,
