@@ -8,6 +8,8 @@ defmodule RujiraWeb.Schema.Calc.ConditionTypes do
   use Absinthe.Schema.Notation
   alias Rujira.Calc.Condition
 
+  import_types(RujiraWeb.Schema.Calc.Condition.ScheduleTypes)
+
   object :calc_condition do
     field :condition, non_null(:calc_condition_type)
     field :index, non_null(:integer)
@@ -36,10 +38,6 @@ defmodule RujiraWeb.Schema.Calc.ConditionTypes do
   end
 
   object :calc_condition_can_swap do
-    field :test, :string
-  end
-
-  object :calc_condition_schedule do
     field :test, :string
   end
 
