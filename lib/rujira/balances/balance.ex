@@ -2,7 +2,7 @@ defmodule Rujira.Balances.Balance do
   @moduledoc false
   alias Rujira.Assets
   alias Rujira.Assets.Asset
-  
+
   defstruct [:asset, :amount]
 
   @type t :: %__MODULE__{
