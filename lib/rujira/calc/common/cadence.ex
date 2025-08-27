@@ -3,17 +3,17 @@ defmodule Rujira.Calc.Common.Cadence do
 
   defmodule Blocks do
     @moduledoc false
-    defstruct [interval: 0 , previous: nil]
+    defstruct interval: 0, previous: nil
   end
 
   defmodule Time do
     @moduledoc false
-    defstruct [duration: 0, previous: nil]
+    defstruct duration: 0, previous: nil
   end
 
   defmodule Cron do
     @moduledoc false
-    defstruct [expr: "", previous: nil]
+    defstruct expr: "", previous: nil
   end
 
   defmodule LimitOrder do
@@ -23,7 +23,7 @@ defmodule Rujira.Calc.Common.Cadence do
 
     @type side :: :base | :quote
 
-    defstruct [pair_address: "", side: :base, strategy: PriceStrategy.default(), previous: nil]
+    defstruct pair_address: "", side: :base, strategy: PriceStrategy.default(), previous: nil
   end
 
   @type t :: Blocks.t() | Time.t() | Cron.t() | LimitOrder.t()

@@ -7,15 +7,13 @@ defmodule Rujira.Calc.Condition.Schedule do
   alias Rujira.Calc.Common.Cadence
 
   # default values
-  defstruct [
-    scheduler_address: "",
-    manager_address: "",
-    cadence: Cadence.default(),
-    next: nil,
-    execution_rebate: [],
-    executors: [],
-    jitter: 0
-  ]
+  defstruct scheduler_address: "",
+            manager_address: "",
+            cadence: Cadence.default(),
+            next: nil,
+            execution_rebate: [],
+            executors: [],
+            jitter: 0
 
   @type t :: %__MODULE__{
           scheduler_address: String.t(),

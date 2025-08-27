@@ -1,12 +1,12 @@
 defmodule Rujira.Calc.Common.PriceStrategy do
   defmodule Fixed do
-    defstruct [price: 0.0]
+    defstruct price: 0.0
 
     @type t :: %__MODULE__{price: float()}
   end
 
   defmodule Offset do
-    defstruct [side: :base, direction: :above, offset: 0.0, tolerance: nil]
+    defstruct side: :base, direction: :above, offset: 0.0, tolerance: nil
 
     @type side :: :base | :quote
     @type direction :: :above | :below

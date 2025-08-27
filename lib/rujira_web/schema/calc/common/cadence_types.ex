@@ -4,7 +4,12 @@ defmodule RujiraWeb.Schema.Calc.Common.CadenceTypes do
   import_types(RujiraWeb.Schema.Calc.Common.PriceStrategyTypes)
 
   union :calc_cadence_type do
-    types([:calc_cadence_blocks, :calc_cadence_time, :calc_cadence_cron, :calc_cadence_limit_order])
+    types([
+      :calc_cadence_blocks,
+      :calc_cadence_time,
+      :calc_cadence_cron,
+      :calc_cadence_limit_order
+    ])
 
     resolve_type(fn
       %Rujira.Calc.Common.Cadence.Blocks{}, _ -> :calc_cadence_blocks
