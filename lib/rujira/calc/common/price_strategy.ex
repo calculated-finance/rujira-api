@@ -1,11 +1,20 @@
 defmodule Rujira.Calc.Common.PriceStrategy do
+  @moduledoc """
+  Defines price strategy types for Calc Protocol actions.
+
+  Price strategies determine how prices are calculated for limit orders and other
+  price-dependent operations. Supports fixed prices and offset-based pricing.
+  """
+
   defmodule Fixed do
+    @moduledoc "Fixed price strategy with a static price value."
     defstruct price: 0.0
 
     @type t :: %__MODULE__{price: float()}
   end
 
   defmodule Offset do
+    @moduledoc "Offset-based price strategy with directional pricing from a base price."
     defstruct side: :base, direction: :above, offset: 0.0, tolerance: nil
 
     @type side :: :base | :quote

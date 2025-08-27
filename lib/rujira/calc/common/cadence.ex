@@ -1,4 +1,10 @@
 defmodule Rujira.Calc.Common.Cadence do
+  @moduledoc """
+  Defines cadence types for scheduling Calc Protocol strategy executions.
+
+  Cadences determine when and how often strategy conditions and actions should
+  be evaluated and executed. Supports block-based, time-based, cron, and limit order cadences.
+  """
   alias Rujira.Calc.Common.PriceStrategy
 
   defmodule Blocks do

@@ -1,4 +1,10 @@
 defmodule RujiraWeb.Schema.Calc.Condition.ScheduleTypes do
+  @moduledoc """
+  Defines GraphQL types for schedule condition data in Calc Protocol.
+
+  This module contains type definitions for schedule conditions including
+  cadence configuration and execution parameters.
+  """
   use Absinthe.Schema.Notation
 
   import_types(RujiraWeb.Schema.Calc.Common.CadenceTypes)

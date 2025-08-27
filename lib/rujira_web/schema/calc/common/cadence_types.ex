@@ -1,4 +1,10 @@
 defmodule RujiraWeb.Schema.Calc.Common.CadenceTypes do
+  @moduledoc """
+  Defines GraphQL types for cadence scheduling data in Calc Protocol.
+
+  This module contains type definitions for different cadence types including
+  block-based, time-based, cron expressions, and limit order cadences.
+  """
   use Absinthe.Schema.Notation
 
   import_types(RujiraWeb.Schema.Calc.Common.PriceStrategyTypes)

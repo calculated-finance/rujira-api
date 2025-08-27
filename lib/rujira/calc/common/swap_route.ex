@@ -1,13 +1,21 @@
 defmodule Rujira.Calc.Common.SwapRoute do
+  @moduledoc """
+  Defines swap route types for different DEX protocols in Calc actions.
+
+  Swap routes specify which DEX protocol and configuration to use for executing
+  token swaps. Supports Fin and Thorchain routing with protocol-specific parameters.
+  """
   alias Rujira.Calc.Common.SwapRoute.Thorchain.StreamingSwap
 
   defmodule Fin do
+    @moduledoc "Fin DEX swap route configuration."
     defstruct pair_address: ""
 
     @type t :: %__MODULE__{pair_address: String.t()}
   end
 
   defmodule Thorchain do
+    @moduledoc "Thorchain swap route configuration with streaming swap support."
     defstruct streaming_interval: nil,
               max_streaming_quantity: nil,
               affiliate_code: nil,
@@ -24,6 +32,7 @@ defmodule Rujira.Calc.Common.SwapRoute do
   end
 
   defmodule Thorchain.StreamingSwap do
+    @moduledoc "Thorchain streaming swap configuration and state tracking."
     alias Rujira.Balances.Balance
 
     defstruct swap_amount: nil,

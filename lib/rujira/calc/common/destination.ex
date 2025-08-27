@@ -1,4 +1,10 @@
 defmodule Rujira.Calc.Common.Destination do
+  @moduledoc """
+  Defines distribution destination configuration for Calc actions.
+
+  Destinations specify how assets should be distributed, including the recipient,
+  their share allocation, and optional labeling for identification.
+  """
   alias Rujira.Calc.Common.Recipient
 
   defstruct shares: 0,

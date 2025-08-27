@@ -1,4 +1,10 @@
 defmodule RujiraWeb.Schema.Calc.Common.PriceStrategyTypes do
+  @moduledoc """
+  Defines GraphQL types for price strategy data in Calc Protocol.
+
+  This module contains type definitions for different pricing strategies including
+  fixed prices and offset-based pricing with directional controls.
+  """
   use Absinthe.Schema.Notation
 
   union :calc_price_strategy_type do
