@@ -1,6 +1,8 @@
 defmodule Rujira.Balances.Balance do
   @moduledoc false
+  alias Rujira.Assets
   alias Rujira.Assets.Asset
+  
   defstruct [:asset, :amount]
 
   @type t :: %__MODULE__{
@@ -9,7 +11,7 @@ defmodule Rujira.Balances.Balance do
         }
 
   def parse(%{"denom" => denom, "amount" => amount}) do
-    with {:ok, asset} <- Asset.from_denom(denom) do
+    with {:ok, asset} <- Assets.from_denom(denom) do
       {:ok, %__MODULE__{asset: asset, amount: amount}}
     end
   end
