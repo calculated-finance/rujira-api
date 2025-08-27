@@ -22,6 +22,7 @@ defmodule RujiraWeb.Schema.Calc.Action.SwapTypes do
   end
 
   object :calc_swap_amount_adjustment_fixed do
+    field :test, :string
   end
 
   object :calc_swap_amount_adjustment_linear_scalar do
