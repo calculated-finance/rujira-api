@@ -32,12 +32,12 @@ defmodule RujiraWeb.Schema.Calc.Common.CadenceTypes do
 
   object :calc_cadence_time do
     field :duration, non_null(:integer)
-    field :previous, :integer
+    field :previous, :timestamp
   end
 
   object :calc_cadence_cron do
     field :expr, non_null(:string)
-    field :previous, :integer
+    field :previous, :timestamp
   end
 
   object :calc_cadence_limit_order do
