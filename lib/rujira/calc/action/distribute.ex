@@ -15,7 +15,7 @@ defmodule Rujira.Calc.Action.Distribute do
         }
 
   def from_config(%{"denoms" => denoms, "destinations" => destinations}) do
-    with {:ok, denoms} <- Rujira.Enum.reduce_while_ok(denoms, &Destination.from_config/1) do
+    with {:ok, destinations} <- Rujira.Enum.reduce_while_ok(destinations, &Destination.from_config/1) do
       {:ok, %__MODULE__{denoms: denoms, destinations: destinations}}
     end
   end

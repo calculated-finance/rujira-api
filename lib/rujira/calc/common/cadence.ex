@@ -9,17 +9,41 @@ defmodule Rujira.Calc.Common.Cadence do
 
   defmodule Blocks do
     @moduledoc false
-    defstruct interval: 0, previous: nil
+    defstruct [
+      :interval,
+      :previous
+    ]
+
+    @type t :: %__MODULE__{
+            interval: non_neg_integer(),
+            previous: non_neg_integer() | nil
+          }
   end
 
   defmodule Time do
     @moduledoc false
-    defstruct duration: 0, previous: nil
+    defstruct [
+      :duration,
+      :previous
+    ]
+
+    @type t :: %__MODULE__{
+            duration: non_neg_integer(),
+            previous: DateTime.t() | nil
+          }
   end
 
   defmodule Cron do
     @moduledoc false
-    defstruct expr: "", previous: nil
+    defstruct [
+      :expr,
+      :previous
+    ]
+
+    @type t :: %__MODULE__{
+            expr: String.t(),
+            previous: DateTime.t() | nil
+          }
   end
 
   defmodule LimitOrder do
@@ -43,14 +67,26 @@ defmodule Rujira.Calc.Common.Cadence do
     {:ok, %Blocks{interval: interval, previous: previous}}
   end
 
-  def from_config(%{"time" => %{"duration" => duration} = map}) do
-    previous = Map.get(map, "previous", nil)
-    {:ok, %Time{duration: duration, previous: previous}}
+  def from_config(%{"time" => %{"duration" => %{"secs" => secs}} = map}) do
+    case Map.get(map, "previous") do
+      nil -> {:ok, %Time{duration: secs, previous: nil}}
+      prev ->
+        with {int, ""} <- Integer.parse(prev),
+             {:ok, dt} <- DateTime.from_unix(int, :nanosecond) do
+          {:ok, %Time{duration: secs, previous: dt}}
+        end
+    end
   end
 
   def from_config(%{"cron" => %{"expr" => expr} = map}) do
-    previous = Map.get(map, "previous", nil)
-    {:ok, %Cron{expr: expr, previous: previous}}
+    case Map.get(map, "previous") do
+      nil -> {:ok, %Cron{expr: expr, previous: nil}}
+      prev ->
+        with {int, ""} <- Integer.parse(prev),
+             {:ok, dt} <- DateTime.from_unix(int, :nanosecond) do
+          {:ok, %Cron{expr: expr, previous: dt}}
+        end
+    end
   end
 
   def from_config(%{

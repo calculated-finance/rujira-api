@@ -18,7 +18,7 @@ defmodule Rujira.Calc.Common.Destination do
         }
 
   def from_config(%{"shares" => shares, "recipient" => recipient, "label" => label}) do
-    with {:ok, recipient} <- Recipient.from_config(recipient) do
+    with {:ok, recipient} <- Recipient.from_config(recipient), {shares, ""} <- Integer.parse(shares) do
       {:ok,
        %__MODULE__{
          shares: shares,

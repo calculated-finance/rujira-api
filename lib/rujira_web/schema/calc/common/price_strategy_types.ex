@@ -20,11 +20,29 @@ defmodule RujiraWeb.Schema.Calc.Common.PriceStrategyTypes do
     field :price, non_null(:bigint)
   end
 
+
   object :calc_price_strategy_offset do
     field :side, non_null(:calc_side)
     field :direction, non_null(:calc_price_strategy_offset_direction)
-    field :offset, non_null(:bigint)
+    field :offset, non_null(:calc_offset_type)
     field :tolerance, :bigint
+  end
+
+  union :calc_offset_type do
+    types([:calc_offset_exact, :calc_offset_percent])
+
+    resolve_type(fn
+      %{"exact" => _}, _ -> :calc_offset_exact
+      %{"percent" => _}, _ -> :calc_offset_percent
+    end)
+  end
+
+  object :calc_offset_exact do
+    field :exact, non_null(:float)
+  end
+
+  object :calc_offset_percent do
+    field :percent, non_null(:bigint)
   end
 
   enum :calc_side do
